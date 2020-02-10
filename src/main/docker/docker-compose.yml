@@ -1,0 +1,32 @@
+version: "3"
+services:
+  database:
+    image: "postgres:12.1-alpine"
+    ports:
+      - "${PROFILE_MANAGER_DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}
+      POSTGRES_PASSWORD: ${PROFILE_MANAGER_DB_USER_PASSWORD:-password}
+      POSTGRES_DB: ${PROFILE_MANAGER_DB_NAME:-profile_manager}
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  api:
+    build:
+      context: .
+      args:
+        PROFILE_MANAGER_DB_HOST: localhost
+        PROFILE_MANAGER_DB_PORT: ${PROFILE_MANAGER_DB_PORT:-5432}
+        PROFILE_MANAGER_DB_NAME: ${PROFILE_MANAGER_DB_NAME:-profile_manager}
+        PROFILE_MANAGER_DB_USER_NAME: ${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}
+        PROFILE_MANAGER_DB_USER_PASSWORD: ${PROFILE_MANAGER_DB_USER_PASSWORD:-password}
+    image: "wenet/profile-manager"
+    ports:
+      - "${PROFILE_MANAGER_API_PORT:-80}:8080"
+    depends_on:
+     - database
+    environment:
+      DATASOURCE_URL: "jdbc:postgresql://database:${PROFILE_MANAGER_DB_PORT:-5432}/${PROFILE_MANAGER_DB_NAME:-profile_manager}"
+      DATASOURCE_USERNAME: "${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}"
+      DATASOURCE_PASSWORD: "${PROFILE_MANAGER_DB_USER_PASSWORD:-password}"
+volumes:
+  database-data:

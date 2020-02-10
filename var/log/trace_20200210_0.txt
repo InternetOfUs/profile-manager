@@ -1,0 +1,853 @@
+DEBUG  2020-02-10 18:20:13 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-papi.port=59533, -papi.host="localhost"]
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.logging.InternalLoggerFactory.newDefaultFactory:43
+	Using SLF4J as the default logging framework
+DEBUG  2020-02-10 18:20:13 io.netty.util.ResourceLeakDetector.<clinit>:129
+	-Dio.netty.leakDetection.level: simple
+DEBUG  2020-02-10 18:20:13 io.netty.util.ResourceLeakDetector.<clinit>:130
+	-Dio.netty.leakDetection.targetRecords: 4
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.InternalThreadLocalMap.<clinit>:54
+	-Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.InternalThreadLocalMap.<clinit>:57
+	-Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+DEBUG  2020-02-10 18:20:13 io.netty.channel.MultithreadEventLoopGroup.<clinit>:44
+	-Dio.netty.eventLoopThreads: 16
+DEBUG  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.<clinit>:106
+	-Dio.netty.noKeySetOptimization: false
+DEBUG  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.<clinit>:107
+	-Dio.netty.selectorAutoRebuildThreshold: 512
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.isOsx0:996
+	Platform: MacOS
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.explicitNoUnsafeCause0:395
+	-Dio.netty.noUnsafe: false
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.javaVersion0:851
+	Java version: 11
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:120
+	sun.misc.Unsafe.theUnsafe: available
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:144
+	sun.misc.Unsafe.copyMemory: available
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:182
+	java.nio.Buffer.address: available
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:252
+	direct buffer constructor: unavailable: java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:272)
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:92)
+	at io.netty.channel.nio.NioEventLoop.newTaskQueue0(NioEventLoop.java:285)
+	at io.netty.channel.nio.NioEventLoop.newTaskQueue(NioEventLoop.java:156)
+	at io.netty.channel.nio.NioEventLoop.<init>(NioEventLoop.java:138)
+	at io.netty.channel.nio.NioEventLoopGroup.newChild(NioEventLoopGroup.java:138)
+	at io.netty.channel.nio.NioEventLoopGroup.newChild(NioEventLoopGroup.java:37)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:84)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:58)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:47)
+	at io.netty.channel.MultithreadEventLoopGroup.<init>(MultithreadEventLoopGroup.java:59)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:78)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:73)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:60)
+	at io.vertx.core.net.impl.transport.Transport.eventLoopGroup(Transport.java:153)
+	at io.vertx.core.impl.VertxImpl.<init>(VertxImpl.java:143)
+	at io.vertx.core.impl.VertxImpl.vertx(VertxImpl.java:92)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:40)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:32)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:27)
+	at io.vertx.core.Vertx.vertx(Vertx.java:75)
+	at eu.internetofus.wenet_profile_manager.Main.startVertx(Main.java:130)
+	at eu.internetofus.wenet_profile_manager.Main.startWith(Main.java:372)
+	at eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension.lambda$0(WeNetProfileManagerIntegrationExtension.java:121)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:313
+	java.nio.Bits.unaligned: available, true
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:372
+	jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable: java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @18bf3d14
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:272)
+	at io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:92)
+	at io.netty.channel.nio.NioEventLoop.newTaskQueue0(NioEventLoop.java:285)
+	at io.netty.channel.nio.NioEventLoop.newTaskQueue(NioEventLoop.java:156)
+	at io.netty.channel.nio.NioEventLoop.<init>(NioEventLoop.java:138)
+	at io.netty.channel.nio.NioEventLoopGroup.newChild(NioEventLoopGroup.java:138)
+	at io.netty.channel.nio.NioEventLoopGroup.newChild(NioEventLoopGroup.java:37)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:84)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:58)
+	at io.netty.util.concurrent.MultithreadEventExecutorGroup.<init>(MultithreadEventExecutorGroup.java:47)
+	at io.netty.channel.MultithreadEventLoopGroup.<init>(MultithreadEventLoopGroup.java:59)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:78)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:73)
+	at io.netty.channel.nio.NioEventLoopGroup.<init>(NioEventLoopGroup.java:60)
+	at io.vertx.core.net.impl.transport.Transport.eventLoopGroup(Transport.java:153)
+	at io.vertx.core.impl.VertxImpl.<init>(VertxImpl.java:143)
+	at io.vertx.core.impl.VertxImpl.vertx(VertxImpl.java:92)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:40)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:32)
+	at io.vertx.core.impl.VertxFactoryImpl.vertx(VertxFactoryImpl.java:27)
+	at io.vertx.core.Vertx.vertx(Vertx.java:75)
+	at eu.internetofus.wenet_profile_manager.Main.startVertx(Main.java:130)
+	at eu.internetofus.wenet_profile_manager.Main.startWith(Main.java:372)
+	at eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension.lambda$0(WeNetProfileManagerIntegrationExtension.java:121)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent0.<clinit>:385
+	java.nio.DirectByteBuffer.<init>(long, int): unavailable
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.unsafeUnavailabilityCause0:1028
+	sun.misc.Unsafe: available
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.maxDirectMemory0:1128
+	maxDirectMemory: 4294967296 bytes (maybe)
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.tmpdir0:1147
+	-Dio.netty.tmpdir: /var/folders/sy/v10lhwz128s08zwb0vw4qv2c0000gp/T (java.io.tmpdir)
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.bitMode0:1226
+	-Dio.netty.bitMode: 64 (sun.arch.data.model)
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.<clinit>:173
+	-Dio.netty.maxDirectMemory: -1 bytes
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.<clinit>:180
+	-Dio.netty.uninitializedArrayAllocationThreshold: -1
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.CleanerJava9.<clinit>:71
+	java.nio.ByteBuffer.cleaner(): available
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent.<clinit>:200
+	-Dio.netty.noPreferDirect: false
+DEBUG  2020-02-10 18:20:13 io.netty.util.internal.PlatformDependent$Mpsc.<clinit>:890
+	org.jctools-core.MpscChunkedArrayQueue: available
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3a6cd7e7
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4d092f32
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@eb3608
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2c164daf
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@258085c7
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@21f44efa
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@787667ba
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6613362e
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@479c3996
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@449c3c01
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@f9cc89f
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@70412d04
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5637fa13
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@73eeb8e0
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1adf4e32
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@638f6960
+TRACE  2020-02-10 18:20:13 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@bc634fe
+DEBUG  2020-02-10 18:20:13 io.netty.resolver.dns.DefaultDnsServerAddressStreamProvider.<clinit>:82
+	Default DNS servers: [/192.168.1.1:53] (sun.net.dns.ResolverConfiguration)
+DEBUG  2020-02-10 18:20:13 io.netty.util.NetUtil.<clinit>:139
+	-Djava.net.preferIPv4Stack: false
+DEBUG  2020-02-10 18:20:13 io.netty.util.NetUtil.<clinit>:140
+	-Djava.net.preferIPv6Addresses: false
+DEBUG  2020-02-10 18:20:13 io.netty.util.NetUtil.<clinit>:224
+	Loopback interface: lo0 (lo0, 0:0:0:0:0:0:0:1%lo0)
+DEBUG  2020-02-10 18:20:13 io.netty.util.NetUtil.run:289
+	Failed to get SOMAXCONN from sysctl and file /proc/sys/net/core/somaxconn. Default: 128
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.AbstractByteBuf.<clinit>:62
+	-Dio.netty.buffer.checkAccessible: true
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.AbstractByteBuf.<clinit>:63
+	-Dio.netty.buffer.checkBounds: true
+DEBUG  2020-02-10 18:20:14 io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector:195
+	Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@3ad2305b
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:139
+	Loaded configuration: {"version":{"api":"0.9.0","vendor":"UDT-IA, IIIA-CSIC","software":"0.9.0 (2020-02-10T17:17:27Z)"},"api":{"host":"localhost","port":59533},"persistence":{"url":"jdbc://localhost:/profile_manager","user":"profile_manager","password":"password"}}
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:146
+	Stored effective configuration at 'var/effective-conf.json'
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@636d76c8
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@981e2f9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@13b86635
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2cf54fca
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2426a7aa
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@22b61ffd
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@72ef5c50
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@74e2d6d8
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@65e83419
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@773386ae
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7fb649c4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1d8004fc
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@39ecb3a9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@528144cc
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1fb4df31
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@20e8fdf
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@18737d6c
+WARN  2020-02-10 18:20:14 io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo:166
+	Exception while reading:: java.lang.RuntimeException: Could not find wenet-profile-manager-api.yaml on the classpath
+	at io.swagger.v3.parser.util.ClasspathHelper.loadFileFromClasspath(ClasspathHelper.java:31)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo(OpenAPIV3Parser.java:149)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readLocation(OpenAPIV3Parser.java:58)
+	at io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory.lambda$create$1(OpenAPI3RouterFactory.java:165)
+	at io.vertx.core.impl.ContextImpl.lambda$executeBlocking$2(ContextImpl.java:316)
+	at io.vertx.core.impl.TaskQueue.run(TaskQueue.java:76)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering default extensions: [org.junit.jupiter.engine.extension.DisabledCondition, org.junit.jupiter.engine.extension.TempDirectory, org.junit.jupiter.engine.extension.TimeoutExtension, org.junit.jupiter.engine.extension.RepeatedTestExtension, org.junit.jupiter.engine.extension.TestInfoParameterResolver, org.junit.jupiter.engine.extension.TestReporterParameterResolver]
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [class eu.internetofus.wenet_profile_manager.MainTest] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureExceptionWhenConfigureDirectory()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-c, undefined://bad/path/to/conf/dir]
+ERROR  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.configure:351
+	Cannot load all the configuration files from undefined://bad/path/to/conf/dir: java.nio.file.NoSuchFileException: undefined:/bad/path/to/conf/dir
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:408)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.Files.list(Files.java:3694)
+	at eu.internetofus.wenet_profile_manager.Main.configure(Main.java:330)
+	at eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureExceptionWhenConfigureDirectory(MainTest.java:248)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:686)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:140)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:84)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:205)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:201)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:137)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:71)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:135)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1540)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1540)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:38)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:32)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:51)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:229)
+	at org.junit.platform.launcher.core.DefaultLauncher.lambda$execute$6(DefaultLauncher.java:197)
+	at org.junit.platform.launcher.core.DefaultLauncher.withInterceptedStreams(DefaultLauncher.java:211)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:191)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:137)
+	at org.eclipse.jdt.internal.junit5.runner.JUnit5TestReference.run(JUnit5TestReference.java:89)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:41)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:542)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:770)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:464)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:210)
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemOutGuard@6fd37997] from source [org.itsallcode.junit.sysextensions.SystemOutGuard@6fd37997].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldShowHelpMessage(org.itsallcode.io.Capturable)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemOutGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldShowHelpMessage(org.itsallcode.io.Capturable)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@3889c343] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@3889c343].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureUndefinedArgument(org.itsallcode.io.Capturable)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureUndefinedArgument(org.itsallcode.io.Capturable)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@13e5b262] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@13e5b262].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureBadConfDirArgument(org.itsallcode.io.Capturable)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureBadConfDirArgument(org.itsallcode.io.Capturable)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@220e1b7b] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@220e1b7b].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecauseConfigurationFilesAreWrong(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecauseConfigurationFilesAreWrong(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.engine.extension.TempDirectory] resolved a value of type [java.io.File] for parameter [java.io.File arg1] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecauseConfigurationFilesAreWrong(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-c, /var/folders/sy/v10lhwz128s08zwb0vw4qv2c0000gp/T/junit7024108717069217591/etc]
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7a9bfd9c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@88647d5
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5340ad1
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5b870257
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7ed563a6
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@44d73b46
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6110c38f
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2e6e040
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@57fb7be9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2a8b675b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4d60c53e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@78b1c832
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7499d0fe
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5d9d089
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4edbbc39
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@38dd0d88
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@713c57b7
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:142
+	-Dio.netty.allocator.numHeapArenas: 16
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:143
+	-Dio.netty.allocator.numDirectArenas: 16
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:145
+	-Dio.netty.allocator.pageSize: 8192
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:150
+	-Dio.netty.allocator.maxOrder: 11
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:154
+	-Dio.netty.allocator.chunkSize: 16777216
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:155
+	-Dio.netty.allocator.tinyCacheSize: 512
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:156
+	-Dio.netty.allocator.smallCacheSize: 256
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:157
+	-Dio.netty.allocator.normalCacheSize: 64
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:158
+	-Dio.netty.allocator.maxCachedBufferCapacity: 32768
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:159
+	-Dio.netty.allocator.cacheTrimInterval: 8192
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:160
+	-Dio.netty.allocator.cacheTrimIntervalMillis: 0
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:161
+	-Dio.netty.allocator.useCacheForAllThreads: true
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.PooledByteBufAllocator.<clinit>:162
+	-Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.ByteBufUtil.<clinit>:85
+	-Dio.netty.allocator.type: pooled
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.ByteBufUtil.<clinit>:94
+	-Dio.netty.threadLocalDirectBufferSize: 0
+DEBUG  2020-02-10 18:20:14 io.netty.buffer.ByteBufUtil.<clinit>:97
+	-Dio.netty.maxThreadLocalCharBufferSize: 16384
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@2daf0cc9] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@2daf0cc9].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBad(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBad(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.engine.extension.TempDirectory] resolved a value of type [java.io.File] for parameter [java.io.File arg1] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBad(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-p, api.port="zero"]
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1417eae5
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1ad00617
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1eef8195
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5bed0c2c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@70868576
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6afcd5cf
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@87d022c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3bc2f363
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7f2b7c58
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@73759cdf
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@13798cff
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3f8c2c18
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1be15e0d
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@442dbaca
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1b6cc8c4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@45dedb5d
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4061f5c2
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:139
+	Loaded configuration: {"version":{"api":"0.9.0","vendor":"UDT-IA, IIIA-CSIC","software":"0.9.0 (2020-02-10T17:17:27Z)"},"api":{"host":"localhost","port":"zero"},"persistence":{"url":"jdbc://localhost:/profile_manager","user":"profile_manager","password":"password"}}
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:146
+	Stored effective configuration at 'var/effective-conf.json'
+WARN  2020-02-10 18:20:14 io.vertx.core.logging.JULLogDelegate.log:167
+	You're already on a Vert.x context, are you sure you want to create a new Vertx instance?
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2e3588c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@c24b6a0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@81b33fc
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4d19bc9b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@55a6aa8c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7c1e972e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2d4bdf82
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2d3643d4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4d246e34
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@458b2759
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@364f57a5
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@29789a5b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4743048e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5bee52d0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1750d477
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7a173e84
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2ecef34a
+WARN  2020-02-10 18:20:14 io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo:166
+	Exception while reading:: java.lang.RuntimeException: Could not find wenet-profile-manager-api.yaml on the classpath
+	at io.swagger.v3.parser.util.ClasspathHelper.loadFileFromClasspath(ClasspathHelper.java:31)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo(OpenAPIV3Parser.java:149)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readLocation(OpenAPIV3Parser.java:58)
+	at io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory.lambda$create$1(OpenAPI3RouterFactory.java:165)
+	at io.vertx.core.impl.ContextImpl.lambda$executeBlocking$2(ContextImpl.java:316)
+	at io.vertx.core.impl.TaskQueue.run(TaskQueue.java:76)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@407d2a01] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@407d2a01].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldShowVersion(org.itsallcode.io.Capturable)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldShowVersion(org.itsallcode.io.Capturable)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@461b38ca] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@461b38ca].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBidded(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBidded(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.engine.extension.TempDirectory] resolved a value of type [java.io.File] for parameter [java.io.File arg1] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldNotStartServerBecausePortIsBidded(org.itsallcode.io.Capturable,java.io.File) throws java.lang.Throwable].
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-c, /var/folders/sy/v10lhwz128s08zwb0vw4qv2c0000gp/T/junit3910938283436169774/etc]
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@79f620c4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7731d18a
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@730e4bb4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@360cdbb1
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7e343db4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7f00e79
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@622b6d8
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@562324fe
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@9256a13
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@e213e88
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1d26dde2
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@526d1e6c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@70ba83c0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@77682621
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5c0a2ce3
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@662ed770
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@46f7c8a5
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:139
+	Loaded configuration: {"version":{"api":"0.9.0","vendor":"UDT-IA, IIIA-CSIC","software":"0.9.0 (2020-02-10T17:17:27Z)"},"api":{"host":"localhost","port":59534},"persistence":{"url":"jdbc://localhost:/profile_manager","user":"profile_manager","password":"password"}}
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:146
+	Stored effective configuration at 'var/effective-conf.json'
+WARN  2020-02-10 18:20:14 io.vertx.core.logging.JULLogDelegate.log:167
+	You're already on a Vert.x context, are you sure you want to create a new Vertx instance?
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6fbe27e0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6179c467
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@65464c90
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2044ce5c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3edb6c93
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@112ecdd3
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@465b31aa
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@406b3113
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@25316279
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@42967359
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5d5fdcc0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@44258dd1
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6aa90d86
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1bd4a731
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@384ed157
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@506d888a
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@78d388a6
+WARN  2020-02-10 18:20:14 io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo:166
+	Exception while reading:: java.lang.RuntimeException: Could not find wenet-profile-manager-api.yaml on the classpath
+	at io.swagger.v3.parser.util.ClasspathHelper.loadFileFromClasspath(ClasspathHelper.java:31)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo(OpenAPIV3Parser.java:149)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readLocation(OpenAPIV3Parser.java:58)
+	at io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory.lambda$create$1(OpenAPI3RouterFactory.java:165)
+	at io.vertx.core.impl.ContextImpl.lambda$executeBlocking$2(ContextImpl.java:316)
+	at io.vertx.core.impl.TaskQueue.run(TaskQueue.java:76)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.itsallcode.junit.sysextensions.SystemErrGuard@3881b884] from source [org.itsallcode.junit.sysextensions.SystemErrGuard@3881b884].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureBadPropertyArgument(org.itsallcode.io.Capturable)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.itsallcode.junit.sysextensions.SystemErrGuard] resolved a value of type [org.itsallcode.io.CapturingOutputStream] for parameter [org.itsallcode.io.Capturable arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCaptureBadPropertyArgument(org.itsallcode.io.Capturable)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.junit.jupiter.params.ParameterizedTestExtension@1185b0b7] from source [org.junit.jupiter.params.ParameterizedTestExtension@1185b0b7].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.junit.jupiter.params.ParameterizedTestParameterResolver@531292ed] from source [org.junit.jupiter.params.ParameterizedTestInvocationContext@41538150].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.params.ParameterizedTestParameterResolver] resolved a value of type [java.lang.String] for parameter [java.lang.String arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.junit.jupiter.params.ParameterizedTestParameterResolver@5dd12c19] from source [org.junit.jupiter.params.ParameterizedTestInvocationContext@40696fc6].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.params.ParameterizedTestParameterResolver] resolved a value of type [java.lang.String] for parameter [java.lang.String arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [org.junit.jupiter.params.ParameterizedTestParameterResolver@3ce2c5f6] from source [org.junit.jupiter.params.ParameterizedTestInvocationContext@20a3321a].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	ParameterResolver [org.junit.jupiter.params.ParameterizedTestParameterResolver] resolved a value of type [java.lang.String] for parameter [java.lang.String arg0] in method [public void eu.internetofus.wenet_profile_manager.MainTest.shouldCreateOptionForLocale(java.lang.String)].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering default extensions: [org.junit.jupiter.engine.extension.DisabledCondition, org.junit.jupiter.engine.extension.TempDirectory, org.junit.jupiter.engine.extension.TimeoutExtension, org.junit.jupiter.engine.extension.RepeatedTestExtension, org.junit.jupiter.engine.extension.TestInfoParameterResolver, org.junit.jupiter.engine.extension.TestReporterParameterResolver]
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension@7f5a25e2] from source [eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension@7f5a25e2].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [class eu.internetofus.wenet_profile_manager.api.NotFoundHandlerIT] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-papi.port=59535, -papi.host="localhost"]
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@226dac47
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2caa567a
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2895c737
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6d975c41
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@22d7da20
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5c305186
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5a9a8948
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@db8a30e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@11a27e43
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4fc0a190
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@419ea1e9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@9f6da07
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@ba4fd1c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@41a201d9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@758771ed
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4a9eabb8
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3d41750f
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:139
+	Loaded configuration: {"version":{"api":"0.9.0","vendor":"UDT-IA, IIIA-CSIC","software":"0.9.0 (2020-02-10T17:17:27Z)"},"api":{"host":"localhost","port":59535},"persistence":{"url":"jdbc://localhost:/profile_manager","user":"profile_manager","password":"password"}}
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:146
+	Stored effective configuration at 'var/effective-conf.json'
+WARN  2020-02-10 18:20:14 io.vertx.core.logging.JULLogDelegate.log:167
+	You're already on a Vert.x context, are you sure you want to create a new Vertx instance?
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@283986fe
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@26fe6d89
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@22c1ed8e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@67c367b2
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3a913c2
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@56eea41b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7b6e8ed5
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7ec98fd
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4c90bcc1
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6ffd1734
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@606a2438
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3a263b8
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4a9da1b9
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4d5e5b69
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7ca4ed1e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6c0bfe91
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@56e6d16d
+WARN  2020-02-10 18:20:14 io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo:166
+	Exception while reading:: java.lang.RuntimeException: Could not find wenet-profile-manager-api.yaml on the classpath
+	at io.swagger.v3.parser.util.ClasspathHelper.loadFileFromClasspath(ClasspathHelper.java:31)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo(OpenAPIV3Parser.java:149)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readLocation(OpenAPIV3Parser.java:58)
+	at io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory.lambda$create$1(OpenAPI3RouterFactory.java:165)
+	at io.vertx.core.impl.ContextImpl.lambda$executeBlocking$2(ContextImpl.java:316)
+	at io.vertx.core.impl.TaskQueue.run(TaskQueue.java:76)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [class eu.internetofus.wenet_profile_manager.api.ErrorMessageTest] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.ModelTestCase.shouldJSONManipulable()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.ModelTestCase.shouldBeEquals()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.ModelTestCase.shouldNotBeEquals()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [class eu.internetofus.wenet_profile_manager.api.APIVerticleTest] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.api.APIVerticleTest.shouldNotStopIfServerNotStarted()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [public void eu.internetofus.wenet_profile_manager.api.APIVerticleTest.shouldStopIfServerStarted()] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5a464be7
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@170f0fd6
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@48d24d63
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@695c8b32
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1adec8d
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6eb332d1
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@34d0c331
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3958db82
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@577f81a0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@202d1424
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1256925b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6dadcf58
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@467421cc
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@eb09112
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@28521ed5
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2b06c388
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@1e2bc241
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Registering extension [eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension@445c693] from source [eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension@445c693].
+DEBUG  2020-02-10 18:20:14 org.junit.platform.commons.logging.LoggerFactory$DelegatingLogger.log:148
+	Evaluation of condition [org.junit.jupiter.engine.extension.DisabledCondition] on [class eu.internetofus.wenet_profile_manager.api.BadRequestHandlerIT] resulted in: ConditionEvaluationResult [enabled = true, reason = '@Disabled is not present']
+DEBUG  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.parse:238
+	Start Main with: [-papi.port=59536, -papi.host="localhost"]
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2abf7f70
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@24789457
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@20471400
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@65459e6c
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3450294b
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@546ad9ba
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4c953023
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@56a6123
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@30c51ab4
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@32e0b21f
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@57919848
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@12498e0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@192c32ca
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@2eeb0bba
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@75e395f7
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@5025f033
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@77716e44
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:139
+	Loaded configuration: {"version":{"api":"0.9.0","vendor":"UDT-IA, IIIA-CSIC","software":"0.9.0 (2020-02-10T17:17:27Z)"},"api":{"host":"localhost","port":59536},"persistence":{"url":"jdbc://localhost:/profile_manager","user":"profile_manager","password":"password"}}
+INFO  2020-02-10 18:20:14 eu.internetofus.wenet_profile_manager.Main.lambda$0:146
+	Stored effective configuration at 'var/effective-conf.json'
+WARN  2020-02-10 18:20:14 io.vertx.core.logging.JULLogDelegate.log:167
+	You're already on a Vert.x context, are you sure you want to create a new Vertx instance?
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@787e8a46
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@76b96b39
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@7286e136
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@37846102
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@3ba4f10e
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@6f9b5e0
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@43337b58
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@57ab9e4d
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@4b9b2937
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@86d311
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@583791e2
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@53e5255f
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@41256c85
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@778d21eb
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@13510679
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@69e40691
+TRACE  2020-02-10 18:20:14 io.netty.channel.nio.NioEventLoop.openSelector:266
+	instrumented a special java.util.Set into: sun.nio.ch.KQueueSelectorImpl@11e0e60
+WARN  2020-02-10 18:20:14 io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo:166
+	Exception while reading:: java.lang.RuntimeException: Could not find wenet-profile-manager-api.yaml on the classpath
+	at io.swagger.v3.parser.util.ClasspathHelper.loadFileFromClasspath(ClasspathHelper.java:31)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readWithInfo(OpenAPIV3Parser.java:149)
+	at io.swagger.v3.parser.OpenAPIV3Parser.readLocation(OpenAPIV3Parser.java:58)
+	at io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory.lambda$create$1(OpenAPI3RouterFactory.java:165)
+	at io.vertx.core.impl.ContextImpl.lambda$executeBlocking$2(ContextImpl.java:316)
+	at io.vertx.core.impl.TaskQueue.run(TaskQueue.java:76)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:834)
