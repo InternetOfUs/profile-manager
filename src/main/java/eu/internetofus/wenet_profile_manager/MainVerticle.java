@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager;
 
 import eu.internetofus.wenet_profile_manager.api.APIVerticle;
+import eu.internetofus.wenet_profile_manager.persistence.PersistenceVerticle;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
@@ -44,16 +45,28 @@ public class MainVerticle extends AbstractVerticle {
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
 
-		final DeploymentOptions options = new DeploymentOptions().setConfig(this.config());
-		this.vertx.deployVerticle(APIVerticle.class, options, deployAPI -> {
+		final DeploymentOptions options = new DeploymentOptions(this.config()).setConfig(this.config());
+		this.vertx.deployVerticle(PersistenceVerticle.class, options, deployPersistence -> {
 
-			if (deployAPI.failed()) {
+			if (deployPersistence.failed()) {
 
-				startPromise.fail(deployAPI.cause());
+				startPromise.fail(deployPersistence.cause());
 
 			} else {
 
-				startPromise.complete();
+				this.vertx.deployVerticle(APIVerticle.class, options, deployAPI -> {
+
+					if (deployAPI.failed()) {
+
+						startPromise.fail(deployAPI.cause());
+
+					} else {
+
+						startPromise.complete();
+					}
+
+				});
+
 			}
 
 		});

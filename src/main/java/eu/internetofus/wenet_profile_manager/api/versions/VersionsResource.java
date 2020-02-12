@@ -40,7 +40,9 @@ import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
 
 /**
- * Resource to provide the version of the API.
+ * Resource to provide the {@link Versions} of the API.
+ *
+ * @see Versions
  *
  * @author UDT-IA, IIIA-CSIC
  */

@@ -250,20 +250,49 @@ public class MainTest {
 	}
 
 	/**
-	 * Verify can not start server because the port has a bad value.
+	 * Verify can not start server because the API port has a bad value.
 	 *
 	 * @param stream captured system err stream.
 	 * @param tmpDir temporal directory.
 	 *
 	 *
-	 * @throws Throwable if can not bind a port.
+	 * @throws Throwable if can not bind a port for teh API.
 	 */
 	@Test
 	@ExtendWith(SystemErrGuard.class)
-	public void shouldNotStartServerBecausePortIsBad(final Capturable stream, @TempDir File tmpDir) throws Throwable {
+	public void shouldNotStartServerBecauseAPIPortIsBad(final Capturable stream, @TempDir File tmpDir) throws Throwable {
 
 		stream.capture();
 		final Thread thread = new Thread(() -> Main.main("-" + Main.PROPERTY_OPTION, "api.port=\"zero\""));
+		thread.start();
+
+		String data = stream.getCapturedData();
+		for (int i = 0; i < 1000 && !data.contains("Check the Logs to known why."); i++) {
+
+			Thread.sleep(100);
+			data = stream.getCapturedData();
+		}
+		assertThat(data).contains(Level.ERROR.name(), "Check the Logs to known why.");
+
+	}
+
+	/**
+	 * Verify can not start server because the persistence password has a bad value.
+	 *
+	 * @param stream captured system err stream.
+	 * @param tmpDir temporal directory.
+	 *
+	 *
+	 * @throws Throwable if can not listen to a bad persistence port.
+	 */
+	@Test
+	@ExtendWith(SystemErrGuard.class)
+	public void shouldNotStartServerBecausePersistencePasswordIsBad(final Capturable stream, @TempDir File tmpDir)
+			throws Throwable {
+
+		stream.capture();
+		final Thread thread = new Thread(
+				() -> Main.main("-" + Main.PROPERTY_OPTION, "persistence.password=\"undefined password value\""));
 		thread.start();
 
 		String data = stream.getCapturedData();

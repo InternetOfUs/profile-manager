@@ -61,7 +61,7 @@ public class NotFoundHandlerIT {
 		testRequest(client, HttpMethod.GET, undefinedPath).expect(res -> {
 			assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("not_found_api_request");
+			assertThat(error.code).isEqualTo("not_found_api_request_path");
 			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code).contains(undefinedPath);
 		}).send(testContext);
 	}

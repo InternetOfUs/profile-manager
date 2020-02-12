@@ -30,6 +30,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
+import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
+import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
 import eu.internetofus.wenet_profile_manager.api.versions.Versions;
 import eu.internetofus.wenet_profile_manager.api.versions.VersionsResource;
 import io.vertx.core.AbstractVerticle;
@@ -62,22 +64,22 @@ public class APIVerticle extends AbstractVerticle {
 		OpenAPI3RouterFactory.create(this.vertx, "wenet-profile-manager-api.yaml", createRouterFactory -> {
 			if (createRouterFactory.succeeded()) {
 
-				final OpenAPI3RouterFactory routerFactory = createRouterFactory.result();
-
-				routerFactory.mountServiceInterface(Versions.class, Versions.ADDRESS);
-				new ServiceBinder(this.vertx).setAddress(Versions.ADDRESS).register(Versions.class, new VersionsResource(this));
-
-				// bind the API operations
-				// routerFactory.addHandlerByOperationId(Versions.OPERATION_VERSION_GET, new
-				// VersionResource()::handleGetVersion);
-
-				// bind the ERROR handlers
-				final Router router = routerFactory.getRouter();
-				router.errorHandler(Status.NOT_FOUND.getStatusCode(), NotFoundHandler.build());
-				router.errorHandler(Status.BAD_REQUEST.getStatusCode(), BadRequestHandler.build());
-
-				// start the server
 				try {
+
+					final OpenAPI3RouterFactory routerFactory = createRouterFactory.result();
+
+					routerFactory.mountServiceInterface(Versions.class, Versions.ADDRESS);
+					new ServiceBinder(this.vertx).setAddress(Versions.ADDRESS).register(Versions.class,
+							new VersionsResource(this));
+
+					routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
+					new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
+							new ProfilesResource(this.vertx));
+
+					// bind the ERROR handlers
+					final Router router = routerFactory.getRouter();
+					router.errorHandler(Status.NOT_FOUND.getStatusCode(), NotFoundHandler.build());
+					router.errorHandler(Status.BAD_REQUEST.getStatusCode(), BadRequestHandler.build());
 
 					final JsonObject apiConf = this.config().getJsonObject("api", new JsonObject());
 					final HttpServerOptions httpServerOptions = new HttpServerOptions(apiConf);

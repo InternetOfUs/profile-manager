@@ -30,6 +30,8 @@ import static eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrati
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -58,6 +60,7 @@ public class VersionsIT {
 	public void shouldReturnVersion(WebClient client, VertxTestContext testContext) {
 
 		testRequest(client, HttpMethod.GET, Versions.PATH).expect(res -> {
+			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
 			final Version version = assertThatBodyIs(Version.class, res);
 			assertThat(version.api).isNotEmpty();
 			assertThat(version.software).isNotEmpty();

@@ -9,8 +9,15 @@
 		"port": 8080
 	},
 	"persistence": {
-		"url": "jdbc://localhost:/profile_manager",
+		"database": "profile_manager",
+		"host": "localhost",
+		"port": 5432,
 		"user": "profile_manager",
-		"password": "password"
+		"password": "password",
+		"flyway": {
+			"baselineOnMigrate": true,
+			"baselineDescription": "WeNet profile manager",
+			"encoding": "UTF-8"
+		}
 	}
 }

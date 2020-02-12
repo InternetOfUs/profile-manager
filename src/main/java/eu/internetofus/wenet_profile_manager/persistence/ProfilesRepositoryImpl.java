@@ -24,50 +24,64 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api;
+package eu.internetofus.wenet_profile_manager.persistence;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
+import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 /**
- * Handler when do a bad request over the API.
+ * Implementation of the {@link ProfilesRepository}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class BadRequestHandler implements Handler<RoutingContext> {
+public class ProfilesRepositoryImpl extends Repository implements ProfilesRepository {
 
 	/**
-	 * Create the handler for the not found.
+	 * Create a new service.
 	 *
-	 * @return a new instance of the handler for the not found.
+	 * @param pool to create the connections.
 	 */
-	public static Handler<RoutingContext> build() {
+	public ProfilesRepositoryImpl(PgPool pool) {
 
-		return new BadRequestHandler();
+		super(pool);
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handle(RoutingContext event) {
+	public void searchProfile(String id, Handler<AsyncResult<WeNetUserProfile>> searchHandler) {
 
-		final HttpServerResponse response = event.response();
-		response.setStatusCode(Status.BAD_REQUEST.getStatusCode());
-		response.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-		final Throwable failure = event.failure();
-		String message = "Bad request";
-		if (failure != null) {
+		this.pool.preparedQuery("SELECT * FROM ", Tuple.of(id), query -> {
 
-			message = failure.getMessage();
-		}
-		final ErrorMessage error = new ErrorMessage("bad_api_request", message);
-		response.end(error.toJsonString());
+			if (query.failed()) {
+
+				searchHandler.handle(Future.failedFuture(query.cause()));
+
+			} else {
+
+				final RowSet<Row> rowSet = query.result();
+				if (rowSet.size() != 1) {
+
+					searchHandler.handle(Future.failedFuture("Not found"));
+
+				} else {
+
+					final Row row = rowSet.iterator().next();
+					final WeNetUserProfile profile = new WeNetUserProfile();
+					profile.id = row.getString(0);
+					searchHandler.handle(Future.succeededFuture(profile));
+				}
+			}
+
+		});
 
 	}
 

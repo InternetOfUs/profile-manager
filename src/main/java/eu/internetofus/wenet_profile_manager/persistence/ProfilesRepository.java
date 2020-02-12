@@ -26,43 +26,57 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
+import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
+import io.vertx.codegen.annotations.ProxyGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgPool;
+import io.vertx.serviceproxy.ServiceBinder;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * The service to manage the {@link WeNetUserProfile} on the database.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+@ProxyGen
+public interface ProfilesRepository {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * The address of this service.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	String ADDRESS = "wenet_profile_manager.persistence.profiles";
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
+	/**
+	 * Create a proxy of the {@link ProfilesRepository}.
+	 *
+	 * @param vertx where the service has to be used.
+	 *
+	 * @return the profile.
+	 */
+	static ProfilesRepository createProxy(Vertx vertx) {
 
+		return new ProfilesRepositoryVertxEBProxy(vertx, ProfilesRepository.ADDRESS);
 	}
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Search for the profile with the specified identifier.
+	 *
+	 * @param id            identifier of the profile to search.
+	 * @param searchHandler handler to manage the search.
 	 */
-	@Test
-	public void shouldStopIfServerStarted() {
+	void searchProfile(String id, Handler<AsyncResult<WeNetUserProfile>> searchHandler);
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = PgPool.pool();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
+	/**
+	 * Register this service.
+	 *
+	 * @param vertx that contains the event bus to use.
+	 * @param pool  to create the database connections.
+	 */
+	static void register(Vertx vertx, PgPool pool) {
+
+		new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class,
+				new ProfilesRepositoryImpl(pool));
 
 	}
 

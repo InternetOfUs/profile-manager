@@ -23,15 +23,15 @@ This project will be used to provide the API to storing and maintaining the WeNe
 If you want to create an image execute the next command.
 
 ```
-docker build -t wenet/profile-manager .
+docker build -f src/main/docker/Dockerfile -t wenet/profile-manager .
 ```
 
 You can use the next arguments:
 
  - **PROFILE_MANAGER_DB_HOST** to define the database server host name. By default is **localhost**.
- - **PROFILE_MANAGER_DB_PORT** to define the database server port. By default is **5432**.
- - **PROFILE_MANAGER_DB_NAME** to define the database name. By default is **profile_manager**.
- - **PROFILE_MANAGER_DB_USER_NAME** to define the database user name. By default is **profile_manager**.
+ - **PROFILE_MANAGER_DB_PORT** to define the database server port. By default is **27017**.
+ - **PROFILE_MANAGER_DB_NAME** to define the database name. By default is **wenetProfileManagerDB**.
+ - **PROFILE_MANAGER_DB_USER_NAME** to define the database user name. By default is **wenetProfileManager**.
  - **PROFILE_MANAGER_DB_USER_PASSWORD** to define the database user password. By default is **password**.
 
 ### Run docker image

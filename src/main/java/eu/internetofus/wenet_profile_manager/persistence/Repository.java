@@ -24,50 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api;
+package eu.internetofus.wenet_profile_manager.persistence;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
-import io.vertx.core.Handler;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.pgclient.PgPool;
 
 /**
- * Handler when do a bad request over the API.
+ * A component that manage the persistence of a component.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class BadRequestHandler implements Handler<RoutingContext> {
+public class Repository {
 
 	/**
-	 * Create the handler for the not found.
+	 * The code that define that the connection failed.
+	 */
+	public static final int CONNECTION_FAILED = 1;
+
+	/**
+	 * The pool of database connections.
+	 */
+	protected PgPool pool;
+
+	/**
+	 * Create a new service.
 	 *
-	 * @return a new instance of the handler for the not found.
+	 * @param pool to create the connections.
 	 */
-	public static Handler<RoutingContext> build() {
+	public Repository(PgPool pool) {
 
-		return new BadRequestHandler();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void handle(RoutingContext event) {
-
-		final HttpServerResponse response = event.response();
-		response.setStatusCode(Status.BAD_REQUEST.getStatusCode());
-		response.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-		final Throwable failure = event.failure();
-		String message = "Bad request";
-		if (failure != null) {
-
-			message = failure.getMessage();
-		}
-		final ErrorMessage error = new ErrorMessage("bad_api_request", message);
-		response.end(error.toJsonString());
+		this.pool = pool;
 
 	}
 

@@ -49,6 +49,7 @@
 		<org.jacoco-version>0.8.5</org.jacoco-version>
 		<maven-site-plugin-version>3.8.2</maven-site-plugin-version>
 		<exec-maven-plugin-version>1.6.0</exec-maven-plugin-version>
+		<build-helper-maven-plugin-version>3.0.0</build-helper-maven-plugin-version>
 		<!-- Library versions -->
 		<io.vertx-version>3.8.5</io.vertx-version>
 		<main.verticle>eu.internetofus.wenet_profile_manager.MainVerticle</main.verticle>
@@ -60,6 +61,7 @@
 		<org.tinylog-version>2.0.1</org.tinylog-version>
 		<commons-cli-version>1.4</commons-cli-version>
 		<org.flywaydb-version>6.2.2</org.flywaydb-version>
+		<org.postgresql-version>42.2.10</org.postgresql-version>
 		<!-- Test library versions -->
 		<org.junit.jupiter-version>5.6.0</org.junit.jupiter-version>
 		<org.assertj-version>3.15.0</org.assertj-version>
@@ -165,6 +167,12 @@
 			<artifactId>flyway-core</artifactId>
 			<version>${org.flywaydb-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${org.postgresql-version}</version>
+			<scope>runtime</scope>
+		</dependency>
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>io.vertx</groupId>
@@ -259,6 +267,25 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>${build-helper-maven-plugin-version}</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/annotations/</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
 				<version>${io.swagger.core.v3-version}</version>
@@ -314,6 +341,10 @@
 				<version>${maven-surefire-plugin-version}</version>
 				<configuration>
 					<workingDirectory>${project.build.directory}</workingDirectory>
+					<includes>
+						<include>**/*Test.java</include>
+						<include>**/*IT.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -366,6 +397,8 @@
 									<element>CLASS</element>
 									<excludes>
 										<!-- Classes that have a less cover ratio and cannot be increased -->
+										<exclude>*ProxyHandler</exclude>
+										<exclude>*Converter</exclude>
 									</excludes>
 									<limits>
 										<limit>

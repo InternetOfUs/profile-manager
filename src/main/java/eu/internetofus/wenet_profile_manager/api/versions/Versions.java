@@ -59,13 +59,6 @@ public interface Versions {
 	String PATH = "/versions";
 
 	/**
-	 * The identifier of the operation to get the version of the API.
-	 *
-	 * @see #getVersion
-	 */
-	String OPERATION_VERSION_GET = "getVersion";
-
-	/**
 	 * The address of this service.
 	 */
 	String ADDRESS = "wenet_profile_manager.api.versions";
@@ -78,7 +71,7 @@ public interface Versions {
 	 */
 	@GET
 	@Operation(
-			operationId = OPERATION_VERSION_GET,
+			operationId = "getVersion",
 			summary = "Get the version of the API",
 			description = "Return the current API version")
 	@ApiResponse(

@@ -61,7 +61,7 @@ public class NotFoundHandler implements Handler<RoutingContext> {
 		response.setStatusCode(Status.NOT_FOUND.getStatusCode());
 		response.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 		final String path = event.normalisedPath();
-		final ErrorMessage error = new ErrorMessage("not_found_api_request",
+		final ErrorMessage error = new ErrorMessage("not_found_api_request_path",
 				"The '" + path + "' is not defined on the API.");
 		response.end(error.toJsonString());
 

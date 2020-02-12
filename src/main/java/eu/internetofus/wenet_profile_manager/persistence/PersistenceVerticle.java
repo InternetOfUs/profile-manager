@@ -26,8 +26,16 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.internal.info.MigrationInfoDumper;
+import org.tinylog.Logger;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.json.JsonObject;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.PoolOptions;
 
 /**
  * The verticle that provide the persistence services.
@@ -37,10 +45,79 @@ import io.vertx.core.Promise;
 public class PersistenceVerticle extends AbstractVerticle {
 
 	/**
+	 * The pool of database connections.
+	 */
+	protected PgPool pool;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
+
+		// create the pool
+		final MongoClient client = MongoClient.createShared(this.vertx, config);
+
+		final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
+		final PgConnectOptions connectOptions = new PgConnectOptions(persitenceConf);
+		final PoolOptions poolOptions = new PoolOptions(persitenceConf);
+		this.pool = PgPool.pool(this.vertx, connectOptions, poolOptions);
+
+		// register services
+		ProfilesRepository.register(this.vertx, this.pool);
+
+		// initialize the data base
+		this.vertx.executeBlocking(future -> {
+
+			try {
+
+				final JsonObject flywayConf = persitenceConf.getJsonObject("flyway", new JsonObject());
+				final String url = flywayConf.getString("url", "jdbc:postgresql://" + connectOptions.getHost() + ":"
+						+ connectOptions.getPort() + "/" + connectOptions.getDatabase());
+				final String user = flywayConf.getString("user", connectOptions.getUser());
+				final String password = flywayConf.getString("password", connectOptions.getPassword());
+				final boolean baselineOnMigrate = flywayConf.getBoolean("baselineOnMigrate", true);
+				final String baselineDescription = flywayConf.getString("baselineDescription", "WeNet profile manager");
+				final String encoding = flywayConf.getString("encoding", "UTF-8");
+				final Flyway flyway = Flyway.configure().baselineDescription(baselineDescription)
+						.baselineOnMigrate(baselineOnMigrate).encoding(encoding).dataSource(url, user, password).load();
+				flyway.migrate();
+				Logger.info("Database has been migrated: {}\n {}", () -> url,
+						() -> MigrationInfoDumper.dumpToAsciiTable(flyway.info().all()));
+				future.complete();
+
+			} catch (final Throwable throwable) {
+
+				future.fail(throwable);
+			}
+
+		}, updateDb -> {
+
+			if (updateDb.failed()) {
+
+				startPromise.fail(updateDb.cause());
+
+			} else {
+
+				startPromise.complete();
+			}
+
+		});
+
+	}
+
+	/**
+	 * Close the connections pool.
+	 *
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void stop() throws Exception {
+
+		if (this.pool != null) {
+			this.pool.close();
+			this.pool = null;
+		}
 
 	}
 

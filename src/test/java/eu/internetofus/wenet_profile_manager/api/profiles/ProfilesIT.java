@@ -24,7 +24,7 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension.Asserts.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.testRequest;
@@ -36,36 +36,36 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
+import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Integration test of the {@link BadRequestHandler}.
+ * The integration test over the {@link Profiles}.
  *
- * @see BadRequestHandler
+ * @see Profiles
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class BadRequestHandlerIT {
+public class ProfilesIT {
 
 	/**
-	 * Verify that return a not found error.
+	 * Verify that return error when the profile is not defined.
 	 *
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 */
 	@Test
-	public void shouldReturnBadRequestErrorMessage(WebClient client, VertxTestContext testContext) {
+	public void shouldNotFoundProfileWithAnUndefinedProfileId(WebClient client, VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+		testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
+			assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_api_request");
+			assertThat(error.code).isNotEmpty();
 			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-		}).sendJson(new JsonObject().put("id", new JsonObject().put("value", 1)), testContext);
+		}).send(testContext);
 	}
+
 }
