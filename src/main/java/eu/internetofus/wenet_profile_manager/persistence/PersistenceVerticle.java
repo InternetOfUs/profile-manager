@@ -26,16 +26,10 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.internal.info.MigrationInfoDumper;
-import org.tinylog.Logger;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
-import io.vertx.pgclient.PgConnectOptions;
-import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.PoolOptions;
+import io.vertx.ext.mongo.MongoClient;
 
 /**
  * The verticle that provide the persistence services.
@@ -45,9 +39,14 @@ import io.vertx.sqlclient.PoolOptions;
 public class PersistenceVerticle extends AbstractVerticle {
 
 	/**
+	 * The name of the pool of connections.
+	 */
+	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
+
+	/**
 	 * The pool of database connections.
 	 */
-	protected PgPool pool;
+	protected MongoClient pool;
 
 	/**
 	 * {@inheritDoc}
@@ -55,55 +54,20 @@ public class PersistenceVerticle extends AbstractVerticle {
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
 
-		// create the pool
-		final MongoClient client = MongoClient.createShared(this.vertx, config);
+		try {
+			// create the pool
+			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
+			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
 
-		final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-		final PgConnectOptions connectOptions = new PgConnectOptions(persitenceConf);
-		final PoolOptions poolOptions = new PoolOptions(persitenceConf);
-		this.pool = PgPool.pool(this.vertx, connectOptions, poolOptions);
+			// register services
+			ProfilesRepository.register(this.vertx, this.pool);
 
-		// register services
-		ProfilesRepository.register(this.vertx, this.pool);
+			startPromise.complete();
 
-		// initialize the data base
-		this.vertx.executeBlocking(future -> {
+		} catch (final Throwable cause) {
 
-			try {
-
-				final JsonObject flywayConf = persitenceConf.getJsonObject("flyway", new JsonObject());
-				final String url = flywayConf.getString("url", "jdbc:postgresql://" + connectOptions.getHost() + ":"
-						+ connectOptions.getPort() + "/" + connectOptions.getDatabase());
-				final String user = flywayConf.getString("user", connectOptions.getUser());
-				final String password = flywayConf.getString("password", connectOptions.getPassword());
-				final boolean baselineOnMigrate = flywayConf.getBoolean("baselineOnMigrate", true);
-				final String baselineDescription = flywayConf.getString("baselineDescription", "WeNet profile manager");
-				final String encoding = flywayConf.getString("encoding", "UTF-8");
-				final Flyway flyway = Flyway.configure().baselineDescription(baselineDescription)
-						.baselineOnMigrate(baselineOnMigrate).encoding(encoding).dataSource(url, user, password).load();
-				flyway.migrate();
-				Logger.info("Database has been migrated: {}\n {}", () -> url,
-						() -> MigrationInfoDumper.dumpToAsciiTable(flyway.info().all()));
-				future.complete();
-
-			} catch (final Throwable throwable) {
-
-				future.fail(throwable);
-			}
-
-		}, updateDb -> {
-
-			if (updateDb.failed()) {
-
-				startPromise.fail(updateDb.cause());
-
-			} else {
-
-				startPromise.complete();
-			}
-
-		});
-
+			startPromise.fail(cause);
+		}
 	}
 
 	/**

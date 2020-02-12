@@ -52,13 +52,11 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.WebClientOptions;
 import io.vertx.junit5.VertxExtension;
-import io.vertx.pgclient.PgConnectOptions;
-import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.PoolOptions;
 
 /**
  * Extension used to run integration tests over the WeNet profile manager.
@@ -209,8 +207,8 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 			client.close();
 		}
 
-		final PgPool pool = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-				.remove(PgPool.class.getName(), PgPool.class);
+		final MongoClient pool = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+				.remove(MongoClient.class.getName(), MongoClient.class);
 		if (pool != null) {
 
 			pool.close();
@@ -237,7 +235,7 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 			throws ParameterResolutionException {
 
 		final Class<?> type = parameterContext.getParameter().getType();
-		return type == WebClient.class || type == WeNetProfileManagerContext.class || type == PgPool.class
+		return type == WebClient.class || type == WeNetProfileManagerContext.class || type == MongoClient.class
 				|| this.vertxExtension.supportsParameter(parameterContext, extensionContext);
 
 	}
@@ -266,18 +264,15 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 						return WebClient.create(context.vertx, options);
 					}, WebClient.class);
 
-		} else if (type == PgPool.class) {
+		} else if (type == MongoClient.class) {
 
 			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-					.getOrComputeIfAbsent(PgPool.class.getName(), key -> {
+					.getOrComputeIfAbsent(MongoClient.class.getName(), key -> {
 
 						final WeNetProfileManagerContext context = getContext();
 						final JsonObject persitenceConf = context.configuration.getJsonObject("persistence", new JsonObject());
-						final PgConnectOptions connectOptions = new PgConnectOptions(persitenceConf);
-						final PoolOptions poolOptions = new PoolOptions(persitenceConf);
-						return PgPool.pool(context.vertx, connectOptions, poolOptions);
-
-					}, PgPool.class);
+						return MongoClient.createShared(context.vertx, persitenceConf, "TEST_POOL_NAME");
+					}, MongoClient.class);
 
 		} else if (type == WeNetProfileManagerContext.class) {
 

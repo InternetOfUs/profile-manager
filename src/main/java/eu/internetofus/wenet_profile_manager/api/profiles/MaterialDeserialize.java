@@ -24,48 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * The component to deserialize a {@link Material} to any of it possible sub
+ * types.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public class MaterialDeserialize extends JsonDeserializer<Material> {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * {@inheritDoc}
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	@Override
+	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
-	/**
-	 * Check that not stop the server if it is not started.
-	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
+		final TreeNode node = p.readValueAsTree();
+		if (node.get("carPlate") != null || node.get("carType") != null) {
+			return p.getCodec().treeToValue(node, Car.class);
+		}
+		return p.getCodec().treeToValue(node, Material.class);
 	}
 
 }

@@ -24,47 +24,57 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.wenet_profile_manager.Validations;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * A competence to drive a vehicle.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+@Schema(description = "A competence to drive a vehicle.")
+@JsonDeserialize(using = JsonDeserializer.None.class)
+public class DrivingLicense extends Competence {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * The identifier of the driving license.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	@Schema(description = "The driving license if", example = "ESdfg09dofgk")
+	public String drivingLicenseId;
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
+	/**
+	 * Create an empty driving license.
+	 */
+	public DrivingLicense() {
 
 	}
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Create a driving license with the value of another.
+	 *
+	 * @param drivinglicense to copy.
 	 */
-	@Test
-	public void shouldStopIfServerStarted() {
+	public DrivingLicense(DrivingLicense drivinglicense) {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
+		super(drivinglicense);
+		this.drivingLicenseId = drivinglicense.drivingLicenseId;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void validate(String codePrefix) throws ValidationErrorException {
+
+		super.validate(codePrefix);
+		this.drivingLicenseId = Validations.validateNullableStringField(codePrefix, "drivingLicenseId", 255,
+				this.drivingLicenseId);
 
 	}
 

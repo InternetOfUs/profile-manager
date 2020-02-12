@@ -39,6 +39,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
 
@@ -73,7 +74,8 @@ public class ProfilesResource implements Profiles {
 
 		this.repository.searchProfile(profileId, search -> {
 
-			if (search.failed()) {
+			final JsonObject profile = search.result();
+			if (profile == null) {
 
 				Logger.debug(search.cause(), "Not found profile for {}", profileId);
 				resultHandler
@@ -85,10 +87,9 @@ public class ProfilesResource implements Profiles {
 
 			} else {
 
-				final WeNetUserProfile profile = search.result();
 				resultHandler.handle(Future.succeededFuture(new OperationResponse().setStatusCode(Status.OK.getStatusCode())
 						.putHeader(HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
-						.setPayload(Buffer.buffer(profile.toJsonString()))));
+						.setPayload(Buffer.buffer(profile.encode()))));
 
 			}
 		});
@@ -98,7 +99,7 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void createProfile(WeNetUserProfile profile, OperationRequest context,
+	public void createProfile(JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
 		// TODO Auto-generated method stub
@@ -109,7 +110,7 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void updateProfile(String profileId, WeNetUserProfile profile, OperationRequest context,
+	public void updateProfile(String profileId, JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
 		// TODO Auto-generated method stub

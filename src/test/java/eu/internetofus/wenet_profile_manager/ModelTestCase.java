@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import io.vertx.core.json.JsonObject;
+
 /**
  * Generic test over the classes that extends the {@link Model}.
  *
@@ -86,7 +88,21 @@ public abstract class ModelTestCase<T extends Model> {
 
 		final T model = this.createModelExample(1);
 		final String value = model.toJsonString();
+		assertThat(value).isNotEmpty();
 		assertThat(Model.fromString(value, model.getClass())).isEqualTo(model);
+
+	}
+
+	/**
+	 * Check the model can be encoded decoded from {@link JsonObject}.
+	 */
+	@Test
+	public void shouldJsonObjectManipulable() {
+
+		final T model = this.createModelExample(1);
+		final JsonObject value = model.toJsonObject();
+		assertThat(value).isNotEmpty();
+		assertThat(Model.fromJsonObject(value, model.getClass())).isEqualTo(model);
 
 	}
 

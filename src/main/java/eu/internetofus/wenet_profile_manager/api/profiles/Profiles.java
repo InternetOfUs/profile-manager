@@ -46,6 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
 import io.vertx.ext.web.api.generator.WebApiServiceGen;
@@ -120,7 +121,7 @@ public interface Profiles {
 			content = @Content(
 					schema = @Schema(
 							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
-					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) })) WeNetUserProfile body,
+					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) })) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -195,7 +196,7 @@ public interface Profiles {
 					content = @Content(
 							schema = @Schema(
 									ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
-							examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) })) WeNetUserProfile body,
+							examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) })) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 

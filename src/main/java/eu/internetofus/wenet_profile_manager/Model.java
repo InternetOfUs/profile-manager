@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Define a data model.
@@ -98,17 +99,71 @@ public class Model {
 	 */
 	public static <T extends Model> T fromString(String value, Class<T> type) {
 
-		return Json.decodeValue(value, type);
+		try {
+
+			return Json.decodeValue(value, type);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
+	}
+
+	/**
+	 * Obtain the model associated to a {@link JsonObject}.
+	 *
+	 * @param value object to obtain the model.
+	 * @param type  of model to obtain
+	 * @param <T>   to obtain
+	 *
+	 * @return the model defined on the object or {@code null} if can not obtain it.
+	 */
+	public static <T extends Model> T fromJsonObject(JsonObject value, Class<T> type) {
+
+		try {
+
+			return Json.decodeValue(value.toBuffer(), type);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
 	}
 
 	/**
 	 * Convert a model to JSON string.
 	 *
-	 * @return the string representation of this model in JSON.
+	 * @return the string representation of this model in JSON or {@code null} if it
+	 *         can not convert it.
 	 */
 	public String toJsonString() {
 
-		return Json.encode(this);
+		try {
+
+			return Json.encode(this);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
+
+	}
+
+	/**
+	 * Convert a model to a {@link JsonObject}.
+	 *
+	 * @return the object of the model or {@code null} if can not convert it.
+	 */
+	public JsonObject toJsonObject() {
+
+		try {
+
+			return new JsonObject(Json.encodeToBuffer(this));
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
 
 	}
 

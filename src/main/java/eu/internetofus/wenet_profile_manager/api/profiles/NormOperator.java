@@ -24,48 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * A norm operator.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+// @Schema(description = "The possible norms operators")
+public enum NormOperator {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Equals operator.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
+	EQUALS,
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Less than operator.
 	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
-	}
+	LESS_THAN,
+	/**
+	 * Greater than operator.
+	 */
+	GREATER_THAN,
+	/**
+	 * Less or equals than operator.
+	 */
+	LESS_EQ_THAN,
+	/**
+	 * Greater or equals than operator.
+	 */
+	GREATER_EQ_THAN;
 
 }

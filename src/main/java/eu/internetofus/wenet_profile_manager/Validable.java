@@ -24,48 +24,22 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+package eu.internetofus.wenet_profile_manager;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * This is implemented by any model that can validate its content.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public interface Validable {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check if the model is right.
+	 *
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @throws ValidationErrorException If the model is not valid.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
-	/**
-	 * Check that not stop the server if it is not started.
-	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
-	}
+	void validate(String codePrefix) throws ValidationErrorException;
 
 }

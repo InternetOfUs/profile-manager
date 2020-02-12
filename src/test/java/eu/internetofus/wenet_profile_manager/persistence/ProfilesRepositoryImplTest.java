@@ -26,59 +26,65 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
-import io.vertx.codegen.annotations.ProxyGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.ext.mongo.MongoClient;
-import io.vertx.serviceproxy.ServiceBinder;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * The service to manage the {@link WeNetUserProfile} on the database.
+ * Test the {@link ProfilesRepositoryImpl}.
+ *
+ * @see ProfilesRepositoryImpl
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ProxyGen
-public interface ProfilesRepository {
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class ProfilesRepositoryImplTest {
 
 	/**
-	 * The address of this service.
+	 * The repository to do the tests.
 	 */
-	String ADDRESS = "wenet_profile_manager.persistence.profiles";
+	protected ProfilesRepositoryImpl repository;
 
 	/**
-	 * Create a proxy of the {@link ProfilesRepository}.
+	 * Create the repository to use in the tests.
 	 *
-	 * @param vertx where the service has to be used.
-	 *
-	 * @return the profile.
+	 * @param pool that create the mongo connections.
 	 */
-	static ProfilesRepository createProxy(Vertx vertx) {
+	@BeforeEach
+	public void cerateRepository(MongoClient pool) {
 
-		return new ProfilesRepositoryVertxEBProxy(vertx, ProfilesRepository.ADDRESS);
+		this.repository = new ProfilesRepositoryImpl(pool);
+
 	}
 
 	/**
-	 * Search for the profile with the specified identifier.
+	 * Verify that can not found a profile if it is not defined.
 	 *
-	 * @param id            identifier of the profile to search.
-	 * @param searchHandler handler to manage the search.
-	 */
-	void searchProfile(String id, Handler<AsyncResult<JsonObject>> searchHandler);
-
-	/**
-	 * Register this service.
 	 *
-	 * @param vertx that contains the event bus to use.
-	 * @param pool  to create the database connections.
+	 * @param testContext context that executes the test.
 	 */
-	static void register(Vertx vertx, MongoClient pool) {
+	@Test
+	public void shouldNotFoundUndefinedProfile(VertxTestContext testContext) {
 
-		new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class,
-				new ProfilesRepositoryImpl(pool));
+		this.repository.searchProfile("undefined profile identifier", search -> {
 
+			if (search.failed()) {
+
+				testContext.failNow(search.cause());
+
+			} else {
+
+				assertThat(search.result()).isNull();
+				testContext.completeNow();
+			}
+
+		});
 	}
 
 }

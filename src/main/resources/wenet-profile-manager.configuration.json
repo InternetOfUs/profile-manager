@@ -9,15 +9,10 @@
 		"port": 8080
 	},
 	"persistence": {
-		"database": "profile_manager",
+		"db_name": "wenetProfileManagerDB",
 		"host": "localhost",
-		"port": 5432,
-		"user": "profile_manager",
-		"password": "password",
-		"flyway": {
-			"baselineOnMigrate": true,
-			"baselineDescription": "WeNet profile manager",
-			"encoding": "UTF-8"
-		}
+		"port": 27017,
+		"username": "wenetProfileManager",
+		"password": "password"
 	}
 }

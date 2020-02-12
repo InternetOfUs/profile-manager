@@ -24,48 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+package eu.internetofus.wenet_profile_manager;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * Basic implementation of a {@link Model}
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public class DummyModel extends Model {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * The index of the model.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	public int index;
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
+	/**
+	 * Create an empty model.
+	 */
+	public DummyModel() {
 
 	}
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Create a model with an index.
+	 *
+	 * @param index of the model.
 	 */
-	@Test
-	public void shouldStopIfServerStarted() {
+	public DummyModel(int index) {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
+		this.index = index;
 	}
 
 }

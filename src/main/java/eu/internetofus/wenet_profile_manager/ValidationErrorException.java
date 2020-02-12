@@ -24,36 +24,75 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
-
-import io.vertx.ext.mongo.MongoClient;
+package eu.internetofus.wenet_profile_manager;
 
 /**
- * A component that manage the persistence of a component.
+ * This exception explains why a model is not valid.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class Repository {
+public class ValidationErrorException extends RuntimeException {
 
 	/**
-	 * The code that define that the connection failed.
+	 * Serialization identifier.
 	 */
-	public static final int CONNECTION_FAILED = 1;
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The pool of database connections.
+	 * The code of the error.
 	 */
-	protected MongoClient pool;
+	protected String code;
 
 	/**
-	 * Create a new service.
+	 * Create a new validation error exception.
 	 *
-	 * @param pool to create the connections.
+	 * @param code    for the error message.
+	 * @param message a brief description of the error to be read by a human.
 	 */
-	public Repository(MongoClient pool) {
+	public ValidationErrorException(String code, String message) {
 
-		this.pool = pool;
+		super(message);
+		this.code = code;
 
+	}
+
+	/**
+	 * Create a new validation error exception with a message an a cause.
+	 *
+	 * @param code    for the error message.
+	 * @param message a brief description of the error to be read by a human.
+	 * @param cause   because the model is not right.
+	 */
+	public ValidationErrorException(String code, String message, Throwable cause) {
+
+		super(message, cause);
+		this.code = code;
+
+	}
+
+	/**
+	 * Create a new validation error exception with a message an a cause.
+	 *
+	 * @param code  for the error message.
+	 * @param cause because the model is not right.
+	 */
+	public ValidationErrorException(String code, Throwable cause) {
+
+		super(cause);
+		this.code = code;
+
+	}
+
+	/**
+	 * The code associated to the error.
+	 *
+	 * @return the error code.
+	 *
+	 * @see #code
+	 */
+	public String getCode() {
+
+		return this.code;
 	}
 
 }

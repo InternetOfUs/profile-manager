@@ -24,47 +24,40 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
 import org.junit.jupiter.api.Test;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 
 /**
- * Test the {@link PersistenceVerticle}.
+ * Test the {@link Model}
  *
- * @see PersistenceVerticle
+ * @see Model
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public class ModelTest {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check not obtain a model form a {@code null} {@link JsonObject}.
 	 */
 	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	public void shouldNotObtainModelFromNullJsonObject() {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
+		assertThat(Model.fromJsonObject(null, Model.class)).isNull();
 
 	}
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check not obtain a model form a {@code null} string.
 	 */
 	@Test
-	public void shouldStopIfServerStarted() {
+	public void shouldNotObtainModelFromNullString() {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
+		assertThat(Model.fromString(null, Model.class)).isNull();
 
 	}
 

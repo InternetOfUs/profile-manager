@@ -1,0 +1,16 @@
+= Cheatsheets
+
+[[WeNetUserProfile]]
+== WeNetUserProfile
+
+++++
+ The profile of a WeNet user.
+++++
+'''
+
+[cols=">25%,25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+|===
+

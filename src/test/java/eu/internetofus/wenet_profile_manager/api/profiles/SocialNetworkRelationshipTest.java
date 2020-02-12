@@ -24,48 +24,29 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * Test the {@link PersistenceVerticle}.
+ * Test the {@link SocialNetworkRelationship}
  *
- * @see PersistenceVerticle
+ * @see SocialNetworkRelationship
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public class SocialNetworkRelationshipTest extends ModelTestCase<SocialNetworkRelationship> {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * {@inheritDoc}
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	@Override
+	public SocialNetworkRelationship createModelExample(int index) {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
-	/**
-	 * Check that not stop the server if it is not started.
-	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
+		final SocialNetworkRelationship relation = new SocialNetworkRelationship();
+		relation.userId = "user_id_1";
+		relation.type = SocialNetworkRelationshipType.acquaintance;
+		return relation;
 	}
 
 }

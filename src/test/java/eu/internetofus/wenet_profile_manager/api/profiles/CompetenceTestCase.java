@@ -24,48 +24,40 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * Test the {@link PersistenceVerticle}.
+ * Test the components that extends the {@link Competence}.
  *
- * @see PersistenceVerticle
+ * @param <T> competence to test
+ *
+ * @see Competence
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public abstract class CompetenceTestCase<T extends Competence> extends ModelTestCase<T> {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check that the {@link #createModelExample(int)} is valid.
+	 *
+	 * @param index to verify
+	 *
+	 * @see UserName#validate(String)
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	@ParameterizedTest(name = "The model example {0} has to be valid")
+	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
+	public void shouldExampleBeValid(int index) {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
-	/**
-	 * Check that not stop the server if it is not started.
-	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
+		final T model = this.createModelExample(index);
+		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
 	}
 
 }

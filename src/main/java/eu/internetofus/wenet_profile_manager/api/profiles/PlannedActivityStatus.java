@@ -24,48 +24,25 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+package eu.internetofus.wenet_profile_manager.api.profiles;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * The possible status of a {@link PlannedActivity}
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public enum PlannedActivityStatus {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * If the activity is confirmed.
 	 */
-	@Test
-	public void shouldNotStopIfServerNotStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
-	}
-
+	confirmed,
 	/**
-	 * Check that not stop the server if it is not started.
+	 * If the activity is in tentative to do.
 	 */
-	@Test
-	public void shouldStopIfServerStarted() {
-
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
-
-	}
-
+	tentative,
+	/**
+	 * If the activity is cancelled.
+	 */
+	cancelled;
 }

@@ -24,48 +24,58 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
-
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * Test the {@link ValidationErrorException}
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest {
+public class ValidationErrorExceptionTest {
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check that create with a code and message.
 	 */
 	@Test
-	public void shouldNotStopIfServerNotStarted() {
+	@Tag("unit")
+	public void shouldCreateWithCodeAndMessage() {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-
+		final ValidationErrorException error = new ValidationErrorException("code", "message");
+		assertThat(error.getCode()).isEqualTo("code");
+		assertThat(error.getMessage()).isEqualTo("message");
 	}
 
 	/**
-	 * Check that not stop the server if it is not started.
+	 * Check that create with a code and cause.
 	 */
 	@Test
-	public void shouldStopIfServerStarted() {
+	@Tag("unit")
+	public void shouldCreateWithCodeAndCause() {
 
-		final PersistenceVerticle persistence = new PersistenceVerticle();
-		persistence.pool = MongoClient.create(Vertx.vertx(), new JsonObject());
-		assertThatCode(() -> persistence.stop()).doesNotThrowAnyException();
-		assertThat(persistence.pool).isNull();
+		final Throwable cause = new Throwable("cause");
+		final ValidationErrorException error = new ValidationErrorException("code", cause);
+		assertThat(error.getCode()).isEqualTo("code");
+		assertThat(error.getMessage()).isEqualTo(cause.toString());
+		assertThat(error.getCause()).isEqualTo(cause);
+	}
 
+	/**
+	 * Check that create with a code, cause and message.
+	 */
+	@Test
+	@Tag("unit")
+	public void shouldCreateWithCodeCauseAndMessage() {
+
+		final Throwable cause = new Throwable("cause");
+		final ValidationErrorException error = new ValidationErrorException("code", "message", cause);
+		assertThat(error.getCode()).isEqualTo("code");
+		assertThat(error.getMessage()).isEqualTo("message");
+		assertThat(error.getCause()).isEqualTo(cause);
 	}
 
 }
