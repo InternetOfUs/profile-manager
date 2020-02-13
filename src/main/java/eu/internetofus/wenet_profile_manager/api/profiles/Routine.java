@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import eu.internetofus.wenet_profile_manager.Model;
@@ -65,34 +66,19 @@ public class Routine extends Model implements Validable {
 	/**
 	 * The time when the routine starts.
 	 */
-	@Schema(description = "The time when the routine starts", example = "1080")
+	@Schema(description = "The time when the routine starts", example = "18:00")
 	public String from_time;
 
 	/**
 	 * The time when the routine ends.
 	 */
-	@Schema(description = "The time when the routine ends", example = "1320")
+	@Schema(description = "The time when the routine ends", example = "22:00")
 	public String to_time;
 
 	/**
 	 * Create an empty routine.
 	 */
 	public Routine() {
-
-	}
-
-	/**
-	 * Create a routine with the values of another routine..
-	 *
-	 * @param routine to copy.
-	 */
-	public Routine(Routine routine) {
-
-		this.id = routine.id;
-		this.label = routine.label;
-		this.proximity = routine.proximity;
-		this.from_time = routine.from_time;
-		this.to_time = routine.to_time;
 
 	}
 
@@ -114,8 +100,10 @@ public class Routine extends Model implements Validable {
 		}
 		this.label = Validations.validateNullableStringField(codePrefix, "label", 255, this.label);
 		this.proximity = Validations.validateNullableStringField(codePrefix, "proximity", 255, this.proximity);
-		this.from_time = Validations.validateNullableStringField(codePrefix, "from_time", 255, this.from_time);
-		this.to_time = Validations.validateNullableStringField(codePrefix, "to_time", 255, this.to_time);
+		this.from_time = Validations.validateNullableDateField(codePrefix, "from_time", DateTimeFormatter.ISO_TIME,
+				this.from_time);
+		this.to_time = Validations.validateNullableDateField(codePrefix, "to_time", DateTimeFormatter.ISO_TIME,
+				this.to_time);
 
 	}
 }

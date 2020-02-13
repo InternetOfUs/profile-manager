@@ -29,7 +29,8 @@ package eu.internetofus.wenet_profile_manager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Tag;
+import java.time.format.DateTimeFormatter;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -52,7 +53,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableStringField(String, String, int,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNullStringFieldBeValid() {
 
 		assertThat(Validations.validateNullableStringField("codePrefix", "fieldName", 255, null)).isEqualTo(null);
@@ -64,7 +64,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableStringField(String, String, int,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldEmptyStringFieldBeValid() {
 
 		assertThat(Validations.validateNullableStringField("codePrefix", "fieldName", 255, "")).isEqualTo(null);
@@ -76,7 +75,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableStringField(String, String, int,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldWhiteStringFieldBeValid() {
 
 		assertThat(Validations.validateNullableStringField("codePrefix", "fieldName", 255, "       ")).isEqualTo(null);
@@ -88,7 +86,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableStringField(String, String, int,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldStringWithWhiteFieldBeValid() {
 
 		assertThat(Validations.validateNullableStringField("codePrefix", "fieldName", 255, "   a b c    "))
@@ -101,7 +98,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableStringField(String, String, int,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidIfStringIsTooLarge() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
@@ -115,7 +111,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNullEmailFieldBeValid() {
 
 		assertThat(Validations.validateNullableEmailField("codePrefix", "fieldName", null)).isEqualTo(null);
@@ -127,7 +122,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldEmptyEmailFieldBeValid() {
 
 		assertThat(Validations.validateNullableEmailField("codePrefix", "fieldName", "")).isEqualTo(null);
@@ -139,7 +133,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldWhiteEmailFieldBeValid() {
 
 		assertThat(Validations.validateNullableEmailField("codePrefix", "fieldName", "       ")).isEqualTo(null);
@@ -151,7 +144,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldEmailWithWhiteFieldBeValid() {
 
 		assertThat(Validations.validateNullableEmailField("codePrefix", "fieldName", "   a@b.com    "))
@@ -164,7 +156,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidIfEmailIsTooLarge() {
 
 		assertThat(assertThrows(ValidationErrorException.class, () -> Validations.validateNullableEmailField("codePrefix",
@@ -178,7 +169,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableEmailField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidABadEmailValue() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
@@ -192,7 +182,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNullLocaleFieldBeValid() {
 
 		assertThat(Validations.validateNullableLocaleField("codePrefix", "fieldName", null)).isEqualTo(null);
@@ -204,7 +193,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldEmptyLocaleFieldBeValid() {
 
 		assertThat(Validations.validateNullableLocaleField("codePrefix", "fieldName", "")).isEqualTo(null);
@@ -216,7 +204,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldWhiteLocaleFieldBeValid() {
 
 		assertThat(Validations.validateNullableLocaleField("codePrefix", "fieldName", "       ")).isEqualTo(null);
@@ -228,7 +215,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldLocaleWithWhiteFieldBeValid() {
 
 		assertThat(Validations.validateNullableLocaleField("codePrefix", "fieldName", "   en_US    ")).isEqualTo("en_US");
@@ -240,7 +226,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidIfLocaleIsTooLarge() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
@@ -254,7 +239,6 @@ public class ValidationsTest {
 	 * @see Validations#validateNullableLocaleField(String, String, String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidABadLocaleValue() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
@@ -269,7 +253,6 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNullTelephoneFieldBeValid() {
 
 		assertThat(Validations.validateNullableTelephoneField("codePrefix", "fieldName", null, null)).isEqualTo(null);
@@ -282,7 +265,6 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldEmptyTelephoneFieldBeValid() {
 
 		assertThat(Validations.validateNullableTelephoneField("codePrefix", "fieldName", null, "")).isEqualTo(null);
@@ -295,7 +277,6 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldWhiteTelephoneFieldBeValid() {
 
 		assertThat(Validations.validateNullableTelephoneField("codePrefix", "fieldName", null, "       ")).isEqualTo(null);
@@ -308,7 +289,6 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldTelephoneWithWhiteFieldBeValid() {
 
 		assertThat(Validations.validateNullableTelephoneField("codePrefix", "fieldName", null, "   +34987654321    "))
@@ -322,7 +302,6 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidIfTelephoneIsTooLarge() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
@@ -337,11 +316,78 @@ public class ValidationsTest {
 	 *      String,String)
 	 */
 	@Test
-	@Tag("unit")
 	public void shouldNotBeValidABadTelephoneValue() {
 
 		assertThat(assertThrows(ValidationErrorException.class,
 				() -> Validations.validateNullableTelephoneField("codePrefix", "fieldName", null, "bad telephone number"))
 						.getCode()).isEqualTo("codePrefix.fieldName");
 	}
+
+	/**
+	 * Check that an empty is right but is changed to null.
+	 *
+	 * @see Validations#validateNullableDateField(String, String,
+	 *      DateTimeFormatter,String)
+	 */
+	@Test
+	public void shouldEmptyDateFieldBeValid() {
+
+		assertThat(Validations.validateNullableDateField("codePrefix", "fieldName", DateTimeFormatter.ISO_INSTANT, ""))
+				.isEqualTo(null);
+	}
+
+	/**
+	 * Check that an white value is right but is changed to null.
+	 *
+	 * @see Validations#validateNullableDateField(String, String,
+	 *      DateTimeFormatter,String)
+	 */
+	@Test
+	public void shouldWhiteDateFieldBeValid() {
+
+		assertThat(
+				Validations.validateNullableDateField("codePrefix", "fieldName", DateTimeFormatter.ISO_INSTANT, "       "))
+						.isEqualTo(null);
+	}
+
+	/**
+	 * Check that the date value is trimmed to be valid.
+	 *
+	 * @see Validations#validateNullableDateField(String, String,
+	 *      DateTimeFormatter,String)
+	 */
+	@Test
+	public void shouldDateWithWhiteFieldBeValid() {
+
+		assertThat(Validations.validateNullableDateField("codePrefix", "fieldName", DateTimeFormatter.ISO_INSTANT,
+				"   2011-12-03t10:15:30z    ")).isEqualTo("2011-12-03T10:15:30Z");
+	}
+
+	/**
+	 * Check that the date value of the field is not valid if it is too large.
+	 *
+	 * @see Validations#validateNullableDateField(String, String,
+	 *      DateTimeFormatter,String)
+	 */
+	@Test
+	public void shouldNotBeValidABadDateValue() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateNullableDateField("codePrefix", "fieldName", null, "bad date")).getCode())
+						.isEqualTo("codePrefix.fieldName");
+	}
+
+	/**
+	 * Check that the date value of the field is not valid if it is too large.
+	 *
+	 * @see Validations#validateNullableDateField(String, String,
+	 *      DateTimeFormatter,String)
+	 */
+	@Test
+	public void shouldNotBeValidABadIsoinstanceValue() {
+
+		assertThat(assertThrows(ValidationErrorException.class, () -> Validations.validateNullableDateField("codePrefix",
+				"fieldName", DateTimeFormatter.ISO_INSTANT, "bad date")).getCode()).isEqualTo("codePrefix.fieldName");
+	}
+
 }

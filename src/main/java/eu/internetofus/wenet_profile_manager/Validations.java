@@ -27,6 +27,8 @@
 package eu.internetofus.wenet_profile_manager;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
 import org.apache.commons.lang3.LocaleUtils;
@@ -217,6 +219,36 @@ public interface Validations {
 			} catch (final Throwable badURL) {
 
 				throw new ValidationErrorException(codePrefix + "." + fieldName, badURL);
+
+			}
+
+		}
+		return validStringValue;
+	}
+
+	/**
+	 * Verify a date value.
+	 *
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 * @param fieldName  name of the checking field.
+	 * @param format     that has to have the date.
+	 * @param value      to verify.
+	 *
+	 * @return the verified date.
+	 */
+	static String validateNullableDateField(String codePrefix, String fieldName, DateTimeFormatter format, String value) {
+
+		String validStringValue = validateNullableStringField(codePrefix, fieldName, 255, value);
+		if (validStringValue != null) {
+
+			try {
+
+				final TemporalAccessor date = format.parse(validStringValue);
+				validStringValue = format.format(date);
+
+			} catch (final Throwable badDate) {
+
+				throw new ValidationErrorException(codePrefix + "." + fieldName, badDate);
 
 			}
 

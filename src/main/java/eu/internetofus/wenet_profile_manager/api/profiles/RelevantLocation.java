@@ -76,19 +76,6 @@ public class RelevantLocation extends Model implements Validable {
 	}
 
 	/**
-	 * Create a location with the values of another.
-	 *
-	 * @param location to copy.
-	 */
-	public RelevantLocation(RelevantLocation location) {
-
-		this.id = location.id;
-		this.label = location.label;
-		this.latitude = location.latitude;
-		this.longitude = location.longitude;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

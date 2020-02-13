@@ -99,36 +99,6 @@ public class SocialNetworkRelationshipTest extends ModelTestCase<SocialNetworkRe
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 *
-	 * @param repository  to create profiles to use.
-	 *
-	 * @param testContext context to test.
-	 */
-	@Test
-	public void shouldCopyBeEqual(ProfilesRepository repository, VertxTestContext testContext) {
-
-		this.createModelExample(1, repository).onComplete(created -> {
-
-			if (created.failed()) {
-
-				testContext.failNow(created.cause());
-
-			} else {
-
-				final SocialNetworkRelationship model1 = created.result();
-				final SocialNetworkRelationship model2 = new SocialNetworkRelationship(model1);
-				testContext.verify(() -> {
-					assertThat(model1).isEqualTo(model2);
-				});
-				testContext.completeNow();
-			}
-
-		});
-
-	}
-
-	/**
 	 * Check that the {@link #createModelExample(int,ProfilesRepository)} is valid.
 	 *
 	 * @param index       to verify

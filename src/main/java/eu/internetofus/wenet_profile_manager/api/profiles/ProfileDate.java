@@ -65,19 +65,6 @@ public class ProfileDate extends Model implements Validable {
 	}
 
 	/**
-	 * Create a date with the values of another.
-	 *
-	 * @param date to copy.
-	 */
-	public ProfileDate(ProfileDate date) {
-
-		this.year = date.year;
-		this.month = date.month;
-		this.day = date.day;
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

@@ -59,40 +59,6 @@ public class Competence extends Model implements Validable {
 	}
 
 	/**
-	 * Create a competence with the values of another.
-	 *
-	 * @param competence to copy.
-	 */
-	public Competence(Competence competence) {
-
-		this.id = competence.id;
-
-	}
-
-	/**
-	 * Create a copy of a competence.
-	 *
-	 * @param competence to copy.
-	 *
-	 * @return the copy of the competence
-	 */
-	public static Competence copyOf(Competence competence) {
-
-		if (competence instanceof DrivingLicense) {
-
-			return new DrivingLicense((DrivingLicense) competence);
-
-		} else if (competence != null) {
-
-			return new Competence(competence);
-
-		} else {
-
-			return null;
-		}
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

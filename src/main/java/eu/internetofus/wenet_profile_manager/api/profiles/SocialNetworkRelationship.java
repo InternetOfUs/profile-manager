@@ -66,17 +66,6 @@ public class SocialNetworkRelationship extends Model {
 	}
 
 	/**
-	 * Create a relation with the values of another.
-	 *
-	 * @param relation to copy.
-	 */
-	public SocialNetworkRelationship(SocialNetworkRelationship relation) {
-
-		this.userId = relation.userId;
-		this.type = relation.type;
-	}
-
-	/**
 	 * Verify that the relationship is right.
 	 *
 	 * @param codePrefix the prefix of the code to use for the error message.

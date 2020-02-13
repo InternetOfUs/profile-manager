@@ -58,18 +58,6 @@ public class CarTest extends MaterialTestCase<Car> {
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final Car model1 = this.createModelExample(1);
-		final Car model2 = new Car(model1);
-		assertThat(model1).isEqualTo(model2);
-
-	}
-
-	/**
 	 * Check that a model with all the values is valid.
 	 *
 	 * @see Car#validate(String)

@@ -81,21 +81,6 @@ public class Norm extends Model implements Validable {
 	}
 
 	/**
-	 * Create a norm with the values of another.
-	 *
-	 * @param norm to copy.
-	 */
-	public Norm(Norm norm) {
-
-		this.id = norm.id;
-		this.attribute = norm.attribute;
-		this.operator = norm.operator;
-		this.comparison = norm.comparison;
-		this.negation = norm.negation;
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

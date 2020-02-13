@@ -56,17 +56,6 @@ public class DrivingLicense extends Competence {
 	}
 
 	/**
-	 * Create a driving license with the value of another.
-	 *
-	 * @param drivinglicense to copy.
-	 */
-	public DrivingLicense(DrivingLicense drivinglicense) {
-
-		super(drivinglicense);
-		this.drivingLicenseId = drivinglicense.drivingLicenseId;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

@@ -62,19 +62,6 @@ public class Car extends Material {
 	}
 
 	/**
-	 * Create a car with the value of another.
-	 *
-	 * @param car to copy.
-	 */
-	public Car(Car car) {
-
-		super(car);
-		this.carPlate = car.carPlate;
-		this.carType = car.carType;
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

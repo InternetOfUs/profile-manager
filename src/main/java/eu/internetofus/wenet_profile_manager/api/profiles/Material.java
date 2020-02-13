@@ -59,40 +59,6 @@ public class Material extends Model implements Validable {
 	}
 
 	/**
-	 * Create a material with the values of another.
-	 *
-	 * @param material to copy.
-	 */
-	public Material(Material material) {
-
-		this.id = material.id;
-
-	}
-
-	/**
-	 * Create a copy of a material.
-	 *
-	 * @param material to copy.
-	 *
-	 * @return the copy of the material
-	 */
-	public static Material copyOf(Material material) {
-
-		if (material instanceof Car) {
-
-			return new Car((Car) material);
-
-		} else if (material != null) {
-
-			return new Material(material);
-
-		} else {
-
-			return null;
-		}
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

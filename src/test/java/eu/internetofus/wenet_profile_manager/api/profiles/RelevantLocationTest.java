@@ -60,18 +60,6 @@ public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final RelevantLocation model1 = this.createModelExample(1);
-		final RelevantLocation model2 = new RelevantLocation(model1);
-		assertThat(model1).isEqualTo(model2);
-
-	}
-
-	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
 	 * @see RelevantLocation#validate(String)

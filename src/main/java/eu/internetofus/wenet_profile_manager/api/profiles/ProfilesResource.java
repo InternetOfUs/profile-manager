@@ -26,19 +26,16 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
-import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
+import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.wenet_profile_manager.api.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -78,18 +75,12 @@ public class ProfilesResource implements Profiles {
 			if (profile == null) {
 
 				Logger.debug(search.cause(), "Not found profile for {}", profileId);
-				resultHandler
-						.handle(Future.succeededFuture(new OperationResponse().setStatusCode(Status.NOT_FOUND.getStatusCode())
-								.putHeader(HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
-								.setPayload(Buffer.buffer(
-										new ErrorMessage("not_found_profile", "Does not exist a profile associated to '" + profileId + "'.")
-												.toJsonString()))));
+				OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile",
+						"Does not exist a profile associated to '" + profileId + "'.");
 
 			} else {
 
-				resultHandler.handle(Future.succeededFuture(new OperationResponse().setStatusCode(Status.OK.getStatusCode())
-						.putHeader(HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)
-						.setPayload(Buffer.buffer(profile.encode()))));
+				OperationReponseHandlers.responseOk(resultHandler, profile);
 
 			}
 		});
@@ -102,7 +93,44 @@ public class ProfilesResource implements Profiles {
 	public void createProfile(JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		// TODO Auto-generated method stub
+		final WeNetUserProfile profile = Model.fromJsonObject(body, WeNetUserProfile.class);
+		if (profile == null) {
+
+			Logger.debug("The {} is not a valid WeNetUserProfile.", body);
+			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile",
+					"The profile is not right.");
+
+		} else {
+
+			profile._creationTs = System.currentTimeMillis();
+			profile._lastUpdateTs = profile._creationTs;
+			profile.validate("bad_profile", this.repository).setHandler(validation -> {
+
+				if (validation.failed()) {
+
+					final Throwable cause = validation.cause();
+					Logger.debug(cause, "The {} is not valid.", profile);
+					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+				} else {
+
+					this.repository.storeProfile(profile, stored -> {
+
+						if (stored.failed()) {
+
+							final Throwable cause = validation.cause();
+							Logger.debug(cause, "Cannot store  {}.", profile);
+							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+						} else {
+
+							OperationReponseHandlers.responseOk(resultHandler, profile);
+						}
+					});
+				}
+
+			});
+		}
 
 	}
 

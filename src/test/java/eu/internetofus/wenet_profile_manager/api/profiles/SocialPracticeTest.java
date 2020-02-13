@@ -64,18 +64,6 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final SocialPractice model1 = this.createModelExample(1);
-		final SocialPractice model2 = new SocialPractice(model1);
-		assertThat(model1).isEqualTo(model2);
-
-	}
-
-	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
 	 * @see SocialPractice#validate(String)

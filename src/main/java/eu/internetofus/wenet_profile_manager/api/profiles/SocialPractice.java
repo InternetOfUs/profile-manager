@@ -85,26 +85,6 @@ public class SocialPractice extends Model implements Validable {
 	}
 
 	/**
-	 * Create a practice with the values of another.
-	 *
-	 * @param practice to copy.
-	 */
-	public SocialPractice(SocialPractice practice) {
-
-		this.id = practice.id;
-		this.label = practice.label;
-		this.materials = Material.copyOf(practice.materials);
-		this.competences = Competence.copyOf(practice.competences);
-		for (final Norm practiceNorm : practice.norms) {
-
-			final Norm norm = new Norm(practiceNorm);
-			this.norms.add(norm);
-
-		}
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

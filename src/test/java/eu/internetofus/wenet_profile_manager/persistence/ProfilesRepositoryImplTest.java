@@ -96,32 +96,15 @@ public class ProfilesRepositoryImplTest {
 	@Test
 	public void shouldFoundProfile(VertxTestContext testContext) {
 
-		this.repository.storeProfile(new WeNetUserProfile(), store -> {
+		this.repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
 
-			if (store.failed()) {
+			this.repository.searchProfile(storedProfile.id, testContext.succeeding(foundProfile -> {
+				assertThat(foundProfile).isEqualTo(storedProfile);
+				testContext.completeNow();
+			}));
 
-				testContext.failNow(store.cause());
+		}));
 
-			} else {
-
-				final WeNetUserProfile storedProfile = store.result();
-				this.repository.searchProfile(storedProfile.id, search -> {
-
-					if (search.failed()) {
-
-						testContext.failNow(search.cause());
-
-					} else {
-
-						testContext.verify(() -> {
-							assertThat(search.result()).isEqualTo(storedProfile);
-						});
-						testContext.completeNow();
-					}
-
-				});
-			}
-		});
 	}
 
 }

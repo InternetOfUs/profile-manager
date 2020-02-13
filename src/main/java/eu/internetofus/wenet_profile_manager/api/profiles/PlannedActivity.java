@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
@@ -59,13 +59,13 @@ public class PlannedActivity extends Model {
 	/**
 	 * The starting time of the activity.
 	 */
-	@Schema(description = "The starting time of the activity", example = "OrderedMap {}")
+	@Schema(description = "The starting time of the activity", example = "2017-07-21T17:32:00Z")
 	public String startTime;
 
 	/**
 	 * The ending time of the activity.
 	 */
-	@Schema(description = "The ending time of the activity", example = "OrderedMap {}")
+	@Schema(description = "The ending time of the activity", example = "2019-07-21T17:32:23Z")
 	public String endTime;
 
 	/**
@@ -98,25 +98,6 @@ public class PlannedActivity extends Model {
 	}
 
 	/**
-	 * Create an activity with the values of another.
-	 *
-	 * @param activity to copy.
-	 */
-	public PlannedActivity(PlannedActivity activity) {
-
-		this.id = activity.id;
-		this.startTime = activity.startTime;
-		this.endTime = activity.endTime;
-		this.description = activity.description;
-		if (activity.attendees != null) {
-
-			this.attendees = new ArrayList<String>(activity.attendees);
-		}
-		this.status = activity.status;
-
-	}
-
-	/**
 	 * Verify that the planned activity is right.
 	 *
 	 * @param codePrefix the prefix of the code to use for the error message.
@@ -129,7 +110,7 @@ public class PlannedActivity extends Model {
 		try {
 
 			final Promise<Void> promise = Promise.promise();
-			final Future<Void> future = promise.future();
+			Future<Void> future = promise.future();
 
 			this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
 			if (this.id != null) {
@@ -141,8 +122,10 @@ public class PlannedActivity extends Model {
 
 				this.id = UUID.randomUUID().toString();
 			}
-			this.startTime = Validations.validateNullableStringField(codePrefix, "startTime", 255, this.startTime);
-			this.endTime = Validations.validateNullableStringField(codePrefix, "endTime", 255, this.endTime);
+			this.startTime = Validations.validateNullableDateField(codePrefix, "startTime", DateTimeFormatter.ISO_INSTANT,
+					this.startTime);
+			this.endTime = Validations.validateNullableDateField(codePrefix, "endTime", DateTimeFormatter.ISO_INSTANT,
+					this.endTime);
 			this.description = Validations.validateNullableStringField(codePrefix, "description", 255, this.description);
 			if (this.attendees != null && !this.attendees.isEmpty()) {
 
@@ -157,7 +140,7 @@ public class PlannedActivity extends Model {
 
 					} else {
 
-						future.compose((Function<Void, Future<Void>>) map -> {
+						future = future.compose((Function<Void, Future<Void>>) map -> {
 
 							final Promise<Void> searchPromise = Promise.promise();
 							repository.searchProfile(id, search -> {

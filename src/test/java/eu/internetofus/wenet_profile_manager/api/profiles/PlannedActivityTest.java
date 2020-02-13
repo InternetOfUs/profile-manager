@@ -29,7 +29,6 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +36,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.wenet_profile_manager.ModelTestCase;
+import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.wenet_profile_manager.ValidationsTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.Future;
@@ -61,8 +62,8 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 
 		final PlannedActivity activity = new PlannedActivity();
 		activity.id = null;
-		activity.startTime = "startTime_" + index;
-		activity.endTime = "endTime_" + index;
+		activity.startTime = "2017-07-21T17:32:0" + index % 10 + "Z";
+		activity.endTime = "2019-07-21T17:32:2" + index % 10 + "Z";
 		activity.description = "description_" + index;
 		activity.attendees = null;
 		activity.status = PlannedActivityStatus.cancelled;
@@ -81,15 +82,9 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 
 		final Promise<PlannedActivity> promise = Promise.promise();
 		final Future<PlannedActivity> future = promise.future();
-		final PlannedActivity activity = new PlannedActivity();
-		activity.id = null;
-		activity.startTime = "startTime_" + index;
-		activity.endTime = "endTime_" + index;
-		activity.description = "description_" + index;
+		final PlannedActivity activity = this.createModelExample(index);
 		activity.attendees = new ArrayList<>();
-		final WeNetUserProfile profile = new WeNetUserProfile();
-		profile.id = UUID.randomUUID().toString();
-		repository.storeProfile(profile, stored -> {
+		repository.storeProfile(new WeNetUserProfile(), stored -> {
 
 			if (stored.failed()) {
 
@@ -97,6 +92,7 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 
 			} else {
 
+				final WeNetUserProfile profile = stored.result();
 				activity.attendees.add(profile.id);
 				promise.complete(activity);
 			}
@@ -105,18 +101,6 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 		activity.status = PlannedActivityStatus.cancelled;
 
 		return future;
-	}
-
-	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final PlannedActivity model1 = this.createModelExample(1);
-		final PlannedActivity model2 = new PlannedActivity(model1);
-		assertThat(model1).isEqualTo(model2);
-
 	}
 
 	/**
@@ -131,22 +115,9 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	@Test
 	public void shouldEmptyModelBeValid(ProfilesRepository repository, VertxTestContext testContext) {
 
-		testContext.verify(() -> {
-			final PlannedActivity model = new PlannedActivity();
-			model.validate("codePrefix", repository).onComplete(validate -> {
-
-				if (validate.failed()) {
-
-					testContext.failNow(validate.cause());
-
-				} else {
-
-					testContext.completeNow();
-				}
-
-			});
-		});
-
+		final PlannedActivity model = new PlannedActivity();
+		testContext.assertComplete(model.validate("codePrefix", repository))
+				.setHandler(validation -> testContext.completeNow());
 	}
 
 	/**
@@ -163,21 +134,9 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
 	public void shouldExampleBeValid(int index, ProfilesRepository repository, VertxTestContext testContext) {
 
-		testContext.verify(() -> {
-			final PlannedActivity model = this.createModelExample(index);
-			model.validate("codePrefix", repository).onComplete(validate -> {
-
-				if (validate.failed()) {
-
-					testContext.failNow(validate.cause());
-
-				} else {
-
-					testContext.completeNow();
-				}
-
-			});
-		});
+		final PlannedActivity model = this.createModelExample(index);
+		testContext.assertComplete(model.validate("codePrefix", repository))
+				.setHandler(validation -> testContext.completeNow());
 
 	}
 
@@ -196,30 +155,11 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	public void shouldExampleFromRepositoryBeValid(int index, ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		testContext.verify(() -> {
-			this.createModelExample(index, repository).onComplete(created -> {
+		testContext.assertComplete(this.createModelExample(index, repository)).setHandler(created -> {
 
-				if (created.failed()) {
-
-					testContext.failNow(created.cause());
-
-				} else {
-
-					final PlannedActivity model = created.result();
-					model.validate("codePrefix", repository).onComplete(validate -> {
-
-						if (validate.failed()) {
-
-							testContext.failNow(validate.cause());
-
-						} else {
-
-							testContext.completeNow();
-						}
-					});
-				}
-
-			});
+			final PlannedActivity model = created.result();
+			testContext.assertComplete(model.validate("codePrefix", repository))
+					.setHandler(validation -> testContext.completeNow());
 		});
 	}
 
@@ -234,99 +174,186 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	@Test
 	public void shouldFullModelBeValid(ProfilesRepository repository, VertxTestContext testContext) {
 
-		testContext.verify(() -> {
+		final PlannedActivity model = new PlannedActivity();
+		model.id = " ";
+		model.startTime = " 2017-07-21T17:32:00z ";
+		model.endTime = " 2019-09-09t09:02:11Z ";
+		model.description = " description ";
+		model.attendees = new ArrayList<>();
+		model.attendees.add("");
+		model.attendees.add(null);
+		model.attendees.add(" ");
+		model.status = PlannedActivityStatus.tentative;
+		testContext.assertComplete(model.validate("codePrefix", repository)).setHandler(validate -> {
 
-			final PlannedActivity model = new PlannedActivity();
-			model.id = " ";
-			model.startTime = " start time ";
-			model.endTime = " end time ";
-			model.description = " description ";
-			model.attendees = new ArrayList<>();
-			model.attendees.add("");
-			model.attendees.add(null);
-			model.attendees.add(" ");
-			model.status = PlannedActivityStatus.tentative;
-			model.validate("codePrefix", repository).onComplete(validate -> {
-
-				if (validate.failed()) {
-
-					testContext.failNow(validate.cause());
-
-				} else {
-
-					final PlannedActivity expected = new PlannedActivity();
-					expected.id = model.id;
-					expected.startTime = "start time";
-					expected.endTime = "end time";
-					expected.description = "description";
-					expected.attendees = new ArrayList<>();
-					expected.status = PlannedActivityStatus.tentative;
-					assertThat(model).isEqualTo(expected);
-					testContext.completeNow();
-				}
-			});
+			final PlannedActivity expected = new PlannedActivity();
+			expected.id = model.id;
+			expected.startTime = "2017-07-21T17:32:00Z";
+			expected.endTime = "2019-09-09T09:02:11Z";
+			expected.description = "description";
+			expected.attendees = new ArrayList<>();
+			expected.status = PlannedActivityStatus.tentative;
+			assertThat(model).isEqualTo(expected);
+			testContext.completeNow();
 		});
 
 	}
 
-	// /**
-	// * Check that the model with id is not valid.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldNotBeValidWithAnId() {
-	//
-	// final PlannedActivity model = new PlannedActivity();
-	// model.id = "has_id";
-	// assertThat(assertThrows(ValidationErrorException.class, () ->
-	// model.validate("codePrefix")).getCode())
-	// .isEqualTo("codePrefix.id");
-	// }
-	//
-	// /**
-	// * Check that not accept planned activity with bad start time.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldNotBeValidWithABadStartTime() {
-	//
-	// final PlannedActivity model = new PlannedActivity();
-	// model.startTime = ValidationsTest.STRING_256;
-	// assertThat(assertThrows(ValidationErrorException.class, () ->
-	// model.validate("codePrefix")).getCode())
-	// .isEqualTo("codePrefix.startTime");
-	// }
-	//
-	// /**
-	// * Check that not accept planned activity with bad end time.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldNotBeValidWithABadEndTime() {
-	//
-	// final PlannedActivity model = new PlannedActivity();
-	// model.endTime = ValidationsTest.STRING_256;
-	// assertThat(assertThrows(ValidationErrorException.class, () ->
-	// model.validate("codePrefix")).getCode())
-	// .isEqualTo("codePrefix.endTime");
-	// }
-	//
-	// /**
-	// * Check that not accept planned activity with bad description.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldNotBeValidWithABadDescription() {
-	//
-	// final PlannedActivity model = new PlannedActivity();
-	// model.description = ValidationsTest.STRING_256;
-	// assertThat(assertThrows(ValidationErrorException.class, () ->
-	// model.validate("codePrefix")).getCode())
-	// .isEqualTo("codePrefix.description");
-	// }
+	/**
+	 * Check that the validation of a model fails.
+	 *
+	 * @param model       to validate.
+	 * @param suffix      to the error code.
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 */
+	public void assertFailValidate(PlannedActivity model, String suffix, ProfilesRepository repository,
+			VertxTestContext testContext) {
+
+		testContext.assertFailure(model.validate("codePrefix", repository)).setHandler(result -> {
+
+			final Throwable cause = result.cause();
+			assertThat(cause).isInstanceOf(ValidationErrorException.class);
+			String expectedCode = "codePrefix";
+			if (suffix != null && suffix.length() > 0) {
+
+				expectedCode += "." + suffix;
+			}
+			assertThat(((ValidationErrorException) cause).getCode()).isEqualTo(expectedCode);
+			testContext.completeNow();
+		});
+
+	}
+
+	/**
+	 * Check that the model with id is not valid.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldNotBeValidWithAnId(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.id = "has_id";
+		this.assertFailValidate(model, "id", repository, testContext);
+	}
+
+	/**
+	 * Check that not accept planned activity with bad start time.
+	 *
+	 * @param badTime     a bad time value.
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@ParameterizedTest(name = "Should not be valid with startTime = {0}")
+	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:00", "2019-02-30T00:00:00Z" })
+	public void shouldNotBeValidWithABadStartTime(String badTime, ProfilesRepository repository,
+			VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.startTime = badTime;
+		this.assertFailValidate(model, "startTime", repository, testContext);
+	}
+
+	/**
+	 * Check that not accept planned activity with bad end time.
+	 *
+	 * @param badTime     a bad time value.
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@ParameterizedTest(name = "Should not be valid with endTime = {0}")
+	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:00", "2019-02-30T00:00:00Z" })
+	public void shouldNotBeValidWithABadEndTime(String badTime, ProfilesRepository repository,
+			VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.endTime = badTime;
+		this.assertFailValidate(model, "endTime", repository, testContext);
+	}
+
+	/**
+	 * Check that not accept planned activity with bad description.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldNotBeValidWithABadDescription(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.description = ValidationsTest.STRING_256;
+		this.assertFailValidate(model, "description", repository, testContext);
+
+	}
+
+	/**
+	 * Check that not accept planned activity with bad attender.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldNotBeValidWithABadAttender(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.attendees = new ArrayList<>();
+		model.attendees.add("undefined attendee identifier");
+		this.assertFailValidate(model, "attendees[0]", repository, testContext);
+
+	}
+
+	/**
+	 * Check that not accept planned activity with bad attender.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldBeValidEmptyAttender(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.attendees = new ArrayList<>();
+		testContext.assertComplete(model.validate("codePrefix", repository))
+				.setHandler(validation -> testContext.completeNow());
+
+	}
+
+	/**
+	 * Check that not accept planned activity with bad attender.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldEmptyAttenderWillRemoved(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final PlannedActivity model = new PlannedActivity();
+		model.attendees = new ArrayList<>();
+		model.attendees.add(null);
+		model.attendees.add("");
+		model.attendees.add("      ");
+		testContext.assertComplete(model.validate("codePrefix", repository)).setHandler(validation -> {
+
+			assertThat(model.attendees).isEmpty();
+			testContext.completeNow();
+		});
+
+	}
 
 }

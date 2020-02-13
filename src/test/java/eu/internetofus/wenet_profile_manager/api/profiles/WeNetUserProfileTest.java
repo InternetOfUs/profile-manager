@@ -67,7 +67,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		model.dateOfBirth = new ProfileDateTest().createModelExample(index);
 		model.gender = Gender.F;
 		model.email = "user" + index + "@internetofus.eu";
-		model.phoneNumber = "+34" + (987654321 + index);
+		model.phoneNumber = "+34 987 65 43 " + (21 + index) % 100;
 		model.locale = "ca_AD";
 		model.avatar = "https://internetofus.eu/wp-content/uploads/sites/38/2019/" + index + "/WeNet_logo.png";
 		model.nationality = "nationality_" + index;
@@ -103,22 +103,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 
 		final Promise<WeNetUserProfile> promise = Promise.promise();
 		Future<WeNetUserProfile> future = promise.future();
-		final WeNetUserProfile model = new WeNetUserProfile();
-		model.id = null;
-		model.name = new UserNameTest().createModelExample(index);
-		model.dateOfBirth = new ProfileDateTest().createModelExample(index);
-		model.gender = Gender.F;
-		model.email = "user1@internetofus.eu";
-		model.phoneNumber = "+34987654321";
-		model.locale = "ca_AD";
-		model.avatar = "https://internetofus.eu/wp-content/uploads/sites/38/2019/02/WeNet_logo.png";
-		model.nationality = "nationality_1";
-		model.languages = new ArrayList<>();
-		model.languages.add(new LanguageTest().createModelExample(index));
-		model.occupation = "occupation 1";
-		model.norms = new ArrayList<>();
-		model.norms.add(new NormTest().createModelExample(index));
-		model.plannedActivities = new ArrayList<>();
+		final WeNetUserProfile model = this.createModelExample(index);
 		future = future.compose(map -> {
 
 			final Promise<WeNetUserProfile> activityPromise = Promise.promise();
@@ -137,8 +122,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			return activityPromise.future();
 
 		});
-		model.relevantLocations = new ArrayList<>();
-		model.relevantLocations.add(new RelevantLocationTest().createModelExample(index));
 		model.relationships = new ArrayList<>();
 		future = future.compose(map -> {
 
@@ -158,12 +141,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			return relationshipPromise.future();
 
 		});
-		model.socialPractices = new ArrayList<>();
-		model.socialPractices.add(new SocialPracticeTest().createModelExample(index));
-		model.personalBehaviors = new ArrayList<>();
-		model.personalBehaviors.add(new RoutineTest().createModelExample(index));
-		model._creationTs = 1234567891 + index;
-		model._lastUpdateTs = 1234567991 + index * 2;
 		promise.complete(model);
 		return future;
 

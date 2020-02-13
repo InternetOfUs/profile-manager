@@ -61,18 +61,6 @@ public class NormTest extends ModelTestCase<Norm> {
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final Norm model1 = this.createModelExample(1);
-		final Norm model2 = new Norm(model1);
-		assertThat(model1).isEqualTo(model2);
-
-	}
-
-	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
 	 * @see Norm#validate(String)

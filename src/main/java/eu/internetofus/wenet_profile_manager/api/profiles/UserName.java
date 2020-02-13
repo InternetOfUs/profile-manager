@@ -86,21 +86,6 @@ public class UserName extends Model implements Validable {
 	}
 
 	/**
-	 * Create a user name with the value of another.
-	 *
-	 * @param name to copy.
-	 */
-	public UserName(UserName name) {
-
-		this.prefix = name.prefix;
-		this.first = name.first;
-		this.middle = name.middle;
-		this.last = name.last;
-		this.suffix = name.suffix;
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

@@ -66,19 +66,6 @@ public class Language extends Model implements Validable {
 	}
 
 	/**
-	 * Create a language with the values of another.
-	 *
-	 * @param language to copy.
-	 */
-	public Language(Language language) {
-
-		this.name = language.name;
-		this.code = language.code;
-		this.level = language.level;
-
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

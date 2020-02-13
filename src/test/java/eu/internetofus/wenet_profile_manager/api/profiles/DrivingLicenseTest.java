@@ -57,18 +57,6 @@ public class DrivingLicenseTest extends CompetenceTestCase<DrivingLicense> {
 	}
 
 	/**
-	 * Check the copy of a model has to be equals to the original.
-	 */
-	@Test
-	public void shouldCopyBeEqual() {
-
-		final DrivingLicense model1 = this.createModelExample(1);
-		final DrivingLicense model2 = new DrivingLicense(model1);
-		assertThat(model1).isEqualTo(model2);
-
-	}
-
-	/**
 	 * Check that a model with all the values is valid.
 	 *
 	 * @see DrivingLicense#validate(String)
