@@ -88,6 +88,13 @@ public class SocialNetworkRelationship extends Model {
 
 		try {
 
+			if (this.type == null) {
+
+				return Future.failedFuture(new ValidationErrorException(codePrefix + ".type",
+						"It is not allowed a social relationship without a type'."));
+
+			}
+
 			this.userId = Validations.validateNullableStringField(codePrefix, "userId", 255, this.userId);
 			if (this.userId == null) {
 

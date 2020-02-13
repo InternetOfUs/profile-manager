@@ -80,6 +80,7 @@ public class ProfileDate extends Model implements Validable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void validate(String codePrefix) throws ValidationErrorException {
 
 		if (this.month < 1 || this.month > 12) {

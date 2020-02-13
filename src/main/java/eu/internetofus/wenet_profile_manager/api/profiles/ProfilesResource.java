@@ -72,7 +72,7 @@ public class ProfilesResource implements Profiles {
 	public void retrieveProfile(String profileId, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		this.repository.searchProfile(profileId, search -> {
+		this.repository.searchProfileObject(profileId, search -> {
 
 			final JsonObject profile = search.result();
 			if (profile == null) {

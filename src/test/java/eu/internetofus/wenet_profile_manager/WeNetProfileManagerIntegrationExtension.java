@@ -48,6 +48,8 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import org.tinylog.Level;
 import org.tinylog.provider.InternalLogger;
 
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryImpl;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
@@ -182,6 +184,21 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 
 		this.vertxExtension.afterEach(context);
 
+		// close client and pool after the test context has been completed.
+		final WebClient client = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+				.remove(WebClient.class.getName(), WebClient.class);
+		if (client != null) {
+
+			client.close();
+		}
+
+		final MongoClient pool = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+				.remove(MongoClient.class.getName(), MongoClient.class);
+		if (pool != null) {
+
+			pool.close();
+		}
+
 	}
 
 	/**
@@ -200,21 +217,8 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 	@Override
 	public void afterTestExecution(ExtensionContext context) throws Exception {
 
-		final WebClient client = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-				.remove(WebClient.class.getName(), WebClient.class);
-		if (client != null) {
-
-			client.close();
-		}
-
-		final MongoClient pool = context.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-				.remove(MongoClient.class.getName(), MongoClient.class);
-		if (pool != null) {
-
-			pool.close();
-		}
-
 		this.vertxExtension.afterTestExecution(context);
+
 	}
 
 	/**
@@ -236,6 +240,7 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 
 		final Class<?> type = parameterContext.getParameter().getType();
 		return type == WebClient.class || type == WeNetProfileManagerContext.class || type == MongoClient.class
+				|| type == ProfilesRepository.class
 				|| this.vertxExtension.supportsParameter(parameterContext, extensionContext);
 
 	}
@@ -264,15 +269,28 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 						return WebClient.create(context.vertx, options);
 					}, WebClient.class);
 
-		} else if (type == MongoClient.class) {
+		} else if (type == MongoClient.class || type == ProfilesRepository.class) {
 
-			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+			final MongoClient pool = extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
 					.getOrComputeIfAbsent(MongoClient.class.getName(), key -> {
 
 						final WeNetProfileManagerContext context = getContext();
 						final JsonObject persitenceConf = context.configuration.getJsonObject("persistence", new JsonObject());
-						return MongoClient.createShared(context.vertx, persitenceConf, "TEST_POOL_NAME");
+						return MongoClient.create(context.vertx, persitenceConf);
 					}, MongoClient.class);
+
+			if (type == ProfilesRepository.class) {
+
+				return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+						.getOrComputeIfAbsent(ProfilesRepository.class.getName(), key -> {
+
+							return new ProfilesRepositoryImpl(pool);
+						}, ProfilesRepository.class);
+
+			} else {
+
+				return pool;
+			}
 
 		} else if (type == WeNetProfileManagerContext.class) {
 

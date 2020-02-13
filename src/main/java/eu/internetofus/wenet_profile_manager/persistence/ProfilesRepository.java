@@ -26,9 +26,12 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -66,7 +69,38 @@ public interface ProfilesRepository {
 	 * @param id            identifier of the profile to search.
 	 * @param searchHandler handler to manage the search.
 	 */
-	void searchProfile(String id, Handler<AsyncResult<JsonObject>> searchHandler);
+	@GenIgnore
+	default void searchProfile(String id, Handler<AsyncResult<WeNetUserProfile>> searchHandler) {
+
+		this.searchProfileObject(id, search -> {
+
+			if (search.failed()) {
+
+				searchHandler.handle(Future.failedFuture(search.cause()));
+
+			} else {
+
+				final JsonObject value = search.result();
+				final WeNetUserProfile profile = Model.fromJsonObject(value, WeNetUserProfile.class);
+				if (profile == null) {
+
+					searchHandler.handle(Future.failedFuture("The stored profile is not valid."));
+
+				} else {
+
+					searchHandler.handle(Future.succeededFuture(profile));
+				}
+			}
+		});
+	}
+
+	/**
+	 * Search for the profile with the specified identifier.
+	 *
+	 * @param id            identifier of the profile to search.
+	 * @param searchHandler handler to manage the search.
+	 */
+	void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
 
 	/**
 	 * Register this service.
@@ -80,5 +114,52 @@ public interface ProfilesRepository {
 				new ProfilesRepositoryImpl(pool));
 
 	}
+
+	/**
+	 * Store a profile.
+	 *
+	 * @param profile      to store.
+	 * @param storeHandler handler to manage the store.
+	 */
+	@GenIgnore
+	default void storeProfile(WeNetUserProfile profile, Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
+
+		final JsonObject object = profile.toJsonObject();
+		if (object == null) {
+
+			storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+
+		} else {
+
+			this.storeProfile(object, stored -> {
+				if (stored.failed()) {
+
+					storeHandler.handle(Future.failedFuture(stored.cause()));
+
+				} else {
+
+					final JsonObject value = stored.result();
+					final WeNetUserProfile storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
+					if (storedProfile == null) {
+
+						storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
+
+					} else {
+
+						storeHandler.handle(Future.succeededFuture(storedProfile));
+					}
+
+				}
+			});
+		}
+	}
+
+	/**
+	 * Store a profile.
+	 *
+	 * @param profile      to store.
+	 * @param storeHandler handler to manage the search.
+	 */
+	void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
 
 }

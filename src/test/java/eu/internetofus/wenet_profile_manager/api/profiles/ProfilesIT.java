@@ -37,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
@@ -56,16 +57,55 @@ public class ProfilesIT {
 	 *
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
 	 */
 	@Test
 	public void shouldNotFoundProfileWithAnUndefinedProfileId(WebClient client, VertxTestContext testContext) {
 
 		testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
+
 			assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
 			assertThat(error.code).isNotEmpty();
 			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
 		}).send(testContext);
+	}
+
+	/**
+	 * Verify that return a defined profile.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldFoundProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+
+		repository.storeProfile(new WeNetUserProfileTest().createModelExample(1), store -> {
+
+			if (store.failed()) {
+
+				testContext.failNow(store.cause());
+			} else {
+
+				final WeNetUserProfile profile = store.result();
+				testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+					assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+					final WeNetUserProfile found = assertThatBodyIs(WeNetUserProfile.class, res);
+					assertThat(found).isEqualTo(profile);
+					testContext.completeNow();
+
+				}).send(testContext);
+			}
+		});
 	}
 
 }

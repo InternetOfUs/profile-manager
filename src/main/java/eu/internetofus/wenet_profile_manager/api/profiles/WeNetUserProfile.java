@@ -27,9 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.ValidationErrorException;
@@ -190,110 +188,6 @@ public class WeNetUserProfile extends Model {
 	}
 
 	/**
-	 * Create a new profile with the information of another profile.
-	 *
-	 * @param profile to copy.
-	 */
-	public WeNetUserProfile(WeNetUserProfile profile) {
-
-		this.id = profile.id;
-		if (profile.name != null) {
-
-			this.name = new UserName(profile.name);
-		}
-		if (profile.dateOfBirth != null) {
-
-			this.dateOfBirth = new ProfileDate(profile.dateOfBirth);
-		}
-		this.gender = profile.gender;
-		this.email = profile.email;
-		this.phoneNumber = profile.phoneNumber;
-		this.locale = profile.locale;
-		this.avatar = profile.avatar;
-		this.nationality = profile.nationality;
-		if (profile.languages != null) {
-
-			this.languages = new ArrayList<>();
-			for (final Language profileLanguage : profile.languages) {
-
-				final Language language = new Language(profileLanguage);
-				this.languages.add(language);
-
-			}
-		}
-		this.occupation = profile.occupation;
-		if (profile.norms != null) {
-
-			this.norms = new ArrayList<>();
-			for (final Norm profileNorm : profile.norms) {
-
-				final Norm norm = new Norm(profileNorm);
-				this.norms.add(norm);
-
-			}
-		}
-
-		if (profile.plannedActivities != null) {
-
-			this.plannedActivities = new ArrayList<>();
-			for (final PlannedActivity profileActivity : profile.plannedActivities) {
-
-				final PlannedActivity activity = new PlannedActivity(profileActivity);
-				this.plannedActivities.add(activity);
-
-			}
-		}
-
-		if (profile.relevantLocations != null) {
-
-			this.relevantLocations = new ArrayList<>();
-			for (final RelevantLocation profileLocation : profile.relevantLocations) {
-
-				final RelevantLocation location = new RelevantLocation(profileLocation);
-				this.relevantLocations.add(location);
-
-			}
-		}
-
-		if (profile.relationships != null) {
-
-			this.relationships = new ArrayList<>();
-			for (final SocialNetworkRelationship profileRelationship : profile.relationships) {
-
-				final SocialNetworkRelationship relationship = new SocialNetworkRelationship(profileRelationship);
-				this.relationships.add(relationship);
-
-			}
-		}
-
-		if (profile.socialPractices != null) {
-
-			this.socialPractices = new ArrayList<>();
-			for (final SocialPractice profilePractice : profile.socialPractices) {
-
-				final SocialPractice relationship = new SocialPractice(profilePractice);
-				this.socialPractices.add(relationship);
-
-			}
-		}
-
-		if (profile.personalBehaviors != null) {
-
-			this.personalBehaviors = new ArrayList<>();
-			for (final Routine profilebehavior : profile.personalBehaviors) {
-
-				final Routine behavior = new Routine(profilebehavior);
-				this.personalBehaviors.add(behavior);
-
-			}
-		}
-
-		this._creationTs = profile._creationTs;
-		this._lastUpdateTs = profile._lastUpdateTs;
-
-	}
-
-	/**
 	 * Validate that the values of the model are right.
 	 *
 	 * @param codePrefix prefix for the error code.
@@ -313,9 +207,6 @@ public class WeNetUserProfile extends Model {
 				return Future.failedFuture(new ValidationErrorException(codePrefix + ".id",
 						"You can not specify the identifier of the profile to create"));
 
-			} else {
-
-				this.id = UUID.randomUUID().toString();
 			}
 			if (this.name != null) {
 

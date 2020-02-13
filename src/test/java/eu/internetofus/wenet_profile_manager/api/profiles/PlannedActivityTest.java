@@ -29,10 +29,19 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.wenet_profile_manager.ModelTestCase;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link PlannedActivity}.
@@ -41,6 +50,7 @@ import eu.internetofus.wenet_profile_manager.ModelTestCase;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 
 	/**
@@ -54,9 +64,47 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 		activity.startTime = "startTime_" + index;
 		activity.endTime = "endTime_" + index;
 		activity.description = "description_" + index;
-		activity.attendees = new ArrayList<>();
+		activity.attendees = null;
 		activity.status = PlannedActivityStatus.cancelled;
 		return activity;
+	}
+
+	/**
+	 * Create an example model that has the specified index.
+	 *
+	 * @param index      to use in the example.
+	 * @param repository to use to create the model.
+	 *
+	 * @return the example.
+	 */
+	public Future<PlannedActivity> createModelExample(int index, ProfilesRepository repository) {
+
+		final Promise<PlannedActivity> promise = Promise.promise();
+		final Future<PlannedActivity> future = promise.future();
+		final PlannedActivity activity = new PlannedActivity();
+		activity.id = null;
+		activity.startTime = "startTime_" + index;
+		activity.endTime = "endTime_" + index;
+		activity.description = "description_" + index;
+		activity.attendees = new ArrayList<>();
+		final WeNetUserProfile profile = new WeNetUserProfile();
+		profile.id = UUID.randomUUID().toString();
+		repository.storeProfile(profile, stored -> {
+
+			if (stored.failed()) {
+
+				promise.fail(stored.cause());
+
+			} else {
+
+				activity.attendees.add(profile.id);
+				promise.complete(activity);
+			}
+
+		});
+		activity.status = PlannedActivityStatus.cancelled;
+
+		return future;
 	}
 
 	/**
@@ -71,63 +119,156 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 
 	}
 
-	// /**
-	// * Check that the {@link #createModelExample(int)} is valid.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldExample1BeValid() {
-	//
-	// final PlannedActivity model = this.createModelExample(1);
-	// assertThat(catchThrowable(() ->
-	// model.validate("codePrefix"))).doesNotThrowAnyException();
-	// }
-	//
-	// /**
-	// * Check that the {@link #createModelExample2()} is valid.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldExample2BeValid() {
-	//
-	// final PlannedActivity model = this.createModelExample2();
-	// assertThat(catchThrowable(() ->
-	// model.validate("codePrefix"))).doesNotThrowAnyException();
-	// }
-	//
-	// /**
-	// * Check that a model with all the values is valid.
-	// *
-	// * @see PlannedActivity#validate(String)
-	// */
-	// @Test
-	// public void shouldFullModelBeValid() {
-	//
-	// final PlannedActivity model = new PlannedActivity();
-	// model.id = " ";
-	// model.startTime = " start time ";
-	// model.endTime = " end time ";
-	// model.description = " description ";
-	// model.attendees = new ArrayList<>();
-	// model.attendees.add("");
-	// model.attendees.add(null);
-	// model.attendees.add(" ");
-	// model.status = PlannedActivityStatus.tentative;
-	// assertThat(catchThrowable(() ->
-	// model.validate("codePrefix"))).doesNotThrowAnyException();
-	//
-	// final PlannedActivity expected = new PlannedActivity();
-	// expected.id = model.id;
-	// expected.startTime = "start time";
-	// expected.endTime = "end time";
-	// expected.description = "description";
-	// expected.attendees = new ArrayList<>();
-	// expected.status = PlannedActivityStatus.tentative;
-	// assertThat(model).isEqualTo(expected);
-	// }
-	//
+	/**
+	 * Check that an empty model is valid.
+	 *
+	 * @param repository  to create profiles to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,
+	 *      eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository)
+	 */
+	@Test
+	public void shouldEmptyModelBeValid(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.verify(() -> {
+			final PlannedActivity model = new PlannedActivity();
+			model.validate("codePrefix", repository).onComplete(validate -> {
+
+				if (validate.failed()) {
+
+					testContext.failNow(validate.cause());
+
+				} else {
+
+					testContext.completeNow();
+				}
+
+			});
+		});
+
+	}
+
+	/**
+	 * Check that the {@link #createModelExample(int)} is valid.
+	 *
+	 * @param index       to verify
+	 * @param repository  to create profiles to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,
+	 *      eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository)
+	 */
+	@ParameterizedTest(name = "The model example {0} has to be valid")
+	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
+	public void shouldExampleBeValid(int index, ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.verify(() -> {
+			final PlannedActivity model = this.createModelExample(index);
+			model.validate("codePrefix", repository).onComplete(validate -> {
+
+				if (validate.failed()) {
+
+					testContext.failNow(validate.cause());
+
+				} else {
+
+					testContext.completeNow();
+				}
+
+			});
+		});
+
+	}
+
+	/**
+	 * Check that the {@link #createModelExample(int,ProfilesRepository)} is valid.
+	 *
+	 * @param index       to verify
+	 * @param repository  to create profiles to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,
+	 *      eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository)
+	 */
+	@ParameterizedTest(name = "The model example {0} has to be valid")
+	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
+	public void shouldExampleFromRepositoryBeValid(int index, ProfilesRepository repository,
+			VertxTestContext testContext) {
+
+		testContext.verify(() -> {
+			this.createModelExample(index, repository).onComplete(created -> {
+
+				if (created.failed()) {
+
+					testContext.failNow(created.cause());
+
+				} else {
+
+					final PlannedActivity model = created.result();
+					model.validate("codePrefix", repository).onComplete(validate -> {
+
+						if (validate.failed()) {
+
+							testContext.failNow(validate.cause());
+
+						} else {
+
+							testContext.completeNow();
+						}
+					});
+				}
+
+			});
+		});
+	}
+
+	/**
+	 * Check that a model with all the values is valid.
+	 *
+	 * @param repository  to create profiles to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldFullModelBeValid(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.verify(() -> {
+
+			final PlannedActivity model = new PlannedActivity();
+			model.id = " ";
+			model.startTime = " start time ";
+			model.endTime = " end time ";
+			model.description = " description ";
+			model.attendees = new ArrayList<>();
+			model.attendees.add("");
+			model.attendees.add(null);
+			model.attendees.add(" ");
+			model.status = PlannedActivityStatus.tentative;
+			model.validate("codePrefix", repository).onComplete(validate -> {
+
+				if (validate.failed()) {
+
+					testContext.failNow(validate.cause());
+
+				} else {
+
+					final PlannedActivity expected = new PlannedActivity();
+					expected.id = model.id;
+					expected.startTime = "start time";
+					expected.endTime = "end time";
+					expected.description = "description";
+					expected.attendees = new ArrayList<>();
+					expected.status = PlannedActivityStatus.tentative;
+					assertThat(model).isEqualTo(expected);
+					testContext.completeNow();
+				}
+			});
+		});
+
+	}
+
 	// /**
 	// * Check that the model with id is not valid.
 	// *

@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -58,10 +59,53 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void searchProfile(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
+	public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
 
-		final JsonObject query = new JsonObject().put("id", id);
-		this.pool.findOne(PROFILES_COLLECTION, query, null, searchHandler);
+		final JsonObject query = new JsonObject().put("_id", id);
+		this.pool.findOne(PROFILES_COLLECTION, query, null, search -> {
+
+			if (search.failed()) {
+
+				searchHandler.handle(Future.failedFuture(search.cause()));
+
+			} else {
+
+				final JsonObject profile = search.result();
+				if (profile == null) {
+
+					searchHandler.handle(Future.failedFuture("Does not exist a profile with the identifier '" + id + "'."));
+
+				} else {
+
+					profile.put("id", profile.remove("_id"));
+					searchHandler.handle(Future.succeededFuture(profile));
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+
+		this.pool.save(PROFILES_COLLECTION, profile, store -> {
+
+			if (store.failed()) {
+
+				storeHandler.handle(Future.failedFuture(store.cause()));
+
+			} else {
+
+				final String id = store.result();
+				profile.put("id", id);
+				profile.remove("_id");
+				storeHandler.handle(Future.succeededFuture(profile));
+			}
+
+		});
 
 	}
 

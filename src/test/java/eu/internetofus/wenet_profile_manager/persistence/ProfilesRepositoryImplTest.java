@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.junit5.VertxTestContext;
 
@@ -66,7 +67,6 @@ public class ProfilesRepositoryImplTest {
 	/**
 	 * Verify that can not found a profile if it is not defined.
 	 *
-	 *
 	 * @param testContext context that executes the test.
 	 */
 	@Test
@@ -76,14 +76,51 @@ public class ProfilesRepositoryImplTest {
 
 			if (search.failed()) {
 
-				testContext.failNow(search.cause());
+				assertThat(search.result()).isNull();
+				testContext.completeNow();
 
 			} else {
 
-				assertThat(search.result()).isNull();
-				testContext.completeNow();
+				testContext.failNow(search.cause());
 			}
 
+		});
+
+	}
+
+	/**
+	 * Verify that can not found a profile if it is not defined.
+	 *
+	 * @param testContext context that executes the test.
+	 */
+	@Test
+	public void shouldFoundProfile(VertxTestContext testContext) {
+
+		this.repository.storeProfile(new WeNetUserProfile(), store -> {
+
+			if (store.failed()) {
+
+				testContext.failNow(store.cause());
+
+			} else {
+
+				final WeNetUserProfile storedProfile = store.result();
+				this.repository.searchProfile(storedProfile.id, search -> {
+
+					if (search.failed()) {
+
+						testContext.failNow(search.cause());
+
+					} else {
+
+						testContext.verify(() -> {
+							assertThat(search.result()).isEqualTo(storedProfile);
+						});
+						testContext.completeNow();
+					}
+
+				});
+			}
 		});
 	}
 
