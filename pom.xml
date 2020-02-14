@@ -386,6 +386,7 @@
 										<!-- Classes that have a less cover ratio and cannot be increased -->
 										<exclude>*ProxyHandler</exclude>
 										<exclude>*Converter</exclude>
+										<exclude>*VertxEBProxy</exclude>
 									</excludes>
 									<limits>
 										<limit>

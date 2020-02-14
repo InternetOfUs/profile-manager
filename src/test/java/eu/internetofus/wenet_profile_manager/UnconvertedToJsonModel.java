@@ -26,69 +26,25 @@
 
 package eu.internetofus.wenet_profile_manager;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-
-import io.vertx.core.json.JsonObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Test the {@link Model}
- *
- * @see Model
+ * A model that can not be converted to JSON.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ModelTest {
+public class UnconvertedToJsonModel extends Model {
 
 	/**
-	 * Check not obtain a model form a {@code null} {@link JsonObject}.
+	 * The identifier of the class.
 	 */
-	@Test
-	public void shouldNotObtainModelFromNullJsonObject() {
-
-		assertThat(Model.fromJsonObject(null, Model.class)).isNull();
-
-	}
+	@JsonProperty("id")
+	public String id;
 
 	/**
-	 * Check not obtain a model form a {@code null} string.
+	 * Another id that fail the JSON encoding.
 	 */
-	@Test
-	public void shouldNotObtainModelFromNullString() {
-
-		assertThat(Model.fromString(null, Model.class)).isNull();
-
-	}
-
-	/**
-	 * Check not convert to JSON the {@link UnconvertedToJsonModel}.
-	 */
-	@Test
-	public void shouldNotConvertToJsonString() {
-
-		assertThat(new UnconvertedToJsonModel().toJsonString()).isNull();
-
-	}
-
-	/**
-	 * Check not convert to JSON object the {@link UnconvertedToJsonModel}.
-	 */
-	@Test
-	public void shouldNotConvertToJsonObject() {
-
-		assertThat(new UnconvertedToJsonModel().toJsonObject()).isNull();
-
-	}
-
-	/**
-	 * Check not convert to buffer the {@link UnconvertedToJsonModel}.
-	 */
-	@Test
-	public void shouldNotConvertToBuffer() {
-
-		assertThat(new UnconvertedToJsonModel().toBuffer()).isNull();
-
-	}
+	@JsonProperty("id")
+	public long _id;
 
 }

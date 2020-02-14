@@ -159,7 +159,7 @@ public class Model {
 
 		try {
 
-			return new JsonObject(Json.encodeToBuffer(this));
+			return new JsonObject(this.toBuffer());
 
 		} catch (final Throwable throwable) {
 
