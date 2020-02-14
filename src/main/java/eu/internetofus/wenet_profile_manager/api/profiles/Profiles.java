@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -202,6 +203,34 @@ public interface Profiles {
 					description = "The identifier of the profile to update",
 					example = "15837028-645a-4a55-9aaf-ceb846439eba") String profileId,
 			@Parameter(hidden = true, required = false) JsonObject body,
+			@Parameter(hidden = true, required = false) OperationRequest context,
+			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+	/**
+	 * Called when want to delete a profile.
+	 *
+	 * @param profileId     identifier of the profile to delete.
+	 * @param context       of the request.
+	 * @param resultHandler to inform of the response.
+	 */
+	@DELETE
+	@Path("/{profileId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Delete the profile associated to the identifier",
+			description = "Allow to delete a profile associated to an identifier")
+	@ApiResponse(
+			responseCode = "200",
+			description = "The deleted profile associated to the identifier",
+			content = @Content(
+					schema = @Schema(
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile")))
+	@ApiResponse(
+			responseCode = "404",
+			description = "Not found profile",
+			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+	void deleteProfile(
+			@PathParam("profileId") @Parameter(description = "The identifier of the profile to delete") String profileId,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
