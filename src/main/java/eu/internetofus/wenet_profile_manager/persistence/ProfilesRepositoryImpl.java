@@ -31,6 +31,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.UpdateOptions;
 
 /**
  * Implementation of the {@link ProfilesRepository}.
@@ -91,6 +92,9 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	@Override
 	public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
+		final long now = System.currentTimeMillis();
+		profile.put("_creationTs", now);
+		profile.put("_lastUpdateTs", now);
 		this.pool.save(PROFILES_COLLECTION, profile, store -> {
 
 			if (store.failed()) {
@@ -105,6 +109,38 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 				storeHandler.handle(Future.succeededFuture(profile));
 			}
 
+		});
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
+
+		final Object id = profile.remove("id");
+		final JsonObject query = new JsonObject().put("_id", id);
+		final long now = System.currentTimeMillis();
+		profile.put("_lastUpdateTs", now);
+		final JsonObject updateProfile = new JsonObject().put("$set", profile);
+		final UpdateOptions options = new UpdateOptions().setMulti(false);
+		this.pool.updateCollectionWithOptions(PROFILES_COLLECTION, query, updateProfile, options, update -> {
+
+			if (update.failed()) {
+
+				updateHandler.handle(Future.failedFuture(update.cause()));
+
+			} else if (update.result().getDocModified() != 1) {
+
+				updateHandler.handle(Future.failedFuture("Not Found profile to update"));
+
+			} else {
+
+				profile.put("id", id);
+				profile.remove("_id");
+				updateHandler.handle(Future.succeededFuture(profile));
+			}
 		});
 
 	}

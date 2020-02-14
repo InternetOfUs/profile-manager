@@ -162,4 +162,51 @@ public interface ProfilesRepository {
 	 */
 	void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
 
+	/**
+	 * Update a profile.
+	 *
+	 * @param profile       to update.
+	 * @param updateHandler handler to manage the update.
+	 */
+	@GenIgnore
+	default void updateProfile(WeNetUserProfile profile, Handler<AsyncResult<WeNetUserProfile>> updateHandler) {
+
+		final JsonObject object = profile.toJsonObject();
+		if (object == null) {
+
+			updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+
+		} else {
+
+			this.updateProfile(object, updated -> {
+				if (updated.failed()) {
+
+					updateHandler.handle(Future.failedFuture(updated.cause()));
+
+				} else {
+
+					final JsonObject value = updated.result();
+					final WeNetUserProfile updatedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
+					if (updatedProfile == null) {
+
+						updateHandler.handle(Future.failedFuture("The updated profile is not valid."));
+
+					} else {
+
+						updateHandler.handle(Future.succeededFuture(updatedProfile));
+					}
+
+				}
+			});
+		}
+	}
+
+	/**
+	 * Update a profile.
+	 *
+	 * @param profile       to update.
+	 * @param updateHandler handler to manage the search.
+	 */
+	void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler);
+
 }

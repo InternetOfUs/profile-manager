@@ -59,14 +59,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldRepondWithModel(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.ACCEPTED.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{}");
 			testContext.completeNow();
 
-		}), Status.ACCEPTED, new Model());
+		})), Status.ACCEPTED, new Model());
 
 	}
 
@@ -78,14 +78,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldRepondWithStringJsonObject(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.FOUND.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{\"key\":\"value\"}");
 			testContext.completeNow();
 
-		}), Status.FOUND, new JsonObject().put("key", "value"));
+		})), Status.FOUND, new JsonObject().put("key", "value"));
 
 	}
 
@@ -97,14 +97,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldRepondWithString(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.CONFLICT.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{\"name\":\"value\"}");
 			testContext.completeNow();
 
-		}), Status.CONFLICT, "{\"name\":\"value\"}");
+		})), Status.CONFLICT, "{\"name\":\"value\"}");
 
 	}
 
@@ -116,14 +116,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldRepondWithOk(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseOk(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseOk(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{\"name\":\"value\"}");
 			testContext.completeNow();
 
-		}), "{\"name\":\"value\"}");
+		})), "{\"name\":\"value\"}");
 
 	}
 
@@ -135,14 +135,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldResponseWithErrorMessage(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseWithErrorMessage(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseWithErrorMessage(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{\"code\":\"code\",\"message\":\"message\"}");
 			testContext.completeNow();
 
-		}), Status.NOT_FOUND, "code", "message");
+		})), Status.NOT_FOUND, "code", "message");
 
 	}
 
@@ -154,7 +154,7 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldResponseFailedWithNullException(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
@@ -162,7 +162,7 @@ public class OperationReponseHandlersTest {
 					.isEqualTo("{\"code\":\"undefined\",\"message\":\"Unexpected failure\"}");
 			testContext.completeNow();
 
-		}), Status.NOT_FOUND, null);
+		})), Status.NOT_FOUND, null);
 
 	}
 
@@ -174,7 +174,7 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldResponseFailedWithException(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.NOT_ACCEPTABLE.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
@@ -182,7 +182,7 @@ public class OperationReponseHandlersTest {
 					.isEqualTo("{\"code\":\"NullPointerException\",\"message\":\"message\"}");
 			testContext.completeNow();
 
-		}), Status.NOT_ACCEPTABLE, new NullPointerException("message"));
+		})), Status.NOT_ACCEPTABLE, new NullPointerException("message"));
 
 	}
 
@@ -194,14 +194,14 @@ public class OperationReponseHandlersTest {
 	@Test
 	public void shouldResponseFailedWithValidationErrorException(VertxTestContext testContext) {
 
-		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> {
+		OperationReponseHandlers.responseFailedWith(testContext.succeeding(reponse -> testContext.verify(() -> {
 
 			assertThat(reponse.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 			assertThat(reponse.getHeaders().get(HttpHeaders.CONTENT_TYPE)).isEqualTo(MediaType.APPLICATION_JSON);
 			assertThat(reponse.getPayload().toString()).isEqualTo("{\"code\":\"code\",\"message\":\"message\"}");
 			testContext.completeNow();
 
-		}), Status.BAD_REQUEST, new ValidationErrorException("code", "message"));
+		})), Status.BAD_REQUEST, new ValidationErrorException("code", "message"));
 
 	}
 

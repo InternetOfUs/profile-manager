@@ -114,14 +114,12 @@ public interface OperationReponseHandlers {
 	 */
 	static void responseWith(Handler<AsyncResult<OperationResponse>> resultHandler, Status status, Object model) {
 
+		Buffer buffer;
 		if (model instanceof Model) {
 
-			model = ((Model) model).toJsonObject();
+			buffer = ((Model) model).toBuffer();
 
-		}
-
-		Buffer buffer;
-		if (model instanceof JsonObject) {
+		} else if (model instanceof JsonObject) {
 
 			buffer = ((JsonObject) model).toBuffer();
 

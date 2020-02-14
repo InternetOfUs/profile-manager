@@ -29,6 +29,8 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -53,8 +55,8 @@ public class ProfileDateTest extends ModelTestCase<ProfileDate> {
 
 		final ProfileDate date = new ProfileDate();
 		date.year = 1950 + index;
-		date.month = (byte) ((1 + index) % 12);
-		date.day = (byte) ((1 + index) % 28);
+		date.month = (byte) (1 + index % 11);
+		date.day = (byte) (1 + index % 27);
 		return date;
 	}
 
@@ -105,6 +107,41 @@ public class ProfileDateTest extends ModelTestCase<ProfileDate> {
 		date.month = 2;
 		date.day = 31;
 		assertThat(assertThrows(ValidationErrorException.class, () -> date.validate("codePrefix")).getCode())
+				.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should not be valid to born in the future.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldNotBeValidToBornOnTheFuture() {
+
+		final ProfileDate date = new ProfileDate();
+		final LocalDate tomorrow = LocalDate.now().plusDays(1);
+		date.year = tomorrow.getYear();
+		date.month = (byte) tomorrow.getMonthValue();
+		date.day = (byte) tomorrow.getDayOfMonth();
+		assertThat(assertThrows(ValidationErrorException.class, () -> date.validateAsBirthDate("codePrefix")).getCode())
+				.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should not be valid to born before the oldest person on the world.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldNotBeValidToBornBeforeTheOldestPersonOnTheWorld() {
+
+		final ProfileDate date = new ProfileDate();
+		date.year = 1903;
+		date.month = 1;
+		date.day = 1;
+		assertThat(assertThrows(ValidationErrorException.class, () -> date.validateAsBirthDate("codePrefix")).getCode())
 				.isEqualTo("codePrefix");
 
 	}

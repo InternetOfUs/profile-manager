@@ -140,6 +140,16 @@ public class PlannedActivity extends Model {
 
 					} else {
 
+						for (int j = index + 1; j < this.attendees.size(); j++) {
+
+							if (id.equals(this.attendees.get(j))) {
+
+								return Future.failedFuture(new ValidationErrorException(codePrefix + ".attendees[" + j + "]",
+										"Duplicated attendee. It is equals to the attendees[" + index + "]."));
+
+							}
+						}
+
 						future = future.compose((Function<Void, Future<Void>>) map -> {
 
 							final Promise<Void> searchPromise = Promise.promise();

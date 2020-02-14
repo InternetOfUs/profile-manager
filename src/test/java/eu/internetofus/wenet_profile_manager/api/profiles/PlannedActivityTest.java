@@ -210,7 +210,7 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	public void assertFailValidate(PlannedActivity model, String suffix, ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		testContext.assertFailure(model.validate("codePrefix", repository)).setHandler(result -> {
+		testContext.assertFailure(model.validate("codePrefix", repository)).setHandler(result -> testContext.verify(() -> {
 
 			final Throwable cause = result.cause();
 			assertThat(cause).isInstanceOf(ValidationErrorException.class);
@@ -221,7 +221,7 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 			}
 			assertThat(((ValidationErrorException) cause).getCode()).isEqualTo(expectedCode);
 			testContext.completeNow();
-		});
+		}));
 
 	}
 
@@ -315,7 +315,7 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 	}
 
 	/**
-	 * Check that not accept planned activity with bad attender.
+	 * Check that is valid without attenders.
 	 *
 	 * @param repository  to use.
 	 * @param testContext context to test.
@@ -329,6 +329,62 @@ public class PlannedActivityTest extends ModelTestCase<PlannedActivity> {
 		model.attendees = new ArrayList<>();
 		testContext.assertComplete(model.validate("codePrefix", repository))
 				.setHandler(validation -> testContext.completeNow());
+
+	}
+
+	/**
+	 * Check is valid with some attenders.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldBeValidWithSomeAttenders(ProfilesRepository repository, VertxTestContext testContext) {
+
+		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
+
+			repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored2 -> {
+
+				final PlannedActivity model = new PlannedActivity();
+				model.attendees = new ArrayList<>();
+				model.attendees.add(stored.id);
+				model.attendees.add(stored2.id);
+				testContext.assertComplete(model.validate("codePrefix", repository))
+						.setHandler(validation -> testContext.completeNow());
+
+			}));
+
+		}));
+
+	}
+
+	/**
+	 * Check is not valid is one attender is duplicated.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see PlannedActivity#validate(String,ProfilesRepository)
+	 */
+	@Test
+	public void shouldNotBeValidWithDuplicatedAttenders(ProfilesRepository repository, VertxTestContext testContext) {
+
+		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
+
+			repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored2 -> {
+
+				final PlannedActivity model = new PlannedActivity();
+				model.attendees = new ArrayList<>();
+				model.attendees.add(stored.id);
+				model.attendees.add(stored2.id);
+				model.attendees.add(stored.id);
+				this.assertFailValidate(model, "attendees[2]", repository, testContext);
+
+			}));
+
+		}));
 
 	}
 

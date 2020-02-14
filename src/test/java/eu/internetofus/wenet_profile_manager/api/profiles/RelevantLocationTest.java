@@ -54,8 +54,8 @@ public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 		final RelevantLocation location = new RelevantLocation();
 		location.id = null;
 		location.label = "label_" + index;
-		location.latitude = (-1 - index) % 180;
-		location.longitude = (1 + index) % 90;
+		location.latitude = -1 - index % 179;
+		location.longitude = 1 + index % 89;
 		return location;
 	}
 

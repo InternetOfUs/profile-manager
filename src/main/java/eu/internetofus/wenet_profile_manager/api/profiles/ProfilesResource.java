@@ -102,8 +102,6 @@ public class ProfilesResource implements Profiles {
 
 		} else {
 
-			profile._creationTs = System.currentTimeMillis();
-			profile._lastUpdateTs = profile._creationTs;
 			profile.validate("bad_profile", this.repository).setHandler(validation -> {
 
 				if (validation.failed()) {
@@ -124,7 +122,7 @@ public class ProfilesResource implements Profiles {
 
 						} else {
 
-							OperationReponseHandlers.responseOk(resultHandler, profile);
+							OperationReponseHandlers.responseOk(resultHandler, stored.result());
 						}
 					});
 				}
@@ -141,7 +139,68 @@ public class ProfilesResource implements Profiles {
 	public void updateProfile(String profileId, JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		// TODO Auto-generated method stub
+		final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
+		if (source == null) {
+
+			Logger.debug("The {} is not a valid WeNetUserProfile to update.", body);
+			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_update",
+					"The profile to update is not right.");
+
+		} else {
+
+			this.repository.searchProfile(profileId, search -> {
+
+				final WeNetUserProfile target = search.result();
+				if (target == null) {
+
+					Logger.debug(search.cause(), "Not found profile {} to update", profileId);
+					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND,
+							"not_found_profile_to_update",
+							"You can not update the profile '" + profileId + "', because it does not exist.");
+
+				} else {
+
+					target.merge("bad_new_profile", this.repository, source).setHandler(merge -> {
+
+						if (merge.failed()) {
+
+							final Throwable cause = merge.cause();
+							Logger.debug(cause, "Cannot update  {} with {}.", target, source);
+							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+						} else {
+
+							final WeNetUserProfile merged = merge.result();
+							if (merged.equals(target)) {
+
+								OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
+										"profile_to_update_equal_to_original", "You can not update the profile '" + profileId
+												+ "', because the new values is equals to the current one.");
+
+							} else {
+								this.repository.updateProfile(merged, update -> {
+
+									if (update.failed()) {
+
+										final Throwable cause = update.cause();
+										Logger.debug(cause, "Cannot update  {}.", target);
+										OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+									} else {
+
+										OperationReponseHandlers.responseOk(resultHandler, merged);
+									}
+
+								});
+							}
+						}
+					}
+
+					);
+
+				}
+			});
+		}
 
 	}
 

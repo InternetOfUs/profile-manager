@@ -26,16 +26,11 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.ext.mongo.MongoClient;
-import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link ProfilesRepositoryImpl}.
@@ -45,12 +40,7 @@ import io.vertx.junit5.VertxTestContext;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class ProfilesRepositoryImplTest {
-
-	/**
-	 * The repository to do the tests.
-	 */
-	protected ProfilesRepositoryImpl repository;
+public class ProfilesRepositoryImplTest extends ProfilesRepositoryTestCase<ProfilesRepositoryImpl> {
 
 	/**
 	 * Create the repository to use in the tests.
@@ -61,49 +51,6 @@ public class ProfilesRepositoryImplTest {
 	public void cerateRepository(MongoClient pool) {
 
 		this.repository = new ProfilesRepositoryImpl(pool);
-
-	}
-
-	/**
-	 * Verify that can not found a profile if it is not defined.
-	 *
-	 * @param testContext context that executes the test.
-	 */
-	@Test
-	public void shouldNotFoundUndefinedProfile(VertxTestContext testContext) {
-
-		this.repository.searchProfile("undefined profile identifier", search -> {
-
-			if (search.failed()) {
-
-				assertThat(search.result()).isNull();
-				testContext.completeNow();
-
-			} else {
-
-				testContext.failNow(search.cause());
-			}
-
-		});
-
-	}
-
-	/**
-	 * Verify that can not found a profile if it is not defined.
-	 *
-	 * @param testContext context that executes the test.
-	 */
-	@Test
-	public void shouldFoundProfile(VertxTestContext testContext) {
-
-		this.repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
-
-			this.repository.searchProfile(storedProfile.id, testContext.succeeding(foundProfile -> {
-				assertThat(foundProfile).isEqualTo(storedProfile);
-				testContext.completeNow();
-			}));
-
-		}));
 
 	}
 

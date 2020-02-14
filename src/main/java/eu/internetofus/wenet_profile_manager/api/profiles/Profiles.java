@@ -105,6 +105,13 @@ public interface Profiles {
 			operationId = "createProfile",
 			summary = "Create a profile",
 			description = "Create a new WeNet user profile")
+	@RequestBody(
+			description = "The new profile to create",
+			required = true,
+			content = @Content(
+					schema = @Schema(
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The created profile",
@@ -116,12 +123,7 @@ public interface Profiles {
 			responseCode = "400",
 			description = "Bad profile",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-	void createProfile(@RequestBody(
-			description = "The new profile to create",
-			content = @Content(
-					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
-					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) })) JsonObject body,
+	void createProfile(@Parameter(hidden = true, required = false) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -167,11 +169,19 @@ public interface Profiles {
 	 */
 	@PUT
 	@Path(PROFILE_ID_PATH)
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(
 			operationId = "updateProfile",
 			summary = "Modify a profile",
 			description = "Change the attributes of a profile")
+	@RequestBody(
+			description = "The new values for the profile",
+			required = true,
+			content = @Content(
+					schema = @Schema(
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+					examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The updated profile",
@@ -191,12 +201,7 @@ public interface Profiles {
 			@PathParam("profileId") @Parameter(
 					description = "The identifier of the profile to update",
 					example = "15837028-645a-4a55-9aaf-ceb846439eba") String profileId,
-			@RequestBody(
-					description = "The new values for the profile",
-					content = @Content(
-							schema = @Schema(
-									ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
-							examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) })) JsonObject body,
+			@Parameter(hidden = true, required = false) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 

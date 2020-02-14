@@ -34,6 +34,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
@@ -165,6 +166,24 @@ public class Model {
 			return null;
 		}
 
+	}
+
+	/**
+	 * Convert this model to a buffer.
+	 *
+	 * @return the buffer that contains the JSON encoding of this model or
+	 *         {@code null} if can not convert it.
+	 */
+	public Buffer toBuffer() {
+
+		try {
+
+			return Json.encodeToBuffer(this);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
 	}
 
 }

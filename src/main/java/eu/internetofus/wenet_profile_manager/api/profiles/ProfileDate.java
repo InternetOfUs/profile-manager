@@ -26,6 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import java.time.LocalDate;
+
 import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.Validable;
 import eu.internetofus.wenet_profile_manager.ValidationErrorException;
@@ -88,6 +90,29 @@ public class ProfileDate extends Model implements Validable {
 
 				throw new ValidationErrorException(codePrefix, exception);
 			}
+		}
+
+	}
+
+	/**
+	 * Check if the date is a right birth date.
+	 *
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @throws ValidationErrorException If the model is not valid.
+	 */
+	public void validateAsBirthDate(String codePrefix) throws ValidationErrorException {
+
+		this.validate(codePrefix);
+		final LocalDate birthDate = LocalDate.of(this.year, this.month, this.day);
+		if (birthDate.isAfter(LocalDate.now())) {
+
+			throw new ValidationErrorException(codePrefix, "The birth date can not be on the future");
+		}
+		if (birthDate.isBefore(LocalDate.of(1903, 1, 2))) {
+
+			throw new ValidationErrorException(codePrefix,
+					"The user can not be born before Kane Tanake, the oldest living person on earth");
 		}
 
 	}
