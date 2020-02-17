@@ -53,6 +53,13 @@ public class ProfilesResource implements Profiles {
 	protected ProfilesRepository repository;
 
 	/**
+	 * Create an empty resource. This is only used for unit tests.
+	 */
+	protected ProfilesResource() {
+
+	}
+
+	/**
 	 * Create a new instance to provide the services of the {@link Profiles}.
 	 *
 	 * @param vertx where resource is defined.
@@ -188,7 +195,22 @@ public class ProfilesResource implements Profiles {
 
 									} else {
 
-										OperationReponseHandlers.responseOk(resultHandler, merged);
+										final WeNetUserProfile updated = update.result();
+
+										final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+										historic.from = target._lastUpdateTs;
+										historic.to = updated._lastUpdateTs;
+										historic.profile = target;
+										this.repository.storeHistoricProfile(historic, store -> {
+
+											if (store.failed()) {
+
+												Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
+											}
+											OperationReponseHandlers.responseOk(resultHandler, updated);
+
+										});
+
 									}
 
 								});
@@ -232,10 +254,28 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void retrieveProfileHistoricPage(String profileId, long from, long to, String order, int offset, int limit,
-			OperationRequest context, Handler<AsyncResult<OperationResponse>> resultHandler) {
+	public void retrieveProfileHistoricPage(String profileId, OperationRequest context,
+			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		// TODO Auto-generated method stub
+		final JsonObject params = context.getParams().getJsonObject("query", new JsonObject());
+		final long from = params.getLong("from", 0l);
+		final long to = params.getLong("to", Long.MAX_VALUE);
+		final boolean ascending = "ASC".equals(params.getString("order", "ASC"));
+		final int offset = params.getInteger("offset", 0);
+		final int limit = params.getInteger("limit", 10);
+		this.repository.searchHistoricProfilePage(profileId, from, to, ascending, offset, limit, search -> {
+
+			if (search.failed()) {
+
+				final Throwable cause = search.cause();
+				Logger.debug(cause, "Cannot found historic profile for {}.", profileId);
+				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+
+			} else {
+
+				OperationReponseHandlers.responseOk(resultHandler, search.result());
+			}
+		});
 
 	}
 

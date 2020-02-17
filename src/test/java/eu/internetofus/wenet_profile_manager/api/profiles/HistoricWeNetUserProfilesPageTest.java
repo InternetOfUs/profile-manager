@@ -26,38 +26,31 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Schema;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * Contains the found profiles.
+ * Test the {@link HistoricWeNetUserProfilesPage}.
+ *
+ * @see HistoricWeNetUserProfilesPage
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "HistoricWeNetUserProfilesPage", description = "Contains a set of profiles found")
-public class HistoricWeNetUserProfilesPage extends Model {
+public class HistoricWeNetUserProfilesPageTest extends ModelTestCase<HistoricWeNetUserProfilesPage> {
 
 	/**
-	 * The index of the first profile returned.
+	 * {@inheritDoc}
 	 */
-	@Schema(description = "The index of the first profile returned.", example = "0")
-	public int offset;
+	@Override
+	public HistoricWeNetUserProfilesPage createModelExample(int index) {
 
-	/**
-	 * The number total of profiles that satisfies the search.
-	 */
-	@Schema(description = "The number total of profiles that satisfies the search.", example = "100")
-	public long total;
-
-	/**
-	 * The found profiles.
-	 */
-	@ArraySchema(
-			schema = @Schema(implementation = HistoricWeNetUserProfile.class),
-			arraySchema = @Schema(description = "The set of profiles found"))
-	public List<HistoricWeNetUserProfile> profiles;
+		final HistoricWeNetUserProfilesPage model = new HistoricWeNetUserProfilesPage();
+		model.offset = index;
+		model.total = 100 + index;
+		model.profiles = new ArrayList<>();
+		model.profiles.add(new HistoricWeNetUserProfileTest().createModelExample(index));
+		return model;
+	}
 
 }

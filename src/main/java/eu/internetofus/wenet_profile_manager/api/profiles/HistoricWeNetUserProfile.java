@@ -26,38 +26,41 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.List;
-
 import eu.internetofus.wenet_profile_manager.Model;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Contains the found profiles.
+ * A previous profile of the user in the time.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "HistoricWeNetUserProfilesPage", description = "Contains a set of profiles found")
-public class HistoricWeNetUserProfilesPage extends Model {
+@Schema(name = "HistoricWeNetUserProfile", description = "The information of the user profile in a period of time.")
+public class HistoricWeNetUserProfile extends Model {
 
 	/**
-	 * The index of the first profile returned.
+	 * The difference, measured in milliseconds, between the time when the profile
+	 * is set and midnight, January 1, 1970 UTC.
 	 */
-	@Schema(description = "The index of the first profile returned.", example = "0")
-	public int offset;
+	@Schema(
+			description = "The difference, measured in milliseconds, between the time when the profile is set and midnight, January 1, 1970 UTC.",
+			example = "1457166440")
+	public long from;
 
 	/**
-	 * The number total of profiles that satisfies the search.
+	 * The difference, measured in milliseconds, between the time when the profile
+	 * is not more valid and midnight, January 1, 1970 UTC.
 	 */
-	@Schema(description = "The number total of profiles that satisfies the search.", example = "100")
-	public long total;
+	@Schema(
+			description = "The difference, measured in milliseconds, between the time when the profile is not more valid and midnight, January 1, 1970 UTC.",
+			example = "1571664406")
+	public long to;
 
 	/**
-	 * The found profiles.
+	 * The profile on the period of time
 	 */
-	@ArraySchema(
-			schema = @Schema(implementation = HistoricWeNetUserProfile.class),
-			arraySchema = @Schema(description = "The set of profiles found"))
-	public List<HistoricWeNetUserProfile> profiles;
+	@Schema(
+			description = "The profile on the period of time.",
+			ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile")
+	public WeNetUserProfile profile;
 
 }

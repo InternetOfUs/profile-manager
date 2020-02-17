@@ -69,5 +69,13 @@ openAPI:
        * **M**: A person whose gender identity matches the male sex.
 
     contact:
-      name: UDT-IA, IIIA-CSIC
-      url: http://www.iiia.csic.es/
+      name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
+      email: rosell@iiia.csic.es
+    license:
+      name: MIT
+      url: https://opensource.org/licenses/MIT
+  servers:
+    - url: http://ardid.iiia.csic.es/dummy-wenet-profile-manager/
+      description: Dummy server
+    - url: TO-DO
+      description: Teesting server

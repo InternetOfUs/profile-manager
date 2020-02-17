@@ -30,6 +30,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.mongo.UpdateOptions;
 
@@ -44,6 +45,11 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	 * The name of the collection that contains the profiles.
 	 */
 	public static final String PROFILES_COLLECTION = "profiles";
+
+	/**
+	 * The name of the collection that contains the historic profiles.
+	 */
+	public static final String HISTORIC_PROFILES_COLLECTION = "historicProfiles";
 
 	/**
 	 * Create a new service.
@@ -165,6 +171,88 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 			} else {
 
 				deleteHandler.handle(Future.succeededFuture());
+			}
+		});
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+
+		this.pool.save(HISTORIC_PROFILES_COLLECTION, profile, store -> {
+
+			if (store.failed()) {
+
+				storeHandler.handle(Future.failedFuture(store.cause()));
+
+			} else {
+
+				storeHandler.handle(Future.succeededFuture(profile));
+			}
+
+		});
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset,
+			int limit, Handler<AsyncResult<JsonObject>> searchHandler) {
+
+		final JsonObject query = new JsonObject().put("profile.id", profileId)
+				.put("from", new JsonObject().put("$gte", from)).put("to", new JsonObject().put("$lte", to));
+		this.pool.count(HISTORIC_PROFILES_COLLECTION, query, count -> {
+
+			if (count.failed()) {
+
+				searchHandler.handle(Future.failedFuture(count.cause()));
+
+			} else {
+
+				final long total = count.result().longValue();
+				final JsonObject page = new JsonObject().put("offset", offset).put("total", total);
+				if (total == 0) {
+
+					searchHandler.handle(Future.failedFuture("Not found profiles with the identifier"));
+
+				} else if (offset >= total) {
+
+					searchHandler.handle(Future.succeededFuture(page));
+
+				} else {
+
+					int order = 1;
+					if (!ascending) {
+
+						order = -1;
+					}
+
+					final FindOptions options = new FindOptions();
+					options.setLimit(limit);
+					options.setSort(new JsonObject().put("from", order));
+					options.setSkip(offset);
+					options.setFields(new JsonObject().put("_id", 0));
+					this.pool.findWithOptions(HISTORIC_PROFILES_COLLECTION, query, options, find -> {
+
+						if (find.failed()) {
+
+							searchHandler.handle(Future.failedFuture(find.cause()));
+
+						} else {
+
+							page.put("profiles", find.result());
+							searchHandler.handle(Future.succeededFuture(page));
+						}
+
+					});
+
+				}
+
 			}
 		});
 

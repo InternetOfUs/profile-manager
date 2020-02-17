@@ -27,9 +27,11 @@
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension.Asserts.assertThatBodyIs;
+import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.ws.rs.core.Response.Status;
@@ -41,6 +43,8 @@ import eu.internetofus.wenet_profile_manager.ValidationsTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryTestCase;
+import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
@@ -472,7 +476,16 @@ public class ProfilesIT {
 										newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
 										newProfile.personalBehaviors.get(0).id = updated.personalBehaviors.get(0).id;
 										assertThat(updated).isEqualTo(newProfile);
-										testContext.completeNow();
+
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> {
+
+													assertThat(page.profiles).hasSize(1);
+													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+													testContext.completeNow();
+												}));
 
 									})).sendJson(newProfile.toJsonObject(), testContext);
 						}));
@@ -530,4 +543,137 @@ public class ProfilesIT {
 		}));
 
 	}
+
+	/**
+	 * Verify that can not obtain a historic page of a non defined profile.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfileHistoricPage(String,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotFoundHistoricOfANUndefinedProfile(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier" + Profiles.HISTORIC_PATH)
+				.expect(res -> {
+
+					assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+					final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+					assertThat(error.code).isNotEmpty();
+					assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+					testContext.completeNow();
+
+				}).send(testContext);
+	}
+
+	/**
+	 * Verify that can not obtain a historic page of a non defined profile.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfileHistoricPage(String,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotFoundHistoricOfNonUpdateProfile(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
+			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+					.expect(res -> {
+
+						assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+						final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+						assertThat(error.code).isNotEmpty();
+						assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+						testContext.completeNow();
+
+					}).send(testContext);
+
+		}));
+	}
+
+	/**
+	 * Verify that can obtain a historic profile page.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfileHistoricPage(String,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldFoundHistoricProfilePage(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		final String profileId = UUID.randomUUID().toString();
+		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+		page.total = 20;
+		page.profiles = new ArrayList<>();
+		ProfilesRepositoryTestCase.createProfilePage(repository, profileId, page, testContext,
+				testContext.succeeding(created -> {
+
+					testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)
+							.with(queryParam("limit", "100")).expect(res -> {
+
+								assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+								final HistoricWeNetUserProfilesPage found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
+								assertThat(found).isEqualTo(created);
+								testContext.completeNow();
+
+							}).send(testContext);
+				}));
+
+	}
+
+	/**
+	 * Verify that can obtain a historic profile page for a range of dates.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfileHistoricPage(String,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldFoundHistoricProfilePageForARange(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		final String profileId = UUID.randomUUID().toString();
+		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+		page.total = 20;
+		page.profiles = new ArrayList<>();
+		ProfilesRepositoryTestCase.createProfilePage(repository, profileId, page, testContext,
+				testContext.succeeding(created -> {
+
+					testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)
+							.with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "DESC"),
+									queryParam("offset", "5"), queryParam("limit", "3"))
+							.expect(res -> {
+
+								assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+								final HistoricWeNetUserProfilesPage found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
+								final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+								expected.offset = 5;
+								expected.total = 10;
+								expected.profiles = new ArrayList<>();
+								expected.profiles.add(created.profiles.get(9));
+								expected.profiles.add(created.profiles.get(8));
+								expected.profiles.add(created.profiles.get(7));
+								assertThat(found).isEqualTo(expected);
+								testContext.completeNow();
+
+							}).send(testContext);
+				}));
+
+	}
+
 }

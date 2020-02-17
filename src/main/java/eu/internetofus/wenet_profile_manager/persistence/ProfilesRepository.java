@@ -27,6 +27,8 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
+import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
@@ -216,5 +218,126 @@ public interface ProfilesRepository {
 	 * @param deleteHandler handler to manage the delete result.
 	 */
 	void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
+
+	/**
+	 * Store a historic profile.
+	 *
+	 * @param profile      to store.
+	 * @param storeHandler handler to manage the store.
+	 */
+	@GenIgnore
+	default void storeHistoricProfile(HistoricWeNetUserProfile profile,
+			Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
+
+		final JsonObject object = profile.toJsonObject();
+		if (object == null) {
+
+			storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+
+		} else {
+
+			this.storeHistoricProfile(object, stored -> {
+				if (stored.failed()) {
+
+					storeHandler.handle(Future.failedFuture(stored.cause()));
+
+				} else {
+
+					final JsonObject value = stored.result();
+					value.remove("_id");
+					final HistoricWeNetUserProfile storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
+					if (storedProfile == null) {
+
+						storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
+
+					} else {
+
+						storeHandler.handle(Future.succeededFuture(storedProfile));
+					}
+
+				}
+			});
+		}
+	}
+
+	/**
+	 * Store a historic profile.
+	 *
+	 * @param profile      to store.
+	 * @param storeHandler handler to manage the search.
+	 */
+	void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
+
+	/**
+	 * Search for some historic profiles.
+	 *
+	 *
+	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param from          the date inclusive that mark the older limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has to be valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param to            the date inclusive that mark the newest limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has not more valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param ascending     this is {@code true} if it has to return in ascending
+	 *                      order.
+	 * @param offset        index of the first profile to return.
+	 * @param limit         number maximum of profiles to return.
+	 * @param searchHandler handler to manage the search.
+	 */
+	@GenIgnore
+	default void searchHistoricProfilePage(String profileId, long from, long to, boolean ascending, int offset, int limit,
+			Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
+
+		this.searchHistoricProfilePageObject(profileId, from, to, ascending, offset, limit, search -> {
+
+			if (search.failed()) {
+
+				searchHandler.handle(Future.failedFuture(search.cause()));
+
+			} else {
+
+				final JsonObject value = search.result();
+				final HistoricWeNetUserProfilesPage page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
+				if (page == null) {
+
+					searchHandler.handle(Future.failedFuture("The stored page is not valid."));
+
+				} else {
+
+					searchHandler.handle(Future.succeededFuture(page));
+				}
+			}
+		});
+
+	}
+
+	/**
+	 * Search for some historic profiles.
+	 *
+	 *
+	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param from          the date inclusive that mark the older limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has to be valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param to            the date inclusive that mark the newest limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has not more valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param ascending     this is {@code true} if it has to return in ascending
+	 *                      order.
+	 * @param offset        index of the first profile to return.
+	 * @param limit         number maximum of profiles to return.
+	 * @param searchHandler handler to manage the search.
+	 */
+	void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset, int limit,
+			Handler<AsyncResult<JsonObject>> searchHandler);
 
 }

@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -185,6 +186,95 @@ public class ProfileRepositoryTest {
 		repository.updateProfile(new WeNetUserProfile(), testContext.failing(fail -> {
 
 			assertThat(fail).isEqualTo(cause);
+			testContext.completeNow();
+		}));
+
+	}
+
+	/**
+	 * Verify that can not store a profile because that returned by repository is
+	 * not right.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldNotStoreHistoricProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+
+			@Override
+			public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+
+				storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+			}
+		};
+
+		repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail -> {
+			testContext.completeNow();
+		}));
+
+	}
+
+	/**
+	 * Verify that can not store a profile because that returned by repository is
+	 * not right.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldNotStoreHistoricProfileBecauseStoreFailed(VertxTestContext testContext) {
+
+		final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+
+			@Override
+			public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+
+				storeHandler.handle(Future.failedFuture(cause));
+			}
+
+		};
+
+		repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail ->
+
+		{
+
+			assertThat(fail).isEqualTo(cause);
+			testContext.completeNow();
+		}));
+
+	}
+
+	/**
+	 * Verify that can not found a historic profile page because that returned by
+	 * repository is not right.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#searchHistoricProfilePage(String, long, long,
+	 *      boolean, int, int, Handler)
+	 */
+	@Test
+	public void shouldNotFoundHistoricProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset,
+					int limit, Handler<AsyncResult<JsonObject>> searchHandler) {
+
+				searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+			}
+		};
+
+		repository.searchHistoricProfilePage("any identifier", 0, 100, true, 0, 100, testContext.failing(fail -> {
 			testContext.completeNow();
 		}));
 

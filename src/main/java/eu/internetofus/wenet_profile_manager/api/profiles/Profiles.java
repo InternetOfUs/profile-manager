@@ -28,19 +28,18 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -118,14 +117,14 @@ public interface Profiles {
 			required = true,
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The created profile",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "400",
@@ -154,7 +153,7 @@ public interface Profiles {
 			description = "The profile associated to the identifier",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "404",
@@ -188,14 +187,14 @@ public interface Profiles {
 			required = true,
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The updated profile",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "400",
@@ -240,19 +239,6 @@ public interface Profiles {
 	 * Called when want to get the historic values of the profile.
 	 *
 	 * @param profileId     identifier of the profile to get the historic values.
-	 * @param from          the date inclusive that mark the older limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has to be valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param to            the date inclusive that mark the newest limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has not more valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param order         in witch has to return the profiles.
-	 * @param offset        index of the first profile to return.
-	 * @param limit         number maximum of profiles to return.
 	 * @param context       of the request.
 	 * @param resultHandler to inform of the response.
 	 */
@@ -262,6 +248,36 @@ public interface Profiles {
 	@Operation(
 			summary = "Get the status of the profile in specific time period",
 			description = "Allow to obtain the historic of profile changes")
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "from",
+			description = "The time stamp inclusive that mark the older limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has to be valid and midnight, January 1, 1970 UTC.",
+			required = false,
+			schema = @Schema(type = "integer", defaultValue = "0", example = "1457166440"))
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "to",
+			description = "The time stamp inclusive that mark the newest limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has not more valid and midnight, January 1, 1970 UTC.",
+			required = false,
+			schema = @Schema(type = "integer", defaultValue = "92233720368547757", example = "1571664406"))
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "order",
+			description = "The order in witch has to return the profiles. From the newest to the oldest (DESC) or from the oldest to the newest (ASC).",
+			required = false,
+			schema = @Schema(allowableValues = { "DESC", "ASC" }, defaultValue = "ASC", example = "ASC"))
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "offset",
+			description = "Index of the first profile to return.",
+			required = false,
+			schema = @Schema(type = "integer", defaultValue = "0", example = "10"))
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "limit",
+			description = "Number maximum of profiles to return.",
+			required = false,
+			schema = @Schema(type = "integer", defaultValue = "10", example = "100"))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The found profiles",
@@ -273,17 +289,6 @@ public interface Profiles {
 	@Tag(name = "Historic")
 	void retrieveProfileHistoricPage(
 			@PathParam("profileId") @Parameter(description = "The identifier of the profile to get") String profileId,
-			@QueryParam("from") @Parameter(
-					description = "The time stamp inclusive that mark the older limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has to be valid and midnight, January 1, 1970 UTC.") long from,
-			@QueryParam("to") @Parameter(
-					description = "The time stamp inclusive that mark the newest limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has not more valid and midnight, January 1, 1970 UTC.") long to,
-			@DefaultValue("DESC") @QueryParam("order") @Parameter(
-					description = "The order in witch has to return the profiles. From the newest to the oldest (DESC) or from the oldest to the newest (ASC).",
-					schema = @Schema(allowableValues = { "DESC", "ASC" }, example = "ASC")) String order,
-			@DefaultValue("0") @QueryParam("offset") @Parameter(
-					description = "Index of the first profile to return") int offset,
-			@DefaultValue("10") @QueryParam("limit") @Parameter(
-					description = "Number maximum of profiles to return") int limit,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 

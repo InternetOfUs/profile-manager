@@ -31,6 +31,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -147,6 +149,72 @@ public class ProfilesRepositoryImplTest extends ProfilesRepositoryTestCase<Profi
 				.forClass(Handler.class);
 		verify(this.repository.pool, times(1)).removeDocument(any(), any(), handler.capture());
 		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check store historic fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldStoreHistoricFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.storeHistoricProfile(new JsonObject(), testContext.failing(store -> {
+			testContext.completeNow();
+		}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<String>>> handler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).save(any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check get total historic fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldSearcHistoricTotalFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.searchHistoricProfilePageObject("profileId", 0, Long.MAX_VALUE, true, 0, 100,
+				testContext.failing(search -> {
+					testContext.completeNow();
+				}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<Long>>> handler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).count(any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check historic fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldSearcHistoricFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.searchHistoricProfilePageObject("profileId", 0, Long.MAX_VALUE, true, 0, 100,
+				testContext.failing(search -> {
+					testContext.completeNow();
+				}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<Long>>> countHandler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).count(any(), any(), countHandler.capture());
+		countHandler.getValue().handle(Future.succeededFuture(100l));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<List<JsonObject>>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).findWithOptions(any(), any(), any(), searchHandler.capture());
+		searchHandler.getValue().handle(Future.failedFuture("Internal error"));
 
 	}
 
