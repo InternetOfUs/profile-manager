@@ -57,7 +57,7 @@ import io.vertx.junit5.VertxTestContext;
 public class ProfilesIT {
 
 	/**
-	 * Verify that return error when the profile is not defined.
+	 * Verify that return error when search an undefined profile.
 	 *
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
@@ -481,4 +481,53 @@ public class ProfilesIT {
 
 	}
 
+	/**
+	 * Verify that return error when delete an undefined profile.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldNotDeleteProfileWithAnUndefinedProfileId(WebClient client, VertxTestContext testContext) {
+
+		testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isNotEmpty();
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).send(testContext);
+	}
+
+	/**
+	 * Verify that can delete a profile.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldDeleteProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+
+		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
+
+			testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + storedProfile.id)
+					.expect(res -> testContext.verify(() -> {
+
+						assertThat(res.statusCode()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+						testContext.completeNow();
+
+					})).send(testContext);
+
+		}));
+
+	}
 }

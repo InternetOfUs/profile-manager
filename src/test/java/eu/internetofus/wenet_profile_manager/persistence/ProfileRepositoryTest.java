@@ -60,17 +60,7 @@ public class ProfileRepositoryTest {
 	@Test
 	public void shouldNotFoundProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepository() {
-
-			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-			}
-
-			@Override
-			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
-
-			}
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
 			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
@@ -97,22 +87,12 @@ public class ProfileRepositoryTest {
 	@Test
 	public void shouldNotStoreProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepository() {
-
-			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-			}
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
 			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
 				storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
-			}
-
-			@Override
-			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
-
 			}
 		};
 
@@ -134,12 +114,7 @@ public class ProfileRepositoryTest {
 	public void shouldNotStoreProfileBecauseStoreFailed(VertxTestContext testContext) {
 
 		final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
-		final ProfilesRepository repository = new ProfilesRepository() {
-
-			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-			}
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
 			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
@@ -147,13 +122,11 @@ public class ProfileRepositoryTest {
 				storeHandler.handle(Future.failedFuture(cause));
 			}
 
-			@Override
-			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
-
-			}
 		};
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
+		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail ->
+
+		{
 
 			assertThat(fail).isEqualTo(cause);
 			testContext.completeNow();
@@ -172,12 +145,7 @@ public class ProfileRepositoryTest {
 	@Test
 	public void shouldNotUpdateProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepository() {
-
-			@Override
-			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-			}
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
 			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
@@ -185,10 +153,6 @@ public class ProfileRepositoryTest {
 				updateHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
 			}
 
-			@Override
-			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
-
-			}
 		};
 
 		repository.updateProfile(new WeNetUserProfile(), testContext.failing(fail -> {
@@ -209,22 +173,12 @@ public class ProfileRepositoryTest {
 	public void shouldNotUpdateProfileBecauseUpdateFailed(VertxTestContext testContext) {
 
 		final Throwable cause = new IllegalArgumentException("Cause that can not be updated");
-		final ProfilesRepository repository = new ProfilesRepository() {
-
-			@Override
-			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-			}
+		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
 			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
 
 				updateHandler.handle(Future.failedFuture(cause));
-			}
-
-			@Override
-			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
-
 			}
 		};
 

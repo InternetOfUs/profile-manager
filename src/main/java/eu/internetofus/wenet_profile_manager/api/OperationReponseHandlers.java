@@ -94,7 +94,7 @@ public interface OperationReponseHandlers {
 	}
 
 	/**
-	 * Handle with an error message.
+	 * Handle with a successful model.
 	 *
 	 * @param resultHandler handler that will manage the response.
 	 * @param model         to response.
@@ -102,6 +102,18 @@ public interface OperationReponseHandlers {
 	static void responseOk(Handler<AsyncResult<OperationResponse>> resultHandler, Object model) {
 
 		responseWith(resultHandler, Status.OK, model);
+
+	}
+
+	/**
+	 * Handle with a successful empty content.
+	 *
+	 * @param resultHandler handler that will manage the response.
+	 */
+	static void responseOk(Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+		resultHandler.handle(Future.succeededFuture(new OperationResponse().setStatusCode(Status.NO_CONTENT.getStatusCode())
+				.putHeader(HttpHeaders.CONTENT_TYPE.toString(), MediaType.APPLICATION_JSON)));
 
 	}
 

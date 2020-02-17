@@ -28,12 +28,14 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
@@ -91,6 +93,11 @@ public interface Profiles {
 	 * The address of this service.
 	 */
 	String ADDRESS = "wenet_profile_manager.api.profiles";
+
+	/**
+	 * The path to the profile past attributes resource.
+	 */
+	String HISTORIC_PATH = "/historic";
 
 	/**
 	 * Called when want to create an user profile.
@@ -214,23 +221,69 @@ public interface Profiles {
 	 * @param resultHandler to inform of the response.
 	 */
 	@DELETE
-	@Path("/{profileId}")
+	@Path(PROFILE_ID_PATH)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(
 			summary = "Delete the profile associated to the identifier",
 			description = "Allow to delete a profile associated to an identifier")
-	@ApiResponse(
-			responseCode = "200",
-			description = "The deleted profile associated to the identifier",
-			content = @Content(
-					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c0512480f89ae267d6fc0dcf42db0f3a50d01e8/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile")))
+	@ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
 	@ApiResponse(
 			responseCode = "404",
 			description = "Not found profile",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	void deleteProfile(
 			@PathParam("profileId") @Parameter(description = "The identifier of the profile to delete") String profileId,
+			@Parameter(hidden = true, required = false) OperationRequest context,
+			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+	/**
+	 * Called when want to get the historic values of the profile.
+	 *
+	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param from          the date inclusive that mark the older limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has to be valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param to            the date inclusive that mark the newest limit in witch
+	 *                      the profile has to be active. It is the difference,
+	 *                      measured in milliseconds, between the time when the
+	 *                      profile has not more valid and midnight, January 1, 1970
+	 *                      UTC.
+	 * @param order         in witch has to return the profiles.
+	 * @param offset        index of the first profile to return.
+	 * @param limit         number maximum of profiles to return.
+	 * @param context       of the request.
+	 * @param resultHandler to inform of the response.
+	 */
+	@GET
+	@Path(PROFILE_ID_PATH + HISTORIC_PATH)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Get the status of the profile in specific time period",
+			description = "Allow to obtain the historic of profile changes")
+	@ApiResponse(
+			responseCode = "200",
+			description = "The found profiles",
+			content = @Content(schema = @Schema(implementation = HistoricWeNetUserProfilesPage.class)))
+	@ApiResponse(
+			responseCode = "404",
+			description = "Not found profile",
+			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+	@Tag(name = "Historic")
+	void retrieveProfileHistoricPage(
+			@PathParam("profileId") @Parameter(description = "The identifier of the profile to get") String profileId,
+			@QueryParam("from") @Parameter(
+					description = "The time stamp inclusive that mark the older limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has to be valid and midnight, January 1, 1970 UTC.") long from,
+			@QueryParam("to") @Parameter(
+					description = "The time stamp inclusive that mark the newest limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has not more valid and midnight, January 1, 1970 UTC.") long to,
+			@DefaultValue("DESC") @QueryParam("order") @Parameter(
+					description = "The order in witch has to return the profiles. From the newest to the oldest (DESC) or from the oldest to the newest (ASC).",
+					schema = @Schema(allowableValues = { "DESC", "ASC" }, example = "ASC")) String order,
+			@DefaultValue("0") @QueryParam("offset") @Parameter(
+					description = "Index of the first profile to return") int offset,
+			@DefaultValue("10") @QueryParam("limit") @Parameter(
+					description = "Number maximum of profiles to return") int limit,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 

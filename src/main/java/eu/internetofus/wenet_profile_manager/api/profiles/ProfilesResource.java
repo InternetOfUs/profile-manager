@@ -204,4 +204,39 @@ public class ProfilesResource implements Profiles {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void deleteProfile(String profileId, OperationRequest context,
+			Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+		this.repository.deleteProfile(profileId, delete -> {
+
+			if (delete.failed()) {
+
+				final Throwable cause = delete.cause();
+				Logger.debug(cause, "Cannot delete the profile  {}.", profileId);
+				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+
+			} else {
+
+				OperationReponseHandlers.responseOk(resultHandler);
+			}
+
+		});
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void retrieveProfileHistoricPage(String profileId, long from, long to, String order, int offset, int limit,
+			OperationRequest context, Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+		// TODO Auto-generated method stub
+
+	}
+
 }

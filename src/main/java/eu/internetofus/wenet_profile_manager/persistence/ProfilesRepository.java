@@ -205,8 +205,16 @@ public interface ProfilesRepository {
 	 * Update a profile.
 	 *
 	 * @param profile       to update.
-	 * @param updateHandler handler to manage the search.
+	 * @param updateHandler handler to manage the update result.
 	 */
 	void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler);
+
+	/**
+	 * Delete a profile.
+	 *
+	 * @param id            identifier of the profile to delete.
+	 * @param deleteHandler handler to manage the delete result.
+	 */
+	void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
 
 }

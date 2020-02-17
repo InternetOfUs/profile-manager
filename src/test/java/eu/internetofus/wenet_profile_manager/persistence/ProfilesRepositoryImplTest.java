@@ -26,11 +26,25 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.MongoClientDeleteResult;
+import io.vertx.ext.mongo.MongoClientUpdateResult;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link ProfilesRepositoryImpl}.
@@ -51,6 +65,88 @@ public class ProfilesRepositoryImplTest extends ProfilesRepositoryTestCase<Profi
 	public void cerateRepository(MongoClient pool) {
 
 		this.repository = new ProfilesRepositoryImpl(pool);
+
+	}
+
+	/**
+	 * Check search fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldSearchFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.searchProfileObject("id", testContext.failing(search -> {
+			testContext.completeNow();
+		}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> handler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).findOne(any(), any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check store fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldStoreFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.storeProfile(new JsonObject(), testContext.failing(store -> {
+			testContext.completeNow();
+		}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<String>>> handler = ArgumentCaptor.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).save(any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check update fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldUpdateFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.updateProfile(new JsonObject(), testContext.failing(update -> {
+			testContext.completeNow();
+		}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<MongoClientUpdateResult>>> handler = ArgumentCaptor
+				.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).updateCollectionWithOptions(any(), any(), any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
+
+	}
+
+	/**
+	 * Check delete fail by mongo client.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldDeleteFailedByMongoClient(VertxTestContext testContext) {
+
+		this.repository.pool = mock(MongoClient.class);
+
+		this.repository.deleteProfile("id", testContext.failing(delete -> {
+			testContext.completeNow();
+		}));
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<MongoClientDeleteResult>>> handler = ArgumentCaptor
+				.forClass(Handler.class);
+		verify(this.repository.pool, times(1)).removeDocument(any(), any(), handler.capture());
+		handler.getValue().handle(Future.failedFuture("Internal error"));
 
 	}
 

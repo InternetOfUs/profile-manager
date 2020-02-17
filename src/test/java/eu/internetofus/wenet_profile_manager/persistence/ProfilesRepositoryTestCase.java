@@ -68,7 +68,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not found a profile if it is not defined.
+	 * Verify that can not found a profile object if it is not defined.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -84,7 +84,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not found a profile if it is not defined.
+	 * Verify that can found a profile.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -105,7 +105,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not found a profile if it is not defined.
+	 * Verify that can found a profile object.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -127,7 +127,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not store a profile if it is not defined.
+	 * Verify that can not store a profile that can not be an object.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -156,7 +156,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not store a profile if it is not defined.
+	 * Verify that can store a profile.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -181,7 +181,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not store a profile if it is not defined.
+	 * Verify that can store a profile object.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -269,7 +269,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not found a profile if it is not defined.
+	 * Verify that can update a profile.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -307,7 +307,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	}
 
 	/**
-	 * Verify that can not found a profile if it is not defined.
+	 * Verify that update a defined profile object.
 	 *
 	 * @param testContext context that executes the test.
 	 *
@@ -335,6 +335,49 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 					})));
 
 				})));
+
+	}
+
+	/**
+	 * Verify that can not delete a profile if it is not defined.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldNotDeleteUndefinedProfile(VertxTestContext testContext) {
+
+		this.repository.deleteProfile("undefined profile identifier", testContext.failing(failed -> {
+			testContext.completeNow();
+		}));
+
+	}
+
+	/**
+	 * Verify that can delete a profile.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#updateProfile(JsonObject, io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldDeleteProfile(VertxTestContext testContext) {
+
+		this.repository.storeProfile(new JsonObject(), testContext.succeeding(stored -> {
+
+			final String id = stored.getString("id");
+			this.repository.deleteProfile(id, testContext.succeeding(success -> {
+
+				this.repository.searchProfileObject(id, testContext.failing(search -> {
+
+					testContext.completeNow();
+
+				}));
+
+			}));
+
+		}));
 
 	}
 }

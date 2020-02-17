@@ -43,7 +43,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	/**
 	 * The name of the collection that contains the profiles.
 	 */
-	private static final String PROFILES_COLLECTION = "profiles";
+	public static final String PROFILES_COLLECTION = "profiles";
 
 	/**
 	 * Create a new service.
@@ -145,4 +145,28 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler) {
+
+		final JsonObject query = new JsonObject().put("_id", id);
+		this.pool.removeDocument(PROFILES_COLLECTION, query, remove -> {
+
+			if (remove.failed()) {
+
+				deleteHandler.handle(Future.failedFuture(remove.cause()));
+
+			} else if (remove.result().getRemovedCount() != 1) {
+
+				deleteHandler.handle(Future.failedFuture("Not Found profile to delete"));
+
+			} else {
+
+				deleteHandler.handle(Future.succeededFuture());
+			}
+		});
+
+	}
 }
