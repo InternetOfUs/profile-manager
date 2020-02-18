@@ -50,9 +50,20 @@ public class CompetenceDeserialize extends JsonDeserializer<Competence> {
 
 		final TreeNode node = p.readValueAsTree();
 		if (node.get("drivingLicenseId") != null) {
+
 			return p.getCodec().treeToValue(node, DrivingLicense.class);
+
+		} else {
+
+			throw new JsonProcessingException("Unknown type of competence", p.getCurrentLocation()) {
+
+				/**
+				 * Default serialization identifier.
+				 */
+				private static final long serialVersionUID = 1L;
+			};
+
 		}
-		return p.getCodec().treeToValue(node, Competence.class);
 	}
 
 }

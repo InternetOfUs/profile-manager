@@ -69,6 +69,11 @@ public interface Profiles {
 	String PATH = "/profiles";
 
 	/**
+	 * The address of this service.
+	 */
+	String ADDRESS = "wenet_profile_manager.api.profiles";
+
+	/**
 	 * The sub path to retrieve a profile.
 	 */
 	String PROFILE_ID_PATH = "/{profileId}";
@@ -89,11 +94,6 @@ public interface Profiles {
 	String PROFILE_TO_UPDATE_EXAMPLE = "{\"name\":{\"prefix\":null,\"first\":\"User\",\"middle\":null,\"last\":\"1\",\"suffix\":null},\"dateOfBirth\":{\"year\":1976,\"month\":4,\"day\":1},\"gender\":\"F\",\"email\":\"user1@internetofus.eu\",\"phoneNumber\":\"+34987654321\",\"locale\":\"es_ES\",\"avatar\":\"avatar_1\",\"nationality\":\"Spanish\",\"occupation\":null,\"personalBehaviors\":[],\"_creationTs\":0,\"_lastUpdateTs\":1234567992,\"languages\":[],\"norms\":[],\"plannedActivities\":[],\"relevantLocations\":[],\"relationships\":[],\"socialPractices\":[]}";
 
 	/**
-	 * The address of this service.
-	 */
-	String ADDRESS = "wenet_profile_manager.api.profiles";
-
-	/**
 	 * The path to the profile past attributes resource.
 	 */
 	String HISTORIC_PATH = "/historic";
@@ -108,10 +108,7 @@ public interface Profiles {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(
-			operationId = "createProfile",
-			summary = "Create a profile",
-			description = "Create a new WeNet user profile")
+	@Operation(summary = "Create a profile", description = "Create a new WeNet user profile")
 	@RequestBody(
 			description = "The new profile to create",
 			required = true,
@@ -145,7 +142,6 @@ public interface Profiles {
 	@Path(PROFILE_ID_PATH)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(
-			operationId = "retrieveProfile",
 			summary = "Return a profile associated to the identifier",
 			description = "Allow to get a profile associated to an identifier")
 	@ApiResponse(
@@ -178,10 +174,7 @@ public interface Profiles {
 	@Path(PROFILE_ID_PATH)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(
-			operationId = "updateProfile",
-			summary = "Modify a profile",
-			description = "Change the attributes of a profile")
+	@Operation(summary = "Modify a profile", description = "Change the attributes of a profile")
 	@RequestBody(
 			description = "The new values for the profile",
 			required = true,

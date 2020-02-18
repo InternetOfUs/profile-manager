@@ -1,0 +1,1034 @@
+{
+	"name": "Personality test",
+	"description": "Test to assess the personality of a person. Please fill it in.",
+	"questions": [
+		{
+			"text": "It is easy for me to say what I think in an argument or debate",
+			"help": "Example: when discussing the independence of Catalonia, I like to express my opinion.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I would rather draw a map than give someone verbal directions",
+			"help": "Example: If you ask me about a path, I prefer to draw it than to explain it with my words.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "If I am angry or happy, I usually know exactly why",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can play or used to play a musical instrument",
+			"help": "Example: I can play the guitar.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can associate music with my moods",
+			"help": "Example: when I listen to reggaeton I feel very happy and I listen to hip-hop when I'm angry.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can add or multiply quickly in my head",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can help a friend sort out strong feelings because I successfully dealt with similar feelings myself",
+			"help": "Example: I can recommend a friend what to do when he is sad because sometimes I have felt sad myself and I have known how to encourage myself. Every time I feel sad, I will play with my best friends :)",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to work with calculators and computers",
+			"help": "Example: I would like to learn to program.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I pick up new dance steps quickly",
+			"help": "Example: When I listen to a new song that I do not know, I'm able to keep up and dance.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I enjoy a good lecture, speech, or debate",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I always know North from South no matter where I am",
+			"help": "Example: Right now I know where the north is.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to gather together groups of people for parties of special events",
+			"help": "Example: I like to organize my birthday party.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am sensitive to the sights, sounds, and feel of things around me",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Life seems empty without music",
+			"help": "Example: I listen to music on the train.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I always understand the directions that come with new gadgets and appliances",
+			"help": "Example: I am able to assemble an Ikea piece of furniture.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to play number and strategy games",
+			"help": "Example: I like to play Monopoly with friends and family.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Learning to ride a bike or skate was easy",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am irritated when I hear an argument or statement that sounds illogical",
+			"help": "Example: I get nervous when my parents will not let me get up from the table without having eaten everything even if I am not hungry.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can convince other people to follow my plans",
+			"help": "Example: when I am with friends, I am able to convince them to do together what I like best.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "My sense of balance and coordination is good",
+			"help": "Example: I'm good at sports like skateboarding, swimming, skiing.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can see patterns and relationship between numbers quickly and easily",
+			"help": "Example: Next I see the next number in a series like 3, 6, 9, ...",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I enjoy building models and sculpters",
+			"help": "Example: I love to build Lego figures.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am good at findings the fine points of word meanings",
+			"help": "Example: When I see a new word, I am able to guess its meaning.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I can look at an object one way and see it turned sideways or backwards just as easily",
+			"help": "Example: Even if I am working with the monitor in front of me, I am able to imagine the back part.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I relate well to animals and enjoy responsibility of caring for them",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I often connect a piece of music with some event in my life",
+			"help": "Example: When I hear \"Despacito\" by Luís Fonsi I remember my best friend's birthday party",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to work with numbers and figures",
+			"help": "Example: I like doing mathematical operations.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to sit quietly and reflect on my inner feelings",
+			"help": "Example: I like to reflect on the activities that I like like skating.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Just looking at shapes of buildings and structures is pleasurable to me",
+			"help": "Example: I like to observe the Eiffel Tower.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I like to hum, whistle, and sing in the shower or when I am alone",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Factual Studies and social studies information gives me quality enjoyment time",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am good at athletics",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I enjoy writing detailed letters to friends",
+			"help": "Example: When I send a Whatsapp, I like to tell a lot of details.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am usually aware of the expression on my face",
+			"help": "Example: When I feel shame I know that I get very red, when I'm happy my eyes are wide open and when I feel sad I know my eyelids come down.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am sensitive to the expressions on other people's faces",
+			"help": "Example: I realize if someone is angry or sad because of the expression on their face.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Taking care of the environment is a high priority",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I stay \"in touch\" with my moods. I have no trouble identifying them",
+			"help": "Example: I realize if I'm angry, happy or sad.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I am sensitive to the moods of others",
+			"help": "Example: I realize when my mother is angry.",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I have a good sense of what other people think of me",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "I feel at home outdoors and in natural surroundings",
+			"answers": [
+				{
+					"text": "Strongly disagree",
+					"value": 0.0
+				},
+				{
+					"text": "Disagree",
+					"value": 0.25
+				},
+				{
+					"text": "Neither agree nor disagree",
+					"value": 0.5
+				},
+				{
+					"text": "Agree",
+					"value": 0.75
+				},
+				{
+					"text": "Strongly agree",
+					"value": 1.0
+				}
+			]
+		}
+	]
+}

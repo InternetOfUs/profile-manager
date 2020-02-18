@@ -26,6 +26,9 @@
 
 package eu.internetofus.wenet_profile_manager;
 
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -184,6 +187,52 @@ public class Model {
 
 			return null;
 		}
+	}
+
+	/**
+	 * Obtain the model associated to a {@link Buffer}.
+	 *
+	 * @param buffer to obtain the model.
+	 * @param type   of model to obtain
+	 * @param <T>    to obtain
+	 *
+	 * @return the model defined on the buffer or {@code null} if can not obtain it.
+	 */
+	public static <T extends Model> T fromBuffer(Buffer buffer, Class<T> type) {
+
+		try {
+
+			return Json.decodeValue(buffer, type);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
+	}
+
+	/**
+	 * Obtain the model associated to a resource.
+	 *
+	 * @param resourceName where the model to obtain is defined In JSON.
+	 * @param type         of model to obtain
+	 * @param <T>          model to obtain
+	 *
+	 * @return the model defined on the resource or {@code null} if can not obtain
+	 *         it.
+	 */
+	public static <T extends Model> T loadFromResource(String resourceName, Class<T> type) {
+
+		try {
+
+			final InputStream stream = type.getClassLoader().getResourceAsStream(resourceName);
+			final String encoded = IOUtils.toString(stream);
+			return fromString(encoded, type);
+
+		} catch (final Throwable throwable) {
+
+			return null;
+		}
+
 	}
 
 }

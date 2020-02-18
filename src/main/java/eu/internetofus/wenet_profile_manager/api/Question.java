@@ -24,45 +24,44 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Represents a question used to extract information of a person.
+ *
+ * @see Questionnaire
+ * @see Answer
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class Question extends Model {
 
 	/**
-	 * {@inheritDoc}
+	 * The text of the question.
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	@Schema(description = "The text of the question", example = "The judges must be")
+	public String text;
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+	/**
+	 * The text that helps to the users to answer the question.
+	 */
+	@Schema(
+			description = "A message to help to answer the question",
+			example = "Example: If a judge judges your brother, you must follow the laws that apply to everyone equally.")
+	public String help;
 
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
+	/**
+	 * The possible answers for the question.
+	 */
+	@ArraySchema(
+			schema = @Schema(implementation = Answer.class),
+			arraySchema = @Schema(description = "The possible answers for the question"))
+	public List<Answer> answers;
 
 }

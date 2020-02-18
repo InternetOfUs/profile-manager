@@ -42,6 +42,8 @@ import io.vertx.ext.web.api.OperationResponse;
 /**
  * Classes used to generate handlers for an {@link OperationResponse}.
  *
+ * @see OperationResponse
+ *
  * @author UDT-IA, IIIA-CSIC
  */
 public interface OperationReponseHandlers {

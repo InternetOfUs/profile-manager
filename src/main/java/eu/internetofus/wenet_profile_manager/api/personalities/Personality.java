@@ -24,45 +24,40 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.personalities;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * The personality factors of a person.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+@Schema(name = "Personality", description = "Provide information about the personality of a person")
+public class Personality extends Model {
 
 	/**
-	 * {@inheritDoc}
+	 * The perception of a person.
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	@Schema(description = "The perception grade of a person", example = "0.1", minimum = "0.0", maximum = "1.0")
+	public double perception;
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+	/**
+	 * The judgment of a person.
+	 */
+	@Schema(description = "The judgment grade of a person", example = "0.2", minimum = "0.0", maximum = "1.0")
+	public double judgment;
 
-			return p.getCodec().treeToValue(node, Car.class);
+	/**
+	 * The extrovert of a person.
+	 */
+	@Schema(description = "The extrovert grade of a person", example = "0.3", minimum = "0.0", maximum = "1.0")
+	public double extrovert;
 
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
-
+	/**
+	 * The attitude of a person.
+	 */
+	@Schema(description = "The attitude grade of a person", example = "0.4", minimum = "0.0", maximum = "1.0")
+	public double attitude;
 }

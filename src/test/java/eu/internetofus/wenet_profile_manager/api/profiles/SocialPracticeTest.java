@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
+import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.ModelTestCase;
 import eu.internetofus.wenet_profile_manager.ValidationErrorException;
 import eu.internetofus.wenet_profile_manager.ValidationsTest;
@@ -179,6 +180,30 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 		model.norms.get(1).attribute = ValidationsTest.STRING_256;
 		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
 				.isEqualTo("codePrefix.norms[1].attribute");
+	}
+
+	/**
+	 * Check that can not be decoded with a generic material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotDecodeWithAGenericMaterial() {
+
+		assertThat(Model.fromString("{\"materials\":{}}", SocialPractice.class)).isNull();
+
+	}
+
+	/**
+	 * Check that can not be decoded with a generic material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotDecodeWithAGenericCompetence() {
+
+		assertThat(Model.fromString("{\"competences\":{}}", SocialPractice.class)).isNull();
+
 	}
 
 }

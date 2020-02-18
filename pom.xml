@@ -480,6 +480,19 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>test-resources</id>
+						<goals>
+							<goal>testResources</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/test/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>

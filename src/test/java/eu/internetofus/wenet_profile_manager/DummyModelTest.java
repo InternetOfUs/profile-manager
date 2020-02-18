@@ -26,6 +26,10 @@
 
 package eu.internetofus.wenet_profile_manager;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
 /**
  * Test the {@link DummyModel}
  *
@@ -42,6 +46,17 @@ public class DummyModelTest extends ModelTestCase<DummyModel> {
 	public DummyModel createModelExample(int index) {
 
 		return new DummyModel(index);
+	}
+
+	/**
+	 * Check can load from resource.
+	 */
+	@Test
+	public void shouldLoadFromResource() {
+
+		assertThat(Model.loadFromResource("eu/internetofus/wenet_profile_manager/DummyModel.100.json", DummyModel.class))
+				.isEqualTo(this.createModelExample(100));
+
 	}
 
 }

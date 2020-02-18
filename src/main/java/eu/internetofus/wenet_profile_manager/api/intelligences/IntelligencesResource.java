@@ -24,45 +24,48 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.intelligences;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.api.OperationRequest;
+import io.vertx.ext.web.api.OperationResponse;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Resource that provide the methods for the {@link Intelligences}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class IntelligencesResource implements Intelligences {
+
+	/**
+	 * The environment where this service is registered.
+	 */
+	protected Vertx vertx;
+
+	/**
+	 * Create a new instance to provide the services of the {@link Intelligences}.
+	 *
+	 * @param vertx where resource is defined.
+	 */
+	public IntelligencesResource(Vertx vertx) {
+
+		this.vertx = vertx;
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public void retrieveIntelligencesQuestionnaire(OperationRequest context,
+			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+		QuestionnaireResources.retrieveQuestionnaire(
+				lang -> "eu/internetofus/wenet_profile_manager/api/intelligences/IntelligencesQuestionnaire." + lang + ".json",
+				this.vertx, context, resultHandler);
 
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
 	}
 
 }

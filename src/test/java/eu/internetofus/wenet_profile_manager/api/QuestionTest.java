@@ -24,45 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
+import java.util.ArrayList;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Test the {@link Question}.
+ *
+ * @see Question
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class QuestionTest extends ModelTestCase<Question> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public Question createModelExample(int index) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
-
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
+		final Question model = new Question();
+		model.text = "Test " + index;
+		model.help = "Help " + index;
+		model.answers = new ArrayList<Answer>();
+		model.answers.add(new AnswerTest().createModelExample(index - 1));
+		model.answers.add(new AnswerTest().createModelExample(index));
+		model.answers.add(new AnswerTest().createModelExample(index + 1));
+		return model;
 	}
 
 }

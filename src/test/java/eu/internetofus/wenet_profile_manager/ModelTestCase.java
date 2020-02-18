@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -103,6 +104,19 @@ public abstract class ModelTestCase<T extends Model> {
 		final JsonObject value = model.toJsonObject();
 		assertThat(value).isNotEmpty();
 		assertThat(Model.fromJsonObject(value, model.getClass())).isEqualTo(model);
+
+	}
+
+	/**
+	 * Check the model can be encoded decoded from {@link Buffer}.
+	 */
+	@Test
+	public void shouldBufferManipulable() {
+
+		final T model = this.createModelExample(1);
+		final Buffer value = model.toBuffer();
+		assertThat(value).isNotNull();
+		assertThat(Model.fromBuffer(value, model.getClass())).isEqualTo(model);
 
 	}
 

@@ -24,45 +24,32 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.personalities;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Test the {@link Personality}.
+ *
+ * @see Personality
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class PersonalityTest extends ModelTestCase<Personality> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public Personality createModelExample(int index) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
-
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
+		final Personality personality = new Personality();
+		final double step = index / 4.0;
+		personality.attitude = step * 0.20;
+		personality.extrovert = step * 0.10;
+		personality.judgment = step * 0.30;
+		personality.perception = step * 0.40;
+		return personality;
 	}
 
 }

@@ -1,0 +1,1034 @@
+{
+	"name": "Test de la personalidad",
+	"description": "Questionario para determinar la personalidad de una persona. Por favor rellene-lo.",
+	"questions": [
+		{
+			"text": "No me es difícil decir lo que pienso en el curso de una discusión o debate",
+			"help": "Ejemplo: cuando se discute sobre la independencia de Catalunya, me gusta expresar mi opinión.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Prefiero hacer un mapa a explicar a alguien como llegar a un sitio",
+			"help": "Ejemplo: Si me preguntan por un camino, prefiero dibujarlo que explicarlo con mis palabras.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Si estoy enfadado(a) o contento(a) generalmente sé exactamente porqué",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Sé tocar (o antes sabía tocar) un instrumento musical",
+			"help": "Ejemplo: sé tocar la guitarra.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Asocio música con mis estados de ánimo",
+			"help": "Ejemplo: cuando escucho reguetón me siento muy alegre y escucho hip-hop cuando estoy enfadado.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Puedo sumar o multiplicar mentalmente con mucha rapidez",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Puedo ayudar a un(a) amigo(a) a manejar sus sentimientos porque yo lo pude hacer antes con sentimientos parecidos",
+			"help": "Ejemplo: Puedo recomendar a un amigo qué hacer cuando se encuentra triste porque hay veces que yo mismo me he sentido triste y he sabido cómo animarme. Cada vez que me siento triste, voy a jugar con mis mejores amigos :)",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta trabajar con calculadoras y computadores",
+			"help": "Ejemplo: Me gustaría aprender programar.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Aprendo rápido a bailar un ritmo nuevo",
+			"help": "Ejemplo: Cuando escucho una canción nueva que no conozco, soy capaz de seguir el ritmo y bailar.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Disfruto de una buena charla, discurso o sermón",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Siempre distingo el norte del sur, esté donde esté",
+			"help": "Ejemplo: Ahora mismo sé donde está el norte.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta reunir grupos de personas en una fiesta o en un evento especial",
+			"help": "Ejemplo: Me gusta organizar mi fiesta de cumpleaños.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Soy sensible a las vistas, los sonidos y la sensación de las cosas que me rodean",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "La vida me parece vacía sin música",
+			"help": "Ejemplo: Escucho música en el tren.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Siempre entiendo los gráficos que vienen en las instrucciones de equipos o instrumentos",
+			"help": "Ejemplo: Soy capaz de montar un mueble de Ikea.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta resolver rompecabezas y entretenerme con juegos electrónicos",
+			"help": "Ejemplo: Me gusta jugar al Monopoly con amigos y familia.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me fue fácil aprender a ir en bicicleta (o a patinar)",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me pongo nervioso(a) cuando oigo una discusión o una afirmación que parece ilógica",
+			"help": "Ejemplo: Me pongo nervioso cuando mis padres no me deja levantar de la mesa sin haber comido todo aunque no tenga hambre.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Soy capaz de convencer a otros para que sigan mis planes",
+			"help": "Ejemplo: cuando estoy con amigos, soy capaz de convencerlos para hacer juntos lo que a mí más me gusta.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Tengo buen sentido del equilibrio y coordinación",
+			"help": "Ejemplo: Se me dan bien deportes como el skate, la natación, el esquí.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Con frecuencia veo configuraciones y relaciones entre números con más rapidez y facilidad que otros",
+			"help": "Ejemplo: Enseguida veo el siguiente número de una serie como 3, 6, 9, ...",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta construir modelos ( o hacer esculturas)",
+			"help": "Ejemplo: Me encanta construir figuras de Lego.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Tengo agudeza para encontrar el significado de las palabras",
+			"help": "Ejemplo: Cuando veo una palabra nueva, soy capaz de adivinar su significado.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Puedo distinguir un objeto desde diferentes puntos de vista",
+			"help": "Ejemplo: Aunque esté trabajando con el monitor delante, soy capaz de imaginarme la parte trasera.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me relaciono bien con los animales y disfruto de la responsabilidad de cuidarlos",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Con frecuencia hago la conexión entre una pieza de música y algún evento de mi vida",
+			"help": "Ejemplo: Cuando oigo \"Despacito\" de Luís Fonsi recuerdo la fiesta de cumpleaños de mi mejor amiga",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta trabajar con números y figuras",
+			"help": "Ejemplo: Me gusta hacer operaciones matemáticas.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta sentarme silenciosamente y reflexionar sobre mis sentimientos íntimos",
+			"help": "Ejemplo: Me gusta reflexionar sobre las actividades que me gustan como patinar.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Con sólo mirar la forma de construcciones y estructuras me siento a gusto",
+			"help": "Ejemplo: Me gusta observar la Torre Eiffel.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta tararear, silbar y cantar en la ducha o cuando estoy solo(a)",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "La información de estudios reales y estudios sociales me da un tiempo de disfrute de la calidad",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Soy bueno(a) para el atletismo",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me gusta escribir cartas detalladas a mis amigos",
+			"help": "Ejemplo: Cuando envio un Whatsapp, me gusta contar muchos detalles.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Generalmente me doy cuenta de la expresión que tengo en la cara",
+			"help": "Ejemplo: Cuando siento vergüenza sé que me pongo muy rojo, cuando estoy alegre mis ojos están abiertos como platos y cuando me siento triste sé que mis párpados bajan.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me doy cuenta de las expresiones en la cara de otras personas",
+			"help": "Ejemplo: Me doy cuenta de si alguien está enfadado o triste por la expresión de su cara.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Cuidar el medioambiente es una prioridad",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me mantengo \"en contacto\" con mis estados de ánimo. No me cuesta identificarlos",
+			"help": "Ejemplo: Me doy cuenta de si estoy enfadado, alegre o triste.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me doy cuenta de los estados de ánimo de otros",
+			"help": "Ejemplo: Me doy cuenta cuando mi madre está enfadada.",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me doy cuenta bastante bien de lo que otros piensan de mí",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		},
+		{
+			"text": "Me siento en casa al aire libre y en un entorno natural",
+			"answers": [
+				{
+					"text": "Totalmente en desacuerdo",
+					"value": 0.0
+				},
+				{
+					"text": "En desacuerdo",
+					"value": 0.25
+				},
+				{
+					"text": "Ni de acuerdo ni en desacuerdo",
+					"value": 0.5
+				},
+				{
+					"text": "De acuerdo",
+					"value": 0.75
+				},
+				{
+					"text": "Totalmente de acuerdo",
+					"value": 1.0
+				}
+			]
+		}
+	]
+}

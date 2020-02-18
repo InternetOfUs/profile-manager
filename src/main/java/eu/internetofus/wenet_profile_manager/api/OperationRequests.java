@@ -24,45 +24,59 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Locale.LanguageRange;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import javax.ws.rs.core.HttpHeaders;
+
+import io.vertx.ext.web.api.OperationRequest;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Classes used to extract information of an {@link OperationRequest}.
+ *
+ * @see OperationRequest
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public interface OperationRequests {
 
 	/**
-	 * {@inheritDoc}
+	 * Obtain the accepted language defined on the header.
+	 *
+	 * @param defaultLanguage   the language to return if it can not obtain the
+	 *                          accepted language.
+	 * @param request           to get the information.
+	 * @param poosibleLanguages the possible languages that can be used.
+	 *
+	 * @return the
+	 *
+	 * @see HttpHeaders#ACCEPT_LANGUAGE
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	static String acceptedLanguageIn(OperationRequest request, String defaultLanguage, String... poosibleLanguages) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+		try {
 
-			return p.getCodec().treeToValue(node, Car.class);
+			final String acceptLanguages = request.getHeaders().get(HttpHeaders.ACCEPT_LANGUAGE);
+			final List<LanguageRange> range = Locale.LanguageRange.parse(acceptLanguages);
+			final String lang = Locale.lookupTag(range, Arrays.asList(poosibleLanguages));
+			if (lang == null) {
 
-		} else {
+				return defaultLanguage;
 
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
+			} else {
 
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
+				return lang;
+			}
+
+		} catch (final Throwable badLanguage) {
+
+			return defaultLanguage;
 		}
+
 	}
 
 }

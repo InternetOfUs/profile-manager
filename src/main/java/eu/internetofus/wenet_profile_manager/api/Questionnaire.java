@@ -24,45 +24,43 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * The component used to evaluate some quality of a person.
+ *
+ * @see Questionnaire
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class Questionnaire extends Model {
 
 	/**
-	 * {@inheritDoc}
+	 * The name of the questionnaire.
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	@Schema(description = "A name that identifies the questionnaire for a human", example = "Personality test")
+	public String name;
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+	/**
+	 * The description of the questionnaire.
+	 */
+	@Schema(
+			description = "Explains what attribute of a person it evaluates",
+			example = "With this questionnaire is possible to obtain the personality of a person.")
+	public String description;
 
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
+	/**
+	 * The questions that form the questionnaire.
+	 */
+	@ArraySchema(
+			schema = @Schema(implementation = Question.class),
+			arraySchema = @Schema(description = "The set of questions used to evaluate the person."))
+	public List<Question> questions;
 
 }

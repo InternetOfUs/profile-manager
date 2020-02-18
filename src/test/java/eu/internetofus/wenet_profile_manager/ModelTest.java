@@ -42,16 +42,6 @@ import io.vertx.core.json.JsonObject;
 public class ModelTest {
 
 	/**
-	 * Check not obtain a model form a {@code null} {@link JsonObject}.
-	 */
-	@Test
-	public void shouldNotObtainModelFromNullJsonObject() {
-
-		assertThat(Model.fromJsonObject(null, Model.class)).isNull();
-
-	}
-
-	/**
 	 * Check not obtain a model form a {@code null} string.
 	 */
 	@Test
@@ -82,12 +72,42 @@ public class ModelTest {
 	}
 
 	/**
+	 * Check not obtain a model form a {@code null} {@link JsonObject}.
+	 */
+	@Test
+	public void shouldNotObtainModelFromNullJsonObject() {
+
+		assertThat(Model.fromJsonObject(null, Model.class)).isNull();
+
+	}
+
+	/**
 	 * Check not convert to buffer the {@link UnconvertedToJsonModel}.
 	 */
 	@Test
 	public void shouldNotConvertToBuffer() {
 
 		assertThat(new UnconvertedToJsonModel().toBuffer()).isNull();
+
+	}
+
+	/**
+	 * Check not obtain a model form a {@code null} string.
+	 */
+	@Test
+	public void shouldNotObtainModelFromNullBuffer() {
+
+		assertThat(Model.fromBuffer(null, Model.class)).isNull();
+
+	}
+
+	/**
+	 * Check not obtain a model form a {@code null} resource.
+	 */
+	@Test
+	public void shouldNotLoadModelFromNullResource() {
+
+		assertThat(Model.loadFromResource(null, Model.class)).isNull();
 
 	}
 

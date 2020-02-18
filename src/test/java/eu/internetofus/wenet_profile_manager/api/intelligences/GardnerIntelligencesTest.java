@@ -24,45 +24,36 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.intelligences;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Test the {@link GardnerIntelligences}
+ *
+ * @see GardnerIntelligences
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class GardnerIntelligencesTest extends ModelTestCase<GardnerIntelligences> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public GardnerIntelligences createModelExample(int index) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
-
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
+		final GardnerIntelligences model = new GardnerIntelligences();
+		final double step = index / 8.0;
+		model.interpersonal = step * 0.2;
+		model.intrapersonal = step * 0.1;
+		model.kinestesicaCorporal = step * 0.05;
+		model.logicMathematics = step * 0.05;
+		model.musicalRhythmic = step * 0.3;
+		model.naturalistEnvironmental = step * 0.1;
+		model.verbal = step * 0.05;
+		model.visualSpatial = step * 0.15;
+		return model;
 	}
 
 }

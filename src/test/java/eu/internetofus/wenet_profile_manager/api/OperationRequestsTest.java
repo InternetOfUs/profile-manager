@@ -24,45 +24,46 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import javax.ws.rs.core.HttpHeaders;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.api.OperationRequest;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Test the {@link OperationRequests}.
+ *
+ * @see OperationRequests
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class OperationRequestsTest {
 
 	/**
-	 * {@inheritDoc}
+	 * Check return the default language.
+	 *
+	 * @param acceptLanguage header value.
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	@ParameterizedTest(name = "Should return the default value for the Accept-Language= {0}")
+	@NullAndEmptySource
+	@ValueSource(strings = { "*", "es", "es-US,es;q=0.5" })
+	public void shouldAcceptLanguageByTheDefault(String acceptLanguage) {
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
+		final JsonObject headers = new JsonObject();
+		if (acceptLanguage != null) {
 
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
+			headers.put(HttpHeaders.ACCEPT_LANGUAGE, acceptLanguage);
 		}
+		final OperationRequest request = new OperationRequest(new JsonObject().put("headers", headers));
+		assertThat(OperationRequests.acceptedLanguageIn(request, "en", "ca")).isEqualTo("en");
+
 	}
 
 }

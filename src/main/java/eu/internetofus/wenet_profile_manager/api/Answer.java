@@ -24,45 +24,29 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The component to deserialize a {@link Material} to any of it possible sub
- * types.
+ * Contains the possible answer to a {@link Question}.
+ *
+ * @see Question
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MaterialDeserialize extends JsonDeserializer<Material> {
+public class Answer extends Model {
 
 	/**
-	 * {@inheritDoc}
+	 * The text of the answer.
 	 */
-	@Override
-	public Material deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	@Schema(description = "The text of the answer", example = "Compassionate")
+	public String text;
 
-		final TreeNode node = p.readValueAsTree();
-		if (node.get("carPlate") != null || node.get("carType") != null) {
-
-			return p.getCodec().treeToValue(node, Car.class);
-
-		} else {
-
-			throw new JsonProcessingException("Unknown type of material", p.getCurrentLocation()) {
-
-				/**
-				 * Default serialization identifier.
-				 */
-				private static final long serialVersionUID = 1L;
-			};
-		}
-	}
-
+	/**
+	 * The value associated to the answer.
+	 */
+	@Schema(description = "The value associated with the answer", example = "-1")
+	public double value;
 }
