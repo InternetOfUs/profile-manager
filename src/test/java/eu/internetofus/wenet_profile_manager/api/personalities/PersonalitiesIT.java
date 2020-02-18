@@ -31,18 +31,25 @@ import static io.vertx.junit5.web.TestRequest.requestHeader;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
+import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 
@@ -82,4 +89,293 @@ public class PersonalitiesIT {
 				}).send(testContext);
 
 	}
+
+	/**
+	 * Verify that not calculate the personality because no answers are passed.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseNoAnswers(WebClient client, VertxTestContext testContext) {
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isEqualTo("bad_number_of_answers");
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).sendJson(new QuestionnaireAnswers(), testContext);
+
+	}
+
+	/**
+	 * Verify that not calculate the personality because no provide an empty answers
+	 * list.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseNotEmptyAnswers(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isEqualTo("bad_number_of_answers");
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that not calculate the personality because no provide enough answers.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseNotEnoughAnswers(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 19; i++) {
+
+			answers.answerValues.add(0d);
+			testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+				assertThat(error.code).isEqualTo("bad_number_of_answers");
+				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+				testContext.completeNow();
+
+			}).sendJson(answers, testContext);
+
+		}
+
+	}
+
+	/**
+	 * Verify that not calculate the personality because provide too many answers.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseTooManyAnswers(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 21; i++) {
+
+			answers.answerValues.add(0d);
+
+		}
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isEqualTo("bad_number_of_answers");
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that not calculate the personality because an answer value is too low.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooLow(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 20; i++) {
+
+			answers.answerValues.add(0d);
+
+		}
+
+		answers.answerValues.set(7, -1.01d);
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isEqualTo("bad_answer_value_at_7");
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that not calculate the personality because an answer value is too
+	 * high.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooHigh(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 20; i++) {
+
+			answers.answerValues.add(0d);
+
+		}
+
+		answers.answerValues.set(17, 1.01d);
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+			assertThat(error.code).isEqualTo("bad_answer_value_at_17");
+			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that calculate a ENTJ personality.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldCalculateENTJPersonality(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 20; i++) {
+
+			answers.answerValues.add(1d);
+
+		}
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+			final Personality personality = assertThatBodyIs(Personality.class, res);
+			assertThat(personality).isNotNull();
+			assertThat(personality.extrovert).isEqualTo(1d);
+			assertThat(personality.perception).isEqualTo(1d);
+			assertThat(personality.judgment).isEqualTo(1d);
+			assertThat(personality.attitude).isEqualTo(1d);
+			assertThat(personality.MBTI).isEqualTo("ENTJ");
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that calculate a ISFP personality.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldCalculateISFPPersonality(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		for (int i = 0; i < 20; i++) {
+
+			answers.answerValues.add(-1d);
+
+		}
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+			final Personality personality = assertThatBodyIs(Personality.class, res);
+			assertThat(personality).isNotNull();
+			assertThat(personality.extrovert).isEqualTo(-1d);
+			assertThat(personality.perception).isEqualTo(-1d);
+			assertThat(personality.judgment).isEqualTo(-1d);
+			assertThat(personality.attitude).isEqualTo(-1d);
+			assertThat(personality.MBTI).isEqualTo("ISFP");
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
+	/**
+	 * Verify that calculate personality.
+	 *
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Personalities#calculatePersonality(JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
+	 */
+	@Test
+	public void shouldCalculatePersonality(WebClient client, VertxTestContext testContext) {
+
+		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+		answers.answerValues = new ArrayList<Double>();
+		Collections.addAll(answers.answerValues, 1d, -1d, 1d, 1d, 0d, 0d, 1d, 1d, -1d, -1d, -1d, 0d, -1d, -1d, 0d, 1d, 1d,
+				-1d, 1d, 1d);
+
+		testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+			final Personality personality = assertThatBodyIs(Personality.class, res);
+			assertThat(personality).isNotNull();
+			assertThat(personality.extrovert).isEqualTo(-0.4d);
+			assertThat(personality.perception).isEqualTo(0.2d);
+			assertThat(personality.judgment).isEqualTo(0.2d);
+			assertThat(personality.attitude).isEqualTo(0.4d);
+			assertThat(personality.MBTI).isEqualTo("INTJ");
+			testContext.completeNow();
+
+		}).sendJson(answers, testContext);
+
+	}
+
 }

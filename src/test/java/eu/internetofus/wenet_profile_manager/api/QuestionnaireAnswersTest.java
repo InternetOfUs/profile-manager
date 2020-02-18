@@ -24,46 +24,34 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.personalities;
+package eu.internetofus.wenet_profile_manager.api;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
+
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * The personality factors of a person.
+ * Test the {@link QuestionnaireAnswers}.
+ *
+ * @see QuestionnaireAnswers
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "Personality", description = "Provide information about the personality of a person")
-public class Personality extends Model {
+public class QuestionnaireAnswersTest extends ModelTestCase<QuestionnaireAnswers> {
 
 	/**
-	 * The perception of a person.
+	 * {@inheritDoc}
 	 */
-	@Schema(description = "The perception grade of a person", example = "0.1", minimum = "0.0", maximum = "1.0")
-	public double perception;
+	@Override
+	public QuestionnaireAnswers createModelExample(int index) {
 
-	/**
-	 * The judgment of a person.
-	 */
-	@Schema(description = "The judgment grade of a person", example = "0.2", minimum = "0.0", maximum = "1.0")
-	public double judgment;
+		final QuestionnaireAnswers model = new QuestionnaireAnswers();
+		model.answerValues = new ArrayList<>();
+		model.answerValues.add(index - 1.0);
+		model.answerValues.add(index * 1.0);
+		model.answerValues.add(index + 1.0);
+		model.answerValues.add(index + 2.0);
+		return model;
+	}
 
-	/**
-	 * The extrovert of a person.
-	 */
-	@Schema(description = "The extrovert grade of a person", example = "0.3", minimum = "0.0", maximum = "1.0")
-	public double extrovert;
-
-	/**
-	 * The attitude of a person.
-	 */
-	@Schema(description = "The attitude grade of a person", example = "0.4", minimum = "0.0", maximum = "1.0")
-	public double attitude;
-
-	/**
-	 * The Myers–Briggs Type Indicator (MBTI) of the person personality.
-	 */
-	@Schema(description = " Myers–Briggs Type Indicator of the person personality", example = "INFJ")
-	public String MBTI;
 }

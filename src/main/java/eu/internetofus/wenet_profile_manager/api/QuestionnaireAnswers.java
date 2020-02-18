@@ -24,46 +24,29 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.personalities;
+package eu.internetofus.wenet_profile_manager.api;
+
+import java.util.List;
 
 import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The personality factors of a person.
+ * The answers to a {@link Questionnaire}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "Personality", description = "Provide information about the personality of a person")
-public class Personality extends Model {
+@Schema(name = "QuestionnaireAnswers", description = "Contains the selected answers of a questionnaire")
+public class QuestionnaireAnswers extends Model {
 
 	/**
-	 * The perception of a person.
+	 * The values of the answers for each question on the questionnaire.
 	 */
-	@Schema(description = "The perception grade of a person", example = "0.1", minimum = "0.0", maximum = "1.0")
-	public double perception;
-
-	/**
-	 * The judgment of a person.
-	 */
-	@Schema(description = "The judgment grade of a person", example = "0.2", minimum = "0.0", maximum = "1.0")
-	public double judgment;
-
-	/**
-	 * The extrovert of a person.
-	 */
-	@Schema(description = "The extrovert grade of a person", example = "0.3", minimum = "0.0", maximum = "1.0")
-	public double extrovert;
-
-	/**
-	 * The attitude of a person.
-	 */
-	@Schema(description = "The attitude grade of a person", example = "0.4", minimum = "0.0", maximum = "1.0")
-	public double attitude;
-
-	/**
-	 * The Myers–Briggs Type Indicator (MBTI) of the person personality.
-	 */
-	@Schema(description = " Myers–Briggs Type Indicator of the person personality", example = "INFJ")
-	public String MBTI;
+	@ArraySchema(
+			arraySchema = @Schema(
+					type = "number",
+					description = "The selected values for the questions on the questionnaire. The answer values are on the same order of the question that refers to the questionnaire.",
+					example = "[1,-1,0,1,1,-1,1,0,0,0,1,-1,-1,-1,1]"))
+	public List<Double> answerValues;
 }
