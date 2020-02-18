@@ -132,6 +132,7 @@ public class PersonalitiesResource implements Personalities {
 
 					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
 							"bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [-1,1]");
+					return;
 
 				}
 				switch (QUESTION_FACTORS[index]) {

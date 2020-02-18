@@ -26,22 +26,28 @@
 
 package eu.internetofus.wenet_profile_manager.api.intelligences;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
+import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
+import eu.internetofus.wenet_profile_manager.api.personalities.Personality;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
 import io.vertx.ext.web.api.generator.WebApiServiceGen;
@@ -90,6 +96,36 @@ public interface Intelligences {
 			description = "The questionnaire to evaluate the intelligences of a person",
 			content = @Content(schema = @Schema(implementation = Questionnaire.class)))
 	void retrieveIntelligencesQuestionnaire(@Parameter(hidden = true, required = false) OperationRequest context,
+			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+	/**
+	 * Called when want to evaluate the Gardner intelligences of a person.
+	 *
+	 * @param body          the selected answer values to the questionnaire.
+	 *
+	 * @param context       of the request.
+	 * @param resultHandler to inform of the response.
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Operation(
+			summary = "Calculate the Gardner intelligences of a person",
+			description = "Evaluate the answers to the intelligences test to obtain the Gardner intelligences of the person")
+	@RequestBody(
+			description = "The values of the answers that the person has selected on the intelligences questionnaire.",
+			required = true,
+			content = @Content(schema = @Schema(implementation = QuestionnaireAnswers.class)))
+	@ApiResponse(
+			responseCode = "200",
+			description = "The Gardner intelligences of the person",
+			content = @Content(schema = @Schema(implementation = GardnerIntelligences.class)))
+	@ApiResponse(
+			responseCode = "404",
+			description = "If it can not calculate the Gardner intelligences",
+			content = @Content(schema = @Schema(implementation = Personality.class)))
+	void calculateGardnerIntelligences(@Parameter(hidden = true, required = false) JsonObject body,
+			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }
