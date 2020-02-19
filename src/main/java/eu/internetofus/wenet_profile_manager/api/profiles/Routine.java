@@ -106,4 +106,55 @@ public class Routine extends Model implements Validable {
 				this.to_time);
 
 	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the model is not right.
+	 */
+	public Routine merge(Routine source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final Routine merged = new Routine();
+			merged.label = source.label;
+			if (merged.label == null) {
+
+				merged.label = this.label;
+			}
+
+			merged.proximity = source.proximity;
+			if (merged.proximity == null) {
+
+				merged.proximity = this.proximity;
+			}
+
+			merged.from_time = source.from_time;
+			if (merged.from_time == null) {
+
+				merged.from_time = this.from_time;
+			}
+
+			merged.to_time = source.to_time;
+			if (merged.to_time == null) {
+
+				merged.to_time = this.to_time;
+			}
+
+			merged.validate(codePrefix);
+			merged.id = this.id;
+			return merged;
+
+		} else {
+
+			return this;
+		}
+
+	}
+
 }

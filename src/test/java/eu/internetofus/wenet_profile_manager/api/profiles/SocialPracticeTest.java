@@ -206,4 +206,228 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 
 	}
 
+	/**
+	 * Check that not merge social practices with bad label.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLabel() {
+
+		final SocialPractice target = this.createModelExample(1);
+		final SocialPractice source = new SocialPractice();
+		source.label = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.label");
+	}
+
+	/**
+	 * Check that not merge model with bad materials.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadMaterials() {
+
+		final SocialPractice target = this.createModelExample(1);
+		final SocialPractice source = new SocialPractice();
+		source.materials = new CarTest().createModelExample(1);
+		((Car) source.materials).carType = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.materials.carType");
+	}
+
+	/**
+	 * Check that not merge model with bad competences.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadCompetences() {
+
+		final SocialPractice target = this.createModelExample(1);
+		final SocialPractice source = new SocialPractice();
+		source.competences = new DrivingLicenseTest().createModelExample(1);
+		((DrivingLicense) source.competences).drivingLicenseId = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.competences.drivingLicenseId");
+	}
+
+	/**
+	 * Check that not merge model with bad norms.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadNorms() {
+
+		final SocialPractice target = this.createModelExample(1);
+		final SocialPractice source = new SocialPractice();
+		source.norms = new ArrayList<>();
+		source.norms.add(new Norm());
+		source.norms.add(new Norm());
+		source.norms.add(new Norm());
+		source.norms.get(1).attribute = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.norms[1].attribute");
+	}
+
+	/**
+	 * Check that merge.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		final SocialPractice source = this.createModelExample(2);
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		source.id = "1";
+		source.competences.id = merged.competences.id;
+		source.materials.id = merged.materials.id;
+		source.norms.get(0).id = merged.norms.get(0).id;
+		assertThat(merged).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final SocialPractice target = this.createModelExample(1);
+		final SocialPractice merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only label.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyLabel() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		target.norms.get(0).id = "2";
+		final SocialPractice source = new SocialPractice();
+		source.label = "NEW LABEL";
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.label = "NEW LABEL";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only competences.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyCompetences() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		final SocialPractice source = new SocialPractice();
+		source.competences = new DrivingLicenseTest().createModelExample(2);
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.competences = new DrivingLicenseTest().createModelExample(2);
+		target.competences.id = merged.competences.id;
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only materials.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyMaterials() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		target.norms.get(0).id = "2";
+		final SocialPractice source = new SocialPractice();
+		source.materials = new CarTest().createModelExample(2);
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.materials = new CarTest().createModelExample(2);
+		target.materials.id = merged.materials.id;
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge removing all norms.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeRemoveNorms() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		final SocialPractice source = new SocialPractice();
+		source.norms = new ArrayList<>();
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.norms = new ArrayList<>();
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge modify a norm.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeModifyANorm() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		target.norms.get(0).id = "2";
+		final SocialPractice source = new SocialPractice();
+		source.norms = new ArrayList<>();
+		source.norms.add(new NormTest().createModelExample(2));
+		source.norms.get(0).id = "2";
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.norms = new ArrayList<>();
+		target.norms.add(new NormTest().createModelExample(2));
+		target.norms.get(0).id = "2";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge modify a norm and add another.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeModifyANormAddOther() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.id = "1";
+		target.norms.get(0).id = "2";
+		final SocialPractice source = new SocialPractice();
+		source.norms = new ArrayList<>();
+		source.norms.add(new NormTest().createModelExample(3));
+		source.norms.add(new NormTest().createModelExample(2));
+		source.norms.get(1).id = "2";
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.norms = new ArrayList<>();
+		target.norms.add(new NormTest().createModelExample(3));
+		target.norms.get(0).id = merged.norms.get(0).id;
+		target.norms.add(new NormTest().createModelExample(2));
+		target.norms.get(1).id = "2";
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

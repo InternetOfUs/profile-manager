@@ -73,6 +73,49 @@ public class Language extends Model implements Validable {
 
 		this.name = Validations.validateNullableStringField(codePrefix, "name", 255, this.name);
 		this.code = Validations.validateNullableStringField(codePrefix, "code", 2, this.code);
+
+	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the model is not right.
+	 */
+	public Language merge(Language source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final Language merged = new Language();
+
+			merged.name = Validations.validateNullableStringField(codePrefix, "name", 255, source.name);
+			if (merged.name == null) {
+
+				merged.name = this.name;
+			}
+
+			merged.code = Validations.validateNullableStringField(codePrefix, "code", 2, source.code);
+			if (merged.code == null) {
+
+				merged.code = this.code;
+			}
+
+			merged.level = source.level;
+			if (merged.level == null) {
+
+				merged.level = this.level;
+			}
+
+			return merged;
+
+		} else {
+
+			return this;
+		}
 	}
 
 }

@@ -116,4 +116,68 @@ public class ProfileDate extends Model implements Validable {
 		}
 
 	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 */
+	public ProfileDate merge(ProfileDate source, String codePrefix) {
+
+		if (source != null) {
+
+			final ProfileDate merged = new ProfileDate();
+			if (source.year != 0) {
+
+				merged.year = source.year;
+
+			} else {
+
+				merged.year = this.year;
+			}
+			if (source.month != 0) {
+
+				merged.month = source.month;
+
+			} else {
+
+				merged.month = this.month;
+			}
+			if (source.day != 0) {
+
+				merged.day = source.day;
+
+			} else {
+
+				merged.day = this.day;
+			}
+			merged.validate(codePrefix);
+
+			return merged;
+
+		} else {
+
+			return this;
+		}
+	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 */
+	public ProfileDate mergeAsBirthDate(ProfileDate source, String codePrefix) {
+
+		final ProfileDate merged = this.merge(source, codePrefix);
+		merged.validateAsBirthDate(codePrefix);
+		return merged;
+
+	}
+
 }

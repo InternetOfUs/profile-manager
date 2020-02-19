@@ -139,4 +139,144 @@ public class NormTest extends ModelTestCase<Norm> {
 				.isEqualTo("codePrefix.comparison");
 	}
 
+	/**
+	 * Check that not merge with bad attribute.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadAttribute() {
+
+		final Norm target = new Norm();
+		final Norm source = new Norm();
+		source.attribute = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.attribute");
+	}
+
+	/**
+	 * Check that not merge with bad comparison.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadComparison() {
+
+		final Norm target = new Norm();
+		final Norm source = new Norm();
+		source.comparison = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.comparison");
+	}
+
+	/**
+	 * Check that merge.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm source = this.createModelExample(2);
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only the identifier.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeOnlyId() {
+
+		final Norm target = this.createModelExample(1);
+		target.id = "1";
+		final Norm source = new Norm();
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isEqualTo(target).isNotSameAs(target).isNotEqualTo(source);
+	}
+
+	/**
+	 * Check that merge only the attribute.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeOnlyAttribute() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm source = new Norm();
+		source.attribute = "NEW VALUE";
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.attribute = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the operator.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeOnlyOperator() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm source = new Norm();
+		source.operator = NormOperator.GREATER_THAN;
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.operator = NormOperator.GREATER_THAN;
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the comparison.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeOnlyComparison() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm source = new Norm();
+		source.comparison = "NEW VALUE";
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.comparison = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the negation.
+	 *
+	 * @see Norm#merge(Norm, String)
+	 */
+	@Test
+	public void shouldMergeOnlyNegation() {
+
+		final Norm target = this.createModelExample(1);
+		final Norm source = new Norm();
+		source.negation = false;
+		final Norm merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.negation = false;
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

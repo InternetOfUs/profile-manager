@@ -99,4 +99,52 @@ public class UserName extends Model implements Validable {
 
 	}
 
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 */
+	public UserName merge(UserName source, String codePrefix) {
+
+		if (source != null) {
+
+			final UserName merged = new UserName();
+			merged.prefix = Validations.validateNullableStringField(codePrefix, "prefix", 10, source.prefix);
+			if (merged.prefix == null) {
+
+				merged.prefix = this.prefix;
+			}
+			merged.first = Validations.validateNullableStringField(codePrefix, "first", 255, source.first);
+			if (merged.first == null) {
+
+				merged.first = this.first;
+			}
+			merged.middle = Validations.validateNullableStringField(codePrefix, "middle", 255, source.middle);
+			if (merged.middle == null) {
+
+				merged.middle = this.middle;
+			}
+			merged.last = Validations.validateNullableStringField(codePrefix, "last", 255, source.last);
+			if (merged.last == null) {
+
+				merged.last = this.last;
+			}
+			merged.suffix = Validations.validateNullableStringField(codePrefix, "suffix", 10, source.suffix);
+			if (merged.suffix == null) {
+
+				merged.suffix = this.suffix;
+			}
+
+			return merged;
+
+		} else {
+
+			return this;
+		}
+
+	}
+
 }

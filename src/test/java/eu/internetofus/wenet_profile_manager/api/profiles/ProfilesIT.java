@@ -676,4 +676,227 @@ public class ProfilesIT {
 
 	}
 
+	/**
+	 * Verify that only update the middle name of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateOnlyProfileNameMiddle(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.name = new UserName();
+							final String newMiddleName = "NEW middle name";
+							newProfile.name.middle = newMiddleName;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+										final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										final String old_middle = storedProfile.name.middle;
+										storedProfile.name.middle = newMiddleName;
+										assertThat(updated).isEqualTo(storedProfile);
+
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> {
+
+													assertThat(page.profiles).hasSize(1);
+													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+													storedProfile._lastUpdateTs = old_lastUpdateTs;
+													storedProfile.name.middle = old_middle;
+													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+													testContext.completeNow();
+												}));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that only update the birth date day of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateOnlyProfileBirthDateDay(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.dateOfBirth = new ProfileDate();
+							newProfile.dateOfBirth.day = 1;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+										final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.dateOfBirth.day = 1;
+										assertThat(updated).isEqualTo(storedProfile);
+
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> {
+
+													assertThat(page.profiles).hasSize(1);
+													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+													storedProfile._lastUpdateTs = old_lastUpdateTs;
+													storedProfile.dateOfBirth.day = 24;
+													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+													testContext.completeNow();
+												}));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that only update the gender of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateOnlyProfileGender(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.gender = Gender.M;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+										final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.gender = Gender.M;
+										assertThat(updated).isEqualTo(storedProfile);
+
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> {
+
+													assertThat(page.profiles).hasSize(1);
+													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+													storedProfile._lastUpdateTs = old_lastUpdateTs;
+													storedProfile.gender = Gender.F;
+													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+													testContext.completeNow();
+												}));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that only update the language of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateOnlyProfileLanguage(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.languages = new ArrayList<>();
+							newProfile.languages.add(new Language());
+							newProfile.languages.get(0).code = storedProfile.languages.get(0).code;
+							newProfile.languages.get(0).level = LanguageLevel.A2;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+										final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.languages.get(0).level = LanguageLevel.A2;
+										assertThat(updated).isEqualTo(storedProfile);
+
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> {
+
+													assertThat(page.profiles).hasSize(1);
+													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+													storedProfile._lastUpdateTs = old_lastUpdateTs;
+													storedProfile.languages.get(0).level = LanguageLevel.A0;
+													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+													testContext.completeNow();
+												}));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
 }

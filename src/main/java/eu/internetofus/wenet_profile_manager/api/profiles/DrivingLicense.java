@@ -67,4 +67,34 @@ public class DrivingLicense extends Competence {
 
 	}
 
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the merged model is not right.
+	 */
+	public DrivingLicense merge(DrivingLicense source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final DrivingLicense merged = new DrivingLicense();
+			merged.drivingLicenseId = source.drivingLicenseId;
+			if (merged.drivingLicenseId == null) {
+
+				merged.drivingLicenseId = this.drivingLicenseId;
+			}
+
+			merged.validate(codePrefix);
+			merged.id = this.id;
+			return merged;
+
+		} else {
+
+			return this;
+		}
+	}
 }

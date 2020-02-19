@@ -178,4 +178,185 @@ public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 				.isEqualTo("codePrefix.latitude");
 	}
 
+	/**
+	 * Check that not merge model with bad label.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLabel() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation source = new RelevantLocation();
+		source.label = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.label");
+	}
+
+	/**
+	 * Check that not merge model with bad longitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLongitudeLessThanMinimum() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation source = new RelevantLocation();
+		source.longitude = -180.0001;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.longitude");
+	}
+
+	/**
+	 * Check that not merge model with bad longitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLongitudeMoreThanMaximum() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation source = new RelevantLocation();
+		source.longitude = 180.0001;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.longitude");
+	}
+
+	/**
+	 * Check that not merge model with bad latitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLatitudeLessThanMinimum() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation source = new RelevantLocation();
+		source.latitude = -90.0001;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.latitude");
+	}
+
+	/**
+	 * Check that not merge model with bad latitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLatitudeMoreThanMaximum() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation source = new RelevantLocation();
+		source.latitude = 90.0001;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.latitude");
+	}
+
+	/**
+	 * Check that merge.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		target.id = "1";
+		final RelevantLocation source = this.createModelExample(2);
+		final RelevantLocation merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		source.id = "1";
+		assertThat(merged).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		final RelevantLocation merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only label.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyLabel() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		target.id = "1";
+		final RelevantLocation source = new RelevantLocation();
+		source.label = "NEW LABEL";
+		source.latitude = target.latitude;
+		source.longitude = target.longitude;
+		final RelevantLocation merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.label = "NEW LABEL";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge the latitude and longitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMergeLatitudeLongitude() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		target.id = "1";
+		final RelevantLocation source = new RelevantLocation();
+		final RelevantLocation merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.latitude = 0;
+		target.longitude = 0;
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only longitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyLongitude() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		target.id = "1";
+		final RelevantLocation source = new RelevantLocation();
+		source.latitude = target.latitude;
+		source.longitude = 0;
+		final RelevantLocation merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.longitude = 0;
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only latitude.
+	 *
+	 * @see RelevantLocation#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyLatitude() {
+
+		final RelevantLocation target = this.createModelExample(1);
+		target.id = "1";
+		final RelevantLocation source = new RelevantLocation();
+		source.longitude = target.longitude;
+		source.latitude = 0;
+		final RelevantLocation merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.latitude = 0;
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

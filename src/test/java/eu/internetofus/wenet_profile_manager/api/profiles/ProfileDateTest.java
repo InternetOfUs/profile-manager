@@ -100,7 +100,7 @@ public class ProfileDateTest extends ModelTestCase<ProfileDate> {
 	 * Should not be valid with a bad day.
 	 */
 	@Test
-	public void shouldNotBeValidAImposibleDate() {
+	public void shouldNotBeValidAnImposibleDate() {
 
 		final ProfileDate date = new ProfileDate();
 		date.year = 2020;
@@ -143,6 +143,207 @@ public class ProfileDateTest extends ModelTestCase<ProfileDate> {
 		date.day = 1;
 		assertThat(assertThrows(ValidationErrorException.class, () -> date.validateAsBirthDate("codePrefix")).getCode())
 				.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should not merge with a bad month.
+	 *
+	 * @param month that is not valid.
+	 */
+	@ParameterizedTest(name = "Should not merge a date with the value {0} as month.")
+	@ValueSource(bytes = { 0, 13, -1, 100 })
+	public void shouldNotMergeMonth(byte month) {
+
+		final ProfileDate date = new ProfileDate();
+		final ProfileDate source = new ProfileDate();
+		source.year = 2020;
+		source.month = month;
+		source.day = 2;
+		assertThat(assertThrows(ValidationErrorException.class, () -> date.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.month");
+
+	}
+
+	/**
+	 * Should not merge with a bad day.
+	 *
+	 * @param day that is not valid.
+	 */
+	@ParameterizedTest(name = "Should not merge a date with the value {0} as day.")
+	@ValueSource(bytes = { 0, 32, -1, 100 })
+	public void shouldNotMergeDay(byte day) {
+
+		final ProfileDate date = new ProfileDate();
+		final ProfileDate source = new ProfileDate();
+		source.year = 2020;
+		source.month = 4;
+		source.day = day;
+		assertThat(assertThrows(ValidationErrorException.class, () -> date.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.day");
+
+	}
+
+	/**
+	 * Should not merge with a bad day.
+	 */
+	@Test
+	public void shouldNotMergeAnImposibleDate() {
+
+		final ProfileDate date = new ProfileDate();
+		final ProfileDate source = new ProfileDate();
+		source.year = 2020;
+		source.month = 2;
+		source.day = 31;
+		assertThat(assertThrows(ValidationErrorException.class, () -> date.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should not merge to born in the future.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldNotMergeToBornOnTheFuture() {
+
+		final ProfileDate date = new ProfileDate();
+		final ProfileDate source = new ProfileDate();
+		final LocalDate tomorrow = LocalDate.now().plusDays(1);
+		source.year = tomorrow.getYear();
+		source.month = (byte) tomorrow.getMonthValue();
+		source.day = (byte) tomorrow.getDayOfMonth();
+		assertThat(
+				assertThrows(ValidationErrorException.class, () -> date.mergeAsBirthDate(source, "codePrefix")).getCode())
+						.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should not merge to born before the oldest person on the world.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldNotMergeToBornBeforeTheOldestPersonOnTheWorld() {
+
+		final ProfileDate date = new ProfileDate();
+		final ProfileDate source = new ProfileDate();
+		source.year = 1903;
+		source.month = 1;
+		source.day = 1;
+		assertThat(
+				assertThrows(ValidationErrorException.class, () -> date.mergeAsBirthDate(source, "codePrefix")).getCode())
+						.isEqualTo("codePrefix");
+
+	}
+
+	/**
+	 * Should only merge the year.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyYear() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.year = target.year - 1;
+		final ProfileDate merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.year--;
+		assertThat(merged).isEqualTo(target);
+
+	}
+
+	/**
+	 * Should only merge the month.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyMonth() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.month = (byte) (target.month - 1);
+		final ProfileDate merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.month--;
+		assertThat(merged).isEqualTo(target);
+
+	}
+
+	/**
+	 * Should only merge the day.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyDay() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.day = (byte) (target.day - 1);
+		final ProfileDate merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.day--;
+		assertThat(merged).isEqualTo(target);
+
+	}
+
+	/**
+	 * Should only merge the year as birth date.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyYearAsBirthDate() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.year = target.year - 1;
+		final ProfileDate merged = target.mergeAsBirthDate(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.year--;
+		assertThat(merged).isEqualTo(target);
+
+	}
+
+	/**
+	 * Should only merge the month as birth date.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyMonthAsBirthDate() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.month = (byte) (target.month - 1);
+		final ProfileDate merged = target.mergeAsBirthDate(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.month--;
+		assertThat(merged).isEqualTo(target);
+
+	}
+
+	/**
+	 * Should only merge the day as birth date.
+	 *
+	 * @see ProfileDate#validateAsBirthDate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyDayAsBirthDate() {
+
+		final ProfileDate target = this.createModelExample(1);
+		final ProfileDate source = new ProfileDate();
+		source.day = (byte) (target.day - 1);
+		final ProfileDate merged = target.mergeAsBirthDate(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target);
+		target.day--;
+		assertThat(merged).isEqualTo(target);
 
 	}
 

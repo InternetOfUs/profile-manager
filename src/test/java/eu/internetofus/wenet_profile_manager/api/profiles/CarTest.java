@@ -120,4 +120,115 @@ public class CarTest extends MaterialTestCase<Car> {
 				.isEqualTo("codePrefix.carPlate");
 	}
 
+	/**
+	 * Check that not merge with bad car type.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadCarType() {
+
+		final Car target = this.createModelExample(1);
+		final Car source = new Car();
+		source.carType = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.carType");
+	}
+
+	/**
+	 * Check that not merge with bad car plate.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadCarPlate() {
+
+		final Car target = this.createModelExample(1);
+		final Car source = new Car();
+		source.carPlate = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.carPlate");
+	}
+
+	/**
+	 * Check that merge two models.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final Car target = this.createModelExample(1);
+		target.id = "1";
+		final Car source = this.createModelExample(2);
+		final Car merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		source.id = "1";
+		assertThat(merged).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null} source.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final Car target = this.createModelExample(1);
+		final Car merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only car type.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldMergeOnlyCarType() {
+
+		final Car target = this.createModelExample(1);
+		target.id = "1";
+		final Car source = new Car();
+		source.carType = "NEW CAR TYPE";
+		final Car merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.carType = "NEW CAR TYPE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only car plate.
+	 *
+	 * @see Car#merge(Car, String)
+	 */
+	@Test
+	public void shouldMergeOnlyCarPlate() {
+
+		final Car target = this.createModelExample(1);
+		target.id = "1";
+		final Car source = new Car();
+		source.carPlate = "NEW CAR PLATE";
+		final Car merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.carPlate = "NEW CAR PLATE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only id.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldMergeOnlyId() {
+
+		final Car target = this.createModelExample(1);
+		target.id = "1";
+		final Car source = new Car();
+		final Car merged = target.merge(source, "codePrefix");
+		assertThat(merged).isEqualTo(target).isNotSameAs(target).isNotEqualTo(source);
+	}
+
 }

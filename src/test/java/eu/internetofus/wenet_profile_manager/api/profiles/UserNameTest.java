@@ -222,4 +222,273 @@ public class UserNameTest extends ModelTestCase<UserName> {
 
 	}
 
+	/**
+	 * Check that the name is not merge if has a large prefix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldNotMergeWithALargePrefix() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.prefix = "12345678901";
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.prefix");
+	}
+
+	/**
+	 * Check that the name is not merge if has a large prefix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeAPrefixWithSpaces() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.prefix = "   1234567890   ";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged.prefix).isEqualTo("1234567890");
+
+	}
+
+	/**
+	 * Check that the name is not merge if has a large first.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldNotMergeWithALargeFirst() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.first = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.first");
+	}
+
+	/**
+	 * Check that the name is not merge if has a large first.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeAFirstWithSpaces() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.first = "   First name 1234567890   ";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged.first).isEqualTo("First name 1234567890");
+
+	}
+
+	/**
+	 * Check that the name is not merge if has a large middle.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldNotMergeWithALargeMiddle() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.middle = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.middle");
+	}
+
+	/**
+	 * Check that the name is not merge if has a large middle.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeAMiddleWithSpaces() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.middle = "   Middle name 1234567890   ";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged.middle).isEqualTo("Middle name 1234567890");
+
+	}
+
+	/**
+	 * Check that the name is not merge if has a large last.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldNotMergeWithALargeLast() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.last = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.last");
+	}
+
+	/**
+	 * Check that the name is not merge if has a large last.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeALastWithSpaces() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.last = "   Last name 1234567890   ";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged.last).isEqualTo("Last name 1234567890");
+
+	}
+
+	/**
+	 * Check that the name is not merge if has a large suffix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldNotMergeWithALargeSuffix() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.suffix = "12345678901";
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.suffix");
+	}
+
+	/**
+	 * Check that the name is not merge if has a large suffix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeASuffixWithSpaces() {
+
+		final UserName target = new UserName();
+		final UserName source = new UserName();
+		source.suffix = "   1234567890   ";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged.suffix).isEqualTo("1234567890");
+
+	}
+
+	/**
+	 * Check that merge two models.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = this.createModelExample(23);
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isEqualTo(source);
+
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+
+	}
+
+	/**
+	 * Check that merge only the prefix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeOnlyPrefix() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = new UserName();
+		source.prefix = "NEW VALUE";
+		final UserName merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.prefix = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the first.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeOnlyFirst() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = new UserName();
+		source.first = "NEW VALUE";
+		final UserName merged = target.merge(source, "codeFirst");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.first = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the middle.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeOnlyMiddle() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = new UserName();
+		source.middle = "NEW VALUE";
+		final UserName merged = target.merge(source, "codeMiddle");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.middle = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the last.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeOnlyLast() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = new UserName();
+		source.last = "NEW VALUE";
+		final UserName merged = target.merge(source, "codeLast");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.last = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the suffix.
+	 *
+	 * @see UserName#merge(UserName,String)
+	 */
+	@Test
+	public void shouldMergeOnlySuffix() {
+
+		final UserName target = this.createModelExample(1);
+		final UserName source = new UserName();
+		source.suffix = "NEW VALUE";
+		final UserName merged = target.merge(source, "codeSuffix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.suffix = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

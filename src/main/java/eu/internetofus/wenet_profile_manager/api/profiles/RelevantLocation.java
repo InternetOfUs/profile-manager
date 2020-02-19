@@ -104,4 +104,38 @@ public class RelevantLocation extends Model implements Validable {
 
 	}
 
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the model is not right.
+	 */
+	public RelevantLocation merge(RelevantLocation source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final RelevantLocation merged = new RelevantLocation();
+			merged.label = source.label;
+			if (merged.label == null) {
+
+				merged.label = this.label;
+			}
+
+			merged.latitude = source.latitude;
+			merged.longitude = source.longitude;
+
+			merged.validate(codePrefix);
+			merged.id = this.id;
+			return merged;
+
+		} else {
+
+			return this;
+		}
+	}
+
 }

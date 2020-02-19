@@ -95,11 +95,90 @@ public class DrivingLicenseTest extends CompetenceTestCase<DrivingLicense> {
 	 * @see DrivingLicense#validate(String)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadDrivingLicenseType() {
+	public void shouldNotBeValidWithABadDrivingLicenseId() {
 
 		final DrivingLicense model = new DrivingLicense();
 		model.drivingLicenseId = ValidationsTest.STRING_256;
 		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
 				.isEqualTo("codePrefix.drivingLicenseId");
 	}
+
+	/**
+	 * Check that not merge with bad driving license id.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadDrivingLicenseId() {
+
+		final DrivingLicense target = this.createModelExample(1);
+		final DrivingLicense source = new DrivingLicense();
+		source.drivingLicenseId = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.drivingLicenseId");
+	}
+
+	/**
+	 * Check that merge two models.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final DrivingLicense target = this.createModelExample(1);
+		target.id = "1";
+		final DrivingLicense source = this.createModelExample(2);
+		final DrivingLicense merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		source.id = "1";
+		assertThat(merged).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null} source.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final DrivingLicense target = this.createModelExample(1);
+		final DrivingLicense merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only driving license id.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldMergeOnlyDrivingLicenseId() {
+
+		final DrivingLicense target = this.createModelExample(1);
+		target.id = "1";
+		final DrivingLicense source = new DrivingLicense();
+		source.drivingLicenseId = "NEW DRIVINGLICENSE TYPE";
+		final DrivingLicense merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.drivingLicenseId = "NEW DRIVINGLICENSE TYPE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only id.
+	 *
+	 * @see DrivingLicense#merge(DrivingLicense, String)
+	 */
+	@Test
+	public void shouldMergeOnlyId() {
+
+		final DrivingLicense target = this.createModelExample(1);
+		target.id = "1";
+		final DrivingLicense source = new DrivingLicense();
+		final DrivingLicense merged = target.merge(source, "codePrefix");
+		assertThat(merged).isEqualTo(target).isNotSameAs(target).isNotEqualTo(source);
+	}
+
 }

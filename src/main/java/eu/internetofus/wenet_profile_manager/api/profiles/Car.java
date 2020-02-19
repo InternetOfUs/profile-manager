@@ -73,4 +73,40 @@ public class Car extends Material {
 
 	}
 
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the merged model is not right.
+	 */
+	public Car merge(Car source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final Car merged = new Car();
+			merged.carPlate = source.carPlate;
+			if (merged.carPlate == null) {
+
+				merged.carPlate = this.carPlate;
+			}
+
+			merged.carType = source.carType;
+			if (merged.carType == null) {
+
+				merged.carType = this.carType;
+			}
+
+			merged.validate(codePrefix);
+			merged.id = this.id;
+			return merged;
+
+		} else {
+
+			return this;
+		}
+	}
 }

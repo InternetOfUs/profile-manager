@@ -128,4 +128,84 @@ public class LanguageTest extends ModelTestCase<Language> {
 
 	}
 
+	/**
+	 * Check that merge two models.
+	 *
+	 * @see Language#merge(Language,String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final Language target = this.createModelExample(1);
+		final Language source = this.createModelExample(23);
+		final Language merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isEqualTo(source);
+
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see Language#merge(Language,String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final Language target = this.createModelExample(1);
+		final Language merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+
+	}
+
+	/**
+	 * Check that merge only the name.
+	 *
+	 * @see Language#merge(Language,String)
+	 */
+	@Test
+	public void shouldMergeOnlyName() {
+
+		final Language target = this.createModelExample(1);
+		final Language source = new Language();
+		source.name = "NEW VALUE";
+		final Language merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.name = "NEW VALUE";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the code.
+	 *
+	 * @see Language#merge(Language,String)
+	 */
+	@Test
+	public void shouldMergeOnlyCode() {
+
+		final Language target = this.createModelExample(1);
+		final Language source = new Language();
+		source.code = "en";
+		final Language merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.code = "en";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only the level.
+	 *
+	 * @see Language#merge(Language,String)
+	 */
+	@Test
+	public void shouldMergeOnlyLevel() {
+
+		final Language target = this.createModelExample(1);
+		final Language source = new Language();
+		source.level = LanguageLevel.C1;
+		final Language merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.level = LanguageLevel.C1;
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

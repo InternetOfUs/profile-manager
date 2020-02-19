@@ -186,4 +186,69 @@ public class PlannedActivity extends Model {
 
 	}
 
+	/**
+	 * Merge this model with another one.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix prefix for the error code.
+	 * @param repository to the defined user profiles.
+	 *
+	 * @return the future with the merged value.
+	 */
+	public Future<PlannedActivity> merge(PlannedActivity source, String codePrefix, ProfilesRepository repository) {
+
+		final Promise<PlannedActivity> promise = Promise.promise();
+		final Future<PlannedActivity> future = promise.future();
+		if (source != null) {
+
+			final PlannedActivity merged = new PlannedActivity();
+			merged.startTime = source.startTime;
+			if (merged.startTime == null) {
+
+				merged.startTime = this.startTime;
+			}
+			merged.endTime = source.endTime;
+			if (merged.endTime == null) {
+
+				merged.endTime = this.endTime;
+			}
+			merged.description = source.description;
+			if (merged.description == null) {
+
+				merged.description = this.description;
+			}
+			merged.attendees = source.attendees;
+			if (merged.attendees == null) {
+
+				merged.attendees = this.attendees;
+			}
+			merged.status = source.status;
+			if (merged.status == null) {
+
+				merged.status = this.status;
+			}
+
+			merged.validate(codePrefix, repository).onComplete(validation -> {
+
+				if (validation.failed()) {
+
+					promise.fail(validation.cause());
+
+				} else {
+
+					merged.id = this.id;
+					promise.complete(merged);
+				}
+
+			});
+
+		} else {
+
+			promise.complete(this);
+
+		}
+		return future;
+
+	}
+
 }

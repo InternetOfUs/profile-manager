@@ -637,7 +637,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotBeValidWithADuplicatedRelationships(ProfilesRepository repository,
@@ -665,7 +665,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldBeValidWithSomeRelationships(ProfilesRepository repository, VertxTestContext testContext) {
@@ -738,12 +738,12 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param source      to merge.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	public void assertFailMerge(WeNetUserProfile model, String suffix, ProfilesRepository repository,
 			WeNetUserProfile source, VertxTestContext testContext) {
 
-		testContext.assertFailure(model.merge("codePrefix", repository, source))
+		testContext.assertFailure(model.merge(source, "codePrefix", repository))
 				.setHandler(result -> testContext.verify(() -> {
 
 					final Throwable cause = result.cause();
@@ -765,7 +765,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadName(ProfilesRepository repository, VertxTestContext testContext) {
@@ -783,14 +783,14 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadBirthDate(ProfilesRepository repository, VertxTestContext testContext) {
 
 		final WeNetUserProfile source = new WeNetUserProfile();
 		source.dateOfBirth = new ProfileDateTest().createModelExample(1);
-		source.dateOfBirth.month = 0;
+		source.dateOfBirth.month = 13;
 		this.assertFailMerge(new WeNetUserProfile(), "dateOfBirth.month", repository, source, testContext);
 
 	}
@@ -801,7 +801,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABirthDateOnTheFuture(ProfilesRepository repository, VertxTestContext testContext) {
@@ -822,7 +822,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABirthDateBeforeTheBirthDateOldestPersonOnWorld(ProfilesRepository repository,
@@ -843,7 +843,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadEmail(ProfilesRepository repository, VertxTestContext testContext) {
@@ -860,7 +860,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadLocale(ProfilesRepository repository, VertxTestContext testContext) {
@@ -876,7 +876,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadPhoneNumber(ProfilesRepository repository, VertxTestContext testContext) {
@@ -893,7 +893,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadAvatar(ProfilesRepository repository, VertxTestContext testContext) {
@@ -909,7 +909,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadNationality(ProfilesRepository repository, VertxTestContext testContext) {
@@ -926,7 +926,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadLanguages(ProfilesRepository repository, VertxTestContext testContext) {
@@ -947,7 +947,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadOccupation(ProfilesRepository repository, VertxTestContext testContext) {
@@ -964,7 +964,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadNorms(ProfilesRepository repository, VertxTestContext testContext) {
@@ -985,7 +985,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithADuplicatedNormIds(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1011,7 +1011,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithNotDefinecNormId(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1032,7 +1032,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeWithNorms(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1047,7 +1047,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.norms.add(new Norm());
 		source.norms.add(new Norm());
 		source.norms.get(1).id = "1";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged.norms).isNotEqualTo(target.norms).isEqualTo(source.norms);
@@ -1065,7 +1065,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1086,7 +1086,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithADuplicatedPlannedActivityIds(ProfilesRepository repository,
@@ -1113,7 +1113,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithNotDefinecPlannedActivityId(ProfilesRepository repository,
@@ -1135,7 +1135,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeWithPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1150,7 +1150,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.plannedActivities.add(new PlannedActivity());
 		source.plannedActivities.add(new PlannedActivity());
 		source.plannedActivities.get(1).id = "1";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged.plannedActivities).isNotEqualTo(target.plannedActivities)
@@ -1169,7 +1169,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1190,7 +1190,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithADuplicatedRelevantLocationIds(ProfilesRepository repository,
@@ -1217,7 +1217,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithNotDefinecRelevantLocationId(ProfilesRepository repository,
@@ -1239,7 +1239,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeWithRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1254,7 +1254,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.relevantLocations.add(new RelevantLocation());
 		source.relevantLocations.add(new RelevantLocation());
 		source.relevantLocations.get(1).id = "1";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged.relevantLocations).isNotEqualTo(target.relevantLocations)
@@ -1273,7 +1273,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadRelationships(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1291,7 +1291,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithDuplicatedRelationships(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1318,7 +1318,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeRelationships(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1339,7 +1339,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			source.relationships.get(0).type = SocialNetworkRelationshipType.family;
 			source.relationships.get(1).userId = stored.id;
 			source.relationships.get(1).type = SocialNetworkRelationshipType.friend;
-			testContext.assertComplete(target.merge("codePrefix", repository, source))
+			testContext.assertComplete(target.merge(source, "codePrefix", repository))
 					.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 						assertThat(merged.relationships).isNotEqualTo(target.relationships).isEqualTo(source.relationships);
@@ -1356,7 +1356,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadSocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1377,7 +1377,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithADuplicatedSocialPracticeIds(ProfilesRepository repository,
@@ -1404,7 +1404,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithNotDefinecSocialPracticeId(ProfilesRepository repository,
@@ -1426,7 +1426,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeWithSocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1441,7 +1441,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.socialPractices.add(new SocialPractice());
 		source.socialPractices.add(new SocialPractice());
 		source.socialPractices.get(1).id = "1";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged.socialPractices).isNotEqualTo(target.socialPractices).isEqualTo(source.socialPractices);
@@ -1459,7 +1459,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithABadPersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1480,7 +1480,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithADuplicatedPersonalBehaviorIds(ProfilesRepository repository,
@@ -1507,7 +1507,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldNotMergeWithNotDefinecPersonalBehaviorId(ProfilesRepository repository,
@@ -1529,7 +1529,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeWithPersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1544,7 +1544,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.personalBehaviors.add(new Routine());
 		source.personalBehaviors.add(new Routine());
 		source.personalBehaviors.get(1).id = "1";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged.personalBehaviors).isNotEqualTo(target.personalBehaviors)
@@ -1563,14 +1563,14 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeEmptyModels(ProfilesRepository repository, VertxTestContext testContext) {
 
 		final WeNetUserProfile target = new WeNetUserProfile();
 		final WeNetUserProfile source = new WeNetUserProfile();
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged).isEqualTo(target);
@@ -1585,7 +1585,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeBasicModels(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1598,7 +1598,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		source.id = "4";
 		source._creationTs = 5;
 		source._lastUpdateTs = 6;
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					assertThat(merged).isEqualTo(target).isNotEqualTo(source);
@@ -1613,7 +1613,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeExampleModels(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1622,7 +1622,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		target.id = "1";
 		final WeNetUserProfile source = this.createModelExample(2);
 		source.id = "2";
-		testContext.assertComplete(target.merge("codePrefix", repository, source))
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
 				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 					source.id = target.id;
@@ -1640,7 +1640,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @param repository  to use.
 	 * @param testContext context to test.
 	 *
-	 * @see WeNetUserProfile#merge(String, ProfilesRepository, WeNetUserProfile)
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
 	public void shouldMergeStoredModels(ProfilesRepository repository, VertxTestContext testContext) {
@@ -1653,7 +1653,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 
 					repository.storeProfile(sourceToStore.result(), testContext.succeeding(source -> {
 
-						testContext.assertComplete(target.merge("codePrefix", repository, source))
+						testContext.assertComplete(target.merge(source, "codePrefix", repository))
 								.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 									source.id = target.id;
@@ -1671,6 +1671,515 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 
 		});
 
+	}
+
+	/**
+	 * Check merge only the user name.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyUserName(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final WeNetUserProfile target = this.createModelExample(1);
+		testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+			target.id = "1";
+			final WeNetUserProfile source = new WeNetUserProfile();
+			source.name = new UserName();
+			source.name.middle = "NEW MIDDLE NAME";
+			testContext.assertComplete(target.merge(source, "codePrefix", repository))
+					.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+						assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+						target.name.middle = "NEW MIDDLE NAME";
+						assertThat(merged).isEqualTo(target);
+						testContext.completeNow();
+					})));
+		});
+
+	}
+
+	/**
+	 * Check merge add user name.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddUserName(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final WeNetUserProfile target = new WeNetUserProfile();
+		target.id = "1";
+		final WeNetUserProfile source = new WeNetUserProfile();
+		source.name = new UserName();
+		source.name.middle = "NEW MIDDLE NAME";
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
+				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+					assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+					target.name = new UserName();
+					target.name.middle = "NEW MIDDLE NAME";
+					assertThat(merged).isEqualTo(target);
+					testContext.completeNow();
+				})));
+
+	}
+
+	/**
+	 * Check merge only the birth date.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyBirthDate(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final WeNetUserProfile target = this.createBasicExample(1);
+		testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+			target.id = "1";
+			final WeNetUserProfile source = new WeNetUserProfile();
+			source.dateOfBirth = new ProfileDate();
+			source.dateOfBirth.year = 1923;
+			testContext.assertComplete(target.merge(source, "codePrefix", repository))
+					.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+						assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+						target.dateOfBirth.year = 1923;
+						assertThat(merged).isEqualTo(target);
+						testContext.completeNow();
+					})));
+		});
+
+	}
+
+	/**
+	 * Check merge add birth date.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddBirthDate(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final WeNetUserProfile target = new WeNetUserProfile();
+		target.id = "1";
+		final WeNetUserProfile source = new WeNetUserProfile();
+		source.dateOfBirth = new ProfileDateTest().createModelExample(1);
+		testContext.assertComplete(target.merge(source, "codePrefix", repository))
+				.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+					assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+					target.dateOfBirth = new ProfileDateTest().createModelExample(1);
+					assertThat(merged).isEqualTo(target);
+					testContext.completeNow();
+				})));
+
+	}
+
+	/**
+	 * Check merge only the gender.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyGender(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.gender = Gender.M;
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.gender = Gender.M;
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the email.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyEmail(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.email = "new@email.com";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.email = "new@email.com";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the locale.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyLocale(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.locale = "en_NZ";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.locale = "en_NZ";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the phone number.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyPhoneNumber(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.phoneNumber = "+1 412 535 2223";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.phoneNumber = "+1 412-535-2223";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the avatar.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyAvatar(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.avatar = "http://new-avatar.com";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.avatar = "http://new-avatar.com";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the nationality.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyNationality(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.nationality = "Canadian";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.nationality = "Canadian";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge only the occupation.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeOnlyOccupation(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.occupation = "Bus driver";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.occupation = "Bus driver";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge remove languages.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeRemoveLanguages(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.languages = new ArrayList<>();
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.languages.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge add language and modify another.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddAndmodifyLanguages(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			target.languages.add(new LanguageTest().createModelExample(2));
+			target.languages.get(1).code = "en";
+			target.languages.add(new LanguageTest().createModelExample(3));
+			target.languages.get(2).code = "fr";
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.languages = new ArrayList<>();
+				source.languages.add(new LanguageTest().createModelExample(2));
+				source.languages.add(new LanguageTest().createModelExample(4));
+				source.languages.add(new LanguageTest().createModelExample(3));
+				source.languages.add(new LanguageTest().createModelExample(1));
+				source.languages.get(0).code = "it";
+				source.languages.get(1).code = "es";
+				source.languages.get(2).code = "fr";
+				source.languages.get(2).level = LanguageLevel.B1;
+				source.languages.get(3).name = "Catalan";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.languages.add(target.languages.remove(0));
+							target.languages.get(0).code = "it";
+							target.languages.add(1, new LanguageTest().createModelExample(4));
+							target.languages.get(1).code = "es";
+							target.languages.get(2).level = LanguageLevel.B1;
+							target.languages.get(3).name = "Catalan";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge remove planned activities.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeRemovePlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.plannedActivities = new ArrayList<>();
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.plannedActivities.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad planned activity.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldFailMergeBadPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				target.plannedActivities.get(0).id = "2";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.plannedActivities = new ArrayList<>();
+				source.plannedActivities.add(new PlannedActivity());
+				source.plannedActivities.get(0).id = "2";
+				source.plannedActivities.get(0).description = ValidationsTest.STRING_256;
+				this.assertFailMerge(new WeNetUserProfile(), "plannedActivities[0].id", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check merge add modify planned activities.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddmodifyPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				target.id = "1";
+				target.plannedActivities.get(0).id = "2";
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.plannedActivities = new ArrayList<>();
+				source.plannedActivities.add(new PlannedActivity());
+				source.plannedActivities.add(new PlannedActivity());
+				source.plannedActivities.get(1).id = "2";
+				source.plannedActivities.get(1).description = "NEW description";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.plannedActivities.add(0, new PlannedActivity());
+							target.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
+							target.plannedActivities.get(1).description = "NEW description";
+							target.plannedActivities.get(1).attendees.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
 	}
 
 }

@@ -77,4 +77,39 @@ public class Competence extends Model implements Validable {
 
 	}
 
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the merged model is not right.
+	 */
+	public Competence merge(Competence source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final Class<? extends Competence> sourceClass = source.getClass();
+			if (sourceClass != this.getClass()) {
+
+				source.validate(codePrefix);
+				return source;
+
+			} else if (this instanceof DrivingLicense) {
+
+				return ((DrivingLicense) this).merge((DrivingLicense) source, codePrefix);
+
+			} else {
+
+				throw new ValidationErrorException(codePrefix, "Unknown how to merge '" + sourceClass + "'.");
+			}
+
+		} else {
+
+			return this;
+		}
+	}
+
 }

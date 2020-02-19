@@ -167,7 +167,7 @@ public class ProfilesResource implements Profiles {
 
 				} else {
 
-					target.merge("bad_new_profile", this.repository, source).setHandler(merge -> {
+					target.merge(source, "bad_new_profile", this.repository).setHandler(merge -> {
 
 						if (merge.failed()) {
 

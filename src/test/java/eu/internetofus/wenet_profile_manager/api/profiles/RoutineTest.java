@@ -175,4 +175,172 @@ public class RoutineTest extends ModelTestCase<Routine> {
 				.isEqualTo("codePrefix.to_time");
 	}
 
+	/**
+	 * Check that not merge routines with bad label.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadLabel() {
+
+		final Routine target = this.createModelExample(1);
+		final Routine source = new Routine();
+		source.label = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.label");
+	}
+
+	/**
+	 * Check that not merge routines with bad proximity.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldNotMergeWithABadProximity() {
+
+		final Routine target = this.createModelExample(1);
+		final Routine source = new Routine();
+		source.proximity = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.proximity");
+	}
+
+	/**
+	 * Check that not merge routines with bad from_time.
+	 *
+	 * @param badTime a bad time value.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@ParameterizedTest(name = "Should not be valid with from_time = {0}")
+	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
+	public void shouldNotMergeWithABadFrom_time(String badTime) {
+
+		final Routine target = this.createModelExample(1);
+		final Routine source = new Routine();
+		source.from_time = badTime;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.from_time");
+	}
+
+	/**
+	 * Check that not merge routines with bad to_time.
+	 *
+	 * @param badTime a bad time value.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@ParameterizedTest(name = "Should not be valid with to_time = {0}")
+	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
+	public void shouldNotMergeWithABadTo_time(String badTime) {
+
+		final Routine target = this.createModelExample(1);
+		final Routine source = new Routine();
+		source.to_time = badTime;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.to_time");
+	}
+
+	/**
+	 * Check that merge.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMerge() {
+
+		final Routine target = this.createModelExample(1);
+		target.id = "1";
+		final Routine source = this.createModelExample(2);
+		final Routine merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		source.id = "1";
+		assertThat(merged).isEqualTo(source);
+	}
+
+	/**
+	 * Check that merge with {@code null}.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMergeWithNull() {
+
+		final Routine target = this.createModelExample(1);
+		final Routine merged = target.merge(null, "codePrefix");
+		assertThat(merged).isSameAs(target);
+	}
+
+	/**
+	 * Check that merge only label.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyLabel() {
+
+		final Routine target = this.createModelExample(1);
+		target.id = "1";
+		final Routine source = new Routine();
+		source.label = "NEW LABEL";
+		final Routine merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.label = "NEW LABEL";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only proximity.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyProximity() {
+
+		final Routine target = this.createModelExample(1);
+		target.id = "1";
+		final Routine source = new Routine();
+		source.proximity = "NEW PROXIMITY";
+		final Routine merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.proximity = "NEW PROXIMITY";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only from_time.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyFrom_time() {
+
+		final Routine target = this.createModelExample(1);
+		target.id = "1";
+		final Routine source = new Routine();
+		source.from_time = "00:00";
+		final Routine merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.from_time = "00:00:00";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that merge only to_time.
+	 *
+	 * @see Routine#validate(String)
+	 */
+	@Test
+	public void shouldMergeOnlyTo_time() {
+
+		final Routine target = this.createModelExample(1);
+		target.id = "1";
+		final Routine source = new Routine();
+		source.to_time = "00:00";
+		final Routine merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		target.to_time = "00:00:00";
+		assertThat(merged).isEqualTo(target);
+	}
+
 }

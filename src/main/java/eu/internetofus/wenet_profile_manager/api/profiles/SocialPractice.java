@@ -26,7 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,7 +74,7 @@ public class SocialPractice extends Model implements Validable {
 	@ArraySchema(
 			schema = @Schema(implementation = Norm.class),
 			arraySchema = @Schema(description = "The norms of the social practice"))
-	public List<Norm> norms = new ArrayList<Norm>();
+	public List<Norm> norms;
 
 	/**
 	 * Create an empty practice.
@@ -120,6 +119,58 @@ public class SocialPractice extends Model implements Validable {
 				norm.validate(codeNorms + "[" + index + "]");
 			}
 
+		}
+
+	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the model is not right.
+	 */
+	public SocialPractice merge(SocialPractice source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final SocialPractice merged = new SocialPractice();
+			merged.label = source.label;
+			if (merged.label == null) {
+
+				merged.label = this.label;
+			}
+
+			if (this.competences != null) {
+
+				merged.competences = this.competences.merge(source.competences, codePrefix + ".competences");
+
+			} else {
+
+				merged.competences = source.competences;
+			}
+
+			if (this.materials != null) {
+
+				merged.materials = this.materials.merge(source.materials, codePrefix + ".materials");
+
+			} else {
+
+				merged.materials = source.materials;
+			}
+
+			merged.validate(codePrefix);
+			// No check norms because are checked by merge norms
+			merged.norms = Merges.mergeListOfNorms(this.norms, source.norms, codePrefix + ".norms");
+			merged.id = this.id;
+			return merged;
+
+		} else {
+
+			return this;
 		}
 
 	}

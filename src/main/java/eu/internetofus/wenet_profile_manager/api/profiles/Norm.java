@@ -100,4 +100,49 @@ public class Norm extends Model implements Validable {
 		this.comparison = Validations.validateNullableStringField(codePrefix, "comparison", 255, this.comparison);
 
 	}
+
+	/**
+	 * Merge this model with another.
+	 *
+	 * @param source     to merge.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 *
+	 * @return the merged model.
+	 *
+	 * @throws ValidationErrorException if the model is not right.
+	 */
+	public Norm merge(Norm source, String codePrefix) throws ValidationErrorException {
+
+		if (source != null) {
+
+			final Norm merged = new Norm();
+			merged.attribute = source.attribute;
+			if (merged.attribute == null) {
+
+				merged.attribute = this.attribute;
+			}
+
+			merged.operator = source.operator;
+			if (merged.operator == null) {
+
+				merged.operator = this.operator;
+			}
+
+			merged.comparison = source.comparison;
+			if (merged.comparison == null) {
+
+				merged.comparison = this.comparison;
+			}
+
+			merged.negation = source.negation;
+
+			merged.validate(codePrefix);
+			merged.id = this.id;
+			return merged;
+
+		} else {
+			return this;
+
+		}
+	}
 }

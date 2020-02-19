@@ -26,9 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.ValidationErrorException;
@@ -325,14 +324,14 @@ public class WeNetUserProfile extends Model {
 	/**
 	 * Merge this model with another and check that is valid.
 	 *
+	 * @param source     model to get the values to merge.
 	 * @param codePrefix prefix for the error code.
 	 * @param repository used to get data to verify the profile.
-	 * @param source     model to get the values to merge.
 	 *
 	 * @return a future that provide the merged model or the error that explains why
 	 *         can not be merged.
 	 */
-	public Future<WeNetUserProfile> merge(String codePrefix, ProfilesRepository repository, WeNetUserProfile source) {
+	public Future<WeNetUserProfile> merge(WeNetUserProfile source, String codePrefix, ProfilesRepository repository) {
 
 		try {
 
@@ -343,26 +342,33 @@ public class WeNetUserProfile extends Model {
 			merged.id = this.id;
 			merged._creationTs = this._creationTs;
 			merged._lastUpdateTs = this._lastUpdateTs;
-			if (source.name != null) {
+			if (this.name != null) {
+
+				merged.name = this.name.merge(source.name, codePrefix + ".name");
+
+			} else if (source.name != null) {
 
 				source.name.validate(codePrefix + ".name");
 				merged.name = source.name;
 
-			} else {
-
-				merged.name = this.name;
 			}
 
-			if (source.dateOfBirth != null) {
+			if (this.dateOfBirth != null) {
+
+				merged.dateOfBirth = this.dateOfBirth.mergeAsBirthDate(source.dateOfBirth, codePrefix + ".name");
+
+			} else if (source.dateOfBirth != null) {
 
 				source.dateOfBirth.validateAsBirthDate(codePrefix + ".dateOfBirth");
 				merged.dateOfBirth = source.dateOfBirth;
 
-			} else {
-
-				merged.dateOfBirth = this.dateOfBirth;
 			}
-			merged.gender = this.gender;
+
+			merged.gender = source.gender;
+			if (merged.gender == null) {
+
+				merged.gender = this.gender;
+			}
 
 			merged.email = Validations.validateNullableEmailField(codePrefix, "email", source.email);
 			if (merged.email == null) {
@@ -392,20 +398,13 @@ public class WeNetUserProfile extends Model {
 				merged.nationality = this.nationality;
 			}
 
-			if (source.languages != null) {
-
-				final String codeLanguages = codePrefix + ".languages";
-				for (int index = 0; index < source.languages.size(); index++) {
-
-					final Language language = source.languages.get(index);
-					language.validate(codeLanguages + "[" + index + "]");
-				}
-				merged.languages = source.languages;
-
-			} else {
-
-				merged.languages = this.languages;
-			}
+			merged.languages = Merges.mergeList(this.languages, source.languages, codePrefix + ".languages",
+					language -> language.code != null || language.name != null,
+					(targetLang,
+							sourceLang) -> (targetLang.code != null && targetLang.code.equals(sourceLang.code)
+									|| targetLang.name != null && targetLang.name.equals(sourceLang.name)),
+					(targetLang, sourceLang, codeLang) -> targetLang.merge(sourceLang, codeLang),
+					(lang, codeLang) -> lang.validate(codeLang));
 
 			merged.occupation = Validations.validateNullableStringField(codePrefix, "occupation", 255, source.occupation);
 			if (merged.occupation == null) {
@@ -413,12 +412,34 @@ public class WeNetUserProfile extends Model {
 				merged.occupation = this.occupation;
 			}
 
-			this.mergeNorms(source, codePrefix, merged);
+			merged.norms = Merges.mergeListOfNorms(this.norms, source.norms, codePrefix + ".norms");
+
 			future = future.compose(map -> this.mergePlannedActivities(source, codePrefix, repository, merged));
-			this.mergeRelevantLocations(source, codePrefix, merged);
+
+			merged.relevantLocations = Merges.mergeList(this.relevantLocations, source.relevantLocations,
+					codePrefix + ".relevantLocations", relevantLocation -> relevantLocation.id != null,
+					(targetRelevantLocation, sourceRelevantLocation) -> targetRelevantLocation.id
+							.equals(sourceRelevantLocation.id),
+					(targetRelevantLocation, sourceRelevantLocation, codeRelevantLocationPrefix) -> targetRelevantLocation
+							.merge(sourceRelevantLocation, codeRelevantLocationPrefix),
+					(relevantLocation, codeRelevantLocationPrefix) -> relevantLocation.validate(codeRelevantLocationPrefix));
+
 			future = future.compose(map -> this.mergeRelationships(source, codePrefix, repository, merged));
-			this.mergeSocialPractices(source, codePrefix, merged);
-			this.mergePersonalBehaviors(source, codePrefix, merged);
+
+			merged.socialPractices = Merges.mergeList(this.socialPractices, source.socialPractices,
+					codePrefix + ".socialPractices", socialPractice -> socialPractice.id != null,
+					(targetSocialPractice, sourceSocialPractice) -> targetSocialPractice.id.equals(sourceSocialPractice.id),
+					(targetSocialPractice, sourceSocialPractice, codeSocialPracticePrefix) -> targetSocialPractice
+							.merge(sourceSocialPractice, codeSocialPracticePrefix),
+					(socialPractice, codeSocialPracticePrefix) -> socialPractice.validate(codeSocialPracticePrefix));
+
+			merged.personalBehaviors = Merges.mergeList(this.personalBehaviors, source.personalBehaviors,
+					codePrefix + ".personalBehaviors", personalBehavior -> personalBehavior.id != null,
+					(targetPersonalBehavior, sourcePersonalBehavior) -> targetPersonalBehavior.id
+							.equals(sourcePersonalBehavior.id),
+					(targetPersonalBehavior, sourcePersonalBehavior, codePersonalBehaviorPrefix) -> targetPersonalBehavior
+							.merge(sourcePersonalBehavior, codePersonalBehaviorPrefix),
+					(personalBehavior, codePersonalBehaviorPrefix) -> personalBehavior.validate(codePersonalBehaviorPrefix));
 
 			promise.complete(merged);
 			return future;
@@ -426,65 +447,6 @@ public class WeNetUserProfile extends Model {
 		} catch (final ValidationErrorException exception) {
 
 			return Future.failedFuture(exception);
-		}
-	}
-
-	/**
-	 * Merge the norms between this model and another.
-	 *
-	 * @param source     profile to get the values to merge.
-	 * @param codePrefix prefix for the error code.
-	 * @param merged     profile to merge the values.
-	 *
-	 * @throws ValidationErrorException if the profile is not right.
-	 */
-	protected void mergeNorms(WeNetUserProfile source, String codePrefix, WeNetUserProfile merged)
-			throws ValidationErrorException {
-
-		if (source.norms != null) {
-
-			final Set<String> ids = new HashSet<String>();
-			if (this.norms != null) {
-
-				for (final Norm norm : this.norms) {
-
-					ids.add(norm.id);
-				}
-			}
-			final String codeNorms = codePrefix + ".norms";
-			for (int index = 0; index < source.norms.size(); index++) {
-
-				final String codeNorm = codeNorms + "[" + index + "]";
-				final Norm norm = source.norms.get(index);
-				if (norm.id == null) {
-
-					norm.validate(codeNorm);
-
-				} else if (!ids.remove(norm.id)) {
-
-					throw new ValidationErrorException(codeNorm + ".id",
-							"Does not exist a norm with the specified identifier or it is duplicated.");
-
-				} else {
-
-					final String id = norm.id;
-
-					try {
-
-						norm.id = null;
-						norm.validate(codeNorm);
-
-					} finally {
-
-						norm.id = id;
-					}
-				}
-			}
-			merged.norms = source.norms;
-
-		} else {
-
-			merged.norms = this.norms;
 		}
 	}
 
@@ -498,58 +460,76 @@ public class WeNetUserProfile extends Model {
 	 *
 	 * @return the future used to verify the profile.
 	 *
-	 * @throws ValidationErrorException if the profile is not right.
+	 * @throws ValidationErrorException if the model is not right.
 	 */
 	protected Future<WeNetUserProfile> mergePlannedActivities(WeNetUserProfile source, String codePrefix,
 			ProfilesRepository repository, WeNetUserProfile merged) throws ValidationErrorException {
 
 		final Promise<WeNetUserProfile> promise = Promise.promise();
 		Future<WeNetUserProfile> future = promise.future();
-
 		if (source.plannedActivities != null) {
 
-			final Set<String> ids = new HashSet<String>();
+			final List<PlannedActivity> original = new ArrayList<>();
 			if (this.plannedActivities != null) {
 
-				for (final PlannedActivity plannedActivity : this.plannedActivities) {
-
-					ids.add(plannedActivity.id);
-				}
+				original.addAll(this.plannedActivities);
 			}
-			final String codePlannedActivities = codePrefix + ".plannedActivities";
-			for (int index = 0; index < source.plannedActivities.size(); index++) {
+			merged.plannedActivities = new ArrayList<>();
+			INDEX: for (int index = 0; index < source.plannedActivities.size(); index++) {
 
-				final String codePlannedActivity = codePlannedActivities + "[" + index + "]";
-				final PlannedActivity plannedActivity = source.plannedActivities.get(index);
-				final String id = plannedActivity.id;
-				if (id != null && !ids.remove(id)) {
+				final String codeActivity = codePrefix + ".plannedActivities[" + index + "]";
+				final PlannedActivity sourceActivity = source.plannedActivities.get(index);
+				// search if it modify any original activity
+				if (sourceActivity.id != null) {
 
-					throw new ValidationErrorException(codePlannedActivity + ".id",
-							"Does not exist a planned activity with the specified identifier or it is duplicated.");
+					for (int j = 0; j < original.size(); j++) {
 
+						final PlannedActivity targetActivity = original.get(j);
+						if (targetActivity.id.equals(sourceActivity.id)) {
+
+							original.remove(j);
+							future = future.compose(map -> {
+								final Promise<WeNetUserProfile> activityPromise = Promise.promise();
+
+								targetActivity.merge(sourceActivity, codeActivity, repository).onComplete(merge -> {
+
+									if (merge.failed()) {
+
+										activityPromise.fail(merge.cause());
+
+									} else {
+
+										merged.plannedActivities.add(merge.result());
+										activityPromise.complete(merged);
+									}
+								});
+								return activityPromise.future();
+							});
+							continue INDEX;
+						}
+
+					}
 				}
+
+				// not found original in original => check it
 				future = future.compose(map -> {
 					final Promise<WeNetUserProfile> activityPromise = Promise.promise();
-					plannedActivity.id = null;
-					plannedActivity.validate(codePlannedActivity, repository).onComplete(validation -> {
 
-						if (id != null) {
+					sourceActivity.validate(codeActivity, repository).onComplete(validation -> {
 
-							plannedActivity.id = id;
-						}
 						if (validation.failed()) {
 
 							activityPromise.fail(validation.cause());
 
 						} else {
 
+							merged.plannedActivities.add(sourceActivity);
 							activityPromise.complete(merged);
 						}
 					});
 					return activityPromise.future();
 				});
 			}
-			merged.plannedActivities = source.plannedActivities;
 
 		} else {
 
@@ -558,65 +538,7 @@ public class WeNetUserProfile extends Model {
 
 		promise.complete(merged);
 		return future;
-	}
 
-	/**
-	 * Merge the relevant locations between this model and another.
-	 *
-	 * @param source     profile to get the values to merge.
-	 * @param codePrefix prefix for the error code.
-	 * @param merged     profile to merge the values.
-	 *
-	 * @throws ValidationErrorException if the profile is not right.
-	 */
-	protected void mergeRelevantLocations(WeNetUserProfile source, String codePrefix, WeNetUserProfile merged)
-			throws ValidationErrorException {
-
-		if (source.relevantLocations != null) {
-
-			final Set<String> ids = new HashSet<String>();
-			if (this.relevantLocations != null) {
-
-				for (final RelevantLocation relevantLocation : this.relevantLocations) {
-
-					ids.add(relevantLocation.id);
-				}
-			}
-			final String codeRelevantLocations = codePrefix + ".relevantLocations";
-			for (int index = 0; index < source.relevantLocations.size(); index++) {
-
-				final String codeRelevantLocation = codeRelevantLocations + "[" + index + "]";
-				final RelevantLocation relevantLocation = source.relevantLocations.get(index);
-				if (relevantLocation.id == null) {
-
-					relevantLocation.validate(codeRelevantLocation);
-
-				} else if (!ids.remove(relevantLocation.id)) {
-
-					throw new ValidationErrorException(codeRelevantLocation + ".id",
-							"Does not exist a norm with the specified identifier or it is duplicated.");
-
-				} else {
-
-					final String id = relevantLocation.id;
-
-					try {
-
-						relevantLocation.id = null;
-						relevantLocation.validate(codeRelevantLocation);
-
-					} finally {
-
-						relevantLocation.id = id;
-					}
-				}
-			}
-			merged.relevantLocations = source.relevantLocations;
-
-		} else {
-
-			merged.relevantLocations = this.relevantLocations;
-		}
 	}
 
 	/**
@@ -677,121 +599,4 @@ public class WeNetUserProfile extends Model {
 		return future;
 	}
 
-	/**
-	 * Merge the social practices between this model and another.
-	 *
-	 * @param source     profile to get the values to merge.
-	 * @param codePrefix prefix for the error code.
-	 * @param merged     profile to merge the values.
-	 *
-	 * @throws ValidationErrorException if the profile is not right.
-	 */
-	protected void mergeSocialPractices(WeNetUserProfile source, String codePrefix, WeNetUserProfile merged)
-			throws ValidationErrorException {
-
-		if (source.socialPractices != null) {
-
-			final Set<String> ids = new HashSet<String>();
-			if (this.socialPractices != null) {
-
-				for (final SocialPractice socialPractice : this.socialPractices) {
-
-					ids.add(socialPractice.id);
-				}
-			}
-			final String codeSocialPractices = codePrefix + ".socialPractices";
-			for (int index = 0; index < source.socialPractices.size(); index++) {
-
-				final String codeSocialPractice = codeSocialPractices + "[" + index + "]";
-				final SocialPractice socialPractice = source.socialPractices.get(index);
-				if (socialPractice.id == null) {
-
-					socialPractice.validate(codeSocialPractice);
-
-				} else if (!ids.remove(socialPractice.id)) {
-
-					throw new ValidationErrorException(codeSocialPractice + ".id",
-							"Does not exist a norm with the specified identifier or it is duplicated.");
-
-				} else {
-
-					final String id = socialPractice.id;
-
-					try {
-
-						socialPractice.id = null;
-						socialPractice.validate(codeSocialPractice);
-
-					} finally {
-
-						socialPractice.id = id;
-					}
-				}
-			}
-			merged.socialPractices = source.socialPractices;
-
-		} else {
-
-			merged.socialPractices = this.socialPractices;
-		}
-	}
-
-	/**
-	 * Merge the personal behaviors between this model and another.
-	 *
-	 * @param source     profile to get the values to merge.
-	 * @param codePrefix prefix for the error code.
-	 * @param merged     profile to merge the values.
-	 *
-	 * @throws ValidationErrorException if the profile is not right.
-	 */
-	protected void mergePersonalBehaviors(WeNetUserProfile source, String codePrefix, WeNetUserProfile merged)
-			throws ValidationErrorException {
-
-		if (source.personalBehaviors != null) {
-
-			final Set<String> ids = new HashSet<String>();
-			if (this.personalBehaviors != null) {
-
-				for (final Routine personalBehavior : this.personalBehaviors) {
-
-					ids.add(personalBehavior.id);
-				}
-			}
-			final String codePersonalBehaviors = codePrefix + ".personalBehaviors";
-			for (int index = 0; index < source.personalBehaviors.size(); index++) {
-
-				final String codePersonalBehavior = codePersonalBehaviors + "[" + index + "]";
-				final Routine personalBehavior = source.personalBehaviors.get(index);
-				if (personalBehavior.id == null) {
-
-					personalBehavior.validate(codePersonalBehavior);
-
-				} else if (!ids.remove(personalBehavior.id)) {
-
-					throw new ValidationErrorException(codePersonalBehavior + ".id",
-							"Does not exist a norm with the specified identifier or it is duplicated.");
-
-				} else {
-
-					final String id = personalBehavior.id;
-
-					try {
-
-						personalBehavior.id = null;
-						personalBehavior.validate(codePersonalBehavior);
-
-					} finally {
-
-						personalBehavior.id = id;
-					}
-				}
-			}
-			merged.personalBehaviors = source.personalBehaviors;
-
-		} else {
-
-			merged.personalBehaviors = this.personalBehaviors;
-		}
-	}
 }
