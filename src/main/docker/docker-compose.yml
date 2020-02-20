@@ -5,40 +5,35 @@ services:
     container_name: wenet_profile_manager_database
     restart: always
     ports:
-      - ${PROFILE_MANAGER_DB_PORT:-27017}:27017
+      - ${DB_PORT:-27017}:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-root}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: ${PROFILE_MANAGER_DB_NAME:-wenetProfileManagerDB}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-wenetProfileManagerDB}
     volumes:
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
       - wenet_profile_manager_data:/data/db
-    image: "postgres:12.1-alpine"
-    ports:
-      - "${PROFILE_MANAGER_DB_PORT:-5432}:5432"
-    environment:
-      POSTGRES_USER: ${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}
-      POSTGRES_PASSWORD: ${PROFILE_MANAGER_DB_USER_PASSWORD:-password}
-      POSTGRES_DB: ${PROFILE_MANAGER_DB_NAME:-profile_manager}
-    volumes:
-      - database-data:/var/lib/postgresql/data/
   api:
     build:
       context: .
       args:
-        PROFILE_MANAGER_DB_HOST: localhost
-        PROFILE_MANAGER_DB_PORT: ${PROFILE_MANAGER_DB_PORT:-27017}
-        PROFILE_MANAGER_DB_NAME: ${PROFILE_MANAGER_DB_NAME:-wenetProfileManagerDB}
-        PROFILE_MANAGER_DB_USER_NAME: ${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}
-        PROFILE_MANAGER_DB_USER_PASSWORD: ${PROFILE_MANAGER_DB_USER_PASSWORD:-password}
+        API_PORT: 8080
+        DB_HOST: database
+        DB_PORT: ${DB_PORT:-27017}
+        DB_NAME: ${DB_NAME:-wenetProfileManagerDB}
+        DB_USER_NAME: ${DB_USER_NAME:-wenetProfileManager}
+        DB_USER_PASSWORD: ${DB_USER_PASSWORD:-password}
     image: "wenet/profile-manager"
     ports:
-      - "${PROFILE_MANAGER_API_PORT:-80}:8080"
+      - "${API_PORT:-80}:8080"
     depends_on:
      - database
     environment:
-      DATASOURCE_URL: "mongodb://database:${PROFILE_MANAGER_DB_PORT:-5432}"
-      DATASOURCE_USERNAME: "${PROFILE_MANAGER_DB_USER_NAME:-profile_manager}"
-      DATASOURCE_PASSWORD: "${PROFILE_MANAGER_DB_USER_PASSWORD:-password}"
+      API_PORT: 8080
+      DB_HOST: database
+      DB_PORT: ${DB_PORT:-27017}
+      DB_NAME: ${DB_NAME:-wenetProfileManagerDB}
+      DB_USER_NAME: ${DB_USER_NAME:-wenetProfileManager}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD:-password}
 volumes:
   wenet_profile_manager_data:
