@@ -14,7 +14,7 @@ This project will be used to provide the API to storing and maintaining the WeNe
 ## Servers
 
   - **Dummy server** (http://ardid.iiia.csic.es/dummy-wenet-profile-manager/)[http://ardid.iiia.csic.es/dummy-wenet-profile-manager/]
-  - **Testing server** TO-DO
+  - **Development server** (http://ardid.iiia.csic.es/dev-wenet-profile-manager/)[http://ardid.iiia.csic.es/dev-wenet-profile-manager/]
 
 
 ## Deploy with docker
