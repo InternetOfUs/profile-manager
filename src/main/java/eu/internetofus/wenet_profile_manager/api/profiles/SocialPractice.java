@@ -138,32 +138,46 @@ public class SocialPractice extends Model implements Validable {
 		if (source != null) {
 
 			final SocialPractice merged = new SocialPractice();
-			merged.label = source.label;
+			merged.label = Validations.validateNullableStringField(codePrefix, "label", 255, source.label);
 			if (merged.label == null) {
 
 				merged.label = this.label;
 			}
 
-			if (this.competences != null) {
+			if (source.competences != null) {
 
-				merged.competences = this.competences.merge(source.competences, codePrefix + ".competences");
+				if (this.competences != null && this.competences.id.equals(source.competences.id)) {
+
+					merged.competences = this.competences.merge(source.competences, codePrefix + ".competences");
+
+				} else {
+
+					merged.competences = source.competences;
+					merged.competences.validate(codePrefix + ".competences");
+				}
 
 			} else {
 
-				merged.competences = source.competences;
+				merged.competences = this.competences;
 			}
 
-			if (this.materials != null) {
+			if (source.materials != null) {
 
-				merged.materials = this.materials.merge(source.materials, codePrefix + ".materials");
+				if (this.materials != null && this.materials.id.equals(source.materials.id)) {
+
+					merged.materials = this.materials.merge(source.materials, codePrefix + ".materials");
+
+				} else {
+
+					merged.materials = source.materials;
+					merged.materials.validate(codePrefix + ".materials");
+				}
 
 			} else {
 
-				merged.materials = source.materials;
+				merged.materials = this.materials;
 			}
 
-			merged.validate(codePrefix);
-			// No check norms because are checked by merge norms
 			merged.norms = Merges.mergeListOfNorms(this.norms, source.norms, codePrefix + ".norms");
 			merged.id = this.id;
 			return merged;

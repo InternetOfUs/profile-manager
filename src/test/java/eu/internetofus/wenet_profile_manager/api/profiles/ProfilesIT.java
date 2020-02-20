@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import eu.internetofus.wenet_profile_manager.Model;
 import eu.internetofus.wenet_profile_manager.ValidationsTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
@@ -843,7 +844,7 @@ public class ProfilesIT {
 	}
 
 	/**
-	 * Verify that only update the language of an user.
+	 * Verify that can update the languages of an user.
 	 *
 	 * @param repository  to access the profiles.
 	 * @param client      to connect to the server.
@@ -853,7 +854,7 @@ public class ProfilesIT {
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldUpdateOnlyProfileLanguage(ProfilesRepository repository, WebClient client,
+	public void shouldUpdateProfileLanguage(ProfilesRepository repository, WebClient client,
 			VertxTestContext testContext) {
 
 		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
@@ -867,30 +868,69 @@ public class ProfilesIT {
 							final WeNetUserProfile newProfile = new WeNetUserProfile();
 							newProfile.languages = new ArrayList<>();
 							newProfile.languages.add(new Language());
-							newProfile.languages.get(0).code = storedProfile.languages.get(0).code;
-							newProfile.languages.get(0).level = LanguageLevel.A2;
+							newProfile.languages.get(0).code = "es";
+							newProfile.languages.add(new Language());
+							newProfile.languages.get(1).name = "English";
 							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
 									.expect(res -> testContext.verify(() -> {
 
 										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
 										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
 										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-										final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
 										storedProfile._lastUpdateTs = updated._lastUpdateTs;
-										storedProfile.languages.get(0).level = LanguageLevel.A2;
+										storedProfile.languages = new ArrayList<>();
+										storedProfile.languages.add(new Language());
+										storedProfile.languages.get(0).code = "es";
+										storedProfile.languages.add(new Language());
+										storedProfile.languages.get(1).name = "English";
 										assertThat(updated).isEqualTo(storedProfile);
-
 										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
-												testContext.succeeding(page -> {
+												testContext.succeeding(page -> testContext.verify(() -> {
 
-													assertThat(page.profiles).hasSize(1);
-													assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-													assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
-													storedProfile._lastUpdateTs = old_lastUpdateTs;
-													storedProfile.languages.get(0).level = LanguageLevel.A0;
-													assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-													testContext.completeNow();
-												}));
+													assertThat(page).isEqualTo(expected);
+													newProfile.languages = new ArrayList<>();
+													newProfile.languages.add(new Language());
+													newProfile.languages.get(0).code = "en";
+													newProfile.languages.get(0).code = "English";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.languages = new ArrayList<>();
+																storedProfile.languages.add(new Language());
+																storedProfile.languages.get(0).code = "en";
+																storedProfile.languages.get(0).name = "English";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
 
 									})).sendJson(newProfile.toJsonObject(), testContext);
 						}));
@@ -899,4 +939,564 @@ public class ProfilesIT {
 
 	}
 
+	/**
+	 * Verify that can update the norms of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfileNorm(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.norms = new ArrayList<>();
+							newProfile.norms.add(new Norm());
+							newProfile.norms.add(new Norm());
+							newProfile.norms.get(1).id = storedProfile.norms.get(0).id;
+							newProfile.norms.get(1).attribute = "Attribute";
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.norms.add(0, new Norm());
+										storedProfile.norms.get(0).id = updated.norms.get(0).id;
+										storedProfile.norms.get(1).attribute = "Attribute";
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.norms = new ArrayList<>();
+													newProfile.norms.add(new Norm());
+													newProfile.norms.get(0).id = updated.norms.get(0).id;
+													newProfile.norms.get(0).attribute = "Attribute2";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.norms = new ArrayList<>();
+																storedProfile.norms.remove(1);
+																storedProfile.norms.get(0).attribute = "Attribute2";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that can update the planned activities of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfilePlannedActivity(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.plannedActivities = new ArrayList<>();
+							newProfile.plannedActivities.add(new PlannedActivity());
+							newProfile.plannedActivities.add(new PlannedActivity());
+							newProfile.plannedActivities.get(1).id = storedProfile.plannedActivities.get(0).id;
+							newProfile.plannedActivities.get(1).description = "Description";
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.plannedActivities.remove(1);
+										storedProfile.plannedActivities.add(0, new PlannedActivity());
+										storedProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+										storedProfile.plannedActivities.get(1).description = "Description";
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.plannedActivities = new ArrayList<>();
+													newProfile.plannedActivities.add(new PlannedActivity());
+													newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+													newProfile.plannedActivities.get(0).description = "Description2";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.plannedActivities = new ArrayList<>();
+																storedProfile.plannedActivities.remove(1);
+																storedProfile.plannedActivities.get(0).description = "Description2";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that can update the relevant locations of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfileRelevantLocation(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.relevantLocations = new ArrayList<>();
+							newProfile.relevantLocations.add(new RelevantLocation());
+							newProfile.relevantLocations.add(new RelevantLocation());
+							newProfile.relevantLocations.get(1).id = storedProfile.relevantLocations.get(0).id;
+							newProfile.relevantLocations.get(1).label = "Label";
+							newProfile.relevantLocations.get(1).latitude = -24;
+							newProfile.relevantLocations.get(1).longitude = 24;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.relevantLocations.add(0, new RelevantLocation());
+										storedProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+										storedProfile.relevantLocations.get(1).label = "Label";
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.relevantLocations = new ArrayList<>();
+													newProfile.relevantLocations.add(new RelevantLocation());
+													newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+													newProfile.relevantLocations.get(0).label = "Label2";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.relevantLocations = new ArrayList<>();
+																storedProfile.relevantLocations.remove(1);
+																storedProfile.relevantLocations.get(0).label = "Label2";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that can update the social practices of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfileSocialPractice(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.socialPractices = new ArrayList<>();
+							newProfile.socialPractices.add(new SocialPractice());
+							newProfile.socialPractices.add(new SocialPractice());
+							newProfile.socialPractices.get(1).id = storedProfile.socialPractices.get(0).id;
+							newProfile.socialPractices.get(1).label = "Label";
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.socialPractices.add(0, new SocialPractice());
+										storedProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
+										storedProfile.socialPractices.get(1).label = "Label";
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.socialPractices = new ArrayList<>();
+													newProfile.socialPractices.add(new SocialPractice());
+													newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
+													newProfile.socialPractices.get(0).label = "Label2";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.socialPractices = new ArrayList<>();
+																storedProfile.socialPractices.remove(1);
+																storedProfile.socialPractices.get(0).label = "Label2";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that can update the personal behaviors of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfilePersonalBehavior(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.personalBehaviors = new ArrayList<>();
+							newProfile.personalBehaviors.add(new Routine());
+							newProfile.personalBehaviors.add(new Routine());
+							newProfile.personalBehaviors.get(1).id = storedProfile.personalBehaviors.get(0).id;
+							newProfile.personalBehaviors.get(1).label = "Label";
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.personalBehaviors.add(0, new Routine());
+										storedProfile.personalBehaviors.get(0).id = updated.personalBehaviors.get(0).id;
+										storedProfile.personalBehaviors.get(1).label = "Label";
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.personalBehaviors = new ArrayList<>();
+													newProfile.personalBehaviors.add(new Routine());
+													newProfile.personalBehaviors.get(0).id = updated.personalBehaviors.get(0).id;
+													newProfile.personalBehaviors.get(0).label = "Label2";
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.personalBehaviors = new ArrayList<>();
+																storedProfile.personalBehaviors.remove(1);
+																storedProfile.personalBehaviors.get(0).label = "Label2";
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
+
+	/**
+	 * Verify that can update the relationships of an user.
+	 *
+	 * @param repository  to access the profiles.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
+	 *      io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldUpdateProfileRelationship(ProfilesRepository repository, WebClient client,
+			VertxTestContext testContext) {
+
+		testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, repository))
+				.setHandler(createdProfile -> {
+
+					final WeNetUserProfile created = createdProfile.result();
+					testContext.assertComplete(created.validate("codePrefix", repository)).setHandler(validation -> {
+
+						repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+
+							final WeNetUserProfile newProfile = new WeNetUserProfile();
+							newProfile.relationships = new ArrayList<>();
+							newProfile.relationships.add(new SocialNetworkRelationship());
+							newProfile.relationships.get(0).userId = storedProfile.relationships.get(0).userId;
+							newProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
+							newProfile.relationships.add(new SocialNetworkRelationship());
+							newProfile.relationships.get(1).userId = storedProfile.relationships.get(0).userId;
+							newProfile.relationships.get(1).type = SocialNetworkRelationshipType.acquaintance;
+							testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+									.expect(res -> testContext.verify(() -> {
+
+										assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+										final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+										assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+										final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+										expected.profiles = new ArrayList<>();
+										expected.profiles.add(new HistoricWeNetUserProfile());
+										expected.profiles.get(0).from = storedProfile._creationTs;
+										expected.profiles.get(0).to = updated._lastUpdateTs;
+										expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+												WeNetUserProfile.class);
+										expected.total++;
+
+										storedProfile._lastUpdateTs = updated._lastUpdateTs;
+										storedProfile.relationships.add(0, new SocialNetworkRelationship());
+										storedProfile.relationships.get(0).userId = storedProfile.relationships.get(1).userId;
+										storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
+										assertThat(updated).isEqualTo(storedProfile);
+										repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+												testContext.succeeding(page -> testContext.verify(() -> {
+
+													assertThat(page).isEqualTo(expected);
+													newProfile.relationships = new ArrayList<>();
+													newProfile.relationships.add(new SocialNetworkRelationship());
+													newProfile.relationships.get(0).userId = storedProfile.relationships.get(0).userId;
+													newProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
+													testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+															.expect(res2 -> testContext.verify(() -> {
+
+																assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+																final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+																assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+
+																expected.profiles.add(new HistoricWeNetUserProfile());
+																expected.profiles.get(1).from = updated._lastUpdateTs;
+																expected.profiles.get(1).to = updated2._lastUpdateTs;
+																expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
+																		WeNetUserProfile.class);
+																expected.total++;
+
+																storedProfile._lastUpdateTs = updated2._lastUpdateTs;
+																storedProfile.relationships = new ArrayList<>();
+																storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
+																assertThat(updated2).isEqualTo(storedProfile);
+																repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
+																		testContext.succeeding(page2 -> testContext.verify(() -> {
+
+																			assertThat(page2).isEqualTo(expected);
+																			testContext.completeNow();
+																		})));
+
+															})).sendJson(newProfile.toJsonObject(), testContext);
+												})));
+
+									})).sendJson(newProfile.toJsonObject(), testContext);
+						}));
+					});
+				});
+
+	}
 }

@@ -230,6 +230,7 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldNotMergeWithABadMaterials() {
 
 		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
 		final SocialPractice source = new SocialPractice();
 		source.materials = new CarTest().createModelExample(1);
 		((Car) source.materials).carType = ValidationsTest.STRING_256;
@@ -246,6 +247,7 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldNotMergeWithABadCompetences() {
 
 		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
 		final SocialPractice source = new SocialPractice();
 		source.competences = new DrivingLicenseTest().createModelExample(1);
 		((DrivingLicense) source.competences).drivingLicenseId = ValidationsTest.STRING_256;
@@ -281,11 +283,11 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldMerge() {
 
 		final SocialPractice target = this.createModelExample(1);
-		target.id = "1";
+		target.validate("codePrefix");
 		final SocialPractice source = this.createModelExample(2);
 		final SocialPractice merged = target.merge(source, "codePrefix");
 		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		source.id = "1";
+		source.id = target.id;
 		source.competences.id = merged.competences.id;
 		source.materials.id = merged.materials.id;
 		source.norms.get(0).id = merged.norms.get(0).id;
@@ -325,15 +327,16 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	}
 
 	/**
-	 * Check that merge only competences.
+	 * Check that merge and add a new competence.
 	 *
 	 * @see SocialPractice#validate(String)
 	 */
 	@Test
-	public void shouldMergeOnlyCompetences() {
+	public void shouldMergeNewCompetence() {
 
 		final SocialPractice target = this.createModelExample(1);
 		target.id = "1";
+		target.competences.id = "2";
 		final SocialPractice source = new SocialPractice();
 		source.competences = new DrivingLicenseTest().createModelExample(2);
 		final SocialPractice merged = target.merge(source, "codePrefix");
@@ -344,16 +347,72 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	}
 
 	/**
-	 * Check that merge only materials.
+	 * Check that fail merge a new competence.
 	 *
 	 * @see SocialPractice#validate(String)
 	 */
 	@Test
-	public void shouldMergeOnlyMaterials() {
+	public void shouldFailMergeNewCompetence() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.competences = new DrivingLicense();
+		source.competences.id = "3";
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.competences.id");
+
+	}
+
+	/**
+	 * Check that merge existing competence.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeExistingCompetence() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.competences = new DrivingLicense();
+		source.competences.id = target.competences.id;
+		((DrivingLicense) source.competences).drivingLicenseId = "New drivingLicense";
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		((DrivingLicense) target.competences).drivingLicenseId = "New drivingLicense";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that fail merge and existing competence.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldFailMergeExistingCompetence() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.competences = new DrivingLicense();
+		source.competences.id = target.competences.id;
+		((DrivingLicense) source.competences).drivingLicenseId = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.competences.drivingLicenseId");
+	}
+
+	/**
+	 * Check that merge and add a new material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeNewMaterial() {
 
 		final SocialPractice target = this.createModelExample(1);
 		target.id = "1";
-		target.norms.get(0).id = "2";
+		target.materials.id = "2";
 		final SocialPractice source = new SocialPractice();
 		source.materials = new CarTest().createModelExample(2);
 		final SocialPractice merged = target.merge(source, "codePrefix");
@@ -361,6 +420,62 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 		target.materials = new CarTest().createModelExample(2);
 		target.materials.id = merged.materials.id;
 		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that fail merge a new material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldFailMergeNewMaterial() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.materials = new Car();
+		source.materials.id = "3";
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.materials.id");
+
+	}
+
+	/**
+	 * Check that merge existing material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldMergeExistingMaterial() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.materials = new Car();
+		source.materials.id = target.materials.id;
+		((Car) source.materials).carPlate = "New car plate";
+		final SocialPractice merged = target.merge(source, "codePrefix");
+		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+		((Car) target.materials).carPlate = "New car plate";
+		assertThat(merged).isEqualTo(target);
+	}
+
+	/**
+	 * Check that fail merge and existing material.
+	 *
+	 * @see SocialPractice#validate(String)
+	 */
+	@Test
+	public void shouldFailMergeExistingMaterial() {
+
+		final SocialPractice target = this.createModelExample(1);
+		target.validate("codePrefix");
+		final SocialPractice source = new SocialPractice();
+		source.materials = new Car();
+		source.materials.id = target.materials.id;
+		((Car) source.materials).carPlate = ValidationsTest.STRING_256;
+		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
+				.isEqualTo("codePrefix.materials.carPlate");
 	}
 
 	/**
@@ -372,7 +487,7 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldMergeRemoveNorms() {
 
 		final SocialPractice target = this.createModelExample(1);
-		target.id = "1";
+		target.validate("codePrefix");
 		final SocialPractice source = new SocialPractice();
 		source.norms = new ArrayList<>();
 		final SocialPractice merged = target.merge(source, "codePrefix");
@@ -390,17 +505,15 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldMergeModifyANorm() {
 
 		final SocialPractice target = this.createModelExample(1);
-		target.id = "1";
-		target.norms.get(0).id = "2";
+		target.validate("codePrefix");
 		final SocialPractice source = new SocialPractice();
 		source.norms = new ArrayList<>();
-		source.norms.add(new NormTest().createModelExample(2));
-		source.norms.get(0).id = "2";
+		source.norms.add(new Norm());
+		source.norms.get(0).id = target.norms.get(0).id;
+		source.norms.get(0).attribute = "New attribute";
 		final SocialPractice merged = target.merge(source, "codePrefix");
 		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.norms = new ArrayList<>();
-		target.norms.add(new NormTest().createModelExample(2));
-		target.norms.get(0).id = "2";
+		target.norms.get(0).attribute = "New attribute";
 		assertThat(merged).isEqualTo(target);
 	}
 
@@ -413,20 +526,18 @@ public class SocialPracticeTest extends ModelTestCase<SocialPractice> {
 	public void shouldMergeModifyANormAddOther() {
 
 		final SocialPractice target = this.createModelExample(1);
-		target.id = "1";
-		target.norms.get(0).id = "2";
+		target.validate("codePrefix");
 		final SocialPractice source = new SocialPractice();
 		source.norms = new ArrayList<>();
 		source.norms.add(new NormTest().createModelExample(3));
-		source.norms.add(new NormTest().createModelExample(2));
-		source.norms.get(1).id = "2";
+		source.norms.add(new Norm());
+		source.norms.get(1).id = target.norms.get(0).id;
+		source.norms.get(1).attribute = "New attribute";
 		final SocialPractice merged = target.merge(source, "codePrefix");
 		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.norms = new ArrayList<>();
-		target.norms.add(new NormTest().createModelExample(3));
+		target.norms.add(0, new NormTest().createModelExample(3));
 		target.norms.get(0).id = merged.norms.get(0).id;
-		target.norms.add(new NormTest().createModelExample(2));
-		target.norms.get(1).id = "2";
+		target.norms.get(1).attribute = "New attribute";
 		assertThat(merged).isEqualTo(target);
 	}
 

@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,7 @@ import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExten
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -1687,7 +1689,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		final WeNetUserProfile target = this.createModelExample(1);
 		testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-			target.id = "1";
 			final WeNetUserProfile source = new WeNetUserProfile();
 			source.name = new UserName();
 			source.name.middle = "NEW MIDDLE NAME";
@@ -1745,7 +1746,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 		final WeNetUserProfile target = this.createBasicExample(1);
 		testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-			target.id = "1";
 			final WeNetUserProfile source = new WeNetUserProfile();
 			source.dateOfBirth = new ProfileDate();
 			source.dateOfBirth.year = 1923;
@@ -1803,7 +1803,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.gender = Gender.M;
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1834,7 +1833,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.email = "new@email.com";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1865,7 +1863,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.locale = "en_NZ";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1896,7 +1893,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.phoneNumber = "+1 412 535 2223";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1927,7 +1923,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.avatar = "http://new-avatar.com";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1958,7 +1953,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.nationality = "Canadian";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -1989,7 +1983,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.occupation = "Bus driver";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -2020,7 +2013,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.languages = new ArrayList<>();
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -2044,7 +2036,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
-	public void shouldMergeAddAndmodifyLanguages(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldMergeAddAndModifyLanguages(ProfilesRepository repository, VertxTestContext testContext) {
 
 		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
 
@@ -2055,7 +2047,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			target.languages.get(2).code = "fr";
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.languages = new ArrayList<>();
 				source.languages.add(new LanguageTest().createModelExample(2));
@@ -2100,7 +2091,6 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.plannedActivities = new ArrayList<>();
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
@@ -2116,7 +2106,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	}
 
 	/**
-	 * Check fail merge with a bad planned activity.
+	 * Check fail merge with a bad defined planned activity.
 	 *
 	 * @param repository  to use.
 	 * @param testContext context to test.
@@ -2124,6 +2114,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
 	 */
 	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
 	public void shouldFailMergeBadPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
 
 		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
@@ -2131,14 +2122,38 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
-				target.plannedActivities.get(0).id = "2";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.plannedActivities = new ArrayList<>();
 				source.plannedActivities.add(new PlannedActivity());
-				source.plannedActivities.get(0).id = "2";
+				source.plannedActivities.get(0).id = target.plannedActivities.get(0).id;
 				source.plannedActivities.get(0).description = ValidationsTest.STRING_256;
-				this.assertFailMerge(new WeNetUserProfile(), "plannedActivities[0].id", repository, source, testContext);
+				this.assertFailMerge(target, "plannedActivities[0].description", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad new planned activity.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadNewPlannedActivities(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.plannedActivities = new ArrayList<>();
+				source.plannedActivities.add(new PlannedActivity());
+				source.plannedActivities.get(0).description = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "plannedActivities[0].description", repository, source, testContext);
 			});
 		});
 	}
@@ -2159,22 +2174,376 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 			final WeNetUserProfile target = targetToStore.result();
 			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
 
-				target.id = "1";
-				target.plannedActivities.get(0).id = "2";
 				final WeNetUserProfile source = new WeNetUserProfile();
 				source.plannedActivities = new ArrayList<>();
 				source.plannedActivities.add(new PlannedActivity());
 				source.plannedActivities.add(new PlannedActivity());
-				source.plannedActivities.get(1).id = "2";
-				source.plannedActivities.get(1).description = "NEW description";
+				source.plannedActivities.get(0).id = target.plannedActivities.get(1).id;
+				source.plannedActivities.get(0).description = "NEW description";
 				testContext.assertComplete(target.merge(source, "codePrefix", repository))
 						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
 
 							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-							target.plannedActivities.add(0, new PlannedActivity());
-							target.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
-							target.plannedActivities.get(1).description = "NEW description";
-							target.plannedActivities.get(1).attendees.clear();
+							target.plannedActivities.remove(0);
+							target.plannedActivities.get(0).description = "NEW description";
+							target.plannedActivities.add(new PlannedActivity());
+							target.plannedActivities.get(1).id = merged.plannedActivities.get(1).id;
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge remove relevant locations.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeRemoveRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.relevantLocations = new ArrayList<>();
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.relevantLocations.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad defined relevant location.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.relevantLocations = new ArrayList<>();
+				source.relevantLocations.add(new RelevantLocation());
+				source.relevantLocations.get(0).id = target.relevantLocations.get(0).id;
+				source.relevantLocations.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "relevantLocations[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad new relevant location.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadNewRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.relevantLocations = new ArrayList<>();
+				source.relevantLocations.add(new RelevantLocation());
+				source.relevantLocations.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "relevantLocations[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check merge add modify relevant locations.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddModifyRelevantLocations(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.relevantLocations = new ArrayList<>();
+				source.relevantLocations.add(new RelevantLocation());
+				source.relevantLocations.add(new RelevantLocationTest().createModelExample(1));
+				source.relevantLocations.get(1).id = target.relevantLocations.get(0).id;
+				source.relevantLocations.get(1).label = "NEW label";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.relevantLocations.add(0, new RelevantLocation());
+							target.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
+							target.relevantLocations.get(1).label = "NEW label";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge remove social practices.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeRemoveSocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.socialPractices = new ArrayList<>();
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.socialPractices.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad defined social practice.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadSocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.socialPractices = new ArrayList<>();
+				source.socialPractices.add(new SocialPractice());
+				source.socialPractices.get(0).id = target.socialPractices.get(0).id;
+				source.socialPractices.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "socialPractices[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad new social practice.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldFailMergeBadNewSocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.socialPractices = new ArrayList<>();
+				source.socialPractices.add(new SocialPractice());
+				source.socialPractices.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "socialPractices[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check merge add modify social practices.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddModifySocialPractices(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.socialPractices = new ArrayList<>();
+				source.socialPractices.add(new SocialPractice());
+				source.socialPractices.add(new SocialPractice());
+				source.socialPractices.get(1).id = target.socialPractices.get(0).id;
+				source.socialPractices.get(1).label = "NEW label";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.socialPractices.add(0, new SocialPractice());
+							target.socialPractices.get(0).id = merged.socialPractices.get(0).id;
+							target.socialPractices.get(1).label = "NEW label";
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check merge remove personal behaviors.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeRemovePersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.personalBehaviors = new ArrayList<>();
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.personalBehaviors.clear();
+							assertThat(merged).isEqualTo(target);
+							testContext.completeNow();
+						})));
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad defined personal behavior.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadPersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.personalBehaviors = new ArrayList<>();
+				source.personalBehaviors.add(new Routine());
+				source.personalBehaviors.get(0).id = target.personalBehaviors.get(0).id;
+				source.personalBehaviors.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "personalBehaviors[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check fail merge with a bad new personal behavior.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	@Timeout(value = 1, timeUnit = TimeUnit.DAYS)
+	public void shouldFailMergeBadNewPersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.personalBehaviors = new ArrayList<>();
+				source.personalBehaviors.add(new Routine());
+				source.personalBehaviors.get(0).label = ValidationsTest.STRING_256;
+				this.assertFailMerge(target, "personalBehaviors[0].label", repository, source, testContext);
+			});
+		});
+	}
+
+	/**
+	 * Check merge add modify personal behaviors.
+	 *
+	 * @param repository  to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#merge(WeNetUserProfile, String, ProfilesRepository)
+	 */
+	@Test
+	public void shouldMergeAddModifyPersonalBehaviors(ProfilesRepository repository, VertxTestContext testContext) {
+
+		testContext.assertComplete(this.createModelExample(1, repository)).setHandler(targetToStore -> {
+
+			final WeNetUserProfile target = targetToStore.result();
+			testContext.assertComplete(target.validate("codePrefix", repository)).setHandler(none -> {
+
+				final WeNetUserProfile source = new WeNetUserProfile();
+				source.personalBehaviors = new ArrayList<>();
+				source.personalBehaviors.add(new Routine());
+				source.personalBehaviors.add(new Routine());
+				source.personalBehaviors.get(1).id = target.personalBehaviors.get(0).id;
+				source.personalBehaviors.get(1).label = "NEW label";
+				testContext.assertComplete(target.merge(source, "codePrefix", repository))
+						.setHandler(testContext.succeeding(merged -> testContext.verify(() -> {
+
+							assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+							target.personalBehaviors.add(0, new Routine());
+							target.personalBehaviors.get(0).id = merged.personalBehaviors.get(0).id;
+							target.personalBehaviors.get(1).label = "NEW label";
 							assertThat(merged).isEqualTo(target);
 							testContext.completeNow();
 						})));
