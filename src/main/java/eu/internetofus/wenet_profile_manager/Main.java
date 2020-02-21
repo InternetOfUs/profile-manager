@@ -54,7 +54,6 @@ import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -212,44 +211,6 @@ public class Main {
 	}
 
 	/**
-	 * Configure the main with the parameters.
-	 *
-	 * @param args arguments to configure the server.
-	 *
-	 * @return the parsed command line, or {@code null} if the arguments are wrong.
-	 */
-	protected CommandLine parse(String... args) {
-
-		try {
-
-			final CommandLineParser parser = new DefaultParser();
-			final Options options = this.createOptions();
-			final CommandLine cmd = parser.parse(options, args);
-			if (cmd.hasOption(HELP_OPTION)) {
-
-				this.printHelpMessage(options);
-
-			} else if (cmd.hasOption(VERSION_OPTION)) {
-
-				this.printVersion();
-
-			} else {
-
-				Logger.debug("Start Main with: {}", (Supplier<String>) () -> Arrays.toString(args));
-				return cmd;
-			}
-
-		} catch (final Throwable throwable) {
-
-			InternalLogger.log(Level.ERROR, throwable.getLocalizedMessage());
-			InternalLogger.log(Level.INFO, "Call with -h to obtain help information");
-		}
-
-		return null;
-
-	}
-
-	/**
 	 * Print the help message.
 	 *
 	 * @param options used to create the command parser.
@@ -257,7 +218,7 @@ public class Main {
 	protected void printHelpMessage(Options options) {
 
 		final HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("profile-manager", options);
+		formatter.printHelp("wenet-profile-manager", options);
 
 	}
 
@@ -280,83 +241,7 @@ public class Main {
 	}
 
 	/**
-	 * Configure the retriever to get the options.
-	 *
-	 * @param cmd command line options.
-	 */
-	protected void configure(CommandLine cmd) {
-
-		if (cmd.hasOption(PROPERTY_OPTION)) {
-
-			final JsonObject userProperties = new JsonObject();
-			final Properties properties = cmd.getOptionProperties(Main.PROPERTY_OPTION);
-			for (final String key : properties.stringPropertyNames()) {
-
-				JsonObject property = userProperties;
-				final String value = properties.getProperty(key);
-				final String[] sections = key.split("\\.");
-				for (int i = 0; i < sections.length - 1; i++) {
-
-					if (property.containsKey(sections[i])) {
-
-						property = property.getJsonObject(sections[i]);
-
-					} else {
-
-						final JsonObject sectionProperty = new JsonObject();
-						property.put(sections[i], sectionProperty);
-						property = sectionProperty;
-
-					}
-
-				}
-				final Object content = Json.decodeValue(value);
-				property.put(sections[sections.length - 1], content);
-
-			}
-
-			final ConfigStoreOptions userPropertiesConf = new ConfigStoreOptions().setType("json").setConfig(userProperties);
-			this.retrieveOptions = this.retrieveOptions.addStore(userPropertiesConf);
-
-		}
-
-		if (cmd.hasOption(CONF_DIR_OPTION)) {
-
-			final String confDirValue = cmd.getOptionValue(CONF_DIR_OPTION);
-
-			try {
-
-				final Path confPath = Path.of(confDirValue);
-				Files.list(confPath).filter(confFilePath -> {
-
-					final File file = confFilePath.toFile();
-					return file.isFile() && file.canRead();
-
-				}).sorted((a, b) -> b.getFileName().compareTo(a.getFileName())).forEach(confFilePath -> {
-
-					String format = "json";
-					final String fileName = confFilePath.getFileName().toString();
-					if (fileName.endsWith("yml")) {
-
-						format = "yaml";
-					}
-					final ConfigStoreOptions confFileOptions = new ConfigStoreOptions().setType("file").setFormat(format)
-							.setConfig(new JsonObject().put("path", confFilePath.toFile().getAbsolutePath()));
-					this.retrieveOptions = this.retrieveOptions.addStore(confFileOptions);
-
-				});
-
-			} catch (final Throwable throwable) {
-
-				Logger.error(throwable, "Cannot load all the configuration files from {}", confDirValue);
-			}
-
-		}
-
-	}
-
-	/**
-	 * Satrt the server with the specified arguments.
+	 * Start the server with the specified arguments.
 	 *
 	 * @param args arguments to configure the main process.
 	 *
@@ -365,16 +250,131 @@ public class Main {
 	public Future<WeNetProfileManagerContext> startWith(String... args) {
 
 		this.startLoggingSystems();
-		final CommandLine cmd = this.parse(args);
-		if (cmd != null) {
+		try {
 
-			this.configure(cmd);
-			return this.startVertx();
+			Logger.debug("Start Main with: {}", (Supplier<String>) () -> Arrays.toString(args));
+			final CommandLineParser parser = new DefaultParser();
+			final Options options = this.createOptions();
+			final CommandLine cmd = parser.parse(options, args);
+			if (cmd.hasOption(CONF_DIR_OPTION)) {
 
-		} else {
+				final String confDirValue = cmd.getOptionValue(CONF_DIR_OPTION);
+				this.configureWithFilesAt(confDirValue);
+			}
+			if (cmd.hasOption(PROPERTY_OPTION)) {
 
-			return Future.failedFuture("Bad arguments");
+				final Properties properties = cmd.getOptionProperties(Main.PROPERTY_OPTION);
+				this.configureWithPropetyValues(properties);
+			}
+
+			if (cmd.hasOption(HELP_OPTION)) {
+
+				this.printHelpMessage(options);
+				return Future.succeededFuture();
+
+			} else if (cmd.hasOption(VERSION_OPTION)) {
+
+				this.printVersion();
+				return Future.succeededFuture();
+
+			} else {
+
+				return this.startVertx();
+
+			}
+
+		} catch (final Throwable throwable) {
+
+			InternalLogger.log(Level.ERROR, throwable.getLocalizedMessage());
+			InternalLogger.log(Level.INFO, "Call with -h to obtain help information");
+			return Future.failedFuture(throwable);
 		}
+
+	}
+
+	/**
+	 * Load the configuration form a files on a directory.
+	 *
+	 * @param confDirValue directory where are the configuration files.
+	 *
+	 * @throws Throwable if exist a problem when load the configuration files.
+	 */
+	protected void configureWithFilesAt(String confDirValue) throws Throwable {
+
+		final Path confPath = Path.of(confDirValue);
+		Files.list(confPath).filter(confFilePath -> {
+
+			final File file = confFilePath.toFile();
+			return file.isFile() && file.canRead();
+
+		}).sorted((a, b) -> b.getFileName().compareTo(a.getFileName())).forEach(confFilePath -> {
+
+			String format = "json";
+			final String fileName = confFilePath.getFileName().toString();
+			if (fileName.endsWith("yml")) {
+
+				format = "yaml";
+			}
+			final ConfigStoreOptions confFileOptions = new ConfigStoreOptions().setType("file").setFormat(format)
+					.setConfig(new JsonObject().put("path", confFilePath.toFile().getAbsolutePath()));
+			this.retrieveOptions = this.retrieveOptions.addStore(confFileOptions);
+
+		});
+
+	}
+
+	/**
+	 * Configure using the specified properties.
+	 *
+	 * @param properties to configure.
+	 */
+	protected void configureWithPropetyValues(Properties properties) {
+
+		final JsonObject userProperties = new JsonObject();
+		for (final String key : properties.stringPropertyNames()) {
+
+			JsonObject property = userProperties;
+			final String[] sections = key.split("\\.");
+			for (int i = 0; i < sections.length - 1; i++) {
+
+				final String section = sections[i].trim();
+				if (property.containsKey(section)) {
+
+					property = property.getJsonObject(section);
+
+				} else {
+
+					final JsonObject sectionProperty = new JsonObject();
+					property.put(section, sectionProperty);
+					property = sectionProperty;
+
+				}
+
+			}
+
+			final String value = properties.getProperty(key).trim();
+
+			if (value.startsWith("\"") && value.endsWith("\"")) {
+
+				property.put(sections[sections.length - 1], value.substring(1, value.length() - 1));
+
+			} else {
+
+				try {
+
+					final Number number = Integer.parseInt(value);
+					property.put(sections[sections.length - 1], number);
+
+				} catch (final Throwable ignored) {
+
+					property.put(sections[sections.length - 1], value);
+				}
+			}
+
+		}
+
+		final ConfigStoreOptions userPropertiesConf = new ConfigStoreOptions().setType("json").setConfig(userProperties);
+		this.retrieveOptions = this.retrieveOptions.addStore(userPropertiesConf);
 
 	}
 

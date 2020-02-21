@@ -34,14 +34,15 @@ docker build -f src/main/docker/Dockerfile -t wenet/profile-manager .
 
 You can use the next arguments:
 
- - **DEFAULT_API_PORT** to define the default port where APi will be bind. By default is **8080**.
+ - **DEFAULT_API_HOST** to define the default host where API will be bind. By default is **0.0.0.0**.
+ - **DEFAULT_API_PORT** to define the default port where API will be bind. By default is **8080**.
  - **DEFAULT_DB_HOST** to define the default mongo database server host name. By default is **localhost**.
  - **DEFAULT_DB_PORT** to define the default mongo database server port. By default is **27017**.
  - **DEFAULT_DB_NAME** to define the default mongo database name. By default is **wenetProfileManagerDB**.
  - **DEFAULT_DB_USER_NAME** to define the default mongo database user name. By default is **wenetProfileManager**.
  - **DEFAULT_DB_USER_PASSWORD** to define the default mongo database user password. By default is **password**.
 
-This arguments are used to create a configurations files at **/usr/profile-manager/etc**.
+This arguments are used to create a configurations files at **/usr/wenet/profile-manager/etc**.
 So you can mount a volume to this if you want to modify any configuration property at runtime.
 
 ### Run docker image
@@ -49,11 +50,12 @@ So you can mount a volume to this if you want to modify any configuration proper
 To run a the created docker image, run the next command:
 
 ```
-docker run -t -i -p 8080:8080 wenet/profile-manager
+docker run -t -i -p 8080:8080 --name wenet_profile_manager_api wenet/profile-manager
 ```
 
 You can modify use the next environment properties to modify some parameters of the server:
 
+ - **API_PORT** to define the host where the API has to bind. By default is **0.0.0.0**.
  - **API_PORT** to define the port where the API has to bind. By default is **8080**.
  - **DB_HOST** to define the mongo database server host name. By default is **localhost**.
  - **DB_PORT** to define the mongo database server port. By default is **27017**.
@@ -61,7 +63,7 @@ You can modify use the next environment properties to modify some parameters of 
  - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
 
-Also you can define your own configuration that modify this properties and mount to  **/usr/profile-manager/etc**.
+Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
 If you want to start also a database and link both you can execute:
 
@@ -73,10 +75,6 @@ After that you can interact with the API at **http://localhost:80**. You can mod
 with the next environment properties:
 
  - **API_PORT** to define the port where the API has to bind to the localhost. By default is **80**.
- - **DB_PORT** to define the mongo database server port. By default is **27017**.
- - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
- - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
- - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
 
 
 ## Developing
@@ -105,26 +103,30 @@ After that you can compile the source, pass the tests and calculate the test cov
 ./mvnw clean install
 ```
 
-To pass the tests is necessary a mongo DB active, to the easier way to enable it is:
+This process generate the next files:
+
+ - The OpenAPI description of the web services at **target/classes/wenet-profile-manager-api.yml**
+ - The execution java package at **target/wenet-profile-manager-VERSION.jar** where **VERSION** is the version of the software.
+ - The java dependencies at **target/lib**.
+
+
+If you go to the **target** directory you can run the application with:
 
 ```
-docker-compose -f src/dev/docker/docker-compose.yml up -d
+java -jar wenet-profile-manager-VERSION.jar
 ```
 
-After that you can run the tests with:
+With the **-h** option you can see the arguments.
 
 ```
-./mvnw clean test
-```
-
-To package your application:
-```
-./mvnw clean package
-```
-
-To run your application:
-```
-./mvnw clean compile exec:java
+user@host:~/git/wenet-profile-manager/target$ java -jar wenet-profile-manager-VERSION.jar -h
+usage: wenet-profile-manager
+ -c,--confDir <<etc>>         Define a directory where the configuration
+                              files are defined.
+ -h,--help                    Show this help message.
+ -p,--property <name=value>   Define a directory where the configuration
+                              files are defined.
+ -v,--version                 Show the software version.
 ```
 
 # Contact

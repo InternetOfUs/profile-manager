@@ -33,7 +33,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Locale;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.itsallcode.io.Capturable;
 import org.itsallcode.junit.sysextensions.SystemErrGuard;
@@ -44,6 +43,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.tinylog.Level;
+
+import io.vertx.config.ConfigRetriever;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link Main}
@@ -238,15 +243,30 @@ public class MainTest {
 
 	/**
 	 * Verify capture exception when configure the configuration directory.
+	 *
+	 * @param testContext context to run the tests.
 	 */
 	@Test
-	public void shouldCaptureExceptionWhenConfigureDirectory() {
+	@ExtendWith(VertxExtension.class)
+	public void shouldCaptureExceptionWhenConfigureDirectory(VertxTestContext testContext) {
 
 		final Main main = new Main();
-		final CommandLine cmd = main.parse("-" + Main.CONF_DIR_OPTION, "undefined://bad/path/to/conf/dir");
-		main.retrieveOptions.getStores().clear();
-		main.configure(cmd);
-		assertThat(main.retrieveOptions.getStores()).isEmpty();
+		testContext.assertFailure(main.startWith("-" + Main.CONF_DIR_OPTION + "undefined://bad/path/to/conf/dir"))
+				.setHandler(handler -> testContext.completeNow());
+	}
+
+	/**
+	 * Verify capture exception when configure the configuration directory.
+	 *
+	 * @param testContext context to run the tests.
+	 */
+	@Test
+	@ExtendWith(VertxExtension.class)
+	public void shouldNotStartBecauseBadAPIPortValue(VertxTestContext testContext) {
+
+		final Main main = new Main();
+		testContext.assertFailure(main.startWith("-" + Main.PROPERTY_OPTION + "api.host=\"localhost\"",
+				"-" + Main.PROPERTY_OPTION + "api.port=\"80\"")).setHandler(handler -> testContext.completeNow());
 	}
 
 	/**
@@ -283,7 +303,6 @@ public class MainTest {
 	 * @param stream captured system err stream.
 	 * @param tmpDir temporal directory.
 	 *
-	 *
 	 * @throws Throwable if can not listen to a bad persistence port.
 	 */
 	@Test
@@ -303,6 +322,158 @@ public class MainTest {
 			data = stream.getCapturedData();
 		}
 		assertThat(data).contains(Level.ERROR.name(), "Check the Logs to known why.");
+
+	}
+
+	/**
+	 * Check configuration load from properties.
+	 *
+	 * @param testContext context to run the tests.
+	 *
+	 * @throws Throwable if can not create the temporal files.
+	 */
+	@Test
+	@ExtendWith(VertxExtension.class)
+	public void shouldLoadConfigurationProperties(VertxTestContext testContext) throws Throwable {
+
+		final Main main = new Main();
+		testContext
+				.assertComplete(
+						main.startWith("-" + Main.PROPERTY_OPTION + "api.host=\"HOST\"", "-" + Main.PROPERTY_OPTION + "api.port=80",
+								"-" + Main.PROPERTY_OPTION, "persistence.db_name=profile-manager", "-" + Main.PROPERTY_OPTION,
+								"persistence.username=db-user-name", "-" + Main.PROPERTY_OPTION + " persistence.host=phost",
+								"-" + Main.PROPERTY_OPTION + "persistence.port=27", "-" + Main.PROPERTY_OPTION,
+								"persistence.db_name=DB_NAME", "-" + Main.PROPERTY_OPTION + "persistence.username=USER_NAME",
+								"-" + Main.PROPERTY_OPTION + " persistence.password=PASSWORD", "-" + Main.VERSION_OPTION))
+				.setHandler(handler -> {
+
+					final ConfigRetriever retriever = ConfigRetriever.create(Vertx.vertx(), main.retrieveOptions);
+					retriever.getConfig(testContext.succeeding(conf -> testContext.verify(() -> {
+
+						assertThat(conf.getJsonObject("api")).isNotNull();
+						assertThat(conf.getJsonObject("api").getString("host")).isEqualTo("HOST");
+						assertThat(conf.getJsonObject("api").getInteger("port")).isEqualTo(80);
+						assertThat(conf.getJsonObject("persistence")).isNotNull();
+						assertThat(conf.getJsonObject("persistence").getString("host")).isEqualTo("phost");
+						assertThat(conf.getJsonObject("persistence").getInteger("port")).isEqualTo(27);
+						assertThat(conf.getJsonObject("persistence").getString("db_name")).isEqualTo("DB_NAME");
+						assertThat(conf.getJsonObject("persistence").getString("username")).isEqualTo("USER_NAME");
+						assertThat(conf.getJsonObject("persistence").getString("password")).isEqualTo("PASSWORD");
+
+						testContext.completeNow();
+					})));
+
+				});
+
+	}
+
+	/**
+	 * Check configuration load configuration files.
+	 *
+	 * @param tmpDir      temporal directory.
+	 * @param testContext context to run the tests.
+	 *
+	 * @throws Throwable if can not create the temporal files.
+	 */
+	@Test
+	@ExtendWith(VertxExtension.class)
+	public void shouldLoadConfigurationFromFiles(@TempDir File tmpDir, VertxTestContext testContext) throws Throwable {
+
+		final File etc = new File(tmpDir, "etc");
+		etc.mkdirs();
+		final JsonObject api = new JsonObject().put("host", "HOST").put("port", 80);
+		final File apiFile = new File(etc, "api.json");
+		apiFile.createNewFile();
+		Files.writeString(apiFile.toPath(), new JsonObject().put("api", api).encodePrettily());
+		final StringBuilder persistence = new StringBuilder();
+		persistence.append("persistence:\n");
+		persistence.append("  host: phost\n");
+		persistence.append("  port: 27\n");
+		persistence.append("  db_name: \"DB_NAME\"\n");
+		persistence.append("  username: USER_NAME\n");
+		persistence.append("  password: \"PASSWORD\"\n");
+		final File persistenceFile = new File(etc, "persistence.yml");
+		persistenceFile.createNewFile();
+		Files.writeString(persistenceFile.toPath(), persistence.toString());
+		final Main main = new Main();
+		testContext
+				.assertComplete(main.startWith("-" + Main.CONF_DIR_OPTION, etc.getAbsolutePath(), "-" + Main.VERSION_OPTION))
+				.setHandler(handler -> {
+
+					final ConfigRetriever retriever = ConfigRetriever.create(Vertx.vertx(), main.retrieveOptions);
+					retriever.getConfig(testContext.succeeding(conf -> testContext.verify(() -> {
+
+						assertThat(conf.getJsonObject("api")).isNotNull();
+						assertThat(conf.getJsonObject("api").getString("host")).isEqualTo("HOST");
+						assertThat(conf.getJsonObject("api").getInteger("port")).isEqualTo(80);
+						assertThat(conf.getJsonObject("persistence")).isNotNull();
+						assertThat(conf.getJsonObject("persistence").getString("host")).isEqualTo("phost");
+						assertThat(conf.getJsonObject("persistence").getInteger("port")).isEqualTo(27);
+						assertThat(conf.getJsonObject("persistence").getString("db_name")).isEqualTo("DB_NAME");
+						assertThat(conf.getJsonObject("persistence").getString("username")).isEqualTo("USER_NAME");
+						assertThat(conf.getJsonObject("persistence").getString("password")).isEqualTo("PASSWORD");
+
+						testContext.completeNow();
+					})));
+
+				});
+
+	}
+
+	/**
+	 * Check configuration properties are preferred to the defined on the
+	 * configuration files.
+	 *
+	 * @param tmpDir      temporal directory.
+	 * @param testContext context to run the tests.
+	 *
+	 * @throws Throwable if can not create the temporal files.
+	 */
+	@Test
+	@ExtendWith(VertxExtension.class)
+	public void shouldConfigureAndUsePropertiesBeforeFiles(@TempDir File tmpDir, VertxTestContext testContext)
+			throws Throwable {
+
+		final File etc = new File(tmpDir, "etc");
+		etc.mkdirs();
+		final JsonObject api = new JsonObject().put("host", "HOST").put("port", 80);
+		final File apiFile = new File(etc, "api.json");
+		apiFile.createNewFile();
+		Files.writeString(apiFile.toPath(), new JsonObject().put("api", api).encodePrettily());
+		final StringBuilder persistence = new StringBuilder();
+		persistence.append("persistence:\n");
+		persistence.append("  host: phost\n");
+		persistence.append("  port: 27\n");
+		persistence.append("  db_name: \"DB_NAME\"\n");
+		persistence.append("  username: USER_NAME\n");
+		persistence.append("  password: \"PASSWORD\"\n");
+		final File persistenceFile = new File(etc, "persistence.yml");
+		persistenceFile.createNewFile();
+		Files.writeString(persistenceFile.toPath(), persistence.toString());
+		final Main main = new Main();
+		testContext.assertComplete(
+				main.startWith("-" + Main.CONF_DIR_OPTION + etc.getAbsolutePath(), "-" + Main.PROPERTY_OPTION + "api.port=8081",
+						"-" + Main.PROPERTY_OPTION + " persistence.db_name=\"database name\"", "-" + Main.PROPERTY_OPTION,
+						"persistence.password=PASSW0RD", "-" + Main.VERSION_OPTION))
+				.setHandler(handler -> {
+
+					final ConfigRetriever retriever = ConfigRetriever.create(Vertx.vertx(), main.retrieveOptions);
+					retriever.getConfig(testContext.succeeding(conf -> testContext.verify(() -> {
+
+						assertThat(conf.getJsonObject("api")).isNotNull();
+						assertThat(conf.getJsonObject("api").getString("host")).isEqualTo("HOST");
+						assertThat(conf.getJsonObject("api").getInteger("port")).isEqualTo(8081);
+						assertThat(conf.getJsonObject("persistence")).isNotNull();
+						assertThat(conf.getJsonObject("persistence").getString("host")).isEqualTo("phost");
+						assertThat(conf.getJsonObject("persistence").getInteger("port")).isEqualTo(27);
+						assertThat(conf.getJsonObject("persistence").getString("db_name")).isEqualTo("database name");
+						assertThat(conf.getJsonObject("persistence").getString("username")).isEqualTo("USER_NAME");
+						assertThat(conf.getJsonObject("persistence").getString("password")).isEqualTo("PASSW0RD");
+
+						testContext.completeNow();
+					})));
+
+				});
 
 	}
 

@@ -29,6 +29,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<require-maven-version>3.6</require-maven-version>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<!-- application properties -->
 		<api-version>0.9.0</api-version>
 		<!-- Maven plugins versions -->
@@ -210,6 +211,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>${finalName}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
