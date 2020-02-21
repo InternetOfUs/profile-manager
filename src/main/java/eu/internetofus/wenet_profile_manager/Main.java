@@ -45,7 +45,6 @@ import org.tinylog.Supplier;
 import org.tinylog.jul.JulTinylogBridge;
 import org.tinylog.provider.InternalLogger;
 
-import eu.internetofus.wenet_profile_manager.api.APIVerticle;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -383,7 +382,7 @@ public class Main {
 	 *
 	 * @param args arguments to configure the main process.
 	 *
-	 * @see APIVerticle
+	 * @see MainVerticle
 	 */
 	public static void main(String... args) {
 
