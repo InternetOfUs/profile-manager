@@ -1,10 +1,11 @@
 image: docker:latest
 
-variables:
-  DOCKER_HOST: tcp://10.43.0.1:2375
-
 services:
   - docker:dind
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_TLS_CERTDIR: ""
 
 before_script:
   - docker info
