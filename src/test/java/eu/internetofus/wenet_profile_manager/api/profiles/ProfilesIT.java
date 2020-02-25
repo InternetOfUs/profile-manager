@@ -946,8 +946,8 @@ public class ProfilesIT {
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
-	 * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
+	 * @see Profiles#updateProfile(String, JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, Handler)
 	 */
 	@Test
 	public void shouldUpdateProfileNorm(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
