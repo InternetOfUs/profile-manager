@@ -357,6 +357,10 @@ public class Main {
 
 				property.put(sections[sections.length - 1], value.substring(1, value.length() - 1));
 
+			} else if (Boolean.TRUE.toString().equalsIgnoreCase(value) || Boolean.FALSE.toString().equalsIgnoreCase(value)) {
+
+				property.put(sections[sections.length - 1], Boolean.valueOf(value));
+
 			} else {
 
 				try {
