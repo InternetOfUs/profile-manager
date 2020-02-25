@@ -55,7 +55,7 @@ docker run -t -i -p 8080:8080 --name wenet_profile_manager_api wenet/profile-man
 
 You can modify use the next environment properties to modify some parameters of the server:
 
- - **API_PORT** to define the host where the API has to bind. By default is **0.0.0.0**.
+ - **API_HOST** to define the host where the API has to bind. By default is **0.0.0.0**.
  - **API_PORT** to define the port where the API has to bind. By default is **8080**.
  - **DB_HOST** to define the mongo database server host name. By default is **localhost**.
  - **DB_PORT** to define the mongo database server port. By default is **27017**.
