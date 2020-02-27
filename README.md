@@ -45,6 +45,7 @@ You can use the next arguments:
 This arguments are used to create a configurations files at **/usr/wenet/profile-manager/etc**.
 So you can mount a volume to this if you want to modify any configuration property at runtime.
 
+
 ### Run docker image
 
 To run a the created docker image, run the next command:
@@ -86,17 +87,6 @@ To develop you need the next software:
  - [docker compose](https://docs.docker.com/compose/install/)
  - [Postman](https://www.postman.com/downloads/)
 
-When you have installed this software you can start the development environment with:
-
-```
-docker-compose -f src/dev/docker/docker-compose.yml up -d
-```
-
-This starts:
-
- - A database ( **MongoDB** ) at **localhost:27017**
- - A web to explore the database ( **mongo-express** ) at **http://localhost:8081/** with the credentials **admin:password**
-
 After that you can compile the source, pass the tests and calculate the test coverage with:
 
 ```
@@ -107,7 +97,7 @@ This process generate the next files:
 
  - The OpenAPI description of the web services at **target/classes/wenet-profile-manager-api.yml**
  - The execution java package at **target/wenet-profile-manager-VERSION.jar** where **VERSION** is the version of the software.
- - The java dependencies at **target/lib**.
+ - The necessary execution dependencies at **target/lib**.
 
 
 If you go to the **target** directory you can run the application with:

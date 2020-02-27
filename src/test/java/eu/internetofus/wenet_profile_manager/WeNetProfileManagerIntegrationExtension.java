@@ -104,6 +104,11 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 	private static WeNetProfileManagerContext context;
 
 	/**
+	 * The started mongodb container for do the integration tests.
+	 */
+	private static MongoContainer mongoContainer;
+
+	/**
 	 * Return the defined vertx.
 	 *
 	 * @return the started vertx.
@@ -115,27 +120,45 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 			final Semaphore semaphore = new Semaphore(0);
 			new Thread(() -> {
 
-				int port = 0;
-				try {
-					final ServerSocket server = new ServerSocket(0);
-					port = server.getLocalPort();
-					server.close();
-				} catch (final Throwable ignored) {
-				}
-				new Main().startWith("-papi.port=" + port).onComplete(start -> {
+				MongoContainer.createAndStart().onComplete(createdMongo -> {
 
-					if (start.failed()) {
+					if (createdMongo.failed()) {
 
-						InternalLogger.log(Level.ERROR, start.cause(), "Cannot start the WeNet profile manager");
+						InternalLogger.log(Level.ERROR, createdMongo.cause(), "Cannot start the MongoDB container");
+						semaphore.release();
 
 					} else {
 
-						context = start.result();
+						mongoContainer = createdMongo.result();
+						int port = 0;
+						try {
+							final ServerSocket server = new ServerSocket(0);
+							port = server.getLocalPort();
+							server.close();
+						} catch (final Throwable ignored) {
+						}
+						new Main().startWith("-papi.port=" + port, "-ppersistence.host=" + mongoContainer.getContainerIpAddress(),
+								"-ppersistence.port=" + mongoContainer.getMappedPort(27017)).onComplete(start -> {
+
+									if (start.failed()) {
+
+										InternalLogger.log(Level.ERROR, start.cause(), "Cannot start the WeNet profile manager");
+										mongoContainer.stop();
+										mongoContainer = null;
+
+									} else {
+
+										context = start.result();
+									}
+
+									semaphore.release();
+
+								});
+
 					}
 
-					semaphore.release();
-
 				});
+
 			}).start();
 			try {
 				semaphore.acquire();
