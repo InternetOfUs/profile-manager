@@ -1,81 +1,81 @@
 resourcePackages:
-- eu.internetofus.wenet_profile_manager.api
+    - eu.internetofus.wenet_profile_manager.api
 prettyPrint: true
 cacheTTL: 0
 openAPI:
-  tags:
-    - name: Other
-      description: Other services provided by the API.
-    - name: Intelligences
-      description: Provide the functionality to evaluate the intelligences of a person
-    - name: Personalities
-      description: Provide the functionality to evaluate the personality of a person
-    - name: Historic
-      description: The functionality provided allows to access to the values of the models
-        in a previous dates.
-    - name: Profiles
-      description: The functionality provided allows to access current and previous values
-        of user attributes that define the user profile.  It also allows you to modify
-        the current values.
-  info:
-    # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-    version: '0.10.0'
-    title: WeNet - Profile manager API
-    description:  >-
-      This API will be used to storing and maintaining the WeNet user profile. A profile
-      is a set of attributes, and their current values represent the state of the user.
-      These attributes can be:
+    tags:
+        - name: Other
+          description: Other services provided by the API.
+        - name: Intelligences
+          description: Provide the functionality to evaluate the intelligences of a person
+        - name: Personalities
+          description: Provide the functionality to evaluate the personality of a person
+        - name: Historic
+          description:
+              The functionality provided allows to access to the values of the models
+              in a previous dates.
+        - name: Profiles
+          description:
+              The functionality provided allows to access current and previous values
+              of user attributes that define the user profile.  It also allows you to modify
+              the current values.
+    info:
+        # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
+        version: "0.10.0"
+        title: WeNet - Profile manager API
+        description: >-
+            This API will be used to storing and maintaining the WeNet user profile. A profile
+            is a set of attributes, and their current values represent the state of the user.
+            These attributes can be:
 
-       * **id**: identifier of the WeNet user.
-       * **name**: the name of the user.
-       * **dateOfBirth**: the date of birth of the user.
-       * **gender**: the gender of the user.
-       * **email**: the email of the user.
-       * **phoneNumber**: the phone number of the user, on the E.164 format (^\+?[1-9]\d{1,14}$).
-       * **locale**: the locale used by the user.
-       * **avatar**: the URL to an image that can be used as an avatar of the user.
-       * **nationality**: the nationality of the user.
-       * **languages**: this is a set of languages that the user can understand.
-       * **occupation**: the occupation of the user.
-       * **norms**: the individual norms of the user.
-       * **plannedActivities**: the activities planned by the user.
-       * **relevantLocations**: the locations of interest for the user - may be the home or work location -.
-       * **relationships**: the relations of this user with other users.
-       * **socialPractices**: the social practices of the user.
-       * **personalBehaviours**: the personal behaviors of the user.
-
-
-      ### Language
-
-      The languages that a user can understand are defined by the **ISO 639-1** code of the language and
-      the linguistic ability level of the person. This level can be:
-
-       * **A0**: Beginner/False beginner. The person only knows a few words of the language, if that.
-       * **A1**: Elementary. The person can ask a few basic questions and ideas, but with a lot of mistakes.
-       * **A2**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
-                 It stills to make a lot of big mistakes.
-       * **B1**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
-                 It stills to make a lot of big mistakes.
-       * **B2**: Intermediate. Now the person can converse in many situations, with less serious errors.
-       * **C1**: Upper-intermediate. The person is comfortable in most situations, still some good mistakes.
-       * **C2**: Proficient. The person is fluent, pretty much mother tongue. Extremely comfortable, it has complete control over the language.
+             * **id**: identifier of the WeNet user.
+             * **name**: the name of the user.
+             * **dateOfBirth**: the date of birth of the user.
+             * **gender**: the gender of the user.
+             * **email**: the email of the user.
+             * **phoneNumber**: the phone number of the user, on the E.164 format (^\+?[1-9]\d{1,14}$).
+             * **locale**: the locale used by the user.
+             * **avatar**: the URL to an image that can be used as an avatar of the user.
+             * **nationality**: the nationality of the user.
+             * **languages**: this is a set of languages that the user can understand.
+             * **occupation**: the occupation of the user.
+             * **norms**: the individual norms of the user.
+             * **plannedActivities**: the activities planned by the user.
+             * **relevantLocations**: the locations of interest for the user - may be the home or work location -.
+             * **relationships**: the relations of this user with other users.
+             * **socialPractices**: the social practices of the user.
+             * **personalBehaviours**: the personal behaviors of the user.
 
 
-      ### Gender
+            ### Language
 
-      The gender of a user can be:
+            The languages that a user can understand are defined by the **ISO 639-1** code of the language and
+            the linguistic ability level of the person. This level can be:
 
-       * **F**: A person whose gender identity matches the female sex.
-       * **M**: A person whose gender identity matches the male sex.
+             * **A0**: Beginner/False beginner. The person only knows a few words of the language, if that.
+             * **A1**: Elementary. The person can ask a few basic questions and ideas, but with a lot of mistakes.
+             * **A2**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
+                       It stills to make a lot of big mistakes.
+             * **B1**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
+                       It stills to make a lot of big mistakes.
+             * **B2**: Intermediate. Now the person can converse in many situations, with less serious errors.
+             * **C1**: Upper-intermediate. The person is comfortable in most situations, still some good mistakes.
+             * **C2**: Proficient. The person is fluent, pretty much mother tongue. Extremely comfortable, it has complete control over the language.
 
-    contact:
-      name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
-      email: rosell (at) iiia.csic.es
-    license:
-      name: MIT
-      url: https://opensource.org/licenses/MIT
-  servers:
-    - url: http://ardid.iiia.csic.es/dummy-wenet-profile-manager/
-      description: Dummy server
-    - url: http://ardid.iiia.csic.es/dev-wenet-profile-manager/
-      description: Develop server
+
+            ### Gender
+
+            The gender of a user can be:
+
+             * **F**: A person whose gender identity matches the female sex.
+             * **M**: A person whose gender identity matches the male sex.
+
+        contact:
+            name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
+            email: rosell (at) iiia.csic.es
+        license:
+            name: MIT
+            url: https://opensource.org/licenses/MIT
+    servers:
+        - url: http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/
+          description: Testing server
