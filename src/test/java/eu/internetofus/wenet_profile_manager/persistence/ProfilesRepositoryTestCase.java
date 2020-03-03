@@ -35,6 +35,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.wenet_profile_manager.TimeManager;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
@@ -179,7 +180,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile._creationTs = 0;
 		profile._lastUpdateTs = 1;
-		final long now = System.currentTimeMillis();
+		final long now = TimeManager.now();
 		this.repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
 			assertThat(storedProfile).isNotNull();
@@ -201,7 +202,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	@Test
 	public void shouldStoreProfileObject(VertxTestContext testContext) {
 
-		final long now = System.currentTimeMillis();
+		final long now = TimeManager.now();
 		this.repository.storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
 			assertThat(storedProfile).isNotNull();
@@ -294,7 +295,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 		profile.occupation = "Doctor";
 		this.repository.storeProfile(profile, testContext.succeeding(stored -> testContext.verify(() -> {
 
-			final long now = System.currentTimeMillis();
+			final long now = TimeManager.now();
 			final WeNetUserProfile update = new WeNetUserProfileTest().createModelExample(23);
 			update.id = stored.id;
 			update._creationTs = stored._creationTs;

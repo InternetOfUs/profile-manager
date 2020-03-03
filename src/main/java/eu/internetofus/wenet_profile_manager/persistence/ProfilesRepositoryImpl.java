@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.wenet_profile_manager.TimeManager;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -98,7 +99,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	@Override
 	public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
-		final long now = System.currentTimeMillis();
+		final long now = TimeManager.now();
 		profile.put("_creationTs", now);
 		profile.put("_lastUpdateTs", now);
 		this.pool.save(PROFILES_COLLECTION, profile, store -> {
@@ -127,7 +128,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
 		final Object id = profile.remove("id");
 		final JsonObject query = new JsonObject().put("_id", id);
-		final long now = System.currentTimeMillis();
+		final long now = TimeManager.now();
 		profile.put("_lastUpdateTs", now);
 		final JsonObject updateProfile = new JsonObject().put("$set", profile);
 		final UpdateOptions options = new UpdateOptions().setMulti(false);

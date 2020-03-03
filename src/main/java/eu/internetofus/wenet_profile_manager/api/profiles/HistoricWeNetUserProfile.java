@@ -39,10 +39,10 @@ public class HistoricWeNetUserProfile extends Model {
 
 	/**
 	 * The difference, measured in milliseconds, between the time when the profile
-	 * is set and midnight, January 1, 1970 UTC.
+	 * is modified to have the current state and midnight, January 1, 1970 UTC.
 	 */
 	@Schema(
-			description = "The difference, measured in milliseconds, between the time when the profile is set and midnight, January 1, 1970 UTC.",
+			description = "The difference, measured in seconds, between the time when the profile is modified to have the current state and midnight, January 1, 1970 UTC.",
 			example = "1457166440")
 	public long from;
 
@@ -51,7 +51,7 @@ public class HistoricWeNetUserProfile extends Model {
 	 * is not more valid and midnight, January 1, 1970 UTC.
 	 */
 	@Schema(
-			description = "The difference, measured in milliseconds, between the time when the profile is not more valid and midnight, January 1, 1970 UTC.",
+			description = "The difference, measured in seconds, between the time when the profile is not more valid and midnight, January 1, 1970 UTC.",
 			example = "1571664406")
 	public long to;
 

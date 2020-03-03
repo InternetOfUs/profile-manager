@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.wenet_profile_manager.TimeManager;
 import eu.internetofus.wenet_profile_manager.ValidationErrorException;
 import eu.internetofus.wenet_profile_manager.Validations;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
@@ -170,7 +171,7 @@ public class WeNetUserProfile extends Model {
 	/**
 	 * The instant of the creation.
 	 */
-	@Schema(description = "The time stamp representing the account creationinstant.", example = "1563871899")
+	@Schema(description = "The time stamp representing the account creation instant.", example = "1563871899")
 	public long _creationTs;
 
 	/**
@@ -184,7 +185,7 @@ public class WeNetUserProfile extends Model {
 	 */
 	public WeNetUserProfile() {
 
-		this._creationTs = this._lastUpdateTs = System.currentTimeMillis();
+		this._creationTs = this._lastUpdateTs = TimeManager.now();
 	}
 
 	/**
