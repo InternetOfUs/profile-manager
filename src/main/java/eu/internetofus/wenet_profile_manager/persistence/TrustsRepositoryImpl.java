@@ -26,64 +26,59 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
+import eu.internetofus.wenet_profile_manager.TimeManager;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
- * The verticle that provide the persistence services.
+ * Implementation of the {@link TrustsRepository}.
+ *
+ * @see TrustsRepository
+ *
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractVerticle {
+public class TrustsRepositoryImpl extends Repository implements TrustsRepository {
 
 	/**
-	 * The name of the pool of connections.
+	 * The name of the collection that contains the trusts.
 	 */
-	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
+	public static final String TRUSTS_COLLECTION = "trusts";
 
 	/**
-	 * The pool of database connections.
+	 * Create a new repository.
+	 *
+	 * @param pool to create the connections.
 	 */
-	protected MongoClient pool;
+	public TrustsRepositoryImpl(MongoClient pool) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
+		super(pool);
 
-		try {
-			// create the pool
-			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
-
-			// register services
-			ProfilesRepository.register(this.vertx, this.pool);
-
-			TrustsRepository.register(this.vertx, this.pool);
-
-			startPromise.complete();
-
-		} catch (final Throwable cause) {
-
-			startPromise.fail(cause);
-		}
 	}
 
 	/**
-	 * Close the connections pool.
-	 *
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void stop() throws Exception {
+	public void storeTrustEventObject(JsonObject event, Handler<AsyncResult<Void>> storeHandler) {
 
-		if (this.pool != null) {
-			this.pool.close();
-			this.pool = null;
-		}
+		final long now = TimeManager.now();
+		event.put("reportTime", now);
+		this.pool.save(TRUSTS_COLLECTION, event, store -> {
+
+			if (store.failed()) {
+
+				storeHandler.handle(Future.failedFuture(store.cause()));
+
+			} else {
+
+				storeHandler.handle(Future.succeededFuture());
+			}
+
+		});
 
 	}
 

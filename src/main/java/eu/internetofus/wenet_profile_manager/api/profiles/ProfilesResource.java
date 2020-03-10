@@ -62,7 +62,7 @@ public class ProfilesResource implements Profiles {
 	/**
 	 * Create a new instance to provide the services of the {@link Profiles}.
 	 *
-	 * @param vertx where resource is defined.
+	 * @param vertx with the event bus to use.
 	 */
 	public ProfilesResource(Vertx vertx) {
 

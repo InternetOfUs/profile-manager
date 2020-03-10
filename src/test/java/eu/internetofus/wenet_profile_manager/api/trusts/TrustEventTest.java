@@ -24,67 +24,33 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import eu.internetofus.wenet_profile_manager.ModelTestCase;
 
 /**
- * The verticle that provide the persistence services.
+ * Test the {@link TrustEvent}
+ *
+ * @see TrustEvent
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractVerticle {
-
-	/**
-	 * The name of the pool of connections.
-	 */
-	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
-
-	/**
-	 * The pool of database connections.
-	 */
-	protected MongoClient pool;
+public class TrustEventTest extends ModelTestCase<TrustEvent> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
+	public TrustEvent createModelExample(int index) {
 
-		try {
-			// create the pool
-			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
-
-			// register services
-			ProfilesRepository.register(this.vertx, this.pool);
-
-			TrustsRepository.register(this.vertx, this.pool);
-
-			startPromise.complete();
-
-		} catch (final Throwable cause) {
-
-			startPromise.fail(cause);
-		}
-	}
-
-	/**
-	 * Close the connections pool.
-	 *
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stop() throws Exception {
-
-		if (this.pool != null) {
-			this.pool.close();
-			this.pool = null;
-		}
-
+		final TrustEvent model = new TrustEvent();
+		model.sourceId = "SourceId_" + index;
+		model.targetId = "TargetId_" + index;
+		model.communityId = "CommunityId_" + index;
+		model.taskTypeId = "TaskTypeId_" + index;
+		model.reportTime = index;
+		model.value = 1.0 / Math.max(1, index + 2);
+		return model;
 	}
 
 }

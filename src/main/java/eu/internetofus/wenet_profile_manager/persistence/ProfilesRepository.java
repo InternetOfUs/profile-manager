@@ -66,6 +66,19 @@ public interface ProfilesRepository {
 	}
 
 	/**
+	 * Register this service.
+	 *
+	 * @param vertx that contains the event bus to use.
+	 * @param pool  to create the database connections.
+	 */
+	static void register(Vertx vertx, MongoClient pool) {
+
+		new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class,
+				new ProfilesRepositoryImpl(pool));
+
+	}
+
+	/**
 	 * Search for the profile with the specified identifier.
 	 *
 	 * @param id            identifier of the profile to search.
@@ -103,19 +116,6 @@ public interface ProfilesRepository {
 	 * @param searchHandler handler to manage the search.
 	 */
 	void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
-
-	/**
-	 * Register this service.
-	 *
-	 * @param vertx that contains the event bus to use.
-	 * @param pool  to create the database connections.
-	 */
-	static void register(Vertx vertx, MongoClient pool) {
-
-		new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class,
-				new ProfilesRepositoryImpl(pool));
-
-	}
 
 	/**
 	 * Store a profile.
@@ -160,7 +160,7 @@ public interface ProfilesRepository {
 	 * Store a profile.
 	 *
 	 * @param profile      to store.
-	 * @param storeHandler handler to manage the search.
+	 * @param storeHandler handler to manage the store.
 	 */
 	void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
 

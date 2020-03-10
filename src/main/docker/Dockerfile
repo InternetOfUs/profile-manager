@@ -18,6 +18,12 @@ ARG DEFAULT_DB_PORT=27017
 ARG DEFAULT_DB_NAME=wenetProfileManagerDB
 ARG DEFAULT_DB_USER_NAME=wenetProfileManager
 ARG DEFAULT_DB_USER_PASSWORD=password
+ARG DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_HOST="wenet.iiia.csic.es"
+ARG DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_PORT=80
+ARG DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_PATH="/interaction-protocol-engine/latest"
+ARG DEFAULT_WENET_TASK_MANAGER_API_HOST="wenet.iiia.csic.es"
+ARG DEFAULT_WENET_TASK_MANAGER_API_PORT=80
+ARG DEFAULT_WENET_TASK_MANAGER_API_PATH="/task-manager/latest"
 ENV API_HOST=${DEFAULT_API_HOST}
 ENV API_PORT=${DEFAULT_API_PORT}
 ENV DB_HOST=${DEFAULT_DB_HOST}
@@ -25,7 +31,14 @@ ENV DB_PORT=${DEFAULT_DB_PORT}
 ENV DB_NAME=${DEFAULT_DB_NAME}
 ENV DB_USER_NAME=${DEFAULT_DB_USER_NAME}
 ENV DB_USER_PASSWORD=${DEFAULT_DB_USER_PASSWORD}
+ENV WENET_INTERACTION_PROTOCOL_ENGINE_API_HOST=${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_HOST}
+ENV WENET_INTERACTION_PROTOCOL_ENGINE_API_PORT=${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_PORT}
+ENV WENET_INTERACTION_PROTOCOL_ENGINE_API_PATH=${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API_PATH}
+ENV WENET_TASK_MANAGER_API_HOST=${DEFAULT_WENET_TASK_MANAGER_API_HOST}
+ENV WENET_TASK_MANAGER_API_PORT=${DEFAULT_WENET_TASK_MANAGER_API_PORT}
+ENV WENET_TASK_MANAGER_API_PATH=${DEFAULT_WENET_TASK_MANAGER_API_PATH}
 ENV RUN_ARGS=""
+
 
 # Create running dierectories
 RUN mkdir -p /usr/wenet/profile-manager/lib
@@ -48,4 +61,9 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait
 RUN chmod +x /wait
 
 EXPOSE ${API_PORT}
-CMD /wait && java -jar wenet-profile-manager.jar -c etc -papi.host=${API_HOST} -papi.port=${API_PORT} -ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD} ${RUN_ARGS}
+CMD /wait && java -jar wenet-profile-manager.jar -c etc \
+  -papi.host=${API_HOST} -papi.port=${API_PORT}\
+  -ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD}\
+  -pservice.interactionProtocolEngine.host=${WENET_INTERACTION_PROTOCOL_ENGINE_API_HOST} -pservice.interactionProtocolEngine.port=${WENET_INTERACTION_PROTOCOL_ENGINE_API_PORT} -pservice.interactionProtocolEngine.apiPath=${WENET_INTERACTION_PROTOCOL_ENGINE_API_PATH}\
+  -pservice.taskManager.host=${WENET_PROFILE_MANAGER_API_HOST} -pservice.taskManager.port=${WENET_PROFILE_MANAGER_API_PORT} -pservice.taskManager.apiPath=${WENET_PROFILE_MANAGER_API_PATH}\
+  ${RUN_ARGS}

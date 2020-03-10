@@ -26,64 +26,71 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
+import org.junit.jupiter.api.Test;
+
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustEvent;
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustEventTest;
+import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * The verticle that provide the persistence services.
+ * Generic test over the {@link TrustsRepository}.
+ *
+ * @param <T> the repository to test.
+ *
+ * @see TrustsRepository
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractVerticle {
+public abstract class TrustsRepositoryTestCase<T extends TrustsRepository> {
 
 	/**
-	 * The name of the pool of connections.
+	 * The repository to do the tests.
 	 */
-	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
+	protected T repository;
 
 	/**
-	 * The pool of database connections.
+	 * Verify that can not store a trust that can not be an object.
+	 *
+	 * @param testContext context that executes the test.
+	 *
+	 * @see TrustsRepository#storeTrustEvent(TrustEvent, Handler)
 	 */
-	protected MongoClient pool;
+	@Test
+	public void shouldNotStoreATrustThatCanNotBeAnObject(VertxTestContext testContext) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
+		final TrustEvent trust = new TrustEvent() {
 
-		try {
-			// create the pool
-			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public JsonObject toJsonObject() {
 
-			// register services
-			ProfilesRepository.register(this.vertx, this.pool);
+				return null;
+			}
+		};
+		this.repository.storeTrustEvent(trust, testContext.failing(failed -> {
+			testContext.completeNow();
+		}));
 
-			TrustsRepository.register(this.vertx, this.pool);
-
-			startPromise.complete();
-
-		} catch (final Throwable cause) {
-
-			startPromise.fail(cause);
-		}
 	}
 
 	/**
-	 * Close the connections pool.
+	 * Verify that can store a trust event.
 	 *
-	 * {@inheritDoc}
+	 * @param testContext context that executes the test.
+	 *
+	 * @see TrustsRepository#storeTrustEvent(TrustEvent, Handler)
 	 */
-	@Override
-	public void stop() throws Exception {
+	@Test
+	public void shouldStoreTrust(VertxTestContext testContext) {
 
-		if (this.pool != null) {
-			this.pool.close();
-			this.pool = null;
-		}
+		final TrustEvent trust = new TrustEventTest().createModelExample(1);
+		this.repository.storeTrustEvent(trust, testContext.succeeding(empty -> {
+			testContext.completeNow();
+		}));
 
 	}
 

@@ -19,9 +19,12 @@ openAPI:
               The functionality provided allows to access current and previous values
               of user attributes that define the user profile.  It also allows you to modify
               the current values.
+        - name: Trusts
+          description: The functionality provided allows to manage the trust over other users.
+
     info:
         # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-        version: "0.10.0"
+        version: "0.11.0"
         title: WeNet - Profile manager API
         description: >-
             This API will be used to storing and maintaining the WeNet user profile. A profile
@@ -70,6 +73,12 @@ openAPI:
              * **F**: A person whose gender identity matches the female sex.
              * **M**: A person whose gender identity matches the male sex.
 
+            ### Trust
+
+            The trust over another user is dynamically and will be updated every time they collaborate
+            to achieve a task. Also, you can get or set the trust on another user, on a member of
+            a community, or on a member of a community to fulfil a task type.
+
         contact:
             name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
             email: rosell (at) iiia.csic.es
@@ -77,5 +86,5 @@ openAPI:
             name: MIT
             url: https://opensource.org/licenses/MIT
     servers:
-        - url: http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/
+        - url: http://ardid.iiia.csic.es/wenet-profile-manager/0.11.0/
           description: Testing server

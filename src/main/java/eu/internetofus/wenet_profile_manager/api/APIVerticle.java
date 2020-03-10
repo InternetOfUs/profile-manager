@@ -36,6 +36,8 @@ import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
 import eu.internetofus.wenet_profile_manager.api.personalities.PersonalitiesResource;
 import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
+import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
 import eu.internetofus.wenet_profile_manager.api.versions.Versions;
 import eu.internetofus.wenet_profile_manager.api.versions.VersionsResource;
 import io.vertx.core.AbstractVerticle;
@@ -87,6 +89,10 @@ public class APIVerticle extends AbstractVerticle {
 					routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
 					new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
 							new IntelligencesResource(this.vertx));
+
+					routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
+					new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class,
+							new TrustsResource(this.vertx));
 
 					// bind the ERROR handlers
 					final Router router = routerFactory.getRouter();

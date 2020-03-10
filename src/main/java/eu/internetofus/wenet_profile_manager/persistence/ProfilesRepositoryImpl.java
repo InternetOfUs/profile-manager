@@ -38,6 +38,8 @@ import io.vertx.ext.mongo.UpdateOptions;
 /**
  * Implementation of the {@link ProfilesRepository}.
  *
+ * @see ProfilesRepository
+ *
  * @author UDT-IA, IIIA-CSIC
  */
 public class ProfilesRepositoryImpl extends Repository implements ProfilesRepository {
@@ -53,7 +55,12 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	public static final String HISTORIC_PROFILES_COLLECTION = "historicProfiles";
 
 	/**
-	 * Create a new service.
+	 * The name of the collection that contains the trusts.
+	 */
+	public static final String TRUSTS_COLLECTION = "trusts";
+
+	/**
+	 * Create a new repository.
 	 *
 	 * @param pool to create the connections.
 	 */
@@ -258,4 +265,5 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 		});
 
 	}
+
 }

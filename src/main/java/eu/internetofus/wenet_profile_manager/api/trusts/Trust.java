@@ -24,67 +24,31 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import eu.internetofus.wenet_profile_manager.Model;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The verticle that provide the persistence services.
+ * Contains information of the calculated trust.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractVerticle {
+@Schema(description = "The calculated trust between two users.")
+public class Trust extends Model {
 
 	/**
-	 * The name of the pool of connections.
+	 * The trust over the user. It has to be on the range {@code [0,1]}.
 	 */
-	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
+	@Schema(description = "The trust over an user respect another. It has to be on the range [0,1].", example = "0.43")
+	public Number value;
 
 	/**
-	 * The pool of database connections.
+	 * The time when the trust was calculated.
 	 */
-	protected MongoClient pool;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
-
-		try {
-			// create the pool
-			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
-
-			// register services
-			ProfilesRepository.register(this.vertx, this.pool);
-
-			TrustsRepository.register(this.vertx, this.pool);
-
-			startPromise.complete();
-
-		} catch (final Throwable cause) {
-
-			startPromise.fail(cause);
-		}
-	}
-
-	/**
-	 * Close the connections pool.
-	 *
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void stop() throws Exception {
-
-		if (this.pool != null) {
-			this.pool.close();
-			this.pool = null;
-		}
-
-	}
+	@Schema(
+			description = "The difference, measured in seconds, between the trust was calculated and midnight, January 1, 1970 UTC.",
+			example = "1571412479710")
+	public long calculatedTime;
 
 }

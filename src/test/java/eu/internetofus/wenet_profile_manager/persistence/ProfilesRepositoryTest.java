@@ -31,13 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -47,8 +47,8 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class ProfileRepositoryTest {
+@ExtendWith(VertxExtension.class)
+public class ProfilesRepositoryTest {
 
 	/**
 	 * Verify that can not found a profile because that returned by repository is
@@ -83,7 +83,7 @@ public class ProfileRepositoryTest {
 	 *
 	 * @param testContext context that executes the test.
 	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
 	public void shouldNotStoreProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
@@ -109,7 +109,7 @@ public class ProfileRepositoryTest {
 	 *
 	 * @param testContext context that executes the test.
 	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
 	public void shouldNotStoreProfileBecauseStoreFailed(VertxTestContext testContext) {
@@ -125,10 +125,7 @@ public class ProfileRepositoryTest {
 
 		};
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail ->
-
-		{
-
+		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
 			assertThat(fail).isEqualTo(cause);
 			testContext.completeNow();
 		}));

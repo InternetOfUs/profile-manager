@@ -26,64 +26,56 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustEvent;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * The verticle that provide the persistence services.
+ * Unit test to increases coverage of the {@link TrustsRepository}
+ *
+ * @see TrustsRepository
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractVerticle {
+@ExtendWith(VertxExtension.class)
+public class TrustsRepositoryTest {
 
 	/**
-	 * The name of the pool of connections.
-	 */
-	private static final String PERSISTENCE_POOL_NAME = "WENET_PROFILE_MANAGER_POOL";
-
-	/**
-	 * The pool of database connections.
-	 */
-	protected MongoClient pool;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
-
-		try {
-			// create the pool
-			final JsonObject persitenceConf = this.config().getJsonObject("persistence", new JsonObject());
-			this.pool = MongoClient.createShared(this.vertx, persitenceConf, PERSISTENCE_POOL_NAME);
-
-			// register services
-			ProfilesRepository.register(this.vertx, this.pool);
-
-			TrustsRepository.register(this.vertx, this.pool);
-
-			startPromise.complete();
-
-		} catch (final Throwable cause) {
-
-			startPromise.fail(cause);
-		}
-	}
-
-	/**
-	 * Close the connections pool.
+	 * Verify that can not store a trust because that returned by repository is not
+	 * right.
 	 *
-	 * {@inheritDoc}
+	 * @param testContext context that executes the test.
+	 *
+	 * @see TrustsRepository#storeTrustEvent(eu.internetofus.wenet_profile_manager.api.trusts.TrustEvent,
+	 *      Handler)
 	 */
-	@Override
-	public void stop() throws Exception {
+	@Test
+	public void shouldNotStoreTrustBecauseStoreFailed(VertxTestContext testContext) {
 
-		if (this.pool != null) {
-			this.pool.close();
-			this.pool = null;
-		}
+		final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
+		final TrustsRepository repository = new TrustsRepositoryImpl(null) {
+
+			@Override
+			public void storeTrustEventObject(JsonObject event, Handler<AsyncResult<Void>> storeHandler) {
+
+				storeHandler.handle(Future.failedFuture(cause));
+			}
+
+		};
+
+		repository.storeTrustEvent(new TrustEvent(), testContext.failing(fail -> {
+			assertThat(fail).isEqualTo(cause);
+			testContext.completeNow();
+		}));
 
 	}
 

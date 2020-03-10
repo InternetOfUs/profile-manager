@@ -29,7 +29,6 @@ package eu.internetofus.wenet_profile_manager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.net.ServerSocket;
 import java.util.concurrent.Semaphore;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -45,11 +44,13 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.testcontainers.Testcontainers;
+import org.testcontainers.containers.Network;
 import org.tinylog.Level;
 import org.tinylog.provider.InternalLogger;
 
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryImpl;
+import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
@@ -99,14 +100,9 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 	}
 
 	/**
-	 * The started WeNet profile manager for do the integration tests.
+	 * The started WeNet interaction protocol engine for do the integration tests.
 	 */
 	private static WeNetProfileManagerContext context;
-
-	/**
-	 * The started mongodb container for do the integration tests.
-	 */
-	private static MongoContainer mongoContainer;
 
 	/**
 	 * Return the defined vertx.
@@ -120,51 +116,47 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 			final Semaphore semaphore = new Semaphore(0);
 			new Thread(() -> {
 
-				MongoContainer.createAndStart().onComplete(createdMongo -> {
+				try {
 
-					if (createdMongo.failed()) {
+					final int profileManagerApiPort = Containers.nextFreePort();
+					final int taskManagerApiPort = Containers.nextFreePort();
+					final int interactionProtocolEngineApiPort = Containers.nextFreePort();
+					Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort);
 
-						InternalLogger.log(Level.ERROR, createdMongo.cause(), "Cannot start the MongoDB container");
-						semaphore.release();
+					final Network network = Network.newNetwork();
 
-					} else {
+					Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort,
+							profileManagerApiPort, taskManagerApiPort, network);
+					Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort, network);
 
-						mongoContainer = createdMongo.result();
-						int port = 0;
-						try {
-							final ServerSocket server = new ServerSocket(0);
-							port = server.getLocalPort();
-							server.close();
-						} catch (final Throwable ignored) {
-						}
-						new Main().startWith("-papi.port=" + port, "-ppersistence.host=" + mongoContainer.getContainerIpAddress(),
-								"-ppersistence.port=" + mongoContainer.getMappedPort(27017)).onComplete(start -> {
+					new Main().startWith(Containers.createProfileManagerContainersToStartWith(profileManagerApiPort,
+							taskManagerApiPort, interactionProtocolEngineApiPort, network)).onComplete(start -> {
 
-									if (start.failed()) {
+								if (start.failed()) {
 
-										InternalLogger.log(Level.ERROR, start.cause(), "Cannot start the WeNet profile manager");
-										mongoContainer.stop();
-										mongoContainer = null;
+									InternalLogger.log(Level.ERROR, start.cause(), "Cannot start the WeNet profile manager");
 
-									} else {
+								} else {
 
-										context = start.result();
-									}
+									context = start.result();
+								}
 
-									semaphore.release();
+								semaphore.release();
 
-								});
+							});
 
-					}
+				} catch (final Throwable throwable) {
 
-				});
+					InternalLogger.log(Level.ERROR, throwable,
+							"Cannot start the required services by WeNet interaction protocol engine");
+					semaphore.release();
+				}
 
 			}).start();
 			try {
 				semaphore.acquire();
 			} catch (final InterruptedException ignored) {
 			}
-
 		}
 		return context;
 
@@ -263,7 +255,7 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 
 		final Class<?> type = parameterContext.getParameter().getType();
 		return type == WebClient.class || type == WeNetProfileManagerContext.class || type == MongoClient.class
-				|| type == ProfilesRepository.class
+				|| type == ProfilesRepository.class || type == TrustsRepository.class
 				|| this.vertxExtension.supportsParameter(parameterContext, extensionContext);
 
 	}
@@ -292,7 +284,7 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 						return WebClient.create(context.vertx, options);
 					}, WebClient.class);
 
-		} else if (type == MongoClient.class || type == ProfilesRepository.class) {
+		} else if (type == MongoClient.class) {
 
 			final MongoClient pool = extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
 					.getOrComputeIfAbsent(MongoClient.class.getName(), key -> {
@@ -301,19 +293,25 @@ public class WeNetProfileManagerIntegrationExtension implements ParameterResolve
 						final JsonObject persitenceConf = context.configuration.getJsonObject("persistence", new JsonObject());
 						return MongoClient.create(context.vertx, persitenceConf);
 					}, MongoClient.class);
+			return pool;
 
-			if (type == ProfilesRepository.class) {
+		} else if (type == ProfilesRepository.class) {
 
-				return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-						.getOrComputeIfAbsent(ProfilesRepository.class.getName(), key -> {
+			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+					.getOrComputeIfAbsent(ProfilesRepository.class.getName(), key -> {
 
-							return new ProfilesRepositoryImpl(pool);
-						}, ProfilesRepository.class);
+						final WeNetProfileManagerContext context = getContext();
+						return ProfilesRepository.createProxy(context.vertx);
+					}, ProfilesRepository.class);
 
-			} else {
+		} else if (type == TrustsRepository.class) {
 
-				return pool;
-			}
+			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
+					.getOrComputeIfAbsent(TrustsRepository.class.getName(), key -> {
+
+						final WeNetProfileManagerContext context = getContext();
+						return TrustsRepository.createProxy(context.vertx);
+					}, TrustsRepository.class);
 
 		} else if (type == WeNetProfileManagerContext.class) {
 

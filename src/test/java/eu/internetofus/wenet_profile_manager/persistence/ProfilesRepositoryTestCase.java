@@ -143,8 +143,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	 *
 	 * @param testContext context that executes the test.
 	 *
-	 * @see ProfilesRepository#updateProfile(WeNetUserProfile,
-	 *      io.vertx.core.Handler)
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
 	public void shouldNotStoreAProfileThatCanNotBeAnObject(VertxTestContext testContext) {
@@ -172,7 +171,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	 *
 	 * @param testContext context that executes the test.
 	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
 	public void shouldStoreProfile(VertxTestContext testContext) {
@@ -197,7 +196,7 @@ public abstract class ProfilesRepositoryTestCase<T extends ProfilesRepository> {
 	 *
 	 * @param testContext context that executes the test.
 	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
 	public void shouldStoreProfileObject(VertxTestContext testContext) {
