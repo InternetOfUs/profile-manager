@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import eu.internetofus.wenet_profile_manager.ModelTestCase;
+import eu.internetofus.common.api.models.ModelTestCase;
 
 /**
  * Test the components that extends the {@link Material}.

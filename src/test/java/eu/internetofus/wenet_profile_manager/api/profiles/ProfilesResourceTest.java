@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
-import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -90,7 +90,7 @@ public class ProfilesResourceTest {
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> storeHandler = ArgumentCaptor.forClass(Handler.class);
 		verify(resource.repository, times(1)).storeProfile(any(), storeHandler.capture());
-		storeHandler.getValue().handle(Future.failedFuture("Search profile error"));
+		storeHandler.getValue().handle(Future.failedFuture("Store profile error"));
 
 	}
 
@@ -117,8 +117,8 @@ public class ProfilesResourceTest {
 		searchHandler.getValue().handle(
 				Future.succeededFuture(Model.fromJsonObject(new JsonObject().put("id", "profileId"), WeNetUserProfile.class)));
 		@SuppressWarnings("unchecked")
-		final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-		verify(resource.repository, times(1)).updateProfile(any(), updateHandler.capture());
+		final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
+		verify(resource.repository, times(1)).updateProfile(any(JsonObject.class), updateHandler.capture());
 		updateHandler.getValue().handle(Future.failedFuture("Update profile error"));
 
 	}
@@ -146,9 +146,9 @@ public class ProfilesResourceTest {
 		searchHandler.getValue().handle(
 				Future.succeededFuture(Model.fromJsonObject(new JsonObject().put("id", "profileId"), WeNetUserProfile.class)));
 		@SuppressWarnings("unchecked")
-		final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-		verify(resource.repository, times(1)).updateProfile(any(), updateHandler.capture());
-		updateHandler.getValue().handle(Future.succeededFuture(new WeNetUserProfile()));
+		final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
+		verify(resource.repository, times(1)).updateProfile(any(JsonObject.class), updateHandler.capture());
+		updateHandler.getValue().handle(Future.succeededFuture());
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<HistoricWeNetUserProfile>>> storeHandler = ArgumentCaptor
 				.forClass(Handler.class);

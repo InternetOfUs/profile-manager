@@ -28,9 +28,9 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import java.time.LocalDate;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.Validable;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.Validable;
+import eu.internetofus.common.api.models.ValidationErrorException;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**

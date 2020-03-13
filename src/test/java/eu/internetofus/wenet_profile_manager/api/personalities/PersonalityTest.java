@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.personalities;
 
-import eu.internetofus.wenet_profile_manager.ModelTestCase;
+import eu.internetofus.common.api.models.ModelTestCase;
 
 /**
  * Test the {@link Personality}.

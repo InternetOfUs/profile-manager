@@ -30,8 +30,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.api.OperationReponseHandlers;
+import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.api.OperationReponseHandlers;
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -195,11 +196,9 @@ public class ProfilesResource implements Profiles {
 
 									} else {
 
-										final WeNetUserProfile updated = update.result();
-
 										final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
 										historic.from = target._lastUpdateTs;
-										historic.to = updated._lastUpdateTs;
+										historic.to = TimeManager.now();
 										historic.profile = target;
 										this.repository.storeHistoricProfile(historic, store -> {
 
@@ -207,7 +206,7 @@ public class ProfilesResource implements Profiles {
 
 												Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
 											}
-											OperationReponseHandlers.responseOk(resultHandler, updated);
+											OperationReponseHandlers.responseOk(resultHandler, merged);
 
 										});
 

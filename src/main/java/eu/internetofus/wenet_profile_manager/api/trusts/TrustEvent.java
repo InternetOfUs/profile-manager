@@ -26,9 +26,12 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ValidationErrorException;
+import eu.internetofus.common.api.models.Validations;
+import eu.internetofus.wenet_profile_manager.api.profiles.SocialNetworkRelationship;
 import eu.internetofus.wenet_profile_manager.api.profiles.SocialNetworkRelationshipType;
+import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.AsyncResult;
@@ -117,29 +120,62 @@ public class TrustEvent extends Model {
 
 		} else {
 
-			profileRepository.searchProfile(this.sourceId, searchSource -> {
+			try {
+				this.sourceId = Validations.validateStringField(codePrefix, "source", 255, this.sourceId);
+				this.targetId = Validations.validateStringField(codePrefix, "target", 255, this.targetId);
+				this.communityId = Validations.validateNullableStringField(codePrefix, "communityId", 255, this.communityId);
+				this.taskTypeId = Validations.validateNullableStringField(codePrefix, "taskTypeId", 255, this.taskTypeId);
+				if (this.sourceId.equals(this.targetId)) {
 
-				if (searchSource.failed()) {
-
-					validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".sourceId",
-							"The user that will provide the trust is not defined.")));
+					validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".targetId",
+							"You cannot provide a trust event over the same user.")));
 
 				} else {
+					profileRepository.searchProfile(this.sourceId, searchSource -> {
 
-					profileRepository.searchProfile(this.targetId, searchTarget -> {
+						if (searchSource.failed()) {
 
-						if (searchTarget.failed()) {
-
-							validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".targetId",
-									"The user that the trust refers to is not defined.")));
+							validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".sourceId",
+									"The user that will provide the trust is not defined.")));
 
 						} else {
+
+							profileRepository.searchProfile(this.targetId, searchTarget -> {
+
+								if (searchTarget.failed()) {
+
+									validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".targetId",
+											"The user that the trust refers to is not defined.")));
+
+								} else {
+
+									final WeNetUserProfile source = searchSource.result();
+									if (this.relationship != null && (source.relationships == null || !source.relationships
+											.contains(new SocialNetworkRelationship(this.relationship, this.targetId)))) {
+
+										validateHandler
+												.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".relationship",
+														"The target user does not have the specified relationship with the source.")));
+
+									} else {
+
+										// TODO check other components as communityId,tasktype,...
+										validateHandler.handle(Future.succeededFuture());
+									}
+
+								}
+							});
 
 						}
 					});
 
 				}
-			});
+
+			} catch (final ValidationErrorException error) {
+
+				validateHandler.handle(Future.failedFuture(error));
+
+			}
 		}
 	}
 

@@ -141,40 +141,13 @@ public class ProfilesRepositoryTest {
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
-
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
-
-			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
-
-				updateHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
-			}
-
-		};
-
-		repository.updateProfile(new WeNetUserProfile(), testContext.failing(fail -> {
-			testContext.completeNow();
-		}));
-
-	}
-
-	/**
-	 * Verify that can not update a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
-	 */
-	@Test
 	public void shouldNotUpdateProfileBecauseUpdateFailed(VertxTestContext testContext) {
 
 		final Throwable cause = new IllegalArgumentException("Cause that can not be updated");
 		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
 			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
+			public void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler) {
 
 				updateHandler.handle(Future.failedFuture(cause));
 			}

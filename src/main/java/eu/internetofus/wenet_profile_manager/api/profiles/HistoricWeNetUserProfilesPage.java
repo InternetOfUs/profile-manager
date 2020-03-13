@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import java.util.List;
 
-import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.common.api.models.Model;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 

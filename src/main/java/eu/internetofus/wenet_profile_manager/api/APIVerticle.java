@@ -26,10 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.tinylog.Logger;
-
+import eu.internetofus.common.api.AbstractAPIVerticle;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
 import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
 import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
@@ -40,113 +37,49 @@ import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
 import eu.internetofus.wenet_profile_manager.api.versions.Versions;
 import eu.internetofus.wenet_profile_manager.api.versions.VersionsResource;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory;
 import io.vertx.serviceproxy.ServiceBinder;
 
 /**
- * The verticle that provide the API management.
+ * The verticle that provide the manage the WeNet profile manager API.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class APIVerticle extends AbstractVerticle {
-
-	/**
-	 * The server that manage the HTTP requests.
-	 */
-	protected HttpServer server;
+public class APIVerticle extends AbstractAPIVerticle {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
+	protected String getOpenAPIResourcePath() {
 
-		OpenAPI3RouterFactory.create(this.vertx, "wenet-profile-manager-api.yaml", createRouterFactory -> {
-			if (createRouterFactory.succeeded()) {
-
-				try {
-
-					final OpenAPI3RouterFactory routerFactory = createRouterFactory.result();
-
-					routerFactory.mountServiceInterface(Versions.class, Versions.ADDRESS);
-					new ServiceBinder(this.vertx).setAddress(Versions.ADDRESS).register(Versions.class,
-							new VersionsResource(this));
-
-					routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
-					new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
-							new ProfilesResource(this.vertx));
-
-					routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
-					new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
-							new PersonalitiesResource(this.vertx));
-
-					routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
-					new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
-							new IntelligencesResource(this.vertx));
-
-					routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
-					new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class,
-							new TrustsResource(this.vertx));
-
-					// bind the ERROR handlers
-					final Router router = routerFactory.getRouter();
-					router.errorHandler(Status.NOT_FOUND.getStatusCode(), NotFoundHandler.build());
-					router.errorHandler(Status.BAD_REQUEST.getStatusCode(), BadRequestHandler.build());
-
-					final JsonObject apiConf = this.config().getJsonObject("api", new JsonObject());
-					final HttpServerOptions httpServerOptions = new HttpServerOptions(apiConf);
-					this.server = this.vertx.createHttpServer(httpServerOptions);
-					this.server.requestHandler(router).listen(startServer -> {
-						if (startServer.failed()) {
-
-							startPromise.fail(startServer.cause());
-
-						} else {
-
-							final HttpServer httpServer = startServer.result();
-							final String host = httpServerOptions.getHost();
-							final int actualPort = httpServer.actualPort();
-							apiConf.put("port", actualPort);
-							Logger.info("The server is ready at http://{}:{}", host, actualPort);
-							startPromise.complete();
-						}
-					});
-
-				} catch (final Throwable throwable) {
-					// Can not start the server , may be the configuration is wrong
-					startPromise.fail(throwable);
-				}
-
-			} else {
-				// In theory never happens, Only can happens if specification is not right or
-				// not present on the path
-				startPromise.fail(createRouterFactory.cause());
-			}
-		});
-
+		return "wenet-profile-manager-api.yaml";
 	}
 
 	/**
-	 * Stop the HTTP server.
-	 *
 	 * {@inheritDoc}
-	 *
-	 * @see #server
 	 */
 	@Override
-	public void stop() {
+	protected void mountServiceInterfaces(OpenAPI3RouterFactory routerFactory) {
 
-		if (this.server != null) {
+		routerFactory.mountServiceInterface(Versions.class, Versions.ADDRESS);
+		new ServiceBinder(this.vertx).setAddress(Versions.ADDRESS).register(Versions.class, new VersionsResource(this));
 
-			this.server.close();
-			this.server = null;
-		}
+		routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
+		new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
+				new ProfilesResource(this.vertx));
+
+		routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
+		new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
+				new PersonalitiesResource(this.vertx));
+
+		routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
+		new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
+				new IntelligencesResource(this.vertx));
+
+		routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
+		new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
+
 	}
 
 }

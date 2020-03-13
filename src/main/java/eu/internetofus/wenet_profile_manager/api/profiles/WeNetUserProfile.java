@@ -29,10 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.TimeManager;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
-import eu.internetofus.wenet_profile_manager.Validations;
+import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ValidationErrorException;
+import eu.internetofus.common.api.models.Validations;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -141,7 +141,7 @@ public class WeNetUserProfile extends Model {
 	 */
 	@ArraySchema(
 			schema = @Schema(implementation = RelevantLocation.class),
-			arraySchema = @Schema(description = "The locations of interest for theuser"))
+			arraySchema = @Schema(description = "The locations of interest for the user"))
 	public List<RelevantLocation> relevantLocations;
 
 	/**

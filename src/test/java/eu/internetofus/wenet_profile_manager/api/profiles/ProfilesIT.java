@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension.Asserts.assertThatBodyIs;
+import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,12 +39,12 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.ValidationsTest;
+import eu.internetofus.common.api.models.ErrorMessage;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ValidationsTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryTestCase;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -618,7 +618,7 @@ public class ProfilesIT {
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryTestCase.createProfilePage(repository, profileId, page, testContext,
+		ProfilesRepositoryIT.createProfilePage(repository, profileId, page, testContext,
 				testContext.succeeding(created -> {
 
 					testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)
@@ -652,7 +652,7 @@ public class ProfilesIT {
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryTestCase.createProfilePage(repository, profileId, page, testContext,
+		ProfilesRepositoryIT.createProfilePage(repository, profileId, page, testContext,
 				testContext.succeeding(created -> {
 
 					testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)

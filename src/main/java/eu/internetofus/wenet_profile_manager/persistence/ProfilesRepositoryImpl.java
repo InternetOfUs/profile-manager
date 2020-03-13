@@ -26,14 +26,12 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.wenet_profile_manager.TimeManager;
+import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.persitences.Repository;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
-import io.vertx.ext.mongo.UpdateOptions;
 
 /**
  * Implementation of the {@link ProfilesRepository}.
@@ -77,26 +75,8 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
 
 		final JsonObject query = new JsonObject().put("_id", id);
-		this.pool.findOne(PROFILES_COLLECTION, query, null, search -> {
-
-			if (search.failed()) {
-
-				searchHandler.handle(Future.failedFuture(search.cause()));
-
-			} else {
-
-				final JsonObject profile = search.result();
-				if (profile == null) {
-
-					searchHandler.handle(Future.failedFuture("Does not exist a profile with the identifier '" + id + "'."));
-
-				} else {
-
-					profile.put("id", profile.remove("_id"));
-					searchHandler.handle(Future.succeededFuture(profile));
-				}
-			}
-		});
+		this.findOneDocument(PROFILES_COLLECTION, query, null, found -> found.put("id", found.remove("_id")),
+				searchHandler);
 
 	}
 
@@ -109,21 +89,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 		final long now = TimeManager.now();
 		profile.put("_creationTs", now);
 		profile.put("_lastUpdateTs", now);
-		this.pool.save(PROFILES_COLLECTION, profile, store -> {
-
-			if (store.failed()) {
-
-				storeHandler.handle(Future.failedFuture(store.cause()));
-
-			} else {
-
-				final String id = store.result();
-				profile.put("id", id);
-				profile.remove("_id");
-				storeHandler.handle(Future.succeededFuture(profile));
-			}
-
-		});
+		this.storeOneDocument(PROFILES_COLLECTION, profile, "id", storeHandler);
 
 	}
 
@@ -131,31 +97,13 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler) {
+	public void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler) {
 
 		final Object id = profile.remove("id");
 		final JsonObject query = new JsonObject().put("_id", id);
 		final long now = TimeManager.now();
 		profile.put("_lastUpdateTs", now);
-		final JsonObject updateProfile = new JsonObject().put("$set", profile);
-		final UpdateOptions options = new UpdateOptions().setMulti(false);
-		this.pool.updateCollectionWithOptions(PROFILES_COLLECTION, query, updateProfile, options, update -> {
-
-			if (update.failed()) {
-
-				updateHandler.handle(Future.failedFuture(update.cause()));
-
-			} else if (update.result().getDocModified() != 1) {
-
-				updateHandler.handle(Future.failedFuture("Not Found profile to update"));
-
-			} else {
-
-				profile.put("id", id);
-				profile.remove("_id");
-				updateHandler.handle(Future.succeededFuture(profile));
-			}
-		});
+		this.updateOneDocument(PROFILES_COLLECTION, query, profile, updateHandler);
 
 	}
 
@@ -166,21 +114,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	public void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler) {
 
 		final JsonObject query = new JsonObject().put("_id", id);
-		this.pool.removeDocument(PROFILES_COLLECTION, query, remove -> {
-
-			if (remove.failed()) {
-
-				deleteHandler.handle(Future.failedFuture(remove.cause()));
-
-			} else if (remove.result().getRemovedCount() != 1) {
-
-				deleteHandler.handle(Future.failedFuture("Not Found profile to delete"));
-
-			} else {
-
-				deleteHandler.handle(Future.succeededFuture());
-			}
-		});
+		this.deleteOneDocument(PROFILES_COLLECTION, query, deleteHandler);
 
 	}
 
@@ -190,18 +124,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	@Override
 	public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
-		this.pool.save(HISTORIC_PROFILES_COLLECTION, profile, store -> {
-
-			if (store.failed()) {
-
-				storeHandler.handle(Future.failedFuture(store.cause()));
-
-			} else {
-
-				storeHandler.handle(Future.succeededFuture(profile));
-			}
-
-		});
+		this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, null, storeHandler, "_id");
 
 	}
 
@@ -214,55 +137,8 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
 		final JsonObject query = new JsonObject().put("profile.id", profileId)
 				.put("from", new JsonObject().put("$gte", from)).put("to", new JsonObject().put("$lte", to));
-		this.pool.count(HISTORIC_PROFILES_COLLECTION, query, count -> {
-
-			if (count.failed()) {
-
-				searchHandler.handle(Future.failedFuture(count.cause()));
-
-			} else {
-
-				final long total = count.result().longValue();
-				final JsonObject page = new JsonObject().put("offset", offset).put("total", total);
-				if (total == 0) {
-
-					searchHandler.handle(Future.failedFuture("Not found profiles with the identifier"));
-
-				} else if (offset >= total) {
-
-					searchHandler.handle(Future.succeededFuture(page));
-
-				} else {
-
-					int order = 1;
-					if (!ascending) {
-
-						order = -1;
-					}
-
-					final FindOptions options = new FindOptions();
-					options.setLimit(limit);
-					options.setSort(new JsonObject().put("from", order));
-					options.setSkip(offset);
-					options.setFields(new JsonObject().put("_id", 0));
-					this.pool.findWithOptions(HISTORIC_PROFILES_COLLECTION, query, options, find -> {
-
-						if (find.failed()) {
-
-							searchHandler.handle(Future.failedFuture(find.cause()));
-
-						} else {
-
-							page.put("profiles", find.result());
-							searchHandler.handle(Future.succeededFuture(page));
-						}
-
-					});
-
-				}
-
-			}
-		});
+		this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, new JsonObject().put("_id", 0), offset, limit,
+				"profiles", searchHandler);
 
 	}
 

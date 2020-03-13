@@ -32,9 +32,9 @@ import java.util.ListIterator;
 import java.util.UUID;
 import java.util.function.Function;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
-import eu.internetofus.wenet_profile_manager.Validations;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ValidationErrorException;
+import eu.internetofus.common.api.models.Validations;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;

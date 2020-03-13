@@ -28,9 +28,9 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import java.util.function.Function;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
-import eu.internetofus.wenet_profile_manager.Validations;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ValidationErrorException;
+import eu.internetofus.common.api.models.Validations;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
@@ -45,10 +45,10 @@ import io.vertx.core.Promise;
 public class SocialNetworkRelationship extends Model {
 
 	/**
-	 * The identifier of the wenet user the relationship is related to.
+	 * The identifier of the WeNet user the relationship is related to.
 	 */
 	@Schema(
-			description = "The identifier of the wenet user the relationship is related to",
+			description = "The identifier of the WeNet user the relationship is related to",
 			example = "4c51ee0b-b7ec-4577-9b21-ae6832656e33")
 	public String userId;
 
@@ -62,6 +62,19 @@ public class SocialNetworkRelationship extends Model {
 	 * Create a new empty relationship.
 	 */
 	public SocialNetworkRelationship() {
+
+	}
+
+	/**
+	 * Create a new relationship.
+	 *
+	 * @param type   of relationship.
+	 * @param userId identifier of the WeNet user the relationship is related to.
+	 */
+	public SocialNetworkRelationship(SocialNetworkRelationshipType type, String userId) {
+
+		this.type = type;
+		this.userId = userId;
 
 	}
 

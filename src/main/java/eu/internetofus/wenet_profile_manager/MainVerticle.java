@@ -26,50 +26,56 @@
 
 package eu.internetofus.wenet_profile_manager;
 
+import eu.internetofus.common.AbstractMainVerticle;
+import eu.internetofus.common.api.AbstractAPIVerticle;
+import eu.internetofus.common.persitences.AbstractPersistenceVerticle;
+import eu.internetofus.common.services.AbstractServicesVerticle;
 import eu.internetofus.wenet_profile_manager.api.APIVerticle;
 import eu.internetofus.wenet_profile_manager.persistence.PersistenceVerticle;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Promise;
+import eu.internetofus.wenet_profile_manager.services.ServicesVerticle;
 
 /**
- * The Main verticle that start the API and the persistence.
+ * The Main verticle that deploy the necessary verticles for the WeNet profile
+ * manager.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class MainVerticle extends AbstractVerticle {
+public class MainVerticle extends AbstractMainVerticle {
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @see ServicesVerticle
 	 */
 	@Override
-	public void start(Promise<Void> startPromise) throws Exception {
+	protected Class<? extends AbstractServicesVerticle> getServiceVerticleClass() {
 
-		final DeploymentOptions options = new DeploymentOptions(this.config()).setConfig(this.config());
-		this.vertx.deployVerticle(PersistenceVerticle.class, options, deployPersistence -> {
-
-			if (deployPersistence.failed()) {
-
-				startPromise.fail(deployPersistence.cause());
-
-			} else {
-
-				this.vertx.deployVerticle(APIVerticle.class, options, deployAPI -> {
-
-					if (deployAPI.failed()) {
-
-						startPromise.fail(deployAPI.cause());
-
-					} else {
-
-						startPromise.complete();
-					}
-
-				});
-
-			}
-
-		});
+		return ServicesVerticle.class;
 
 	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @see PersistenceVerticle
+	 */
+	@Override
+	protected Class<? extends AbstractPersistenceVerticle> getPersistenceVerticleClass() {
+
+		return PersistenceVerticle.class;
+
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @see APIVerticle
+	 */
+	@Override
+	protected Class<? extends AbstractAPIVerticle> getAPIVerticleClass() {
+
+		return APIVerticle.class;
+
+	}
+
 }

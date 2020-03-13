@@ -14,5 +14,21 @@
 		"port": 27017,
 		"username": "wenetProfileManager",
 		"password": "password"
+	},
+	"service": {
+		"webClient": {
+			"defaultHost": "wenet.iiia.csic.es",
+			"defaultPort": 80
+		},
+		"interactionProtocolEngine": {
+			"host": "wenet.iiia.csic.es",
+			"port": 80,
+			"apiPath": "/interaction-protocol-engine/latest"
+		},
+		"taskManager": {
+			"host": "wenet.iiia.csic.es",
+			"port": 80,
+			"apiPath": "/task-manager/latest"
+		}
 	}
 }

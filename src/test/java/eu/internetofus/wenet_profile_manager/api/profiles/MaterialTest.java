@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.common.api.models.ValidationErrorException;
 
 /**
  * Test the {@link Material}.

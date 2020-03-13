@@ -30,7 +30,9 @@ import java.util.function.Function;
 
 import javax.ws.rs.core.Response.Status;
 
-import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.common.api.OperationReponseHandlers;
+import eu.internetofus.common.api.OperationRequests;
+import eu.internetofus.common.api.models.Model;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

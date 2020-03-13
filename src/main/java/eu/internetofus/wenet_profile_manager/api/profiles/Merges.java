@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.common.api.models.ValidationErrorException;
 
 /**
  * The utility components to merge values.

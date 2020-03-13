@@ -35,8 +35,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import eu.internetofus.wenet_profile_manager.ModelTestCase;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
+import eu.internetofus.common.api.models.ModelTestCase;
+import eu.internetofus.common.api.models.ValidationErrorException;
 
 /**
  * Test the {@link ProfileDate}.

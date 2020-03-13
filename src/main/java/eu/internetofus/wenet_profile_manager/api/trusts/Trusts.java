@@ -34,8 +34,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import eu.internetofus.wenet_profile_manager.api.ErrorMessage;
-import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
+import eu.internetofus.common.api.models.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -56,7 +55,7 @@ import io.vertx.ext.web.api.generator.WebApiServiceGen;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Path(Profiles.PATH)
+@Path(Trusts.PATH)
 @Tag(name = "Trusts")
 @WebApiServiceGen
 public interface Trusts {

@@ -34,10 +34,10 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.ModelTestCase;
-import eu.internetofus.wenet_profile_manager.ValidationErrorException;
-import eu.internetofus.wenet_profile_manager.ValidationsTest;
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.ModelTestCase;
+import eu.internetofus.common.api.models.ValidationErrorException;
+import eu.internetofus.common.api.models.ValidationsTest;
 
 /**
  * Test the {@link SocialPractice}

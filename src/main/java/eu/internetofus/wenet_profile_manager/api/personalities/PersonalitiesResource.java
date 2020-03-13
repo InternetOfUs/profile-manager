@@ -28,8 +28,8 @@ package eu.internetofus.wenet_profile_manager.api.personalities;
 
 import javax.ws.rs.core.Response.Status;
 
-import eu.internetofus.wenet_profile_manager.Model;
-import eu.internetofus.wenet_profile_manager.api.OperationReponseHandlers;
+import eu.internetofus.common.api.OperationReponseHandlers;
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;

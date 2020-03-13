@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.wenet_profile_manager.Model;
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
@@ -171,7 +171,7 @@ public interface ProfilesRepository {
 	 * @param updateHandler handler to manage the update.
 	 */
 	@GenIgnore
-	default void updateProfile(WeNetUserProfile profile, Handler<AsyncResult<WeNetUserProfile>> updateHandler) {
+	default void updateProfile(WeNetUserProfile profile, Handler<AsyncResult<Void>> updateHandler) {
 
 		final JsonObject object = profile.toJsonObject();
 		if (object == null) {
@@ -180,27 +180,9 @@ public interface ProfilesRepository {
 
 		} else {
 
-			this.updateProfile(object, updated -> {
-				if (updated.failed()) {
-
-					updateHandler.handle(Future.failedFuture(updated.cause()));
-
-				} else {
-
-					final JsonObject value = updated.result();
-					final WeNetUserProfile updatedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
-					if (updatedProfile == null) {
-
-						updateHandler.handle(Future.failedFuture("The updated profile is not valid."));
-
-					} else {
-
-						updateHandler.handle(Future.succeededFuture(updatedProfile));
-					}
-
-				}
-			});
+			this.updateProfile(object, updateHandler);
 		}
+
 	}
 
 	/**
@@ -209,7 +191,7 @@ public interface ProfilesRepository {
 	 * @param profile       to update.
 	 * @param updateHandler handler to manage the update result.
 	 */
-	void updateProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> updateHandler);
+	void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler);
 
 	/**
 	 * Delete a profile.
