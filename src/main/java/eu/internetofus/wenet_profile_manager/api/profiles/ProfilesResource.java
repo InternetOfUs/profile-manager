@@ -271,8 +271,16 @@ public class ProfilesResource implements Profiles {
 				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
 			} else {
+				final HistoricWeNetUserProfilesPage page = search.result();
+				if (page.total == 0l) {
 
-				OperationReponseHandlers.responseOk(resultHandler, search.result());
+					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found",
+							"Not found any historic profile that match to the specific parameters.");
+
+				} else {
+					OperationReponseHandlers.responseOk(resultHandler, page);
+
+				}
 			}
 		});
 

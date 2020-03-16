@@ -64,14 +64,12 @@ public class Repository {
 	 *
 	 * @param collectionName of the collections that contains the models.
 	 * @param query          to obtain the components of the page.
-	 * @param fields         for the search.
-	 * @param offset         index of the first model to obtain.
-	 * @param limit          number maximum of models to return.
+	 * @param options        to apply to the search.
 	 * @param resultKey      to store the found models.
 	 * @param searchHandler  handler to manage the result action.
 	 */
-	protected void searchPageObject(String collectionName, JsonObject query, JsonObject fields, int offset, int limit,
-			String resultKey, Handler<AsyncResult<JsonObject>> searchHandler) {
+	protected void searchPageObject(String collectionName, JsonObject query, FindOptions options, String resultKey,
+			Handler<AsyncResult<JsonObject>> searchHandler) {
 
 		this.pool.count(collectionName, query, count -> {
 
@@ -82,6 +80,7 @@ public class Repository {
 			} else {
 
 				final long total = count.result().longValue();
+				final int offset = options.getSkip();
 				final JsonObject page = new JsonObject().put("offset", offset).put("total", total);
 				if (total == 0 || offset >= total) {
 
@@ -89,10 +88,6 @@ public class Repository {
 
 				} else {
 
-					final FindOptions options = new FindOptions();
-					options.setLimit(limit);
-					options.setSkip(offset);
-					options.setFields(fields);
 					this.pool.findWithOptions(collectionName, query, options, find -> {
 
 						if (find.failed()) {

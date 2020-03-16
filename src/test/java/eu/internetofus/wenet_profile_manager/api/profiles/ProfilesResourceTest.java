@@ -28,6 +28,8 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -38,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 
-import eu.internetofus.common.api.models.Model;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -114,11 +115,10 @@ public class ProfilesResourceTest {
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
 		verify(resource.repository, times(1)).searchProfile(any(), searchHandler.capture());
-		searchHandler.getValue().handle(
-				Future.succeededFuture(Model.fromJsonObject(new JsonObject().put("id", "profileId"), WeNetUserProfile.class)));
+		searchHandler.getValue().handle(Future.succeededFuture(new WeNetUserProfile()));
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-		verify(resource.repository, times(1)).updateProfile(any(JsonObject.class), updateHandler.capture());
+		verify(resource.repository, times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
 		updateHandler.getValue().handle(Future.failedFuture("Update profile error"));
 
 	}
@@ -143,11 +143,10 @@ public class ProfilesResourceTest {
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
 		verify(resource.repository, times(1)).searchProfile(any(), searchHandler.capture());
-		searchHandler.getValue().handle(
-				Future.succeededFuture(Model.fromJsonObject(new JsonObject().put("id", "profileId"), WeNetUserProfile.class)));
+		searchHandler.getValue().handle(Future.succeededFuture(new WeNetUserProfile()));
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-		verify(resource.repository, times(1)).updateProfile(any(JsonObject.class), updateHandler.capture());
+		verify(resource.repository, times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
 		updateHandler.getValue().handle(Future.succeededFuture());
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<HistoricWeNetUserProfile>>> storeHandler = ArgumentCaptor
@@ -157,4 +156,30 @@ public class ProfilesResourceTest {
 
 	}
 
+	/**
+	 * Check fail retrieve profile historic page because repository can not store
+	 * it.
+	 *
+	 * @param testContext test context.
+	 */
+	@Test
+	public void shouldFailRetrieveProfileHistoricPageBecasueRepositoryFailsToStore(VertxTestContext testContext) {
+
+		final ProfilesResource resource = createProfilesResource();
+		final OperationRequest context = mock(OperationRequest.class);
+		doReturn(new JsonObject()).when(context).getParams();
+		resource.retrieveProfileHistoricPage("profileId", context, testContext.succeeding(create -> {
+
+			assertThat(create.getStatusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+			testContext.completeNow();
+		}));
+
+		@SuppressWarnings("unchecked")
+		final ArgumentCaptor<Handler<AsyncResult<HistoricWeNetUserProfilesPage>>> searchHandler = ArgumentCaptor
+				.forClass(Handler.class);
+		verify(resource.repository, times(1)).searchHistoricProfilePage(any(), eq(0l), eq(Long.MAX_VALUE), eq(true), eq(0),
+				eq(10), searchHandler.capture());
+		searchHandler.getValue().handle(Future.failedFuture("Search historic profile error"));
+
+	}
 }

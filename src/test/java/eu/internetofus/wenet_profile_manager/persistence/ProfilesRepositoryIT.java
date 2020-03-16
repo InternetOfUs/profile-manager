@@ -469,7 +469,8 @@ public class ProfilesRepositoryIT {
 	}
 
 	/**
-	 * Verify that can not found some historic profiles if it is not defined.
+	 * Verify that can not found any historic profiles that match to an undefined
+	 * identifier.
 	 *
 	 * @param repository  to test.
 	 * @param testContext context that executes the test.
@@ -478,17 +479,22 @@ public class ProfilesRepositoryIT {
 	 *      boolean, int, int, Handler)
 	 */
 	@Test
-	public void shouldNotFoundUndefinedHistoricProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotFoundAnyHistoricProfileFromAnUdefinedId(ProfilesRepository repository,
+			VertxTestContext testContext) {
 
 		repository.searchHistoricProfilePage("undefined profile identifier", 0, Long.MAX_VALUE, false, 0, 100,
-				testContext.failing(failed -> {
+				testContext.succeeding(found -> testContext.verify(() -> {
+					assertThat(found.offset).isEqualTo(0);
+					assertThat(found.total).isEqualTo(0);
+					assertThat(found.profiles).isNull();
 					testContext.completeNow();
-				}));
+				})));
 
 	}
 
 	/**
-	 * Verify that can not found a profile object if it is not defined.
+	 * Verify that can not found any profile object that match to an undefined
+	 * identifier.
 	 *
 	 * @param repository  to test.
 	 * @param testContext context that executes the test.
@@ -497,13 +503,16 @@ public class ProfilesRepositoryIT {
 	 *      boolean, int, int, Handler)
 	 */
 	@Test
-	public void shouldNotFoundUndefinedHistoricProfileObject(ProfilesRepository repository,
+	public void shouldNotFoundAnyHistoricProfileObjectFromAnUdefinedId(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
 		repository.searchHistoricProfilePageObject("undefined profile identifier", 0, Long.MAX_VALUE, true, 0, 100,
-				testContext.failing(failed -> {
+				testContext.succeeding(found -> testContext.verify(() -> {
+					assertThat(found.getLong("offset")).isEqualTo(0);
+					assertThat(found.getLong("total")).isEqualTo(0);
+					assertThat(found.getJsonArray("profiles")).isNull();
 					testContext.completeNow();
-				}));
+				})));
 
 	}
 

@@ -31,6 +31,7 @@ import eu.internetofus.common.persitences.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
@@ -137,8 +138,17 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
 		final JsonObject query = new JsonObject().put("profile.id", profileId)
 				.put("from", new JsonObject().put("$gte", from)).put("to", new JsonObject().put("$lte", to));
-		this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, new JsonObject().put("_id", 0), offset, limit,
-				"profiles", searchHandler);
+		final FindOptions options = new FindOptions();
+		options.setSkip(offset);
+		options.setLimit(limit);
+		options.getFields().put("_id", 0);
+		int order = 1;
+		if (!ascending) {
+
+			order = -1;
+		}
+		options.getSort().put("from", order);
+		this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", searchHandler);
 
 	}
 
