@@ -85,7 +85,7 @@ public class TrustsResource implements Trusts {
 	public void addTrustEvent(JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		final TrustEvent event = Model.fromJsonObject(body, TrustEvent.class);
+		final UserPerformanceRatingEvent event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
 		if (event == null) {
 
 			Logger.debug("The {} is not a valid TrustEvent.", body);

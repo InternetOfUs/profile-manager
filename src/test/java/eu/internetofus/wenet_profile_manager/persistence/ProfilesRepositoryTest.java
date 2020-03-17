@@ -31,8 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

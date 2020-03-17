@@ -24,31 +24,63 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.common.api.models.wenet;
 
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import java.time.LocalDate;
+
+import eu.internetofus.common.api.models.ValidationErrorException;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
- *
- * @see HistoricWeNetUserProfile
+ * A birth date of an alive person.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public class AliveBirthDate extends ProfileDate {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
+	public Future<Void> validate(String codePrefix, Vertx vertx) {
 
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
+		return super.validate(codePrefix, vertx).compose(mapper -> {
+
+			final Promise<Void> promise = Promise.promise();
+			final LocalDate birthDate = LocalDate.of(this.year, this.month, this.day);
+			if (birthDate.isAfter(LocalDate.now())) {
+
+				promise.fail(new ValidationErrorException(codePrefix, "The birth date can not be on the future"));
+
+			} else if (birthDate.isBefore(LocalDate.of(1903, 1, 2))) {
+
+				promise.fail(new ValidationErrorException(codePrefix,
+						"The user can not be born before Kane Tanake, the oldest living person on earth"));
+
+			} else {
+
+				promise.complete();
+			}
+			return promise.future();
+
+		});
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Future<ProfileDate> merge(ProfileDate source, String codePrefix, Vertx vertx) {
+
+		return super.merge(source, codePrefix, vertx).map(model -> {
+			final AliveBirthDate date = new AliveBirthDate();
+			date.day = model.day;
+			date.month = model.month;
+			date.year = model.year;
+			return date;
+		});
 	}
 
 }

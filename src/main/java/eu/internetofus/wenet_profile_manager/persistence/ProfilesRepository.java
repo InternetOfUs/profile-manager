@@ -27,9 +27,9 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;

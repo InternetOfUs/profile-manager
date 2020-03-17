@@ -66,6 +66,17 @@ public interface Trusts {
 	String PATH = "/trusts";
 
 	/**
+	 * The path to add new rating events.
+	 */
+	String RATING_PATH = "/rating";
+
+	/**
+	 * The path that is used to manipulate the trust between the source and target
+	 * users.
+	 */
+	String BETWEEN_USERS_TRUST_PATH = "/{sourceId}/with/{targetId}";
+
+	/**
 	 * The address of this service.
 	 */
 	String ADDRESS = "wenet_profile_manager.api.trusts";
@@ -78,18 +89,19 @@ public interface Trusts {
 	 * @param resultHandler to inform of the response.
 	 */
 	@POST
+	@Path(RATING_PATH)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Operation(
-			summary = "Add a trust event",
-			description = "Store an event that provide some trust information about another user")
+			summary = "Rate an user performance",
+			description = "Store an event that rating the performance of an user over a task that it has done in WeNet")
 	@RequestBody(
-			description = "The new trust event",
+			description = "The event to store",
 			required = true,
-			content = @Content(schema = @Schema(implementation = TrustEvent.class)))
-	@ApiResponse(responseCode = "204", description = "The trust event has been added")
+			content = @Content(schema = @Schema(implementation = UserPerformanceRatingEvent.class)))
+	@ApiResponse(responseCode = "204", description = "The event has been stored")
 	@ApiResponse(
 			responseCode = "400",
-			description = "Bad trust event",
+			description = "Bad event",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	void addTrustEvent(@Parameter(hidden = true, required = false) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
@@ -105,7 +117,7 @@ public interface Trusts {
 	 * @param resultHandler to inform of the response.
 	 */
 	@GET
-	@Path("/{sourceId}/with/{targetId}")
+	@Path(BETWEEN_USERS_TRUST_PATH)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Operation(
 			summary = "Calculate the trust of an user respect another",

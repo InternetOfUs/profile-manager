@@ -24,31 +24,42 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.common.api.models.wenet;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import eu.internetofus.common.api.models.wenet.Competence;
+import eu.internetofus.common.api.models.wenet.UserName;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
+ * Test the components that extends the {@link Competence}.
  *
- * @see HistoricWeNetUserProfile
+ * @param <T> competence to test
+ *
+ * @see Competence
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public abstract class CompetenceTestCase<T extends Competence> extends ModelTestCase<T> {
 
 	/**
-	 * {@inheritDoc}
+	 * Check that the {@link #createModelExample(int)} is valid.
+	 *
+	 * @param index to verify
+	 *
+	 * @see UserName#validate(String)
 	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
+	@ParameterizedTest(name = "The model example {0} has to be valid")
+	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
+	public void shouldExampleBeValid(int index) {
 
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
+		final T model = this.createModelExample(index);
+		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
 	}
 
 }

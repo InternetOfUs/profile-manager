@@ -24,31 +24,46 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.common.api.models.wenet;
 
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
- *
- * @see HistoricWeNetUserProfile
+ * The component to deserialize a {@link Competence} to any of it possible sub
+ * types.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public class CompetenceDeserialize extends JsonDeserializer<Competence> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
+	public Competence deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
 
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
+		final TreeNode node = p.readValueAsTree();
+		if (node.get("drivingLicenseId") != null) {
+
+			return p.getCodec().treeToValue(node, DrivingLicense.class);
+
+		} else {
+
+			throw new JsonProcessingException("Unknown type of competence", p.getCurrentLocation()) {
+
+				/**
+				 * Default serialization identifier.
+				 */
+				private static final long serialVersionUID = 1L;
+			};
+
+		}
 	}
 
 }

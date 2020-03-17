@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustEvent;
+import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustEventTest;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -52,12 +52,12 @@ public class TrustsRepositoryIT {
 	 * @param repository  to test.
 	 * @param testContext context that executes the test.
 	 *
-	 * @see TrustsRepository#storeTrustEvent(TrustEvent, Handler)
+	 * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
 	 */
 	@Test
 	public void shouldNotStoreATrustThatCanNotBeAnObject(TrustsRepository repository, VertxTestContext testContext) {
 
-		final TrustEvent trust = new TrustEvent() {
+		final UserPerformanceRatingEvent trust = new UserPerformanceRatingEvent() {
 
 			/**
 			 * {@inheritDoc}
@@ -80,12 +80,12 @@ public class TrustsRepositoryIT {
 	 * @param repository  to test.
 	 * @param testContext context that executes the test.
 	 *
-	 * @see TrustsRepository#storeTrustEvent(TrustEvent, Handler)
+	 * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
 	 */
 	@Test
 	public void shouldStoreTrust(TrustsRepository repository, VertxTestContext testContext) {
 
-		final TrustEvent trust = new TrustEventTest().createModelExample(1);
+		final UserPerformanceRatingEvent trust = new TrustEventTest().createModelExample(1);
 		repository.storeTrustEvent(trust, testContext.succeeding(empty -> {
 			testContext.completeNow();
 		}));

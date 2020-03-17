@@ -24,31 +24,33 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
-
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+package eu.internetofus.common.api.models.wenet;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
- *
- * @see HistoricWeNetUserProfile
+ * The possible types of the social relationships.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public enum SocialNetworkRelationshipType {
 
 	/**
-	 * {@inheritDoc}
+	 * A friend relation.
 	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
-
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
-	}
-
+	friend,
+	/**
+	 * A colleague relation.
+	 */
+	colleague,
+	/**
+	 * A follower relation.
+	 */
+	follower,
+	/**
+	 * A family relation.
+	 */
+	family,
+	/**
+	 * An acquaintance relation.
+	 */
+	acquaintance;
 }

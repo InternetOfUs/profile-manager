@@ -24,31 +24,35 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
-
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+package eu.internetofus.common.api.models.wenet;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
- *
- * @see HistoricWeNetUserProfile
+ * A norm operator.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+// @Schema(description = "The possible norms operators")
+public enum NormOperator {
 
 	/**
-	 * {@inheritDoc}
+	 * Equals operator.
 	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
-
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
-	}
+	EQUALS,
+	/**
+	 * Less than operator.
+	 */
+	LESS_THAN,
+	/**
+	 * Greater than operator.
+	 */
+	GREATER_THAN,
+	/**
+	 * Less or equals than operator.
+	 */
+	LESS_EQ_THAN,
+	/**
+	 * Greater or equals than operator.
+	 */
+	GREATER_EQ_THAN;
 
 }

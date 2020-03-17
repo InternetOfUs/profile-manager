@@ -41,8 +41,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ErrorMessage;
 import eu.internetofus.common.api.models.ValidationsTest;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
@@ -103,10 +103,10 @@ public class TrustsIT {
 
 		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
 
-			final TrustEvent event = new TrustEvent();
+			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.sourceId = stored.id;
 			event.targetId = targetId;
-			event.value = Math.random();
+			event.rating = Math.random();
 
 			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
 
@@ -141,10 +141,10 @@ public class TrustsIT {
 
 		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
 
-			final TrustEvent event = new TrustEvent();
+			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.targetId = stored.id;
 			event.sourceId = sourceId;
-			event.value = Math.random();
+			event.rating = Math.random();
 
 			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
 
@@ -176,10 +176,10 @@ public class TrustsIT {
 
 		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
 
-			final TrustEvent event = new TrustEvent();
+			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.sourceId = stored.id;
 			event.targetId = stored.id;
-			event.value = Math.random();
+			event.rating = Math.random();
 
 			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
 
@@ -214,10 +214,10 @@ public class TrustsIT {
 		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored1 -> {
 
 			profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored2 -> {
-				final TrustEvent event = new TrustEvent();
+				final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 				event.sourceId = stored1.id;
 				event.targetId = stored2.id;
-				event.value = value;
+				event.rating = value;
 
 				testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
 

@@ -24,31 +24,25 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
-
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+package eu.internetofus.common.api.models.wenet;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
- *
- * @see HistoricWeNetUserProfile
+ * The possible status of a {@link PlannedActivity}
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public enum PlannedActivityStatus {
 
 	/**
-	 * {@inheritDoc}
+	 * If the activity is confirmed.
 	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
-
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
-	}
-
+	confirmed,
+	/**
+	 * If the activity is in tentative to do.
+	 */
+	tentative,
+	/**
+	 * If the activity is cancelled.
+	 */
+	cancelled;
 }

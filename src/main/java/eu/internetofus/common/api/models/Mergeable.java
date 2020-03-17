@@ -24,31 +24,34 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.common.api.models;
 
-import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
+ * This is implemented by any model that can be merged with another model of the
+ * same type.
  *
- * @see HistoricWeNetUserProfile
+ * @param <T> type of models that can be merged.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public interface Mergeable<T> {
 
 	/**
-	 * {@inheritDoc}
+	 * Merge the current model with a new one, and verify the result is valid.
+	 *
+	 * @param source     model to merge with the current one.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 * @param vertx      the event bus infrastructure to use.
+	 *
+	 * @return the future that provide the merged model that has to be valid. If it
+	 *         can not merge or the merged value is not valid the cause will be a
+	 *         {@link ValidationErrorException}.
+	 *
+	 * @see ValidationErrorException
 	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
-
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
-	}
+	Future<T> merge(T source, String codePrefix, Vertx vertx);
 
 }

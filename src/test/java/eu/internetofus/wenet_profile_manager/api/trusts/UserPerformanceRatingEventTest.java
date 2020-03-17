@@ -24,30 +24,33 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
 
 /**
- * Test the {@link HistoricWeNetUserProfile}.
+ * Test the {@link UserPerformanceRatingEvent}
  *
- * @see HistoricWeNetUserProfile
+ * @see UserPerformanceRatingEvent
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
+public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanceRatingEvent> {
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
+	public UserPerformanceRatingEvent createModelExample(int index) {
 
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
+		final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+		model.sourceId = "SourceId_" + index;
+		model.targetId = "TargetId_" + index;
+		model.communityId = "CommunityId_" + index;
+		model.taskTypeId = "TaskTypeId_" + index;
+		model.taskId = "TaskId_" + index;
+		model.reportTime = index;
+		model.rating = 1.0 / Math.max(1, index + 2);
 		return model;
 	}
 

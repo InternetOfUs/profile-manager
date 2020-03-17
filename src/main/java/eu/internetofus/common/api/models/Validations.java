@@ -32,6 +32,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -39,6 +40,10 @@ import org.apache.commons.validator.routines.EmailValidator;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 
 /**
  * Generic methods to validate the common fields of the models.
@@ -319,6 +324,43 @@ public interface Validations {
 
 		}
 		return validStringValue;
+	}
+
+	/**
+	 * Validate a fields that contains a list of models.
+	 *
+	 * @param models     to validate.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 * @param vertx      the event bus infrastructure to use.
+	 *
+	 *
+	 * @return the function that can be composed with the future that is validating
+	 *         the model of the filed.
+	 *
+	 * @see ValidationErrorException
+	 */
+	static Function<Void, Future<Void>> validate(List<? extends Validable> models, String codePrefix, Vertx vertx) {
+
+		return mapper -> {
+			final Promise<Void> promise = Promise.promise();
+			final Future<Void> future = promise.future();
+			if (models != null) {
+
+				final int max = models.size();
+				for (int i = 0; i < max; i++) {
+
+					final Validable model = models.get(i);
+					final String modelPrefix = codePrefix + "[" + i + "]";
+					future.compose(elementMapper -> model.validate(modelPrefix, vertx));
+
+				}
+
+			}
+
+			promise.complete();
+
+			return future;
+		};
 	}
 
 }
