@@ -122,9 +122,9 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 
 				this.id = UUID.randomUUID().toString();
 			}
-			this.startTime = Validations.validateNullableDateField(codePrefix, "startTime", DateTimeFormatter.ISO_INSTANT,
+			this.startTime = Validations.validateNullableStringDateField(codePrefix, "startTime", DateTimeFormatter.ISO_INSTANT,
 					this.startTime);
-			this.endTime = Validations.validateNullableDateField(codePrefix, "endTime", DateTimeFormatter.ISO_INSTANT,
+			this.endTime = Validations.validateNullableStringDateField(codePrefix, "endTime", DateTimeFormatter.ISO_INSTANT,
 					this.endTime);
 			this.description = Validations.validateNullableStringField(codePrefix, "description", 255, this.description);
 			if (this.attendees != null && !this.attendees.isEmpty()) {
