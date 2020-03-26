@@ -26,18 +26,22 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.ValidationsTest;
-import eu.internetofus.common.api.models.wenet.Routine;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link Routine}
@@ -46,6 +50,7 @@ import eu.internetofus.common.api.models.wenet.Routine;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class RoutineTest extends ModelTestCase<Routine> {
 
 	/**
@@ -66,22 +71,28 @@ public class RoutineTest extends ModelTestCase<Routine> {
 	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldExampleBeValid() {
+	public void shouldExampleBeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = this.createModelExample(1);
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext);
 	}
 
 	/**
 	 * Check that a model with all the values is valid.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldFullModelBeValid() {
+	public void shouldFullModelBeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.id = "      ";
@@ -89,259 +100,310 @@ public class RoutineTest extends ModelTestCase<Routine> {
 		model.proximity = "    proximity   ";
 		model.from_time = "   18:19    ";
 		model.to_time = "  22:21:20   ";
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext, () -> {
 
-		final Routine expected = new Routine();
-		expected.id = model.id;
-		expected.label = "label";
-		expected.proximity = "proximity";
-		expected.from_time = "18:19:00";
-		expected.to_time = "22:21:20";
-		assertThat(model).isEqualTo(expected);
+			final Routine expected = new Routine();
+			expected.id = model.id;
+			expected.label = "label";
+			expected.proximity = "proximity";
+			expected.from_time = "18:19:00";
+			expected.to_time = "22:21:20";
+			assertThat(model).isEqualTo(expected);
+
+		});
 	}
 
 	/**
 	 * Check that the model with id is not valid.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithAnId() {
+	public void shouldNotBeValidWithAnId(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.id = "has_id";
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.id");
+		assertIsNotValid(model, "id", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept routines with bad label.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLabel() {
+	public void shouldNotBeValidWithABadLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.label = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.label");
+		assertIsNotValid(model, "label", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept routines with bad proximity.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadProximity() {
+	public void shouldNotBeValidWithABadProximity(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.proximity = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.proximity");
+		assertIsNotValid(model, "proximity", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept routines with bad from_time.
 	 *
-	 * @param badTime a bad time value.
+	 * @param badTime     a bad time value.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@ParameterizedTest(name = "Should not be valid with from_time = {0}")
 	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
-	public void shouldNotBeValidWithABadFrom_time(String badTime) {
+	public void shouldNotBeValidWithABadFrom_time(String badTime, Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.from_time = badTime;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.from_time");
+		assertIsNotValid(model, "from_time", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept routines with bad to_time.
 	 *
-	 * @param badTime a bad time value.
+	 * @param badTime     a bad time value.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#validate(String, io.vertx.core.Vertx)
 	 */
 	@ParameterizedTest(name = "Should not be valid with to_time = {0}")
 	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
-	public void shouldNotBeValidWithABadTo_time(String badTime) {
+	public void shouldNotBeValidWithABadTo_time(String badTime, Vertx vertx, VertxTestContext testContext) {
 
 		final Routine model = new Routine();
 		model.to_time = badTime;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.to_time");
+		assertIsNotValid(model, "to_time", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge routines with bad label.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLabel() {
+	public void shouldNotMergeWithABadLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		final Routine source = new Routine();
 		source.label = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.label");
+		assertCannotMerge(target, source, "label", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge routines with bad proximity.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadProximity() {
+	public void shouldNotMergeWithABadProximity(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		final Routine source = new Routine();
 		source.proximity = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.proximity");
+		assertCannotMerge(target, source, "proximity", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge routines with bad from_time.
 	 *
-	 * @param badTime a bad time value.
+	 * @param badTime     a bad time value.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@ParameterizedTest(name = "Should not be valid with from_time = {0}")
 	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
-	public void shouldNotMergeWithABadFrom_time(String badTime) {
+	public void shouldNotMergeWithABadFrom_time(String badTime, Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		final Routine source = new Routine();
 		source.from_time = badTime;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.from_time");
+		assertCannotMerge(target, source, "from_time", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge routines with bad to_time.
 	 *
-	 * @param badTime a bad time value.
+	 * @param badTime     a bad time value.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@ParameterizedTest(name = "Should not be valid with to_time = {0}")
 	@ValueSource(strings = { "0", "tomorrow", "2019-23-10", "10:0", "2019-02-02T00:00:00Z" })
-	public void shouldNotMergeWithABadTo_time(String badTime) {
+	public void shouldNotMergeWithABadTo_time(String badTime, Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		final Routine source = new Routine();
 		source.to_time = badTime;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.to_time");
+		assertCannotMerge(target, source, "to_time", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that merge.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		target.id = "1";
 		final Routine source = this.createModelExample(2);
-		final Routine merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		source.id = "1";
-		assertThat(merged).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			source.id = "1";
+			assertThat(merged).isEqualTo(source);
+		});
 	}
 
 	/**
 	 * Check that merge with {@code null}.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
-		final Routine merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
 	}
 
 	/**
 	 * Check that merge only label.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyLabel() {
+	public void shouldMergeOnlyLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		target.id = "1";
 		final Routine source = new Routine();
 		source.label = "NEW LABEL";
-		final Routine merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.label = "NEW LABEL";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.label = "NEW LABEL";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only proximity.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyProximity() {
+	public void shouldMergeOnlyProximity(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		target.id = "1";
 		final Routine source = new Routine();
 		source.proximity = "NEW PROXIMITY";
-		final Routine merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.proximity = "NEW PROXIMITY";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.proximity = "NEW PROXIMITY";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only from_time.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyFrom_time() {
+	public void shouldMergeOnlyFrom_time(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		target.id = "1";
 		final Routine source = new Routine();
 		source.from_time = "00:00";
-		final Routine merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.from_time = "00:00:00";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.from_time = "00:00:00";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only to_time.
 	 *
-	 * @see Routine#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Routine#merge(Routine, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyTo_time() {
+	public void shouldMergeOnlyTo_time(Vertx vertx, VertxTestContext testContext) {
 
 		final Routine target = this.createModelExample(1);
 		target.id = "1";
 		final Routine source = new Routine();
 		source.to_time = "00:00";
-		final Routine merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.to_time = "00:00:00";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.to_time = "00:00:00";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 }

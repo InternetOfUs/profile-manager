@@ -26,14 +26,15 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.api.models.ValidationErrorException;
-import eu.internetofus.common.api.models.wenet.Competence;
-import eu.internetofus.common.api.models.wenet.DrivingLicense;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link Competence}.
@@ -42,64 +43,92 @@ import eu.internetofus.common.api.models.wenet.DrivingLicense;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class CompetenceTest {
 
 	/**
 	 * Check that merge two models.
 	 *
-	 * @see Competence#merge(Competence, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Competence#merge(Competence, String, Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final Competence target = new DrivingLicenseTest().createModelExample(1);
 		target.id = "1";
 		final Competence source = new DrivingLicenseTest().createModelExample(2);
-		final Competence merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		source.id = "1";
-		assertThat(merged).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			source.id = "1";
+			assertThat(merged).isEqualTo(source);
+
+		});
+
 	}
 
 	/**
 	 * Check that merge with {@code null} source.
 	 *
-	 * @see Competence#merge(Competence, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Competence#merge(Competence, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final Competence target = new Competence();
-		final Competence merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
+
 	}
 
 	/**
 	 * Check that merge with two different classes.
 	 *
-	 * @see Competence#merge(Competence, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Competence#merge(Competence, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithDiferentClasses() {
+	public void shouldNotMergeWithDiferentClasses(Vertx vertx, VertxTestContext testContext) {
 
 		final Competence target = new Competence();
+		target.id = "Target_Id";
 		final Competence source = new DrivingLicense();
-		final Competence merged = target.merge(source, "codePrefix");
-		assertThat(merged).isSameAs(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isSameAs(source);
+			assertThat(merged.id).isEqualTo(target.id);
+
+		});
+
 	}
 
 	/**
-	 * Check that not merge with bad competence class.
+	 * Check that merge two competences.
 	 *
-	 * @see Competence#merge(Competence, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Competence#merge(Competence, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadClass() {
+	public void shouldMergeTwoCompetences(Vertx vertx, VertxTestContext testContext) {
 
 		final Competence target = new Competence();
 		final Competence source = new Competence();
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix");
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isSameAs(source);
+			assertThat(merged.id).isEqualTo(target.id);
+
+		});
+
 	}
 
 }

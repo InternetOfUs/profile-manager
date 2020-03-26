@@ -26,15 +26,14 @@
 
 package eu.internetofus.common.api.models.wenet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.wenet.Material;
-import eu.internetofus.common.api.models.wenet.UserName;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the components that extends the {@link Material}.
@@ -50,16 +49,19 @@ public abstract class MaterialTestCase<T extends Material> extends ModelTestCase
 	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
-	 * @param index to verify
+	 * @param index       to verify
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
 	 *
-	 * @see UserName#validate(String)
+	 * @see Material#validate(String, io.vertx.core.Vertx)
 	 */
 	@ParameterizedTest(name = "The model example {0} has to be valid")
 	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
-	public void shouldExampleBeValid(int index) {
+	public void shouldExampleBeValid(int index, Vertx vertx, VertxTestContext testContext) {
 
 		final T model = this.createModelExample(index);
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext);
+
 	}
 
 }

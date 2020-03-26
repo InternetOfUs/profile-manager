@@ -31,7 +31,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import eu.internetofus.common.api.models.Mergeable;
-import eu.internetofus.common.api.models.Merges;
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
@@ -100,24 +99,24 @@ public class Competence extends Model implements Validable, Mergeable<Competence
 
 		if (this instanceof DrivingLicense && source instanceof DrivingLicense) {
 
-			return ((DrivingLicense) this).merge(source, codePrefix, vertx);
+			return ((DrivingLicense) this).mergeDrivingLicense((DrivingLicense) source, codePrefix, vertx).map(license -> {
+
+				license.id = this.id;
+				return (Competence) license;
+
+			});
+
+		} else if (source == null) {
+
+			return Future.succeededFuture(this);
 
 		} else {
 
-			final Promise<Competence> promise = Promise.promise();
-			Future<Competence> future = promise.future();
-			if (source == null) {
+			return source.validate(codePrefix, vertx).map(validation -> {
+				source.id = this.id;
+				return source;
+			});
 
-				promise.complete(this);
-
-			} else {
-
-				promise.complete(source);
-				future = future.compose(Merges.validateMerged(codePrefix, vertx));
-
-			}
-
-			return future;
 		}
 	}
 

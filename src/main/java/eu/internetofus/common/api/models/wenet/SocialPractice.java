@@ -38,7 +38,6 @@ import eu.internetofus.common.api.models.Validations;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 /**
@@ -94,14 +93,12 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 	@Override
 	public Future<Void> validate(String codePrefix, Vertx vertx) {
 
-		final Promise<Void> promise = Promise.promise();
-		Future<Void> future = promise.future();
 		try {
 
 			this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
 			if (this.id != null) {
 
-				promise.fail(new ValidationErrorException(codePrefix + ".id",
+				return Future.failedFuture(new ValidationErrorException(codePrefix + ".id",
 						"You can not specify the identifier of the social practice to create"));
 
 			} else {
@@ -110,6 +107,7 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 
 				this.label = Validations.validateNullableStringField(codePrefix, "label", 255, this.label);
 
+				Future<Void> future = Future.succeededFuture();
 				if (this.competences != null) {
 
 					future = future.compose(mapper -> this.competences.validate(codePrefix + ".competences", vertx));
@@ -123,15 +121,13 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 
 				future = future.compose(Validations.validate(this.norms, codePrefix + ".norms", vertx));
 
-				promise.complete();
+				return future;
 			}
 
 		} catch (final ValidationErrorException validationError) {
 
-			promise.fail(validationError);
+			return Future.failedFuture(validationError);
 		}
-
-		return future;
 
 	}
 
@@ -141,8 +137,6 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 	@Override
 	public Future<SocialPractice> merge(SocialPractice source, String codePrefix, Vertx vertx) {
 
-		final Promise<SocialPractice> promise = Promise.promise();
-		Future<SocialPractice> future = promise.future();
 		if (source != null) {
 
 			final SocialPractice merged = new SocialPractice();
@@ -152,7 +146,7 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 				merged.label = this.label;
 			}
 
-			future = future.compose(Merges.validateMerged(codePrefix, vertx));
+			Future<SocialPractice> future = merged.validate(codePrefix, vertx).map(empty -> merged);
 
 			future = future.compose(Merges.mergeField(this.competences, source.competences, codePrefix + ".competences",
 					vertx, (model, mergedCompetences) -> model.competences = mergedCompetences));
@@ -170,11 +164,12 @@ public class SocialPractice extends Model implements Validable, Mergeable<Social
 				return mergedValidatedModel;
 			});
 
+			return future;
+
 		} else {
 
-			promise.complete(this);
+			return Future.succeededFuture(this);
 		}
-		return future;
 
 	}
 

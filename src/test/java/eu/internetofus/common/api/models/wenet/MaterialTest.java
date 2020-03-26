@@ -26,14 +26,15 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.api.models.ValidationErrorException;
-import eu.internetofus.common.api.models.wenet.Car;
-import eu.internetofus.common.api.models.wenet.Material;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link Material}.
@@ -42,65 +43,92 @@ import eu.internetofus.common.api.models.wenet.Material;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class MaterialTest {
 
 	/**
 	 * Check that merge two models.
 	 *
-	 * @see Material#merge(Material, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Material#merge(Material, String, Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final Material target = new CarTest().createModelExample(1);
 		target.id = "1";
 		final Material source = new CarTest().createModelExample(2);
-		final Material merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		source.id = "1";
-		assertThat(merged).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			source.id = "1";
+			assertThat(merged).isEqualTo(source);
+
+		});
+
 	}
 
 	/**
 	 * Check that merge with {@code null} source.
 	 *
-	 * @see Material#merge(Material, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Material#merge(Material, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final Material target = new Material();
-		final Material merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
 
 	}
 
 	/**
 	 * Check that merge with two different classes.
 	 *
-	 * @see Material#merge(Material, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Material#merge(Material, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithDiferentClasses() {
+	public void shouldNotMergeWithDiferentClasses(Vertx vertx, VertxTestContext testContext) {
 
 		final Material target = new Material();
+		target.id = "Target_Id";
 		final Material source = new Car();
-		final Material merged = target.merge(source, "codePrefix");
-		assertThat(merged).isSameAs(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isSameAs(source);
+			assertThat(merged.id).isEqualTo(target.id);
+
+		});
+
 	}
 
 	/**
-	 * Check that not merge with bad material class.
+	 * Check that merge two materials.
 	 *
-	 * @see Material#merge(Material, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Material#merge(Material, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadCarPlate() {
+	public void shouldMergeTwoMaterials(Vertx vertx, VertxTestContext testContext) {
 
 		final Material target = new Material();
 		final Material source = new Material();
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix");
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isSameAs(source);
+			assertThat(merged.id).isEqualTo(target.id);
+
+		});
+
 	}
 
 }

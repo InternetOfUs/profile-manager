@@ -26,17 +26,20 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.ValidationsTest;
-import eu.internetofus.common.api.models.wenet.Norm;
-import eu.internetofus.common.api.models.wenet.NormOperator;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link Norm}
@@ -45,6 +48,7 @@ import eu.internetofus.common.api.models.wenet.NormOperator;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class NormTest extends ModelTestCase<Norm> {
 
 	/**
@@ -65,22 +69,29 @@ public class NormTest extends ModelTestCase<Norm> {
 	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
-	 * @see Norm#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#validate(String,Vertx)
 	 */
 	@Test
-	public void shouldExample1BeValid() {
+	public void shouldExample1BeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm model = this.createModelExample(1);
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext);
+
 	}
 
 	/**
 	 * Check that a model with all the values is valid.
 	 *
-	 * @see Norm#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#validate(String,Vertx)
 	 */
 	@Test
-	public void shouldFullModelBeValid() {
+	public void shouldFullModelBeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm model = new Norm();
 		model.id = "      ";
@@ -88,197 +99,255 @@ public class NormTest extends ModelTestCase<Norm> {
 		model.operator = NormOperator.GREATER_THAN;
 		model.comparison = "   comparison    ";
 		model.negation = false;
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
 
-		final Norm expected = new Norm();
-		expected.id = model.id;
-		expected.attribute = "attribute";
-		expected.operator = NormOperator.GREATER_THAN;
-		expected.comparison = "comparison";
-		expected.negation = false;
-		assertThat(model).isEqualTo(expected);
+		assertIsValid(model, vertx, testContext, () -> {
+
+			final Norm expected = new Norm();
+			expected.id = model.id;
+			expected.attribute = "attribute";
+			expected.operator = NormOperator.GREATER_THAN;
+			expected.comparison = "comparison";
+			expected.negation = false;
+			assertThat(model).isEqualTo(expected);
+
+		});
+
 	}
 
 	/**
 	 * Check that the model with id is not valid.
 	 *
-	 * @see Norm#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#validate(String,Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithAnId() {
+	public void shouldNotBeValidWithAnId(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm model = new Norm();
 		model.id = "has_id";
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.id");
+		assertIsNotValid(model, "id", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept norms with bad attribute.
 	 *
-	 * @see Norm#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#validate(String,Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadAttribute() {
+	public void shouldNotBeValidWithABadAttribute(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm model = new Norm();
 		model.attribute = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.attribute");
+		assertIsNotValid(model, "attribute", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept norms with bad comparison.
 	 *
-	 * @see Norm#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#validate(String,Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadComparison() {
+	public void shouldNotBeValidWithABadComparison(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm model = new Norm();
 		model.comparison = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.comparison");
+		assertIsNotValid(model, "comparison", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge with bad attribute.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadAttribute() {
+	public void shouldNotMergeWithABadAttribute(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = new Norm();
 		final Norm source = new Norm();
 		source.attribute = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.attribute");
+		assertCannotMerge(target, source, "attribute", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge with bad comparison.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadComparison() {
+	public void shouldNotMergeWithABadComparison(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = new Norm();
 		final Norm source = new Norm();
 		source.comparison = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.comparison");
+		assertCannotMerge(target, source, "comparison", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that merge.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		final Norm source = this.createModelExample(2);
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged).isNotEqualTo(target).isEqualTo(source));
+
 	}
 
 	/**
 	 * Check that merge with {@code null}.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
-		final Norm merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
+
 	}
 
 	/**
 	 * Check that merge only the identifier.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyId() {
+	public void shouldMergeOnlyId(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		target.id = "1";
 		final Norm source = new Norm();
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isEqualTo(target).isNotSameAs(target).isNotEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged).isEqualTo(target).isNotSameAs(target).isNotEqualTo(source));
+
 	}
 
 	/**
 	 * Check that merge only the attribute.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyAttribute() {
+	public void shouldMergeOnlyAttribute(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		final Norm source = new Norm();
 		source.attribute = "NEW VALUE";
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.attribute = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.attribute = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+
+		});
+
 	}
 
 	/**
 	 * Check that merge only the operator.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyOperator() {
+	public void shouldMergeOnlyOperator(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		final Norm source = new Norm();
 		source.operator = NormOperator.GREATER_THAN;
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.operator = NormOperator.GREATER_THAN;
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.operator = NormOperator.GREATER_THAN;
+			assertThat(merged).isEqualTo(target);
+
+		});
+
 	}
 
 	/**
 	 * Check that merge only the comparison.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyComparison() {
+	public void shouldMergeOnlyComparison(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		final Norm source = new Norm();
 		source.comparison = "NEW VALUE";
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.comparison = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.comparison = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+
+		});
+
 	}
 
 	/**
 	 * Check that merge only the negation.
 	 *
-	 * @see Norm#merge(Norm, String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Norm#merge(Norm, String, io.vertx.core.Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyNegation() {
+	public void shouldMergeOnlyNegation(Vertx vertx, VertxTestContext testContext) {
 
 		final Norm target = this.createModelExample(1);
 		final Norm source = new Norm();
 		source.negation = false;
-		final Norm merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.negation = false;
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.negation = false;
+			assertThat(merged).isEqualTo(target);
+
+		});
+
 	}
 
 }

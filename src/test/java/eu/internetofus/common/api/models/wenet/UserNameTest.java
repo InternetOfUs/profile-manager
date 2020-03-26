@@ -26,18 +26,22 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.ValidationsTest;
-import eu.internetofus.common.api.models.wenet.UserName;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link UserName}.
@@ -46,6 +50,7 @@ import eu.internetofus.common.api.models.wenet.UserName;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class UserNameTest extends ModelTestCase<UserName> {
 
 	/**
@@ -66,430 +71,512 @@ public class UserNameTest extends ModelTestCase<UserName> {
 	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
-	 * @param index to verify
+	 * @param index       to verify
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@ParameterizedTest(name = "The model example {0} has to be valid")
 	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
-	public void shouldExampleBeValid(int index) {
+	public void shouldExampleBeValid(int index, Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = this.createModelExample(index);
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large prefix.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithALargePrefix() {
+	public void shouldNotBeValidWithALargePrefix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.prefix = "12345678901";
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.prefix");
+		assertIsNotValid(model, "prefix", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large prefix.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldBeValidAPrefixWithSpaces() {
+	public void shouldBeValidAPrefixWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.prefix = "   1234567890   ";
-		model.validate("codePrefix");
-		assertThat(model.prefix).isEqualTo("1234567890");
+		assertIsValid(model, vertx, testContext, () -> assertThat(model.prefix).isEqualTo("1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not valid if has a large first.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithALargeFirst() {
+	public void shouldNotBeValidWithALargeFirst(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.first = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.first");
+		assertIsNotValid(model, "first", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large first.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldBeValidAFirstWithSpaces() {
+	public void shouldBeValidAFirstWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.first = "   First name 1234567890   ";
-		model.validate("codePrefix");
-		assertThat(model.first).isEqualTo("First name 1234567890");
+		assertIsValid(model, vertx, testContext, () -> assertThat(model.first).isEqualTo("First name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not valid if has a large middle.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithALargeMiddle() {
+	public void shouldNotBeValidWithALargeMiddle(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.middle = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.middle");
+		assertIsNotValid(model, "middle", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large middle.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldBeValidAMiddleWithSpaces() {
+	public void shouldBeValidAMiddleWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.middle = "   Middle name 1234567890   ";
-		model.validate("codePrefix");
-		assertThat(model.middle).isEqualTo("Middle name 1234567890");
+		assertIsValid(model, vertx, testContext, () -> assertThat(model.middle).isEqualTo("Middle name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not valid if has a large last.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithALargeLast() {
+	public void shouldNotBeValidWithALargeLast(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.last = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.last");
+		assertIsNotValid(model, "last", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large last.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldBeValidALastWithSpaces() {
+	public void shouldBeValidALastWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.last = "   Last name 1234567890   ";
-		model.validate("codePrefix");
-		assertThat(model.last).isEqualTo("Last name 1234567890");
+		assertIsValid(model, vertx, testContext, () -> assertThat(model.last).isEqualTo("Last name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not valid if has a large suffix.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithALargeSuffix() {
+	public void shouldNotBeValidWithALargeSuffix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.suffix = "12345678901";
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.suffix");
+		assertIsNotValid(model, "suffix", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not valid if has a large suffix.
 	 *
-	 * @see UserName#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldBeValidASuffixWithSpaces() {
+	public void shouldBeValidASuffixWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName model = new UserName();
 		model.suffix = "   1234567890   ";
-		model.validate("codePrefix");
-		assertThat(model.suffix).isEqualTo("1234567890");
+		assertIsValid(model, vertx, testContext, () -> assertThat(model.suffix).isEqualTo("1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not merge if has a large prefix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithALargePrefix() {
+	public void shouldNotMergeWithALargePrefix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.prefix = "12345678901";
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.prefix");
+		assertCannotMerge(target, source, "prefix", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not merge if has a large prefix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeAPrefixWithSpaces() {
+	public void shouldMergeAPrefixWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.prefix = "   1234567890   ";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged.prefix).isEqualTo("1234567890");
+		assertCanMerge(target, source, vertx, testContext, merged -> assertThat(merged.prefix).isEqualTo("1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not merge if has a large first.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithALargeFirst() {
+	public void shouldNotMergeWithALargeFirst(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.first = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.first");
+		assertCannotMerge(target, source, "first", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not merge if has a large first.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeAFirstWithSpaces() {
+	public void shouldMergeAFirstWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.first = "   First name 1234567890   ";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged.first).isEqualTo("First name 1234567890");
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged.first).isEqualTo("First name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not merge if has a large middle.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithALargeMiddle() {
+	public void shouldNotMergeWithALargeMiddle(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.middle = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.middle");
+		assertCannotMerge(target, source, "middle", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not merge if has a large middle.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeAMiddleWithSpaces() {
+	public void shouldMergeAMiddleWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.middle = "   Middle name 1234567890   ";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged.middle).isEqualTo("Middle name 1234567890");
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged.middle).isEqualTo("Middle name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not merge if has a large last.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithALargeLast() {
+	public void shouldNotMergeWithALargeLast(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.last = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.last");
+		assertCannotMerge(target, source, "last", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not merge if has a large last.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeALastWithSpaces() {
+	public void shouldMergeALastWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.last = "   Last name 1234567890   ";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged.last).isEqualTo("Last name 1234567890");
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged.last).isEqualTo("Last name 1234567890"));
 
 	}
 
 	/**
 	 * Check that the name is not merge if has a large suffix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithALargeSuffix() {
+	public void shouldNotMergeWithALargeSuffix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.suffix = "12345678901";
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.suffix");
+		assertCannotMerge(target, source, "suffix", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that the name is not merge if has a large suffix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeASuffixWithSpaces() {
+	public void shouldMergeASuffixWithSpaces(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = new UserName();
 		final UserName source = new UserName();
 		source.suffix = "   1234567890   ";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged.suffix).isEqualTo("1234567890");
+		assertCanMerge(target, source, vertx, testContext, merged -> assertThat(merged.suffix).isEqualTo("1234567890"));
 
 	}
 
 	/**
 	 * Check that merge two models.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = this.createModelExample(23);
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext,
+				merged -> assertThat(merged).isNotEqualTo(target).isEqualTo(source));
 
 	}
 
 	/**
 	 * Check that merge with {@code null}.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
-		final UserName merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
 
 	}
 
 	/**
 	 * Check that merge only the prefix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyPrefix() {
+	public void shouldMergeOnlyPrefix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = new UserName();
 		source.prefix = "NEW VALUE";
-		final UserName merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.prefix = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.prefix = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only the first.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyFirst() {
+	public void shouldMergeOnlyFirst(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = new UserName();
 		source.first = "NEW VALUE";
-		final UserName merged = target.merge(source, "codeFirst");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.first = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.first = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only the middle.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyMiddle() {
+	public void shouldMergeOnlyMiddle(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = new UserName();
 		source.middle = "NEW VALUE";
-		final UserName merged = target.merge(source, "codeMiddle");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.middle = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.middle = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only the last.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyLast() {
+	public void shouldMergeOnlyLast(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = new UserName();
 		source.last = "NEW VALUE";
-		final UserName merged = target.merge(source, "codeLast");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.last = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.last = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only the suffix.
 	 *
-	 * @see UserName#merge(UserName,String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see UserName#merge(UserName, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlySuffix() {
+	public void shouldMergeOnlySuffix(Vertx vertx, VertxTestContext testContext) {
 
 		final UserName target = this.createModelExample(1);
 		final UserName source = new UserName();
 		source.suffix = "NEW VALUE";
-		final UserName merged = target.merge(source, "codeSuffix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.suffix = "NEW VALUE";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.suffix = "NEW VALUE";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 }

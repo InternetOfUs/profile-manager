@@ -106,9 +106,9 @@ public class Routine extends Model implements Validable, Mergeable<Routine> {
 
 				this.label = Validations.validateNullableStringField(codePrefix, "label", 255, this.label);
 				this.proximity = Validations.validateNullableStringField(codePrefix, "proximity", 255, this.proximity);
-				this.from_time = Validations.validateNullableDateField(codePrefix, "from_time", DateTimeFormatter.ISO_TIME,
+				this.from_time = Validations.validateNullableStringDateField(codePrefix, "from_time", DateTimeFormatter.ISO_TIME,
 						this.from_time);
-				this.to_time = Validations.validateNullableDateField(codePrefix, "to_time", DateTimeFormatter.ISO_TIME,
+				this.to_time = Validations.validateNullableStringDateField(codePrefix, "to_time", DateTimeFormatter.ISO_TIME,
 						this.to_time);
 
 				this.id = UUID.randomUUID().toString();

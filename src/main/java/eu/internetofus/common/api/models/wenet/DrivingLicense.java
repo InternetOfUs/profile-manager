@@ -97,7 +97,7 @@ public class DrivingLicense extends Competence {
 	 *
 	 * @see ValidationErrorException
 	 */
-	public Future<DrivingLicense> merge(DrivingLicense source, String codePrefix, Vertx vertx) {
+	public Future<DrivingLicense> mergeDrivingLicense(DrivingLicense source, String codePrefix, Vertx vertx) {
 
 		final Promise<DrivingLicense> promise = Promise.promise();
 		Future<DrivingLicense> future = promise.future();

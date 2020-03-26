@@ -103,7 +103,7 @@ public class Car extends Material {
 	 *
 	 * @see ValidationErrorException
 	 */
-	public Future<Car> merge(Car source, String codePrefix, Vertx vertx) {
+	public Future<Car> mergeCar(Car source, String codePrefix, Vertx vertx) {
 
 		final Promise<Car> promise = Promise.promise();
 		Future<Car> future = promise.future();

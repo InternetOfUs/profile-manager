@@ -31,7 +31,6 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import eu.internetofus.common.api.models.Mergeable;
-import eu.internetofus.common.api.models.Merges;
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
@@ -100,24 +99,24 @@ public class Material extends Model implements Validable, Mergeable<Material> {
 
 		if (this instanceof Car && source instanceof Car) {
 
-			return ((Car) this).merge(source, codePrefix, vertx);
+			return ((Car) this).mergeCar((Car) source, codePrefix, vertx).map(car -> {
+
+				car.id = this.id;
+				return (Material) car;
+
+			});
+
+		} else if (source == null) {
+
+			return Future.succeededFuture(this);
 
 		} else {
 
-			final Promise<Material> promise = Promise.promise();
-			Future<Material> future = promise.future();
-			if (source == null) {
+			return source.validate(codePrefix, vertx).map(validation -> {
+				source.id = this.id;
+				return source;
+			});
 
-				promise.complete(this);
-
-			} else {
-
-				promise.complete(source);
-				future = future.compose(Merges.validateMerged(codePrefix, vertx));
-
-			}
-
-			return future;
 		}
 	}
 

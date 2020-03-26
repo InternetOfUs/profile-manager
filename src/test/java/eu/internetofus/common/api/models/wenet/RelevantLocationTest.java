@@ -26,16 +26,20 @@
 
 package eu.internetofus.common.api.models.wenet;
 
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.api.models.ModelTestCase;
-import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.ValidationsTest;
-import eu.internetofus.common.api.models.wenet.RelevantLocation;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link RelevantLocation}.
@@ -44,6 +48,7 @@ import eu.internetofus.common.api.models.wenet.RelevantLocation;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+@ExtendWith(VertxExtension.class)
 public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 
 	/**
@@ -63,234 +68,286 @@ public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 	/**
 	 * Check that the {@link #createModelExample(int)} is valid.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldExampleBeValid() {
+	public void shouldExampleBeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = this.createModelExample(1);
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
+		assertIsValid(model, vertx, testContext);
+
 	}
 
 	/**
 	 * Check that a model with all the values is valid.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldFullModelBeValid() {
+	public void shouldFullModelBeValid(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.id = "      ";
 		model.label = "    label    ";
 		model.longitude = 10;
 		model.latitude = -10;
-		assertThat(catchThrowable(() -> model.validate("codePrefix"))).doesNotThrowAnyException();
 
-		final RelevantLocation expected = new RelevantLocation();
-		expected.id = model.id;
-		expected.label = "label";
-		expected.longitude = 10;
-		expected.latitude = -10;
-		assertThat(model).isEqualTo(expected);
+		assertIsValid(model, vertx, testContext, () -> {
+
+			final RelevantLocation expected = new RelevantLocation();
+			expected.id = model.id;
+			expected.label = "label";
+			expected.longitude = 10;
+			expected.latitude = -10;
+			assertThat(model).isEqualTo(expected);
+
+		});
 	}
 
 	/**
 	 * Check that the model with id is not valid.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithAnId() {
+	public void shouldNotBeValidWithAnId(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.id = "has_id";
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.id");
+		assertIsNotValid(model, "id", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept model with bad label.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLabel() {
+	public void shouldNotBeValidWithABadLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.label = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.label");
+		assertIsNotValid(model, "label", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept model with bad longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLongitudeLessThanMinimum() {
+	public void shouldNotBeValidWithABadLongitudeLessThanMinimum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.longitude = -180.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.longitude");
+		assertIsNotValid(model, "longitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept model with bad longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLongitudeMoreThanMaximum() {
+	public void shouldNotBeValidWithABadLongitudeMoreThanMaximum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.longitude = 180.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.longitude");
+		assertIsNotValid(model, "longitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept model with bad latitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLatitudeLessThanMinimum() {
+	public void shouldNotBeValidWithABadLatitudeLessThanMinimum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.latitude = -90.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.latitude");
+		assertIsNotValid(model, "latitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not accept model with bad latitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithABadLatitudeMoreThanMaximum() {
+	public void shouldNotBeValidWithABadLatitudeMoreThanMaximum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation model = new RelevantLocation();
 		model.latitude = 90.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> model.validate("codePrefix")).getCode())
-				.isEqualTo("codePrefix.latitude");
+		assertIsNotValid(model, "latitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge model with bad label.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLabel() {
+	public void shouldNotMergeWithABadLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		final RelevantLocation source = new RelevantLocation();
 		source.label = ValidationsTest.STRING_256;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.label");
+		assertCannotMerge(target, source, "label", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge model with bad longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLongitudeLessThanMinimum() {
+	public void shouldNotMergeWithABadLongitudeLessThanMinimum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		final RelevantLocation source = new RelevantLocation();
 		source.longitude = -180.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.longitude");
+		assertCannotMerge(target, source, "longitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge model with bad longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLongitudeMoreThanMaximum() {
+	public void shouldNotMergeWithABadLongitudeMoreThanMaximum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		final RelevantLocation source = new RelevantLocation();
 		source.longitude = 180.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.longitude");
+		assertCannotMerge(target, source, "longitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge model with bad latitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLatitudeLessThanMinimum() {
+	public void shouldNotMergeWithABadLatitudeLessThanMinimum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		final RelevantLocation source = new RelevantLocation();
 		source.latitude = -90.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.latitude");
+		assertCannotMerge(target, source, "latitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that not merge model with bad latitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldNotMergeWithABadLatitudeMoreThanMaximum() {
+	public void shouldNotMergeWithABadLatitudeMoreThanMaximum(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		final RelevantLocation source = new RelevantLocation();
 		source.latitude = 90.0001;
-		assertThat(assertThrows(ValidationErrorException.class, () -> target.merge(source, "codePrefix")).getCode())
-				.isEqualTo("codePrefix.latitude");
+		assertCannotMerge(target, source, "latitude", vertx, testContext);
+
 	}
 
 	/**
 	 * Check that merge.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMerge() {
+	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		target.id = "1";
 		final RelevantLocation source = this.createModelExample(2);
-		final RelevantLocation merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		source.id = "1";
-		assertThat(merged).isEqualTo(source);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			source.id = "1";
+			assertThat(merged).isEqualTo(source);
+		});
 	}
 
 	/**
 	 * Check that merge with {@code null}.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeWithNull() {
+	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
-		final RelevantLocation merged = target.merge(null, "codePrefix");
-		assertThat(merged).isSameAs(target);
+		assertCanMerge(target, null, vertx, testContext, merged -> assertThat(merged).isSameAs(target));
 	}
 
 	/**
 	 * Check that merge only label.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyLabel() {
+	public void shouldMergeOnlyLabel(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		target.id = "1";
@@ -298,66 +355,80 @@ public class RelevantLocationTest extends ModelTestCase<RelevantLocation> {
 		source.label = "NEW LABEL";
 		source.latitude = target.latitude;
 		source.longitude = target.longitude;
-		final RelevantLocation merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.label = "NEW LABEL";
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.label = "NEW LABEL";
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge the latitude and longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeLatitudeLongitude() {
+	public void shouldMergeLatitudeLongitude(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		target.id = "1";
 		final RelevantLocation source = new RelevantLocation();
-		final RelevantLocation merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.latitude = 0;
-		target.longitude = 0;
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.latitude = 0;
+			target.longitude = 0;
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 	/**
 	 * Check that merge only longitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyLongitude() {
+	public void shouldMergeOnlyLongitude(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		target.id = "1";
 		final RelevantLocation source = new RelevantLocation();
 		source.latitude = target.latitude;
 		source.longitude = 0;
-		final RelevantLocation merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.longitude = 0;
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.longitude = 0;
+			assertThat(merged).isEqualTo(target);
+		});
+
 	}
 
 	/**
 	 * Check that merge only latitude.
 	 *
-	 * @see RelevantLocation#validate(String)
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see RelevantLocation#merge(RelevantLocation, String, Vertx)
 	 */
 	@Test
-	public void shouldMergeOnlyLatitude() {
+	public void shouldMergeOnlyLatitude(Vertx vertx, VertxTestContext testContext) {
 
 		final RelevantLocation target = this.createModelExample(1);
 		target.id = "1";
 		final RelevantLocation source = new RelevantLocation();
 		source.longitude = target.longitude;
 		source.latitude = 0;
-		final RelevantLocation merged = target.merge(source, "codePrefix");
-		assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-		target.latitude = 0;
-		assertThat(merged).isEqualTo(target);
+		assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+			target.latitude = 0;
+			assertThat(merged).isEqualTo(target);
+		});
 	}
 
 }

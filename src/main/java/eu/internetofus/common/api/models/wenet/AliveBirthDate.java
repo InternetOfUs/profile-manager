@@ -74,12 +74,12 @@ public class AliveBirthDate extends ProfileDate {
 	@Override
 	public Future<ProfileDate> merge(ProfileDate source, String codePrefix, Vertx vertx) {
 
-		return super.merge(source, codePrefix, vertx).map(model -> {
+		return super.merge(source, codePrefix, vertx).compose(model -> {
 			final AliveBirthDate date = new AliveBirthDate();
 			date.day = model.day;
 			date.month = model.month;
 			date.year = model.year;
-			return date;
+			return date.validate(codePrefix, vertx).map(empty -> date);
 		});
 	}
 

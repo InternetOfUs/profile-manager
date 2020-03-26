@@ -27,7 +27,6 @@
 package eu.internetofus.common.api.models.wenet;
 
 import eu.internetofus.common.api.models.Mergeable;
-import eu.internetofus.common.api.models.Merges;
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
@@ -107,8 +106,6 @@ public class ProfileDate extends Model implements Validable, Mergeable<ProfileDa
 	@Override
 	public Future<ProfileDate> merge(ProfileDate source, String codePrefix, Vertx vertx) {
 
-		final Promise<ProfileDate> promise = Promise.promise();
-		Future<ProfileDate> future = promise.future();
 		if (source != null) {
 
 			final ProfileDate merged = new ProfileDate();
@@ -137,15 +134,14 @@ public class ProfileDate extends Model implements Validable, Mergeable<ProfileDa
 				merged.day = this.day;
 			}
 
-			promise.complete(merged);
-			future = future.compose(Merges.validateMerged(codePrefix, vertx));
+			return merged.validate(codePrefix, vertx).map(empty -> merged);
 
 		} else {
 
-			promise.complete(this);
+			return Future.succeededFuture(this);
 
 		}
-		return future;
+
 	}
 
 }

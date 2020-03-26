@@ -168,7 +168,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String, int, String)
 	 */
-	static String validateNullableEmailField(String codePrefix, String fieldName, String value) {
+	static String validateNullableEmailField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		final String trimmedValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (trimmedValue != null && !EmailValidator.getInstance().isValid(trimmedValue)) {
@@ -193,7 +194,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String, int,String)
 	 */
-	static String validateNullableLocaleField(String codePrefix, String fieldName, String value) {
+	static String validateNullableLocaleField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		final String validStringValue = validateNullableStringField(codePrefix, fieldName, 50, value);
 		if (validStringValue != null) {
@@ -226,7 +228,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String,int, String)
 	 */
-	static String validateNullableTelephoneField(String codePrefix, String fieldName, String locale, String value) {
+	static String validateNullableTelephoneField(String codePrefix, String fieldName, String locale, String value)
+			throws ValidationErrorException {
 
 		final String validStringValue = validateNullableStringField(codePrefix, fieldName, 50, value);
 		if (validStringValue != null) {
@@ -276,7 +279,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String,int, String)
 	 */
-	static String validateNullableURLField(String codePrefix, String fieldName, String value) {
+	static String validateNullableURLField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		String validStringValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (validStringValue != null) {
@@ -305,8 +309,11 @@ public interface Validations {
 	 * @param value      to verify.
 	 *
 	 * @return the verified date.
+	 *
+	 * @throws ValidationErrorException If the value is not a valid date.
 	 */
-	static String validateNullableDateField(String codePrefix, String fieldName, DateTimeFormatter format, String value) {
+	static String validateNullableStringDateField(String codePrefix, String fieldName, DateTimeFormatter format,
+			String value) throws ValidationErrorException {
 
 		String validStringValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (validStringValue != null) {
@@ -343,7 +350,7 @@ public interface Validations {
 
 		return mapper -> {
 			final Promise<Void> promise = Promise.promise();
-			final Future<Void> future = promise.future();
+			Future<Void> future = promise.future();
 			if (models != null) {
 
 				final int max = models.size();
@@ -351,7 +358,7 @@ public interface Validations {
 
 					final Validable model = models.get(i);
 					final String modelPrefix = codePrefix + "[" + i + "]";
-					future.compose(elementMapper -> model.validate(modelPrefix, vertx));
+					future = future.compose(elementMapper -> model.validate(modelPrefix, vertx));
 
 				}
 

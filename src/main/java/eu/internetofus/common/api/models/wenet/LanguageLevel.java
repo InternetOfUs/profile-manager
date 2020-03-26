@@ -19,8 +19,6 @@ package eu.internetofus.common.api.models.wenet;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-// @Schema(description = "The levels that define the linguistic ability of a
-// person in a language")
 public enum LanguageLevel {
 
 	/**
