@@ -75,7 +75,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	}
 
 	/**
-	 * Create a n empty Planned activity to use in the tests.
+	 * Create an empty planned activity to use in the tests.
 	 *
 	 * @return a new instance of the model to test.
 	 */
