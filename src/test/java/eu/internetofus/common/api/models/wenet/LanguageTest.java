@@ -27,6 +27,7 @@
 package eu.internetofus.common.api.models.wenet;
 
 import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
 import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
 import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -179,6 +180,24 @@ public class LanguageTest extends ModelTestCase<Language> {
 	}
 
 	/**
+	 * Check that not merge with a bad name.
+	 *
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Language#merge(Language, String, Vertx)
+	 */
+	@Test
+	public void shouldNotMergeWithBadName(Vertx vertx, VertxTestContext testContext) {
+
+		final Language target = this.createModelExample(1);
+		final Language source = new Language();
+		source.name = ValidationsTest.STRING_256;
+		assertCannotMerge(target, source, "name", vertx, testContext);
+
+	}
+
+	/**
 	 * Check that merge only the code.
 	 *
 	 * @param vertx       event bus to use.
@@ -199,6 +218,24 @@ public class LanguageTest extends ModelTestCase<Language> {
 			assertThat(merged).isEqualTo(target);
 
 		});
+
+	}
+
+	/**
+	 * Check that not merge with a bad code.
+	 *
+	 * @param vertx       event bus to use.
+	 * @param testContext test context to use.
+	 *
+	 * @see Language#merge(Language, String, Vertx)
+	 */
+	@Test
+	public void shouldNotMergeWithBadCode(Vertx vertx, VertxTestContext testContext) {
+
+		final Language target = this.createModelExample(1);
+		final Language source = new Language();
+		source.code = "english";
+		assertCannotMerge(target, source, "code", vertx, testContext);
 
 	}
 
