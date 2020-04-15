@@ -38,13 +38,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.ModelTestCase;
 import eu.internetofus.common.api.models.ValidationsTest;
+import eu.internetofus.common.services.WeNetProfileManagerService;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -112,7 +115,29 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	 * @param vertx    event bus to use.
 	 * @param creation handler to manage the created user profile.
 	 */
-	protected abstract void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation);
+	protected void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation) {
+
+		WeNetProfileManagerService.createProxy(vertx).createProfile(new JsonObject(), (creationResult) -> {
+
+			if (creationResult.failed()) {
+
+				creation.handle(Future.failedFuture(creationResult.cause()));
+
+			} else {
+
+				final WeNetUserProfile profile = Model.fromJsonObject(creationResult.result(), WeNetUserProfile.class);
+				if (profile == null) {
+
+					creation.handle(Future.failedFuture("Can not obtain a profile form the JSON result"));
+
+				} else {
+
+					creation.handle(Future.succeededFuture(profile));
+				}
+
+			}
+		});
+	}
 
 	/**
 	 * Check that an empty model is valid.

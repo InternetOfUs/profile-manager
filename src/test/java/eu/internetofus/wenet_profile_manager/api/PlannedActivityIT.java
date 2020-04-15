@@ -45,7 +45,7 @@ import io.vertx.core.Vertx;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class PlannedActivityTest extends PlannedActivityTestCase<PlannedActivity> {
+public class PlannedActivityIT extends PlannedActivityTestCase<PlannedActivity> {
 
 	/**
 	 * {@inheritDoc}

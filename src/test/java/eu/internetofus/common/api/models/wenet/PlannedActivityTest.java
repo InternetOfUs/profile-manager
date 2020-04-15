@@ -34,14 +34,14 @@ import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 
 /**
- * Test the {@link WeNetUserProfile}.
+ * Test the {@link PlannedActivity}.
  *
- * @see WeNetUserProfile
+ * @see PlannedActivity
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(VertxExtension.class)
-public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProfile> {
+public class PlannedActivityTest extends PlannedActivityTestCase<PlannedActivity> {
 
 	/**
 	 * Register the necessary services before to test.
@@ -57,11 +57,13 @@ public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProf
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @see PlannedActivity#PlannedActivity()
 	 */
 	@Override
-	protected WeNetUserProfile createEmptyModel() {
+	public PlannedActivity createEmptyModel() {
 
-		return new WeNetUserProfile();
+		return new PlannedActivity();
 	}
 
 }

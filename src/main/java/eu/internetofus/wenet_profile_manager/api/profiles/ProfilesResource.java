@@ -30,7 +30,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.OperationReponseHandlers;
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
@@ -111,32 +110,34 @@ public class ProfilesResource implements Profiles {
 
 		} else {
 
-			profile.validate("bad_profile", this.repository).setHandler(validation -> {
-
-				if (validation.failed()) {
-
-					final Throwable cause = validation.cause();
-					Logger.debug(cause, "The {} is not valid.", profile);
-					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-				} else {
-
-					this.repository.storeProfile(profile, stored -> {
-
-						if (stored.failed()) {
-
-							final Throwable cause = validation.cause();
-							Logger.debug(cause, "Cannot store  {}.", profile);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-						} else {
-
-							OperationReponseHandlers.responseOk(resultHandler, stored.result());
-						}
-					});
-				}
-
-			});
+			// profile.validate("bad_profile", this.repository).setHandler(validation -> {
+			//
+			// if (validation.failed()) {
+			//
+			// final Throwable cause = validation.cause();
+			// Logger.debug(cause, "The {} is not valid.", profile);
+			// OperationReponseHandlers.responseFailedWith(resultHandler,
+			// Status.BAD_REQUEST, cause);
+			//
+			// } else {
+			//
+			// this.repository.storeProfile(profile, stored -> {
+			//
+			// if (stored.failed()) {
+			//
+			// final Throwable cause = validation.cause();
+			// Logger.debug(cause, "Cannot store {}.", profile);
+			// OperationReponseHandlers.responseFailedWith(resultHandler,
+			// Status.BAD_REQUEST, cause);
+			//
+			// } else {
+			//
+			// OperationReponseHandlers.responseOk(resultHandler, stored.result());
+			// }
+			// });
+			// }
+			//
+			// });
 		}
 
 	}
@@ -169,56 +170,61 @@ public class ProfilesResource implements Profiles {
 
 				} else {
 
-					target.merge(source, "bad_new_profile", this.repository).setHandler(merge -> {
-
-						if (merge.failed()) {
-
-							final Throwable cause = merge.cause();
-							Logger.debug(cause, "Cannot update  {} with {}.", target, source);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-						} else {
-
-							final WeNetUserProfile merged = merge.result();
-							if (merged.equals(target)) {
-
-								OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
-										"profile_to_update_equal_to_original", "You can not update the profile '" + profileId
-												+ "', because the new values is equals to the current one.");
-
-							} else {
-								this.repository.updateProfile(merged, update -> {
-
-									if (update.failed()) {
-
-										final Throwable cause = update.cause();
-										Logger.debug(cause, "Cannot update  {}.", target);
-										OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-									} else {
-
-										final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
-										historic.from = target._lastUpdateTs;
-										historic.to = TimeManager.now();
-										historic.profile = target;
-										this.repository.storeHistoricProfile(historic, store -> {
-
-											if (store.failed()) {
-
-												Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
-											}
-											OperationReponseHandlers.responseOk(resultHandler, merged);
-
-										});
-
-									}
-
-								});
-							}
-						}
-					}
-
-					);
+					// target.merge(source, "bad_new_profile", this.repository).setHandler(merge ->
+					// {
+					//
+					// if (merge.failed()) {
+					//
+					// final Throwable cause = merge.cause();
+					// Logger.debug(cause, "Cannot update {} with {}.", target, source);
+					// OperationReponseHandlers.responseFailedWith(resultHandler,
+					// Status.BAD_REQUEST, cause);
+					//
+					// } else {
+					//
+					// final WeNetUserProfile merged = merge.result();
+					// if (merged.equals(target)) {
+					//
+					// OperationReponseHandlers.responseWithErrorMessage(resultHandler,
+					// Status.BAD_REQUEST,
+					// "profile_to_update_equal_to_original", "You can not update the profile '" +
+					// profileId
+					// + "', because the new values is equals to the current one.");
+					//
+					// } else {
+					// this.repository.updateProfile(merged, update -> {
+					//
+					// if (update.failed()) {
+					//
+					// final Throwable cause = update.cause();
+					// Logger.debug(cause, "Cannot update {}.", target);
+					// OperationReponseHandlers.responseFailedWith(resultHandler,
+					// Status.BAD_REQUEST, cause);
+					//
+					// } else {
+					//
+					// final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+					// historic.from = target._lastUpdateTs;
+					// historic.to = TimeManager.now();
+					// historic.profile = target;
+					// this.repository.storeHistoricProfile(historic, store -> {
+					//
+					// if (store.failed()) {
+					//
+					// Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
+					// }
+					// OperationReponseHandlers.responseOk(resultHandler, merged);
+					//
+					// });
+					//
+					// }
+					//
+					// });
+					// }
+					// }
+					// }
+					//
+					// );
 
 				}
 			});

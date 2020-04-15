@@ -79,7 +79,7 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 	public String description;
 
 	/**
-	 * The identifier of other wenet user taking part to the activity.
+	 * The identifier of other WeNet user taking part to the activity.
 	 */
 	@ArraySchema(
 			schema = @Schema(implementation = String.class),
@@ -122,8 +122,8 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 
 				this.id = UUID.randomUUID().toString();
 			}
-			this.startTime = Validations.validateNullableStringDateField(codePrefix, "startTime", DateTimeFormatter.ISO_INSTANT,
-					this.startTime);
+			this.startTime = Validations.validateNullableStringDateField(codePrefix, "startTime",
+					DateTimeFormatter.ISO_INSTANT, this.startTime);
 			this.endTime = Validations.validateNullableStringDateField(codePrefix, "endTime", DateTimeFormatter.ISO_INSTANT,
 					this.endTime);
 			this.description = Validations.validateNullableStringField(codePrefix, "description", 255, this.description);

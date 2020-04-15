@@ -159,7 +159,7 @@ public class UserPerformanceRatingEvent extends Model {
 
 								} else {
 
-									final WeNetUserProfile source = Model.fromJsonObject(searchSource.result(),WeNetUserProfile.class);
+									final WeNetUserProfile source = Model.fromJsonObject(searchSource.result(), WeNetUserProfile.class);
 									if (this.relationship != null && (source.relationships == null || !source.relationships
 											.contains(new SocialNetworkRelationship(this.relationship, this.targetId)))) {
 
@@ -177,9 +177,9 @@ public class UserPerformanceRatingEvent extends Model {
 
 												final WeNetInteractionProtocolEngineService interactionProtocolEngineService = WeNetInteractionProtocolEngineService
 														.createProxy(vertx);
-												interactionProtocolEngineService.retrieveCommunity(this.communityId,found->{
+												interactionProtocolEngineService.retrieveCommunity(this.communityId, found -> {
 
-													if( found.failed)
+													// if( found.failed)
 
 												});
 

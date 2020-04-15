@@ -24,44 +24,50 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.api.models.wenet;
+package eu.internetofus.wenet_profile_manager.api;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.services.WeNetProfileManagerServiceForUnitTest;
+import eu.internetofus.common.api.models.wenet.PlannedActivity;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfileTestCase;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * Test the {@link WeNetUserProfile}.
+ * Test the {@link PlannedActivity}.
  *
- * @see WeNetUserProfile
+ * @see PlannedActivity
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(VertxExtension.class)
-public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProfile> {
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class WeNetUserProfileIT extends WeNetUserProfileTestCase<WeNetUserProfile> {
 
 	/**
-	 * Register the necessary services before to test.
+	 * {@inheritDoc}
 	 *
-	 * @param vertx event bus to register the necessary services.
+	 * @see PlannedActivity#PlannedActivity()
 	 */
-	@BeforeEach
-	public void registerServices(Vertx vertx) {
+	@Override
+	public WeNetUserProfile createEmptyModel() {
 
-		WeNetProfileManagerServiceForUnitTest.register(vertx);
-
+		return new WeNetUserProfile();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected WeNetUserProfile createEmptyModel() {
+	public void storeProfile(WeNetUserProfile profile, Vertx vertx, VertxTestContext testContext,
+			Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
 
-		return new WeNetUserProfile();
+		ProfilesRepository.createProxy(vertx).storeProfile(profile, storeHandler);
+
 	}
 
 }

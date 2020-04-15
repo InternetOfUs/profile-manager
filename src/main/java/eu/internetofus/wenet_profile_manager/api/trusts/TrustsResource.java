@@ -94,32 +94,34 @@ public class TrustsResource implements Trusts {
 
 		} else {
 
-			event.validate("bad_trust_event", this.profileRepository, validate -> {
-
-				if (validate.failed()) {
-
-					final Throwable cause = validate.cause();
-					Logger.debug(cause, "The {} is not valid.", event);
-					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-				} else {
-
-					this.repository.storeTrustEvent(event, store -> {
-
-						if (store.failed()) {
-
-							final Throwable cause = validate.cause();
-							Logger.debug(cause, "Cannot store  {}.", event);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-						} else {
-
-							OperationReponseHandlers.responseOk(resultHandler);
-						}
-					});
-				}
-
-			});
+			// event.validate("bad_trust_event", this.profileRepository, validate -> {
+			//
+			// if (validate.failed()) {
+			//
+			// final Throwable cause = validate.cause();
+			// Logger.debug(cause, "The {} is not valid.", event);
+			// OperationReponseHandlers.responseFailedWith(resultHandler,
+			// Status.BAD_REQUEST, cause);
+			//
+			// } else {
+			//
+			// this.repository.storeTrustEvent(event, store -> {
+			//
+			// if (store.failed()) {
+			//
+			// final Throwable cause = validate.cause();
+			// Logger.debug(cause, "Cannot store {}.", event);
+			// OperationReponseHandlers.responseFailedWith(resultHandler,
+			// Status.BAD_REQUEST, cause);
+			//
+			// } else {
+			//
+			// OperationReponseHandlers.responseOk(resultHandler);
+			// }
+			// });
+			// }
+			//
+			// });
 		}
 
 	}
