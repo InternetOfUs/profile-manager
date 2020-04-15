@@ -93,36 +93,37 @@ public class SocialNetworkRelationship extends Model implements Validable {
 				promise.fail(new ValidationErrorException(codePrefix + ".type",
 						"It is not allowed a social relationship without a type'."));
 
-			}
-
-			this.userId = Validations.validateNullableStringField(codePrefix, "userId", 255, this.userId);
-			if (this.userId == null) {
-
-				promise.fail(new ValidationErrorException(codePrefix + ".userId",
-						"It is not allowed a social relationship without an user identifier'."));
-
 			} else {
 
-				future = future.compose(mapper -> {
+				this.userId = Validations.validateNullableStringField(codePrefix, "userId", 255, this.userId);
+				if (this.userId == null) {
 
-					final Promise<Void> searchPromise = Promise.promise();
-					WeNetProfileManagerService.createProxy(vertx).retrieveProfile(this.userId, search -> {
+					promise.fail(new ValidationErrorException(codePrefix + ".userId",
+							"It is not allowed a social relationship without an user identifier'."));
 
-						if (search.result() != null) {
+				} else {
 
-							searchPromise.complete();
+					future = future.compose(mapper -> {
 
-						} else {
+						final Promise<Void> searchPromise = Promise.promise();
+						WeNetProfileManagerService.createProxy(vertx).retrieveProfile(this.userId, search -> {
 
-							searchPromise.fail(new ValidationErrorException(codePrefix + ".userId",
-									"Does not exist any user identifier by '" + this.userId + "'."));
-						}
+							if (search.result() != null) {
 
+								searchPromise.complete();
+
+							} else {
+
+								searchPromise.fail(new ValidationErrorException(codePrefix + ".userId",
+										"Does not exist any user identifier by '" + this.userId + "'."));
+							}
+
+						});
+						return searchPromise.future();
 					});
-					return searchPromise.future();
-				});
+					promise.complete();
+				}
 			}
-
 		} catch (final ValidationErrorException validationError) {
 
 			promise.fail(validationError);

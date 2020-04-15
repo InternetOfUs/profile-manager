@@ -108,9 +108,8 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 	public Future<Void> validate(String codePrefix, Vertx vertx) {
 
 		final Promise<Void> promise = Promise.promise();
+		Future<Void> future = promise.future();
 		try {
-
-			Future<Void> future = promise.future();
 
 			this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
 			if (this.id != null) {
@@ -134,18 +133,16 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 					final int index = ids.nextIndex();
 					final String id = Validations.validateNullableStringField(codePrefix, "attendees[" + index + "]", 255,
 							ids.next());
-					if (id == null) {
+					ids.remove();
+					if (id != null) {
 
-						ids.remove();
-
-					} else {
-
-						for (int j = index + 1; j < this.attendees.size(); j++) {
+						ids.add(id);
+						for (int j = 0; j < index; j++) {
 
 							if (id.equals(this.attendees.get(j))) {
 
-								return Future.failedFuture(new ValidationErrorException(codePrefix + ".attendees[" + j + "]",
-										"Duplicated attendee. It is equals to the attendees[" + index + "]."));
+								return Future.failedFuture(new ValidationErrorException(codePrefix + ".attendees[" + index + "]",
+										"Duplicated attendee. It is equals to the attendees[" + j + "]."));
 
 							}
 						}
@@ -162,7 +159,7 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 								} else {
 
 									searchPromise.fail(new ValidationErrorException(codePrefix + ".attendees[" + index + "]",
-											"Does not exist an user with the profile identifier '" + id + "'."));
+											"Does not exist an user with the identifier '" + id + "'."));
 								}
 
 							});
@@ -174,13 +171,14 @@ public class PlannedActivity extends Model implements Validable, Mergeable<Plann
 				}
 
 			}
+			promise.complete();
 
 		} catch (final ValidationErrorException validationError) {
 
 			promise.fail(validationError);
 		}
 
-		return promise.future();
+		return future;
 
 	}
 

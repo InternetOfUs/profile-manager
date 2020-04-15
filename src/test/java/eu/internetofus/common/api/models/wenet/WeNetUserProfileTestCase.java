@@ -259,7 +259,7 @@ public abstract class WeNetUserProfileTestCase<T extends WeNetUserProfile> exten
 
 		final WeNetUserProfile model = new WeNetUserProfile();
 		model.id = "has_id";
-		assertIsValid(model, vertx, testContext);
+		assertIsNotValid(model, "id", vertx, testContext);
 
 	}
 
@@ -1921,20 +1921,27 @@ public abstract class WeNetUserProfileTestCase<T extends WeNetUserProfile> exten
 	@Test
 	public void shouldMergeRemovePlannedActivities(Vertx vertx, VertxTestContext testContext) {
 
-		final WeNetUserProfile target = this.createBasicExample(1);
-		assertIsValid(target, vertx, testContext, () -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-			final T source = this.createEmptyModel();
-			source.plannedActivities = new ArrayList<>();
-			assertCanMerge(target, source, vertx, testContext, merged -> {
+			assertIsValid(created, vertx, testContext, () -> {
 
-				assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
-				target.plannedActivities.clear();
-				assertThat(merged).isEqualTo(target);
+				this.storeProfile(created, vertx, testContext, testContext.succeeding(target -> {
+
+					final T source = this.createEmptyModel();
+					source.plannedActivities = new ArrayList<>();
+					assertCanMerge(target, source, vertx, testContext, merged -> {
+
+						assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
+						target.plannedActivities.clear();
+						assertThat(merged).isEqualTo(target);
+
+					});
+
+				}));
 
 			});
 
-		});
+		}));
 
 	}
 

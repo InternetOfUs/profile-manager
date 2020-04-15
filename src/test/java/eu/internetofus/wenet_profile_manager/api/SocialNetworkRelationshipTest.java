@@ -26,16 +26,14 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationship;
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationshipTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import eu.internetofus.common.services.WeNetProfileManagerServiceForUnitTest;
 import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
 
 /**
  * Test the {@link SocialNetworkRelationship}.
@@ -44,8 +42,20 @@ import io.vertx.core.Vertx;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+@ExtendWith(VertxExtension.class)
 public class SocialNetworkRelationshipTest extends SocialNetworkRelationshipTestCase<SocialNetworkRelationship> {
+
+	/**
+	 * Register the necessary services before to test.
+	 *
+	 * @param vertx event bus to register the necessary services.
+	 */
+	@BeforeEach
+	public void registerServices(Vertx vertx) {
+
+		WeNetProfileManagerServiceForUnitTest.register(vertx);
+
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -56,16 +66,6 @@ public class SocialNetworkRelationshipTest extends SocialNetworkRelationshipTest
 	public SocialNetworkRelationship createEmptyModel() {
 
 		return new SocialNetworkRelationship();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation) {
-
-		ProfilesRepository.createProxy(vertx).storeProfile(new WeNetUserProfile(), creation);
-
 	}
 
 }

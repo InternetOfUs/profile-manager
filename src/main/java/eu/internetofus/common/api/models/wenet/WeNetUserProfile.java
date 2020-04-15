@@ -214,7 +214,7 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 				}
 				if (this.dateOfBirth != null) {
 
-					future = future.compose(mapper -> this.dateOfBirth.validate(codePrefix + ".name", vertx));
+					future = future.compose(mapper -> this.dateOfBirth.validate(codePrefix + ".dateOfBirth", vertx));
 
 				}
 				// Gender not verified because is a enumeration and this fix the possible values
@@ -226,7 +226,7 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 				this.nationality = Validations.validateNullableStringField(codePrefix, "nationality", 255, this.nationality);
 				future = future.compose(Validations.validate(this.languages, codePrefix + ".languages", vertx));
 				this.occupation = Validations.validateNullableStringField(codePrefix, "occupation", 255, this.occupation);
-				future = future.compose(Validations.validate(this.norms, codePrefix + ".languages", vertx));
+				future = future.compose(Validations.validate(this.norms, codePrefix + ".norms", vertx));
 				future = future.compose(Validations.validate(this.plannedActivities, codePrefix + ".plannedActivities", vertx));
 				future = future.compose(Validations.validate(this.relevantLocations, codePrefix + ".relevantLocations", vertx));
 				future = future.compose(Validations.validate(this.relationships, codePrefix + ".relationships", vertx));
@@ -293,6 +293,12 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 			if (merged.occupation == null) {
 
 				merged.occupation = this.occupation;
+			}
+
+			merged.relationships = source.relationships;
+			if (merged.relationships == null) {
+
+				merged.relationships = this.relationships;
 			}
 
 			future = future.compose(Merges.validateMerged(codePrefix, vertx));

@@ -31,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -353,12 +354,34 @@ public interface Validations {
 			Future<Void> future = promise.future();
 			if (models != null) {
 
-				final int max = models.size();
-				for (int i = 0; i < max; i++) {
+				final ListIterator<? extends Validable> iterator = models.listIterator();
+				while (iterator.hasNext()) {
 
-					final Validable model = models.get(i);
-					final String modelPrefix = codePrefix + "[" + i + "]";
-					future = future.compose(elementMapper -> model.validate(modelPrefix, vertx));
+					final Validable model = iterator.next();
+					if (model == null) {
+
+						iterator.remove();
+
+					} else {
+
+						final int index = iterator.previousIndex();
+						final String modelPrefix = codePrefix + "[" + index + "]";
+						future = future.compose(elementMapper -> model.validate(modelPrefix, vertx));
+						future = future.compose(elementMapper -> {
+
+							final int firstIndex = models.indexOf(model);
+							if (firstIndex != index) {
+
+								return Future.failedFuture(new ValidationErrorException(modelPrefix,
+										"This model is already defined at '" + firstIndex + "'."));
+
+							} else {
+
+								return Future.succeededFuture();
+							}
+
+						});
+					}
 
 				}
 

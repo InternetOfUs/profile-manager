@@ -33,6 +33,7 @@ import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,7 +46,6 @@ import eu.internetofus.common.services.WeNetProfileManagerService;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
@@ -90,22 +90,19 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	 * @param index       to use in the example.
 	 * @param vertx       event bus to use.
 	 * @param testContext test context to use.
-	 *
-	 * @return the example.
+	 * @param creation    handler to manage the created planned activity.
 	 */
-	public Future<T> createModelExample(int index, Vertx vertx, VertxTestContext testContext) {
+	public void createModelExample(int index, Vertx vertx, VertxTestContext testContext,
+			Handler<AsyncResult<T>> creation) {
 
-		final Promise<T> promise = Promise.promise();
-		final T activity = this.createModelExample(index);
-		activity.attendees = new ArrayList<>();
 		this.createNewEmptyProfile(vertx, testContext.succeeding(profile -> {
 
+			final T activity = this.createModelExample(index);
+			activity.attendees = new ArrayList<>();
 			activity.attendees.add(profile.id);
-			promise.complete(activity);
-		}));
-		activity.status = PlannedActivityStatus.cancelled;
+			creation.handle(Future.succeededFuture(activity));
 
-		return promise.future();
+		}));
 
 	}
 
@@ -174,8 +171,8 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	}
 
 	/**
-	 * Check that the {@link #createModelExample(int, Vertx, VertxTestContext)} is
-	 * valid.
+	 * Check that the
+	 * {@link #createModelExample(int, Vertx, VertxTestContext, Handler)} is valid.
 	 *
 	 * @param index       to verify
 	 * @param vertx       event bus to use.
@@ -187,44 +184,29 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
 	public void shouldExampleFromRepositoryBeValid(int index, Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(index, vertx, testContext)
-				.onComplete(testContext.succeeding(model -> assertIsValid(model, vertx, testContext)));
+		this.createModelExample(index, vertx, testContext, testContext.succeeding(model -> {
 
-	}
+			model.id = " ";
+			final String originalStartTime = model.startTime;
+			model.startTime = " " + originalStartTime + " ";
+			final String originalEndTime = model.endTime;
+			model.endTime = " " + originalEndTime + " ";
+			final String originalDescription = model.description;
+			model.description = " " + originalDescription + " ";
+			final List<String> originalAttendees = new ArrayList<>(model.attendees);
+			model.attendees.add(0, "");
+			model.attendees.add(null);
+			model.attendees.add(" ");
 
-	/**
-	 * Check that a model with all the values is valid.
-	 *
-	 * @param vertx       event bus to use.
-	 * @param testContext context to test.
-	 *
-	 * @see PlannedActivity#validate(String,Vertx)
-	 */
-	@Test
-	public void shouldFullModelBeValid(Vertx vertx, VertxTestContext testContext) {
+			assertIsValid(model, vertx, testContext, () -> {
 
-		final T model = this.createEmptyModel();
-		model.id = " ";
-		model.startTime = " 2017-07-21T17:32:00z ";
-		model.endTime = " 2019-09-09t09:02:11Z ";
-		model.description = " description ";
-		model.attendees = new ArrayList<>();
-		model.attendees.add("");
-		model.attendees.add(null);
-		model.attendees.add(" ");
-		model.status = PlannedActivityStatus.tentative;
-
-		assertIsValid(model, vertx, testContext, () -> {
-
-			final T expected = this.createEmptyModel();
-			expected.id = model.id;
-			expected.startTime = "2017-07-21T17:32:00Z";
-			expected.endTime = "2019-09-09T09:02:11Z";
-			expected.description = "description";
-			expected.attendees = new ArrayList<>();
-			expected.status = PlannedActivityStatus.tentative;
-			assertThat(model).isEqualTo(expected);
-		});
+				assertThat(model.id).isNotNull().isNotEqualTo(" ");
+				assertThat(model.startTime).isEqualTo(originalStartTime);
+				assertThat(model.endTime).isEqualTo(originalEndTime);
+				assertThat(model.description).isEqualTo(originalDescription);
+				assertThat(model.attendees).isEqualTo(originalAttendees);
+			});
+		}));
 
 	}
 
@@ -410,6 +392,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 		assertIsValid(model, vertx, testContext, () -> {
 
 			final T expected = this.createEmptyModel();
+			expected.id = model.id;
 			expected.attendees = new ArrayList<>();
 			assertThat(model).isEqualTo(expected);
 		});
@@ -600,9 +583,9 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMerge(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 
-			this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(source -> {
+			this.createModelExample(1, vertx, testContext, testContext.succeeding(source -> {
 
 				target.id = "1";
 				assertCanMerge(target, source, vertx, testContext, merged -> {
@@ -629,7 +612,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeWithNull(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 
 			assertCanMerge(target, null, vertx, testContext, merged -> {
 
@@ -653,7 +636,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeOnlyStartTime(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 			target.id = "1";
 			final T source = this.createEmptyModel();
 			source.startTime = "2000-02-19T16:18:00Z";
@@ -678,7 +661,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeOnlyEndTime(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 
 			target.id = "1";
 			final T source = this.createEmptyModel();
@@ -704,7 +687,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeOnlyDescription(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 			target.id = "1";
 			final T source = this.createEmptyModel();
 			source.description = "New description";
@@ -729,7 +712,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeOnlyStatus(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 			target.id = "1";
 			final T source = this.createEmptyModel();
 			source.status = PlannedActivityStatus.tentative;
@@ -754,7 +737,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeRemoveAttenders(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 			target.id = "1";
 			final T source = this.createEmptyModel();
 			source.attendees = new ArrayList<>();
@@ -779,7 +762,7 @@ public abstract class PlannedActivityTestCase<T extends PlannedActivity> extends
 	@Test
 	public void shouldMergeAddNewAttenders(Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(target -> {
+		this.createModelExample(1, vertx, testContext, testContext.succeeding(target -> {
 			target.id = "1";
 			this.createNewEmptyProfile(vertx, testContext.succeeding(stored -> {
 

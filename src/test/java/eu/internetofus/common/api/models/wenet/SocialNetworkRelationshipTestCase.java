@@ -35,13 +35,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.ModelTestCase;
 import eu.internetofus.common.api.models.ValidationsTest;
+import eu.internetofus.common.services.WeNetProfileManagerService;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -82,7 +84,29 @@ public abstract class SocialNetworkRelationshipTestCase<T extends SocialNetworkR
 	 * @param vertx    event bus to use.
 	 * @param creation handler to manage the created user profile.
 	 */
-	protected abstract void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation);
+	protected void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation) {
+
+		WeNetProfileManagerService.createProxy(vertx).createProfile(new JsonObject(), (creationResult) -> {
+
+			if (creationResult.failed()) {
+
+				creation.handle(Future.failedFuture(creationResult.cause()));
+
+			} else {
+
+				final WeNetUserProfile profile = Model.fromJsonObject(creationResult.result(), WeNetUserProfile.class);
+				if (profile == null) {
+
+					creation.handle(Future.failedFuture("Can not obtain a profile form the JSON result"));
+
+				} else {
+
+					creation.handle(Future.succeededFuture(profile));
+				}
+
+			}
+		});
+	}
 
 	/**
 	 * Create an example model that has the specified index.
@@ -90,28 +114,24 @@ public abstract class SocialNetworkRelationshipTestCase<T extends SocialNetworkR
 	 * @param index       to use in the example.
 	 * @param vertx       event bus to use.
 	 * @param testContext test context to use.
-	 *
-	 * @return the example.
+	 * @param creation    handler to manage the created social network relationship.
 	 */
-	public Future<T> createModelExample(int index, Vertx vertx, VertxTestContext testContext) {
+	public void createModelExample(int index, Vertx vertx, VertxTestContext testContext,
+			Handler<AsyncResult<T>> creation) {
 
-		final Promise<T> promise = Promise.promise();
-		final Future<T> future = promise.future();
-
-		final T relation = this.createModelExample(index);
 		this.createNewEmptyProfile(vertx, testContext.succeeding(profile -> {
+
+			final T relation = this.createModelExample(index);
 			relation.userId = profile.id;
-			promise.complete(relation);
+			creation.handle(Future.succeededFuture(relation));
 
 		}));
-
-		return future;
 
 	}
 
 	/**
-	 * Check that the {@link #createModelExample(int, Vertx, VertxTestContext)} is
-	 * valid.
+	 * Check that the
+	 * {@link #createModelExample(int, Vertx, VertxTestContext, Handler)} is valid.
 	 *
 	 * @param index       to verify
 	 * @param vertx       event bus to use.
@@ -123,32 +143,14 @@ public abstract class SocialNetworkRelationshipTestCase<T extends SocialNetworkR
 	@ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
 	public void shouldExampleFromRepositoryBeValid(int index, Vertx vertx, VertxTestContext testContext) {
 
-		this.createModelExample(index, vertx, testContext)
-				.onComplete(testContext.succeeding(model -> assertIsValid(model, vertx, testContext)));
+		this.createModelExample(index, vertx, testContext, testContext.succeeding(model -> {
 
-	}
-
-	/**
-	 * Check that a model with all the values is valid.
-	 *
-	 * @param vertx       event bus to use.
-	 * @param testContext context to test.
-	 *
-	 * @see SocialNetworkRelationship#validate(String, Vertx)
-	 */
-	@Test
-	public void shouldFullModelBeValid(Vertx vertx, VertxTestContext testContext) {
-
-		this.createModelExample(1, vertx, testContext).onComplete(testContext.succeeding(model -> {
-
+			final String originalUserId = model.userId;
+			model.userId = "   " + originalUserId + "   ";
 			assertIsValid(model, vertx, testContext, () -> {
-				final SocialNetworkRelationship expected = new SocialNetworkRelationship();
-				expected.userId = model.userId;
-				expected.type = model.type;
-				model.userId = "     " + model.userId + "    ";
-				assertThat(model).isEqualTo(expected);
-			});
 
+				assertThat(model.userId).isEqualTo(originalUserId);
+			});
 		}));
 
 	}
