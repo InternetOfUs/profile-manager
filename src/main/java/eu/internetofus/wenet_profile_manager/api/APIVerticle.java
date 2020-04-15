@@ -53,7 +53,7 @@ public class APIVerticle extends AbstractAPIVerticle {
 	@Override
 	protected String getOpenAPIResourcePath() {
 
-		return "wenet-profile-manager-api.yaml";
+		return "wenet-profile_manager-openapi.yaml";
 	}
 
 	/**
