@@ -73,7 +73,7 @@ public class TrustsIT {
 	public void shouldNotAddEventBecauseIsNotAValidEvent(ProfilesRepository profileRepository, WebClient client,
 			VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
+		testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
 			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -108,7 +108,7 @@ public class TrustsIT {
 			event.targetId = targetId;
 			event.rating = Math.random();
 
-			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
+			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
 				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -146,7 +146,7 @@ public class TrustsIT {
 			event.sourceId = sourceId;
 			event.rating = Math.random();
 
-			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
+			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
 				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -181,7 +181,7 @@ public class TrustsIT {
 			event.targetId = stored.id;
 			event.rating = Math.random();
 
-			testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
+			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
 				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -219,7 +219,7 @@ public class TrustsIT {
 				event.targetId = stored2.id;
 				event.rating = value;
 
-				testRequest(client, HttpMethod.POST, Trusts.PATH).expect(res -> {
+				testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
 					assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
 					final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);

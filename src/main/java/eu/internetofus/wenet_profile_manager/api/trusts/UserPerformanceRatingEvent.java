@@ -71,25 +71,27 @@ public class UserPerformanceRatingEvent extends Model {
 	/**
 	 * The relationship with the user.
 	 */
-	@Schema(description = "The relationship with the user that has perform the task")
+	@Schema(description = "The relationship with the user that has perform the task", example = "friend")
 	public SocialNetworkRelationshipType relationship;
 
 	/**
 	 * The identifier of the community where the user has performed the action.
 	 */
-	@Schema(description = "The identifier of the community where the user has performed the task")
+	@Schema(
+			description = "The identifier of the community where the user has performed the task",
+			example = "43937ed6ty32")
 	public String communityId;
 
 	/**
 	 * The identifier of task type that the rating user has done.
 	 */
-	@Schema(description = "The identifier of task type that the rating user has done.")
+	@Schema(description = "The identifier of task type that the rating user has done.", example = "4ty37ed63932")
 	public String taskTypeId;
 
 	/**
 	 * The identifier of task that the rating user has done.
 	 */
-	@Schema(description = "The identifier of task that the rating user has done.")
+	@Schema(description = "The identifier of task that the rating user has done.", example = "d64ty39s7e32")
 	public String taskId;
 
 	/**
@@ -130,8 +132,8 @@ public class UserPerformanceRatingEvent extends Model {
 		} else {
 
 			try {
-				this.sourceId = Validations.validateStringField(codePrefix, "source", 255, this.sourceId);
-				this.targetId = Validations.validateStringField(codePrefix, "target", 255, this.targetId);
+				this.sourceId = Validations.validateStringField(codePrefix, "sourceId", 255, this.sourceId);
+				this.targetId = Validations.validateStringField(codePrefix, "targetId", 255, this.targetId);
 				this.communityId = Validations.validateNullableStringField(codePrefix, "communityId", 255, this.communityId);
 				this.taskTypeId = Validations.validateNullableStringField(codePrefix, "taskTypeId", 255, this.taskTypeId);
 				if (this.sourceId.equals(this.targetId)) {

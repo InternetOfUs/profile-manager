@@ -152,6 +152,16 @@ public interface Trusts {
 			description = "The time stamp inclusive that mark the newest limit in witch the trust event has reported. It is the difference, measured in seconds, between the time when the trust events were reported and midnight, January 1, 1970 UTC.",
 			required = false,
 			schema = @Schema(type = "integer", defaultValue = "92233720368547757", example = "1571664406"))
+	@Parameter(
+			in = ParameterIn.QUERY,
+			name = "aggregation",
+			description = "The type of aggregation that has to be used to calculate the trust.",
+			required = false,
+			schema = @Schema(
+					type = "string",
+					defaultValue = "RECENCY_BASED",
+					allowableValues = { "RECENCY_BASED", "AVERAGE", "MEDIAN", "MINIMUM", "MAXIMUM" },
+					example = "1571664406"))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The calculated trust",

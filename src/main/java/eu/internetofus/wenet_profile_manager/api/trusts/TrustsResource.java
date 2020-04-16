@@ -30,9 +30,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
+import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.OperationReponseHandlers;
 import eu.internetofus.common.api.models.Model;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -51,9 +51,9 @@ import io.vertx.ext.web.api.OperationResponse;
 public class TrustsResource implements Trusts {
 
 	/**
-	 * The repository to manage the profiles.
+	 * The event bus that is using.
 	 */
-	protected ProfilesRepository profileRepository;
+	protected Vertx vertx;
 
 	/**
 	 * The repository to manage the trusts events.
@@ -74,8 +74,9 @@ public class TrustsResource implements Trusts {
 	 */
 	public TrustsResource(Vertx vertx) {
 
+		this.vertx = vertx;
 		this.repository = TrustsRepository.createProxy(vertx);
-		this.profileRepository = ProfilesRepository.createProxy(vertx);
+
 	}
 
 	/**
@@ -94,34 +95,32 @@ public class TrustsResource implements Trusts {
 
 		} else {
 
-			// event.validate("bad_trust_event", this.profileRepository, validate -> {
-			//
-			// if (validate.failed()) {
-			//
-			// final Throwable cause = validate.cause();
-			// Logger.debug(cause, "The {} is not valid.", event);
-			// OperationReponseHandlers.responseFailedWith(resultHandler,
-			// Status.BAD_REQUEST, cause);
-			//
-			// } else {
-			//
-			// this.repository.storeTrustEvent(event, store -> {
-			//
-			// if (store.failed()) {
-			//
-			// final Throwable cause = validate.cause();
-			// Logger.debug(cause, "Cannot store {}.", event);
-			// OperationReponseHandlers.responseFailedWith(resultHandler,
-			// Status.BAD_REQUEST, cause);
-			//
-			// } else {
-			//
-			// OperationReponseHandlers.responseOk(resultHandler);
-			// }
-			// });
-			// }
-			//
-			// });
+			event.validate("bad_trust_event", this.vertx, validate -> {
+
+				if (validate.failed()) {
+
+					final Throwable cause = validate.cause();
+					Logger.debug(cause, "The {} is not valid.", event);
+					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+				} else {
+
+					this.repository.storeTrustEvent(event, store -> {
+
+						if (store.failed()) {
+
+							final Throwable cause = validate.cause();
+							Logger.debug(cause, "Cannot store {}.", event);
+							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+						} else {
+
+							OperationReponseHandlers.responseOk(resultHandler);
+						}
+					});
+				}
+
+			});
 		}
 
 	}
@@ -133,7 +132,10 @@ public class TrustsResource implements Trusts {
 	public void calculateTrust(String sourceId, String targetId, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		// TODO Auto-generated method stub
+		final Trust trust = new Trust();
+		trust.value = Math.random();
+		trust.calculatedTime = TimeManager.now();
+		OperationReponseHandlers.responseOk(resultHandler, trust);
 
 	}
 
