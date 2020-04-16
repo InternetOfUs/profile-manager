@@ -26,8 +26,11 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
+import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
+import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
 import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
+import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +60,6 @@ import eu.internetofus.common.api.models.wenet.UserName;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.WeNetUserProfileIT;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
 import io.vertx.core.Handler;
@@ -189,7 +191,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldStoreProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(1, vertx, testContext, testContext.succeeding(profile -> {
+		new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(profile -> {
 			testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
 				assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -464,7 +466,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -703,7 +705,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateOnlyProfileNameMiddle(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -759,7 +761,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateOnlyProfileBirthDateDay(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -813,7 +815,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateOnlyProfileGender(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -866,7 +868,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfileLanguage(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -960,7 +962,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfileNorm(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -1052,7 +1054,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfilePlannedActivity(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -1145,7 +1147,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfileRelevantLocation(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -1239,7 +1241,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfileSocialPractice(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -1331,7 +1333,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfilePersonalBehavior(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 
@@ -1423,7 +1425,7 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfileRelationship(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileIT().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
+		new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
 
 			assertIsValid(created, vertx, testContext, () -> {
 

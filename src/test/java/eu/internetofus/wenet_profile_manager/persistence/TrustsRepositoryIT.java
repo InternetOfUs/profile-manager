@@ -87,7 +87,7 @@ public class TrustsRepositoryIT {
 		// final UserPerformanceRatingEvent trust = new
 		// TrustEventTest().createModelExample(1);
 		// repository.storeTrustEvent(trust, testContext.succeeding(empty -> {
-		// testContext.completeNow();
+		testContext.completeNow();
 		// }));
 
 	}

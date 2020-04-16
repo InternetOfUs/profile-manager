@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api;
 
 import eu.internetofus.common.api.AbstractAPIVerticle;
+import eu.internetofus.common.services.WeNetProfileManagerService;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
 import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
 import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
@@ -37,7 +38,9 @@ import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
 import eu.internetofus.wenet_profile_manager.api.versions.Versions;
 import eu.internetofus.wenet_profile_manager.api.versions.VersionsResource;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory;
+import io.vertx.ext.web.client.WebClient;
 import io.vertx.serviceproxy.ServiceBinder;
 
 /**
@@ -79,6 +82,25 @@ public class APIVerticle extends AbstractAPIVerticle {
 
 		routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
 		new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
+
+	}
+
+	/**
+	 * Register the services provided by the API.
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @see WeNetProfileManagerService
+	 */
+	@Override
+	protected void startedServerAt(String host, int port) {
+
+		final JsonObject conf = new JsonObject();
+		conf.put("host", host);
+		conf.put("port", port);
+		conf.put("apiPath", "");
+		final WebClient client = WebClient.create(this.vertx);
+		WeNetProfileManagerService.register(this.vertx, client, conf);
 
 	}
 

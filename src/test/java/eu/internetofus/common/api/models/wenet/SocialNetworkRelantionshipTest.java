@@ -24,48 +24,46 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api;
+package eu.internetofus.common.api.models.wenet;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.api.models.wenet.PlannedActivity;
-import eu.internetofus.common.api.models.wenet.PlannedActivityTestCase;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import eu.internetofus.common.services.WeNetProfileManagerServiceForUnitTest;
 import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxExtension;
 
 /**
- * Test the {@link PlannedActivity}.
+ * Test the {@link SocialNetworkRelationship}.
  *
- * @see PlannedActivity
+ * @see SocialNetworkRelationship
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class PlannedActivityIT extends PlannedActivityTestCase<PlannedActivity> {
+@ExtendWith(VertxExtension.class)
+public class SocialNetworkRelantionshipTest extends SocialNetworkRelationshipTestCase<SocialNetworkRelationship> {
 
 	/**
-	 * {@inheritDoc}
+	 * Register the necessary services before to test.
 	 *
-	 * @see PlannedActivity#PlannedActivity()
+	 * @param vertx event bus to register the necessary services.
 	 */
-	@Override
-	public PlannedActivity createEmptyModel() {
+	@BeforeEach
+	public void registerServices(Vertx vertx) {
 
-		return new PlannedActivity();
+		WeNetProfileManagerServiceForUnitTest.register(vertx);
+
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @see SocialNetworkRelationship#SocialNetworkRelationship()
 	 */
 	@Override
-	protected void createNewEmptyProfile(Vertx vertx, Handler<AsyncResult<WeNetUserProfile>> creation) {
+	public SocialNetworkRelationship createEmptyModel() {
 
-		ProfilesRepository.createProxy(vertx).storeProfile(new WeNetUserProfile(), creation);
-
+		return new SocialNetworkRelationship();
 	}
 
 }

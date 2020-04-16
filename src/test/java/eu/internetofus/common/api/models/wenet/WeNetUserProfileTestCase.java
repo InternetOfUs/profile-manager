@@ -44,8 +44,6 @@ import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.ModelTestCase;
 import eu.internetofus.common.api.models.ValidationsTest;
 import eu.internetofus.common.services.WeNetProfileManagerService;
-import eu.internetofus.wenet_profile_manager.api.PlannedActivityIT;
-import eu.internetofus.wenet_profile_manager.api.SocialNetworkRelationshipTest;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -108,7 +106,7 @@ public abstract class WeNetUserProfileTestCase<T extends WeNetUserProfile> exten
 		model.norms = new ArrayList<>();
 		model.norms.add(new NormTest().createModelExample(index));
 		model.plannedActivities = new ArrayList<>();
-		model.plannedActivities.add(new PlannedActivityIT().createModelExample(index));
+		model.plannedActivities.add(new PlannedActivityTest().createModelExample(index));
 		model.relevantLocations = new ArrayList<>();
 		model.relevantLocations.add(new RelevantLocationTest().createModelExample(index));
 		model.relationships = null;
@@ -179,9 +177,9 @@ public abstract class WeNetUserProfileTestCase<T extends WeNetUserProfile> exten
 				activity.attendees.add(stored2.id);
 				profile.plannedActivities.add(activity);
 				profile.relationships = new ArrayList<>();
-				profile.relationships.add(new SocialNetworkRelationshipTest().createModelExample(5));
+				profile.relationships.add(new SocialNetworkRelantionshipTest().createModelExample(5));
 				profile.relationships.get(0).userId = stored1.id;
-				profile.relationships.add(new SocialNetworkRelationshipTest().createModelExample(6));
+				profile.relationships.add(new SocialNetworkRelantionshipTest().createModelExample(6));
 				profile.relationships.get(1).userId = stored2.id;
 				createHandler.handle(Future.succeededFuture(profile));
 
