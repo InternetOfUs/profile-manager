@@ -4,7 +4,7 @@ This project will be used to provide the API to storing and maintaining the WeNe
 
  - [License](LICENSE)
  - [Changes](CHANGELOG)
- - [API specification](https://bitbucket.org/wenet/wenet-components-documentation/src/master/sources/wenet-profile-manager-api.yaml) ( [Swagger UI](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile-manager-api.yaml) )
+ - [API specification](https://bitbucket.org/wenet/wenet-components-documentation/src/master/sources/wenet-profile_manager-openapi.yaml) ( [Swagger UI](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml) )
  - [API Examples with Postman](https://bitbucket.org/wenet/wenet-components-documentation/raw/b529541301d7dcc1f6b3fbf6afae3a18a18037f7/Postman_collections/wenet-profile_manager_api/wenet-profile-manager.postman_collection.json)
  - [Repository](https://rosell@bitbucket.org/wenet/wenet-profile-manager.git)
  - [Servers](#servers)
@@ -97,7 +97,7 @@ After that you can compile the source, pass the tests and calculate the test cov
 
 This process generate the next files:
 
- - The OpenAPI description of the web services at **target/classes/wenet-profile-manager-api.yml**
+ - The OpenAPI description of the web services at **target/classes/wenet-profile_manager-openapi.yml**
  - The execution java package at **target/wenet-profile-manager-VERSION.jar** where **VERSION** is the version of the software.
  - The necessary execution dependencies at **target/lib**.
 

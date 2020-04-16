@@ -76,12 +76,23 @@ openAPI:
             ### Trust
 
             The trust over another user is dynamically and will be updated every time they collaborate
-            to achieve a task. Also, you can get or set the trust on another user, on a member of
-            a community, or on a member of a community to fulfil a task type.
+            to achieve a task. When an user has received help it can rate the performance of the user
+            that had helped it. For this it has to post a **UserPerformanceRatingEvent**.
+
+            When an user want to konw its trust of another user it can ask for the trust for a community
+            or taskType, and also specify how the trust has to be calculated. The aggregation of
+            **UserPerformanceRatingEvent** that generated the trust of an user repect another, you can use
+            the next functions:
+
+             * **RECENCY_BASED** this is based on the recency rating events. It is the function used on uHelp.
+             * **AVERAGE** the trust is the average of the rating event.
+             * **MEDIAN** the trust is the median of the rating event.
+             * **MINIMUM** the trust is the minimum rating.
+             * **MAXIMUM** the trust is the maximum rating.
 
         contact:
             name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
-            email: rosell (at) iiia.csic.es
+            email: rosell@iiia.csic.es
         license:
             name: MIT
             url: https://opensource.org/licenses/MIT

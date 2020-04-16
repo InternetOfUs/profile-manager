@@ -30,8 +30,8 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
+import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 
 /**
@@ -54,7 +54,7 @@ public class TrustsResourceTest {
 	public static TrustsResource createTrustsResource() {
 
 		final TrustsResource resource = new TrustsResource();
-		resource.profileRepository = mock(ProfilesRepository.class);
+		resource.vertx = mock(Vertx.class);
 		resource.repository = mock(TrustsRepository.class);
 		return resource;
 

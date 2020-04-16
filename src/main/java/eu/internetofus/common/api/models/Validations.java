@@ -31,7 +31,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -39,6 +41,10 @@ import org.apache.commons.validator.routines.EmailValidator;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
+
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 
 /**
  * Generic methods to validate the common fields of the models.
@@ -163,7 +169,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String, int, String)
 	 */
-	static String validateNullableEmailField(String codePrefix, String fieldName, String value) {
+	static String validateNullableEmailField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		final String trimmedValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (trimmedValue != null && !EmailValidator.getInstance().isValid(trimmedValue)) {
@@ -188,7 +195,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String, int,String)
 	 */
-	static String validateNullableLocaleField(String codePrefix, String fieldName, String value) {
+	static String validateNullableLocaleField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		final String validStringValue = validateNullableStringField(codePrefix, fieldName, 50, value);
 		if (validStringValue != null) {
@@ -221,7 +229,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String,int, String)
 	 */
-	static String validateNullableTelephoneField(String codePrefix, String fieldName, String locale, String value) {
+	static String validateNullableTelephoneField(String codePrefix, String fieldName, String locale, String value)
+			throws ValidationErrorException {
 
 		final String validStringValue = validateNullableStringField(codePrefix, fieldName, 50, value);
 		if (validStringValue != null) {
@@ -271,7 +280,8 @@ public interface Validations {
 	 *
 	 * @see #validateNullableStringField(String, String,int, String)
 	 */
-	static String validateNullableURLField(String codePrefix, String fieldName, String value) {
+	static String validateNullableURLField(String codePrefix, String fieldName, String value)
+			throws ValidationErrorException {
 
 		String validStringValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (validStringValue != null) {
@@ -300,8 +310,11 @@ public interface Validations {
 	 * @param value      to verify.
 	 *
 	 * @return the verified date.
+	 *
+	 * @throws ValidationErrorException If the value is not a valid date.
 	 */
-	static String validateNullableDateField(String codePrefix, String fieldName, DateTimeFormatter format, String value) {
+	static String validateNullableStringDateField(String codePrefix, String fieldName, DateTimeFormatter format,
+			String value) throws ValidationErrorException {
 
 		String validStringValue = validateNullableStringField(codePrefix, fieldName, 255, value);
 		if (validStringValue != null) {
@@ -319,6 +332,65 @@ public interface Validations {
 
 		}
 		return validStringValue;
+	}
+
+	/**
+	 * Validate a fields that contains a list of models.
+	 *
+	 * @param models     to validate.
+	 * @param codePrefix the prefix of the code to use for the error message.
+	 * @param vertx      the event bus infrastructure to use.
+	 *
+	 *
+	 * @return the function that can be composed with the future that is validating
+	 *         the model of the filed.
+	 *
+	 * @see ValidationErrorException
+	 */
+	static Function<Void, Future<Void>> validate(List<? extends Validable> models, String codePrefix, Vertx vertx) {
+
+		return mapper -> {
+			final Promise<Void> promise = Promise.promise();
+			Future<Void> future = promise.future();
+			if (models != null) {
+
+				final ListIterator<? extends Validable> iterator = models.listIterator();
+				while (iterator.hasNext()) {
+
+					final Validable model = iterator.next();
+					if (model == null) {
+
+						iterator.remove();
+
+					} else {
+
+						final int index = iterator.previousIndex();
+						final String modelPrefix = codePrefix + "[" + index + "]";
+						future = future.compose(elementMapper -> model.validate(modelPrefix, vertx));
+						future = future.compose(elementMapper -> {
+
+							final int firstIndex = models.indexOf(model);
+							if (firstIndex != index) {
+
+								return Future.failedFuture(new ValidationErrorException(modelPrefix,
+										"This model is already defined at '" + firstIndex + "'."));
+
+							} else {
+
+								return Future.succeededFuture();
+							}
+
+						});
+					}
+
+				}
+
+			}
+
+			promise.complete();
+
+			return future;
+		};
 	}
 
 }

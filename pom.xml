@@ -318,7 +318,7 @@
 				</executions>
 				<configuration>
 					<outputPath>${basedir}/target/classes</outputPath>
-					<outputFileName>wenet-profile-manager-api</outputFileName>
+					<outputFileName>wenet-profile_manager-openapi</outputFileName>
 					<outputFormat>YAML</outputFormat>
 					<configurationFilePath>${basedir}/src/main/swagger/wenet-profile-manager-configuration.yaml</configurationFilePath>
 				</configuration>

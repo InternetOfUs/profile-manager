@@ -37,12 +37,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfileTest;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -70,7 +70,7 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldNotFoundUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
 
-		repository.searchProfile("undefined profile identifier", testContext.failing(failed -> {
+		repository.searchProfile("undefined user identifier", testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -87,7 +87,7 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldNotFoundUndefinedProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
 
-		repository.searchProfileObject("undefined profile identifier", testContext.failing(failed -> {
+		repository.searchProfileObject("undefined user identifier", testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -160,7 +160,7 @@ public class ProfilesRepositoryIT {
 				return null;
 			}
 		};
-		profile.id = "undefined profile identifier";
+		profile.id = "undefined user identifier";
 		repository.storeProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
@@ -230,7 +230,7 @@ public class ProfilesRepositoryIT {
 	public void shouldNotUpdateUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile();
-		profile.id = "undefined profile identifier";
+		profile.id = "undefined user identifier";
 		repository.updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
@@ -248,7 +248,7 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldNotUpdateUndefinedProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
 
-		final JsonObject profile = new JsonObject().put("id", "undefined profile identifier");
+		final JsonObject profile = new JsonObject().put("id", "undefined user identifier");
 		repository.updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
@@ -278,7 +278,7 @@ public class ProfilesRepositoryIT {
 				return null;
 			}
 		};
-		profile.id = "undefined profile identifier";
+		profile.id = "undefined user identifier";
 		repository.updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
@@ -365,7 +365,7 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldNotDeleteUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
 
-		repository.deleteProfile("undefined profile identifier", testContext.failing(failed -> {
+		repository.deleteProfile("undefined user identifier", testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -482,7 +482,7 @@ public class ProfilesRepositoryIT {
 	public void shouldNotFoundAnyHistoricProfileFromAnUdefinedId(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		repository.searchHistoricProfilePage("undefined profile identifier", 0, Long.MAX_VALUE, false, 0, 100,
+		repository.searchHistoricProfilePage("undefined user identifier", 0, Long.MAX_VALUE, false, 0, 100,
 				testContext.succeeding(found -> testContext.verify(() -> {
 					assertThat(found.offset).isEqualTo(0);
 					assertThat(found.total).isEqualTo(0);
@@ -506,7 +506,7 @@ public class ProfilesRepositoryIT {
 	public void shouldNotFoundAnyHistoricProfileObjectFromAnUdefinedId(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		repository.searchHistoricProfilePageObject("undefined profile identifier", 0, Long.MAX_VALUE, true, 0, 100,
+		repository.searchHistoricProfilePageObject("undefined user identifier", 0, Long.MAX_VALUE, true, 0, 100,
 				testContext.succeeding(found -> testContext.verify(() -> {
 					assertThat(found.getLong("offset")).isEqualTo(0);
 					assertThat(found.getLong("total")).isEqualTo(0);

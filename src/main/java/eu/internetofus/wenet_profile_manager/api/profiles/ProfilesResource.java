@@ -33,6 +33,7 @@ import org.tinylog.Logger;
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.OperationReponseHandlers;
 import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -47,6 +48,11 @@ import io.vertx.ext.web.api.OperationResponse;
  * @author UDT-IA, IIIA-CSIC
  */
 public class ProfilesResource implements Profiles {
+
+	/**
+	 * The event bus that is using.
+	 */
+	protected Vertx vertx;
 
 	/**
 	 * The repository to manage the profiles.
@@ -67,7 +73,9 @@ public class ProfilesResource implements Profiles {
 	 */
 	public ProfilesResource(Vertx vertx) {
 
+		this.vertx = vertx;
 		this.repository = ProfilesRepository.createProxy(vertx);
+
 	}
 
 	/**
@@ -110,7 +118,7 @@ public class ProfilesResource implements Profiles {
 
 		} else {
 
-			profile.validate("bad_profile", this.repository).setHandler(validation -> {
+			profile.validate("bad_profile", this.vertx).setHandler(validation -> {
 
 				if (validation.failed()) {
 
@@ -125,7 +133,7 @@ public class ProfilesResource implements Profiles {
 						if (stored.failed()) {
 
 							final Throwable cause = validation.cause();
-							Logger.debug(cause, "Cannot store  {}.", profile);
+							Logger.debug(cause, "Cannot store {}.", profile);
 							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
 						} else {
@@ -168,12 +176,12 @@ public class ProfilesResource implements Profiles {
 
 				} else {
 
-					target.merge(source, "bad_new_profile", this.repository).setHandler(merge -> {
+					target.merge(source, "bad_new_profile", this.vertx).setHandler(merge -> {
 
 						if (merge.failed()) {
 
 							final Throwable cause = merge.cause();
-							Logger.debug(cause, "Cannot update  {} with {}.", target, source);
+							Logger.debug(cause, "Cannot update {} with {}.", target, source);
 							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
 						} else {
@@ -191,7 +199,7 @@ public class ProfilesResource implements Profiles {
 									if (update.failed()) {
 
 										final Throwable cause = update.cause();
-										Logger.debug(cause, "Cannot update  {}.", target);
+										Logger.debug(cause, "Cannot update {}.", target);
 										OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
 									} else {

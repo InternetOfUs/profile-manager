@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.wenet_profile_manager.api.trusts.Trust;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustEvent;
+import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
@@ -83,7 +83,7 @@ public interface TrustsRepository {
 	 * @param storeHandler handler to manage the store.
 	 */
 	@GenIgnore
-	default void storeTrustEvent(TrustEvent event, Handler<AsyncResult<Void>> storeHandler) {
+	default void storeTrustEvent(UserPerformanceRatingEvent event, Handler<AsyncResult<Void>> storeHandler) {
 
 		final JsonObject object = event.toJsonObject();
 		if (object == null) {

@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.api.models.ModelTestCase;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
 
 /**
  * Test the {@link HistoricWeNetUserProfile}.
