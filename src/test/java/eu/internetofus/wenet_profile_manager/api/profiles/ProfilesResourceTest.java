@@ -106,7 +106,7 @@ public class ProfilesResourceTest {
 
 		final ProfilesResource resource = createProfilesResource();
 		final OperationRequest context = mock(OperationRequest.class);
-		resource.updateProfile("profileId", new JsonObject().put("name", new JsonObject().put("first", "John")), context,
+		resource.updateProfile("userId", new JsonObject().put("name", new JsonObject().put("first", "John")), context,
 				testContext.succeeding(update -> {
 
 					assertThat(update.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
@@ -134,7 +134,7 @@ public class ProfilesResourceTest {
 
 		final ProfilesResource resource = createProfilesResource();
 		final OperationRequest context = mock(OperationRequest.class);
-		resource.updateProfile("profileId", new JsonObject().put("name", new JsonObject().put("first", "John")), context,
+		resource.updateProfile("userId", new JsonObject().put("name", new JsonObject().put("first", "John")), context,
 				testContext.succeeding(update -> {
 
 					assertThat(update.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -169,7 +169,7 @@ public class ProfilesResourceTest {
 		final ProfilesResource resource = createProfilesResource();
 		final OperationRequest context = mock(OperationRequest.class);
 		doReturn(new JsonObject()).when(context).getParams();
-		resource.retrieveProfileHistoricPage("profileId", context, testContext.succeeding(create -> {
+		resource.retrieveProfileHistoricPage("userId", context, testContext.succeeding(create -> {
 
 			assertThat(create.getStatusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 			testContext.completeNow();

@@ -77,7 +77,7 @@ public interface Profiles {
 	/**
 	 * The sub path to retrieve a profile.
 	 */
-	String PROFILE_ID_PATH = "/{profileId}";
+	String PROFILE_ID_PATH = "/{userId}";
 
 	/**
 	 * An example of a {@link WeNetUserProfile} that can be created.
@@ -135,7 +135,7 @@ public interface Profiles {
 	/**
 	 * Called when want to get a profile.
 	 *
-	 * @param profileId     identifier of the profile to get.
+	 * @param userId        identifier of the user to get.
 	 * @param context       of the request.
 	 * @param resultHandler to inform of the response.
 	 */
@@ -157,16 +157,16 @@ public interface Profiles {
 			description = "Not found profile",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	void retrieveProfile(
-			@PathParam("profileId") @Parameter(
-					description = "The identifier of the profile to get",
-					example = "15837028-645a-4a55-9aaf-ceb846439eba") String profileId,
+			@PathParam("userId") @Parameter(
+					description = "The identifier of the user to get",
+					example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 	/**
 	 * Called when want to modify a profile.
 	 *
-	 * @param profileId     identifier of the profile to modify.
+	 * @param userId        identifier of the user to modify.
 	 * @param body          the new profile attributes.
 	 * @param context       of the request.
 	 * @param resultHandler to inform of the response.
@@ -199,9 +199,9 @@ public interface Profiles {
 			description = "Not found profile",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	void updateProfile(
-			@PathParam("profileId") @Parameter(
-					description = "The identifier of the profile to update",
-					example = "15837028-645a-4a55-9aaf-ceb846439eba") String profileId,
+			@PathParam("userId") @Parameter(
+					description = "The identifier of the user to update",
+					example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
 			@Parameter(hidden = true, required = false) JsonObject body,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
@@ -209,7 +209,7 @@ public interface Profiles {
 	/**
 	 * Called when want to delete a profile.
 	 *
-	 * @param profileId     identifier of the profile to delete.
+	 * @param userId        identifier of the user to delete.
 	 * @param context       of the request.
 	 * @param resultHandler to inform of the response.
 	 */
@@ -225,14 +225,14 @@ public interface Profiles {
 			description = "Not found profile",
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	void deleteProfile(
-			@PathParam("profileId") @Parameter(description = "The identifier of the profile to delete") String profileId,
+			@PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 	/**
 	 * Called when want to get the historic values of the profile.
 	 *
-	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param userId        identifier of the user to get the historic values.
 	 * @param context       of the request.
 	 * @param resultHandler to inform of the response.
 	 */
@@ -282,7 +282,7 @@ public interface Profiles {
 			content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
 	@Tag(name = "Historic")
 	void retrieveProfileHistoricPage(
-			@PathParam("profileId") @Parameter(description = "The identifier of the profile to get") String profileId,
+			@PathParam("userId") @Parameter(description = "The identifier of the user to get") String userId,
 			@Parameter(hidden = true, required = false) OperationRequest context,
 			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 

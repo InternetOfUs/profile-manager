@@ -555,14 +555,13 @@ public class ProfilesRepositoryIT {
 	 * Create a profile page.
 	 *
 	 * @param repository      to store the information.
-	 * @param profileId       identifier of the profile to get the historic.
+	 * @param userId          identifier of the profile to get the historic.
 	 * @param page            that has to be created.
 	 * @param testContext     context to test.
 	 * @param creationHandler handler to apply when has been created the page.
 	 */
-	public static void createProfilePage(ProfilesRepository repository, String profileId,
-			HistoricWeNetUserProfilesPage page, VertxTestContext testContext,
-			Handler<AsyncResult<HistoricWeNetUserProfilesPage>> creationHandler) {
+	public static void createProfilePage(ProfilesRepository repository, String userId, HistoricWeNetUserProfilesPage page,
+			VertxTestContext testContext, Handler<AsyncResult<HistoricWeNetUserProfilesPage>> creationHandler) {
 
 		final int numProfiles = page.profiles.size();
 		if (page.total == numProfiles) {
@@ -575,11 +574,11 @@ public class ProfilesRepositoryIT {
 					.createModelExample(page.profiles.size());
 			historic.from = numProfiles * 10000;
 			historic.to = (1 + numProfiles) * 10000;
-			historic.profile.id = profileId;
+			historic.profile.id = userId;
 			repository.storeHistoricProfile(historic, testContext.succeeding(store -> {
 
 				page.profiles.add(store);
-				createProfilePage(repository, profileId, page, testContext, creationHandler);
+				createProfilePage(repository, userId, page, testContext, creationHandler);
 
 			}));
 
@@ -598,13 +597,13 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldFoundHistoricProfilePageObject(ProfilesRepository repository, VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, Long.MAX_VALUE, true, 0, 100,
+			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -629,13 +628,13 @@ public class ProfilesRepositoryIT {
 	public void shouldFoundHistoricProfilePageObjectWithFrom(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 70000, Long.MAX_VALUE, true, 0, 100,
+			repository.searchHistoricProfilePageObject(userId, 70000, Long.MAX_VALUE, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -661,13 +660,13 @@ public class ProfilesRepositoryIT {
 	@Test
 	public void shouldFoundHistoricProfilePageObjectWithTo(ProfilesRepository repository, VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, 70000, true, 0, 100,
+			repository.searchHistoricProfilePageObject(userId, 0, 70000, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -695,13 +694,13 @@ public class ProfilesRepositoryIT {
 	public void shouldFoundHistoricProfilePageObjectOnDescendingOrder(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, Long.MAX_VALUE, false, 0, 100,
+			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, false, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -727,13 +726,13 @@ public class ProfilesRepositoryIT {
 	public void shouldFoundHistoricProfilePageObjectWithOffset(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, Long.MAX_VALUE, true, 5, 100,
+			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 5, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -760,13 +759,13 @@ public class ProfilesRepositoryIT {
 	public void shouldFoundHistoricProfilePageObjectWithOffsetBiggerThanTotal(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, Long.MAX_VALUE, true, 21, 100,
+			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 21, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -793,13 +792,13 @@ public class ProfilesRepositoryIT {
 	public void shouldFoundHistoricProfilePageObjectWithLimit(ProfilesRepository repository,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(profileId, 0, Long.MAX_VALUE, true, 0, 10,
+			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 10,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,

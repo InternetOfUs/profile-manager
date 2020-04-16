@@ -81,7 +81,7 @@ public interface ProfilesRepository {
 	/**
 	 * Search for the profile with the specified identifier.
 	 *
-	 * @param id            identifier of the profile to search.
+	 * @param id            identifier of the user to search.
 	 * @param searchHandler handler to manage the search.
 	 */
 	@GenIgnore
@@ -112,7 +112,7 @@ public interface ProfilesRepository {
 	/**
 	 * Search for the profile with the specified identifier.
 	 *
-	 * @param id            identifier of the profile to search.
+	 * @param id            identifier of the user to search.
 	 * @param searchHandler handler to manage the search.
 	 */
 	void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
@@ -196,7 +196,7 @@ public interface ProfilesRepository {
 	/**
 	 * Delete a profile.
 	 *
-	 * @param id            identifier of the profile to delete.
+	 * @param id            identifier of the user to delete.
 	 * @param deleteHandler handler to manage the delete result.
 	 */
 	void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
@@ -254,7 +254,7 @@ public interface ProfilesRepository {
 	 * Search for some historic profiles.
 	 *
 	 *
-	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param userId        identifier of the user to get the historic values.
 	 * @param from          the date inclusive that mark the older limit in witch
 	 *                      the profile has to be active. It is the difference,
 	 *                      measured in milliseconds, between the time when the
@@ -272,10 +272,10 @@ public interface ProfilesRepository {
 	 * @param searchHandler handler to manage the search.
 	 */
 	@GenIgnore
-	default void searchHistoricProfilePage(String profileId, long from, long to, boolean ascending, int offset, int limit,
+	default void searchHistoricProfilePage(String userId, long from, long to, boolean ascending, int offset, int limit,
 			Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
 
-		this.searchHistoricProfilePageObject(profileId, from, to, ascending, offset, limit, search -> {
+		this.searchHistoricProfilePageObject(userId, from, to, ascending, offset, limit, search -> {
 
 			if (search.failed()) {
 
@@ -302,7 +302,7 @@ public interface ProfilesRepository {
 	 * Search for some historic profiles.
 	 *
 	 *
-	 * @param profileId     identifier of the profile to get the historic values.
+	 * @param userId        identifier of the user to get the historic values.
 	 * @param from          the date inclusive that mark the older limit in witch
 	 *                      the profile has to be active. It is the difference,
 	 *                      measured in milliseconds, between the time when the
@@ -319,7 +319,7 @@ public interface ProfilesRepository {
 	 * @param limit         number maximum of profiles to return.
 	 * @param searchHandler handler to manage the search.
 	 */
-	void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset, int limit,
+	void searchHistoricProfilePageObject(String userId, long from, long to, boolean ascending, int offset, int limit,
 			Handler<AsyncResult<JsonObject>> searchHandler);
 
 }

@@ -133,11 +133,11 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset,
+	public void searchHistoricProfilePageObject(String userId, long from, long to, boolean ascending, int offset,
 			int limit, Handler<AsyncResult<JsonObject>> searchHandler) {
 
-		final JsonObject query = new JsonObject().put("profile.id", profileId)
-				.put("from", new JsonObject().put("$gte", from)).put("to", new JsonObject().put("$lte", to));
+		final JsonObject query = new JsonObject().put("profile.id", userId).put("from", new JsonObject().put("$gte", from))
+				.put("to", new JsonObject().put("$lte", to));
 		final FindOptions options = new FindOptions();
 		options.setSkip(offset);
 		options.setLimit(limit);

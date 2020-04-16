@@ -82,17 +82,17 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void retrieveProfile(String profileId, OperationRequest context,
+	public void retrieveProfile(String userId, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		this.repository.searchProfileObject(profileId, search -> {
+		this.repository.searchProfileObject(userId, search -> {
 
 			final JsonObject profile = search.result();
 			if (profile == null) {
 
-				Logger.debug(search.cause(), "Not found profile for {}", profileId);
+				Logger.debug(search.cause(), "Not found profile for the user {}", userId);
 				OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile",
-						"Does not exist a profile associated to '" + profileId + "'.");
+						"Does not exist a profile associated for the user '" + userId + "'.");
 
 			} else {
 
@@ -152,7 +152,7 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void updateProfile(String profileId, JsonObject body, OperationRequest context,
+	public void updateProfile(String userId, JsonObject body, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
 		final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
@@ -164,15 +164,15 @@ public class ProfilesResource implements Profiles {
 
 		} else {
 
-			this.repository.searchProfile(profileId, search -> {
+			this.repository.searchProfile(userId, search -> {
 
 				final WeNetUserProfile target = search.result();
 				if (target == null) {
 
-					Logger.debug(search.cause(), "Not found profile {} to update", profileId);
+					Logger.debug(search.cause(), "Not found profile {} to update", userId);
 					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND,
 							"not_found_profile_to_update",
-							"You can not update the profile '" + profileId + "', because it does not exist.");
+							"You can not update the profile of the user '" + userId + "', because it does not exist.");
 
 				} else {
 
@@ -190,7 +190,7 @@ public class ProfilesResource implements Profiles {
 							if (merged.equals(target)) {
 
 								OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
-										"profile_to_update_equal_to_original", "You can not update the profile '" + profileId
+										"profile_to_update_equal_to_original", "You can not update the profile of the user '" + userId
 												+ "', because the new values is equals to the current one.");
 
 							} else {
@@ -237,15 +237,15 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void deleteProfile(String profileId, OperationRequest context,
+	public void deleteProfile(String userId, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		this.repository.deleteProfile(profileId, delete -> {
+		this.repository.deleteProfile(userId, delete -> {
 
 			if (delete.failed()) {
 
 				final Throwable cause = delete.cause();
-				Logger.debug(cause, "Cannot delete the profile  {}.", profileId);
+				Logger.debug(cause, "Cannot delete the profile of the user {}.", userId);
 				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
 			} else {
@@ -261,7 +261,7 @@ public class ProfilesResource implements Profiles {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void retrieveProfileHistoricPage(String profileId, OperationRequest context,
+	public void retrieveProfileHistoricPage(String userId, OperationRequest context,
 			Handler<AsyncResult<OperationResponse>> resultHandler) {
 
 		final JsonObject params = context.getParams().getJsonObject("query", new JsonObject());
@@ -270,12 +270,12 @@ public class ProfilesResource implements Profiles {
 		final boolean ascending = "ASC".equals(params.getString("order", "ASC"));
 		final int offset = params.getInteger("offset", 0);
 		final int limit = params.getInteger("limit", 10);
-		this.repository.searchHistoricProfilePage(profileId, from, to, ascending, offset, limit, search -> {
+		this.repository.searchHistoricProfilePage(userId, from, to, ascending, offset, limit, search -> {
 
 			if (search.failed()) {
 
 				final Throwable cause = search.cause();
-				Logger.debug(cause, "Cannot found historic profile for {}.", profileId);
+				Logger.debug(cause, "Cannot found historic profile for the user {}.", userId);
 				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
 			} else {

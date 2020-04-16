@@ -631,13 +631,13 @@ public class ProfilesIT {
 	public void shouldFoundHistoricProfilePage(ProfilesRepository repository, WebClient client,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryIT.createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		ProfilesRepositoryIT.createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)
+			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH)
 					.with(queryParam("limit", "100")).expect(res -> {
 
 						assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -664,13 +664,13 @@ public class ProfilesIT {
 	public void shouldFoundHistoricProfilePageForARange(ProfilesRepository repository, WebClient client,
 			VertxTestContext testContext) {
 
-		final String profileId = UUID.randomUUID().toString();
+		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryIT.createProfilePage(repository, profileId, page, testContext, testContext.succeeding(created -> {
+		ProfilesRepositoryIT.createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
 
-			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profileId + Profiles.HISTORIC_PATH)
+			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH)
 					.with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "DESC"),
 							queryParam("offset", "5"), queryParam("limit", "3"))
 					.expect(res -> {

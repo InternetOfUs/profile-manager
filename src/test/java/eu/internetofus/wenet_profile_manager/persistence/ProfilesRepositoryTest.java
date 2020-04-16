@@ -237,7 +237,7 @@ public class ProfilesRepositoryTest {
 			 * {@inheritDoc}
 			 */
 			@Override
-			public void searchHistoricProfilePageObject(String profileId, long from, long to, boolean ascending, int offset,
+			public void searchHistoricProfilePageObject(String userId, long from, long to, boolean ascending, int offset,
 					int limit, Handler<AsyncResult<JsonObject>> searchHandler) {
 
 				searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
