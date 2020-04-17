@@ -19,6 +19,7 @@ This project will be used to provide the API to storing and maintaining the WeNe
   - **Sever for the API 0.9.0** [http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/)
   - **Sever for the API 0.10.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/)
 - **Sever for the API 0.11.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.11.0/)
+- **Sever for the API 0.12.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.12.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.12.0/)
 
 ## Deploy with docker
 

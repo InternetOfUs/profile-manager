@@ -171,15 +171,15 @@ public class Repository {
 	 *
 	 * @param collectionName of the collections that contains the model to store.
 	 * @param model          to store.
-	 * @param idField        name of the filed that contains the identifier. If it
-	 *                       is {@code null} is used the {@code _id}.
+	 * @param map            function to modify the stored document. If it is
+	 *                       {@code null} no modification is applied.
+	 *
 	 * @param storeHandler   handler to manage the store action.
-	 * @param fieldsToRemove fields to remove after stored the model.
 	 */
-	protected void storeOneDocument(String collectionName, JsonObject model, String idField,
-			Handler<AsyncResult<JsonObject>> storeHandler, String... fieldsToRemove) {
+	protected void storeOneDocument(String collectionName, JsonObject model, Function<JsonObject, JsonObject> map,
+			Handler<AsyncResult<JsonObject>> storeHandler) {
 
-		this.pool.save(collectionName, model, store -> {
+		this.pool.insert(collectionName, model, store -> {
 
 			if (store.failed()) {
 
@@ -187,18 +187,23 @@ public class Repository {
 
 			} else {
 
-				if (idField != null) {
+				if (map != null) {
 
-					model.put(idField, model.remove("_id"));
-				}
-				if (fieldsToRemove != null) {
+					try {
 
-					for (final String field : fieldsToRemove) {
+						final JsonObject adaptedModel = map.apply(model);
+						storeHandler.handle(Future.succeededFuture(adaptedModel));
 
-						model.remove(field);
+					} catch (final Throwable throwable) {
+
+						storeHandler.handle(Future.failedFuture(throwable));
+
 					}
+
+				} else {
+
+					storeHandler.handle(Future.succeededFuture(model));
 				}
-				storeHandler.handle(Future.succeededFuture(model));
 			}
 
 		});

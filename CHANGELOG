@@ -3,9 +3,11 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
-## Version 0.12.0 (2020-03-09)
+## Version 0.12.0 (2020-04-17)
 
- * Manage the trust between users.
+ * Define API to manage trust between users.
+ * Allow to define a profile with an identifier.
+ * Change 'profileId' to 'userId'.
 
 
 ## Version 0.11.0 (2020-03-03)

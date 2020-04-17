@@ -194,6 +194,55 @@ public class ProfilesRepositoryIT {
 	}
 
 	/**
+	 * Verify that can store a profile.
+	 *
+	 * @param repository  to test.
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
+	 */
+	@Test
+	public void shouldStoreProfileWithAnId(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final String id = UUID.randomUUID().toString();
+		final WeNetUserProfile profile = new WeNetUserProfile();
+		profile.id = id;
+		profile._creationTs = 0;
+		profile._lastUpdateTs = 1;
+		final long now = TimeManager.now();
+		repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
+
+			assertThat(storedProfile.id).isEqualTo(id);
+			assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
+			assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+			testContext.completeNow();
+		})));
+
+	}
+
+	/**
+	 * Verify that can store a profile with an id of an stored profile.
+	 *
+	 * @param repository  to test.
+	 * @param testContext context that executes the test.
+	 *
+	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
+	 */
+	@Test
+	public void shouldNotStoreTwoProfileWithTheSameId(ProfilesRepository repository, VertxTestContext testContext) {
+
+		final String id = UUID.randomUUID().toString();
+		final WeNetUserProfile profile = new WeNetUserProfile();
+		profile.id = id;
+		repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
+
+			repository.storeProfile(profile, testContext.failing(error -> testContext.completeNow()));
+
+		})));
+
+	}
+
+	/**
 	 * Verify that can store a profile object.
 	 *
 	 * @param repository  to test.

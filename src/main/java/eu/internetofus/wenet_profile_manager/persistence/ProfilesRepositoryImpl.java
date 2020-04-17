@@ -76,8 +76,10 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
 
 		final JsonObject query = new JsonObject().put("_id", id);
-		this.findOneDocument(PROFILES_COLLECTION, query, null, found -> found.put("id", found.remove("_id")),
-				searchHandler);
+		this.findOneDocument(PROFILES_COLLECTION, query, null, found -> {
+			final String _id = (String) found.remove("_id");
+			return found.put("id", _id);
+		}, searchHandler);
 
 	}
 
@@ -87,10 +89,20 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	@Override
 	public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
+		final String id = (String) profile.remove("id");
+		if (id != null) {
+
+			profile.put("_id", id);
+		}
 		final long now = TimeManager.now();
 		profile.put("_creationTs", now);
 		profile.put("_lastUpdateTs", now);
-		this.storeOneDocument(PROFILES_COLLECTION, profile, "id", storeHandler);
+		this.storeOneDocument(PROFILES_COLLECTION, profile, stored -> {
+
+			final String _id = (String) stored.remove("_id");
+			return stored.put("id", _id);
+
+		}, storeHandler);
 
 	}
 
@@ -125,7 +137,10 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 	@Override
 	public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
 
-		this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, null, storeHandler, "_id");
+		this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, stored -> {
+			stored.remove("_id");
+			return stored;
+		}, storeHandler);
 
 	}
 

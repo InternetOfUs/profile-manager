@@ -171,7 +171,7 @@ public abstract class RepositoryTestCase<T extends Repository> {
 		}));
 		@SuppressWarnings("unchecked")
 		final ArgumentCaptor<Handler<AsyncResult<String>>> handler = ArgumentCaptor.forClass(Handler.class);
-		verify(pool, times(1)).save(any(), any(), handler.capture());
+		verify(pool, times(1)).insert(any(), any(), handler.capture());
 		handler.getValue().handle(Future.failedFuture("Internal error"));
 
 	}

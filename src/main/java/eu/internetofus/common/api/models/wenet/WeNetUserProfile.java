@@ -35,6 +35,7 @@ import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.Validations;
+import eu.internetofus.common.services.WeNetProfileManagerService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
@@ -85,7 +86,6 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 	@Schema(
 			description = "The phone number of the user, on the E.164 format(^\\+?[1-9]\\d{1,14}$)",
 			example = "+34987654321")
-
 	public String phoneNumber;
 
 	/**
@@ -203,38 +203,51 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 			this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
 			if (this.id != null) {
 
-				promise.fail(new ValidationErrorException(codePrefix + ".id",
-						"You can not specify the identifier of the profile to create"));
+				future = future.compose(mapper -> {
 
-			} else {
+					final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+					WeNetProfileManagerService.createProxy(vertx).retrieveProfile(this.id, profile -> {
 
-				if (this.name != null) {
+						if (profile.failed()) {
 
-					future = future.compose(mapper -> this.name.validate(codePrefix + ".name", vertx));
-				}
-				if (this.dateOfBirth != null) {
+							verifyNotRepeatedIdPromise.complete();
 
-					future = future.compose(mapper -> this.dateOfBirth.validate(codePrefix + ".dateOfBirth", vertx));
+						} else {
 
-				}
-				// Gender not verified because is a enumeration and this fix the possible values
-				this.email = Validations.validateNullableEmailField(codePrefix, "email", this.email);
-				this.locale = Validations.validateNullableLocaleField(codePrefix, "locale", this.locale);
-				this.phoneNumber = Validations.validateNullableTelephoneField(codePrefix, "phoneNumber", this.locale,
-						this.phoneNumber);
-				this.avatar = Validations.validateNullableURLField(codePrefix, "avatar", this.avatar);
-				this.nationality = Validations.validateNullableStringField(codePrefix, "nationality", 255, this.nationality);
-				future = future.compose(Validations.validate(this.languages, codePrefix + ".languages", vertx));
-				this.occupation = Validations.validateNullableStringField(codePrefix, "occupation", 255, this.occupation);
-				future = future.compose(Validations.validate(this.norms, codePrefix + ".norms", vertx));
-				future = future.compose(Validations.validate(this.plannedActivities, codePrefix + ".plannedActivities", vertx));
-				future = future.compose(Validations.validate(this.relevantLocations, codePrefix + ".relevantLocations", vertx));
-				future = future.compose(Validations.validate(this.relationships, codePrefix + ".relationships", vertx));
-				future = future.compose(Validations.validate(this.socialPractices, codePrefix + ".socialPractices", vertx));
-				future = future.compose(Validations.validate(this.personalBehaviors, codePrefix + ".personalBehaviors", vertx));
-
-				promise.complete();
+							verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".id",
+									"The user '" + this.id + "' has already a profile."));
+						}
+					});
+					return verifyNotRepeatedIdPromise.future();
+				});
 			}
+
+			if (this.name != null) {
+
+				future = future.compose(mapper -> this.name.validate(codePrefix + ".name", vertx));
+			}
+			if (this.dateOfBirth != null) {
+
+				future = future.compose(mapper -> this.dateOfBirth.validate(codePrefix + ".dateOfBirth", vertx));
+
+			}
+			// Gender not verified because is a enumeration and this fix the possible values
+			this.email = Validations.validateNullableEmailField(codePrefix, "email", this.email);
+			this.locale = Validations.validateNullableLocaleField(codePrefix, "locale", this.locale);
+			this.phoneNumber = Validations.validateNullableTelephoneField(codePrefix, "phoneNumber", this.locale,
+					this.phoneNumber);
+			this.avatar = Validations.validateNullableURLField(codePrefix, "avatar", this.avatar);
+			this.nationality = Validations.validateNullableStringField(codePrefix, "nationality", 255, this.nationality);
+			future = future.compose(Validations.validate(this.languages, codePrefix + ".languages", vertx));
+			this.occupation = Validations.validateNullableStringField(codePrefix, "occupation", 255, this.occupation);
+			future = future.compose(Validations.validate(this.norms, codePrefix + ".norms", vertx));
+			future = future.compose(Validations.validate(this.plannedActivities, codePrefix + ".plannedActivities", vertx));
+			future = future.compose(Validations.validate(this.relevantLocations, codePrefix + ".relevantLocations", vertx));
+			future = future.compose(Validations.validate(this.relationships, codePrefix + ".relationships", vertx));
+			future = future.compose(Validations.validate(this.socialPractices, codePrefix + ".socialPractices", vertx));
+			future = future.compose(Validations.validate(this.personalBehaviors, codePrefix + ".personalBehaviors", vertx));
+
+			promise.complete();
 
 		} catch (final ValidationErrorException validationError) {
 

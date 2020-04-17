@@ -48,6 +48,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxTestContext;
 
@@ -253,11 +254,15 @@ public abstract class WeNetUserProfileTestCase<T extends WeNetUserProfile> exten
 	 * @see WeNetUserProfile#validate(String, Vertx)
 	 */
 	@Test
-	public void shouldNotBeValidWithAnId(Vertx vertx, VertxTestContext testContext) {
+	public void shouldNotBeValidWithAnExistingId(Vertx vertx, VertxTestContext testContext) {
 
-		final WeNetUserProfile model = new WeNetUserProfile();
-		model.id = "has_id";
-		assertIsNotValid(model, "id", vertx, testContext);
+		WeNetProfileManagerService.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
+
+			final WeNetUserProfile model = new WeNetUserProfile();
+			model.id = created.getString("id");
+			assertIsNotValid(model, "id", vertx, testContext);
+
+		}));
 
 	}
 

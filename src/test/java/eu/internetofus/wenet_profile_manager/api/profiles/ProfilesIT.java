@@ -26,11 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static eu.internetofus.common.api.models.MergesTest.assertCanMerge;
-import static eu.internetofus.common.api.models.MergesTest.assertCannotMerge;
-import static eu.internetofus.common.api.models.ValidationsTest.assertIsNotValid;
-import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
+import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +40,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.models.ErrorMessage;
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.ValidationsTest;
@@ -59,6 +57,7 @@ import eu.internetofus.common.api.models.wenet.SocialPractice;
 import eu.internetofus.common.api.models.wenet.UserName;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import eu.internetofus.common.services.WeNetProfileManagerService;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
@@ -156,6 +155,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can not store a bad profile.
 	 *
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -163,19 +163,23 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotStoreBadProfile(WebClient client, VertxTestContext testContext) {
+	public void shouldNotStoreProfileWithExistingId(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		final WeNetUserProfile profile = new WeNetUserProfile();
-		profile.id = UUID.randomUUID().toString();
-		testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
+		WeNetProfileManagerService.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isNotEmpty().isEqualTo("bad_profile.id");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+			final WeNetUserProfile profile = new WeNetUserProfile();
+			profile.id = created.getString("id");
+			testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
-		}).sendJson(profile.toJsonObject(), testContext);
+				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+				assertThat(error.code).isNotEmpty().isEqualTo("bad_profile.id");
+				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+				testContext.completeNow();
+
+			}).sendJson(profile.toJsonObject(), testContext);
+
+		}));
 	}
 
 	/**
@@ -1502,6 +1506,57 @@ public class ProfilesIT {
 				}));
 			});
 		}));
+
+	}
+
+	/**
+	 * Verify that can store a profile with only an identifier.
+	 *
+	 * @param vertx       event bus to use.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
+	 *
+	 * @see Profiles#createProfile(io.vertx.core.json.JsonObject,
+	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+	 */
+	@Test
+	public void shouldStoreProfileWithOnlyAnId(Vertx vertx, WebClient client, VertxTestContext testContext) {
+
+		final long now = TimeManager.now();
+		final String id = UUID.randomUUID().toString();
+		testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
+
+			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+			final WeNetUserProfile stored = assertThatBodyIs(WeNetUserProfile.class, res);
+			assertThat(stored).isNotNull();
+			assertThat(stored.id).isEqualTo(id);
+			assertThat(stored._creationTs).isGreaterThanOrEqualTo(now);
+			assertThat(stored._lastUpdateTs).isEqualTo(stored._creationTs);
+			assertThat(stored.name).isNull();
+			assertThat(stored.dateOfBirth).isNull();
+			assertThat(stored.gender).isNull();
+			assertThat(stored.email).isNull();
+			assertThat(stored.phoneNumber).isNull();
+			assertThat(stored.locale).isNull();
+			assertThat(stored.avatar).isNull();
+			assertThat(stored.nationality).isNull();
+			assertThat(stored.languages).isNull();
+			assertThat(stored.occupation).isNull();
+			assertThat(stored.norms).isNull();
+			assertThat(stored.plannedActivities).isNull();
+			assertThat(stored.relevantLocations).isNull();
+			assertThat(stored.relationships).isNull();
+			assertThat(stored.socialPractices).isNull();
+			assertThat(stored.personalBehaviors).isNull();
+			ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
+					testContext.succeeding(foundProfile -> testContext.verify(() -> {
+
+						assertThat(foundProfile).isEqualTo(stored);
+						testContext.completeNow();
+
+					})));
+
+		}).sendJson(new JsonObject().put("id", id), testContext);
 
 	}
 }
