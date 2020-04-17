@@ -71,7 +71,7 @@ public class OperationRequestsTest {
 	}
 
 	/**
-	 * Check that convert a {@code null} array to a {@©ode null} list.
+	 * Check that convert a {@code null} array to a {@code null} list.
 	 */
 	@Test
 	public void shouldNullArrayBeNullListString() {
@@ -81,7 +81,7 @@ public class OperationRequestsTest {
 	}
 
 	/**
-	 * Check that convert an empty array to a {@©ode null} list.
+	 * Check that convert an empty array to a {@code null} list.
 	 */
 	@Test
 	public void shouldEmptyArrayBeNullListString() {
