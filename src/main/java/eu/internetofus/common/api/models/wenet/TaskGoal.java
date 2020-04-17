@@ -38,55 +38,31 @@ import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 /**
- * The information of an user name.
+ * The explanation of the task objective.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(description = "The information of an user name.")
-public class UserName extends Model implements Validable, Mergeable<UserName> {
+@Schema(description = "The explanation of the task objective.")
+public class TaskGoal extends Model implements Validable, Mergeable<TaskGoal> {
 
 	/**
 	 * The user name prefix.
 	 */
-	@Schema(description = "The prefix of the name such as Mr., Mrs., Ms., Miss, or Dr.", example = "Dr.")
-	public String prefix;
+	@Schema(description = "A short description of the task goal.", example = "Go to dinner together")
+	public String name;
 
 	/**
-	 * The user first name.
+	 * The user name name.
 	 */
 	@Schema(
-			description = "The first name (also known as a given name, forename or	 Christian name) is a part of a person's personal name.",
-			example = "Abbey")
-	public String first;
-
-	/**
-	 * The user middle name.
-	 */
-	@Schema(
-			description = "The portion of a personal name that is written between the person's first name (given) and their last names (surname).",
-			example = "Fitzgerald")
-	public String middle;
-
-	/**
-	 * The user last name.
-	 */
-	@Schema(
-			description = "The last name (surname or family name) is the portion (in some cultures) of a personal name that indicates a person's family (or tribe or community, depending on the culture).",
-			example = "Smith")
-	public String last;
-
-	/**
-	 * The user name suffix.
-	 */
-	@Schema(
-			description = "The suffix of the name such as Jr., Sr., I, II, III, IV, V, MD, DDS, PhD or DVM.",
-			example = "Jr.")
-	public String suffix;
+			description = "A human readable description of the objective of the task.",
+			example = "It is my anniversary and I want to celebrate together.")
+	public String description;
 
 	/**
 	 * Create a new user name.
 	 */
-	public UserName() {
+	public TaskGoal() {
 
 	}
 
@@ -99,11 +75,8 @@ public class UserName extends Model implements Validable, Mergeable<UserName> {
 		final Promise<Void> promise = Promise.promise();
 		try {
 
-			this.prefix = Validations.validateNullableStringField(codePrefix, "prefix", 10, this.prefix);
-			this.first = Validations.validateNullableStringField(codePrefix, "first", 255, this.first);
-			this.middle = Validations.validateNullableStringField(codePrefix, "middle", 255, this.middle);
-			this.last = Validations.validateNullableStringField(codePrefix, "last", 255, this.last);
-			this.suffix = Validations.validateNullableStringField(codePrefix, "suffix", 10, this.suffix);
+			this.name = Validations.validateNullableStringField(codePrefix, "name", 255, this.name);
+			this.description = Validations.validateNullableStringField(codePrefix, "description", 1023, this.description);
 			promise.complete();
 
 		} catch (final ValidationErrorException validationError) {
@@ -118,37 +91,22 @@ public class UserName extends Model implements Validable, Mergeable<UserName> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Future<UserName> merge(UserName source, String codePrefix, Vertx vertx) {
+	public Future<TaskGoal> merge(TaskGoal source, String codePrefix, Vertx vertx) {
 
-		final Promise<UserName> promise = Promise.promise();
-		Future<UserName> future = promise.future();
+		final Promise<TaskGoal> promise = Promise.promise();
+		Future<TaskGoal> future = promise.future();
 		if (source != null) {
 
-			final UserName merged = new UserName();
-			merged.prefix = source.prefix;
-			if (merged.prefix == null) {
+			final TaskGoal merged = new TaskGoal();
+			merged.name = source.name;
+			if (merged.name == null) {
 
-				merged.prefix = this.prefix;
+				merged.name = this.name;
 			}
-			merged.first = source.first;
-			if (merged.first == null) {
+			merged.description = source.description;
+			if (merged.description == null) {
 
-				merged.first = this.first;
-			}
-			merged.middle = source.middle;
-			if (merged.middle == null) {
-
-				merged.middle = this.middle;
-			}
-			merged.last = source.last;
-			if (merged.last == null) {
-
-				merged.last = this.last;
-			}
-			merged.suffix = source.suffix;
-			if (merged.suffix == null) {
-
-				merged.suffix = this.suffix;
+				merged.description = this.description;
 			}
 
 			promise.complete(merged);

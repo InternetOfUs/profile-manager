@@ -28,10 +28,8 @@ package eu.internetofus.common.api.models.wenet;
 
 import java.util.List;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.api.models.Mergeable;
 import eu.internetofus.common.api.models.Merges;
-import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.Validations;
@@ -48,7 +46,7 @@ import io.vertx.core.Vertx;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(hidden = true, name = "WeNetUserProfile", description = "The profile of a WeNet user.")
-public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNetUserProfile> {
+public class WeNetUserProfile extends CreateUpdateTsDetails implements Validable, Mergeable<WeNetUserProfile> {
 
 	/**
 	 * The identifier of the profile.
@@ -169,26 +167,6 @@ public class WeNetUserProfile extends Model implements Validable, Mergeable<WeNe
 			schema = @Schema(implementation = Routine.class),
 			arraySchema = @Schema(description = "The user routines"))
 	public List<Routine> personalBehaviors;
-
-	/**
-	 * The instant of the creation.
-	 */
-	@Schema(description = "The time stamp representing the account creation instant.", example = "1563871899")
-	public long _creationTs;
-
-	/**
-	 * The instant of the last update.
-	 */
-	@Schema(description = "The time stamp representing the last update instant.", example = "1563898764")
-	public long _lastUpdateTs;
-
-	/**
-	 * Create a new profile.
-	 */
-	public WeNetUserProfile() {
-
-		this._creationTs = this._lastUpdateTs = TimeManager.now();
-	}
 
 	/**
 	 * {@inheritDoc}

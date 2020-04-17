@@ -100,18 +100,100 @@ public abstract class WeNetTaskManagerServiceTestCase {
 	 * @param testContext context over the tests.
 	 */
 	@Test
-	public void shouldCreateRetrieveAndDeleteProfile(Vertx vertx, VertxTestContext testContext) {
+	public void shouldCreateRetrieveAndDeleteTask(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetTaskManagerService service = WeNetTaskManagerService.createProxy(vertx);
 		service.createTask(new JsonObject(), testContext.succeeding(create -> {
 
-			final String id = create.getString("taskId");
+			final String id = create.getString("id");
 			service.retrieveTask(id, testContext.succeeding(retrieve -> testContext.verify(() -> {
 
 				assertThat(create).isEqualTo(retrieve);
 				service.deleteTask(id, testContext.succeeding(empty -> {
 
 					service.retrieveTask(id, testContext.failing(handler -> {
+						testContext.completeNow();
+
+					}));
+
+				}));
+
+			})));
+
+		}));
+
+	}
+
+	/**
+	 * Should not create a bad task type.
+	 *
+	 * @param vertx       that contains the event bus to use.
+	 * @param testContext context over the tests.
+	 */
+	@Test
+	public void shouldNotCreateBadTaskType(Vertx vertx, VertxTestContext testContext) {
+
+		WeNetTaskManagerService.createProxy(vertx).createTaskType(new JsonObject().put("undefinedField", "value"),
+				testContext.failing(handler -> {
+					testContext.completeNow();
+
+				}));
+
+	}
+
+	/**
+	 * Should not retrieve undefined task type.
+	 *
+	 * @param vertx       that contains the event bus to use.
+	 * @param testContext context over the tests.
+	 */
+	@Test
+	public void shouldNotRretrieveUndefinedTaskType(Vertx vertx, VertxTestContext testContext) {
+
+		WeNetTaskManagerService.createProxy(vertx).retrieveTaskType("undefined-task-type-identifier",
+				testContext.failing(handler -> {
+					testContext.completeNow();
+
+				}));
+
+	}
+
+	/**
+	 * Should not delete undefined task type.
+	 *
+	 * @param vertx       that contains the event bus to use.
+	 * @param testContext context over the tests.
+	 */
+	@Test
+	public void shouldNotDeleteUndefinedTaskType(Vertx vertx, VertxTestContext testContext) {
+
+		WeNetTaskManagerService.createProxy(vertx).deleteTaskType("undefined-task-type-identifier",
+				testContext.failing(handler -> {
+					testContext.completeNow();
+
+				}));
+
+	}
+
+	/**
+	 * Should create, retrieve and delete a task type.
+	 *
+	 * @param vertx       that contains the event bus to use.
+	 * @param testContext context over the tests.
+	 */
+	@Test
+	public void shouldCreateRetrieveAndDeleteTaskType(Vertx vertx, VertxTestContext testContext) {
+
+		final WeNetTaskManagerService service = WeNetTaskManagerService.createProxy(vertx);
+		service.createTaskType(new JsonObject(), testContext.succeeding(create -> {
+
+			final String id = create.getString("id");
+			service.retrieveTaskType(id, testContext.succeeding(retrieve -> testContext.verify(() -> {
+
+				assertThat(create).isEqualTo(retrieve);
+				service.deleteTaskType(id, testContext.succeeding(empty -> {
+
+					service.retrieveTaskType(id, testContext.failing(handler -> {
 						testContext.completeNow();
 
 					}));

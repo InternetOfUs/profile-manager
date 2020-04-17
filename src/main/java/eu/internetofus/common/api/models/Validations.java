@@ -393,4 +393,62 @@ public interface Validations {
 		};
 	}
 
+	/**
+	 * Validate that the value is a valid time stamp.
+	 *
+	 * @param codePrefix    the prefix of the code to use for the error message.
+	 * @param fieldName     name of the checking field.
+	 * @param value         to verify.
+	 * @param from          the minimum value that the time stamp can have. If it is
+	 *                      {@code null}, it uses {@code 0}.
+	 * @param fromInclusive this is{@code true} if the time stamp can be equals to
+	 *                      the from value.
+	 * @param to            the maximum value that the time stamp can have. If it is
+	 *                      {@code null}, it uses {@link Long#MAX_VALUE}.
+	 * @param toInclusive   this is{@code true} if the time stamp can be equals to
+	 *                      the to value.
+	 *
+	 * @return the valid time stamp value.
+	 *
+	 * @throws ValidationErrorException If the value is not a valid time stamp.
+	 */
+	static Long validateNullableTimeStamp(String codePrefix, String fieldName, Long value, Long from,
+			boolean fromInclusive, Long to, boolean toInclusive) throws ValidationErrorException {
+
+		if (value != null) {
+			long minValue = 0;
+			if (from != null) {
+
+				minValue = from;
+			}
+			if (fromInclusive) {
+				minValue--;
+			}
+			minValue = Math.max(0, minValue - 1);
+			long maxValue = Long.MAX_VALUE;
+			if (to != null) {
+
+				maxValue = to;
+				if (!toInclusive) {
+
+					maxValue--;
+				}
+			}
+			maxValue = Math.max(minValue + 1, maxValue);
+
+			if (value > minValue) {
+
+				throw new ValidationErrorException(codePrefix + "." + fieldName,
+						"The time stamp '" + value + "' has to be greater than '" + minValue + "'.");
+
+			} else if (value <= maxValue) {
+
+				throw new ValidationErrorException(codePrefix + "." + fieldName,
+						"The time stamp '" + value + "' has to be less than or equal to '" + maxValue + "'.");
+
+			}
+		}
+		return value;
+	}
+
 }

@@ -61,7 +61,7 @@ public class UserNameTest extends ModelTestCase<UserName> {
 
 		final UserName name = new UserName();
 		name.prefix = "prefix_" + index;
-		name.first = "firts_" + index;
+		name.first = "first_" + index;
 		name.middle = "middle_" + index;
 		name.last = "last_" + index;
 		name.suffix = "suffix_" + index;
