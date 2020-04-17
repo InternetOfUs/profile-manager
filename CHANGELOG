@@ -2,6 +2,10 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 0.12.1 (2020-04-17)
+
+ * Synchronize common models with task-manager
+
 
 ## Version 0.12.0 (2020-04-17)
 

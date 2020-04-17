@@ -24,24 +24,21 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.api.models.wenet;
+package eu.internetofus.common.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.services.WeNetProfileManagerServiceOnMemory;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 
 /**
- * Test the {@link WeNetUserProfile}.
- *
- * @see WeNetUserProfile
+ * Test the {@link WeNetProfileManagerServiceOnMemory}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(VertxExtension.class)
-public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProfile> {
+public class WeNetProfileManagerServiceOnMemoryTest extends WeNetProfileManagerServiceTestCase {
 
 	/**
 	 * Register the necessary services before to test.
@@ -53,15 +50,6 @@ public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProf
 
 		WeNetProfileManagerServiceOnMemory.register(vertx);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected WeNetUserProfile createEmptyModel() {
-
-		return new WeNetUserProfile();
 	}
 
 }

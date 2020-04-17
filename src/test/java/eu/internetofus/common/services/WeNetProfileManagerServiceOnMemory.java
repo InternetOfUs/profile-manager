@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -43,7 +45,7 @@ import io.vertx.serviceproxy.ServiceBinder;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class WeNetProfileManagerServiceForUnitTest implements WeNetProfileManagerService {
+public class WeNetProfileManagerServiceOnMemory implements WeNetProfileManagerService {
 
 	/**
 	 * Register this service.
@@ -53,7 +55,7 @@ public class WeNetProfileManagerServiceForUnitTest implements WeNetProfileManage
 	public static void register(Vertx vertx) {
 
 		new ServiceBinder(vertx).setAddress(WeNetProfileManagerService.ADDRESS).register(WeNetProfileManagerService.class,
-				new WeNetProfileManagerServiceForUnitTest());
+				new WeNetProfileManagerServiceOnMemory());
 
 	}
 
@@ -65,7 +67,7 @@ public class WeNetProfileManagerServiceForUnitTest implements WeNetProfileManage
 	/**
 	 * Create the service.
 	 */
-	public WeNetProfileManagerServiceForUnitTest() {
+	public WeNetProfileManagerServiceOnMemory() {
 
 		this.profiles = new HashMap<>();
 
@@ -77,21 +79,29 @@ public class WeNetProfileManagerServiceForUnitTest implements WeNetProfileManage
 	@Override
 	public synchronized void createProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> createHandler) {
 
-		String id = profile.getString("id");
-		if (id == null) {
-
-			id = UUID.randomUUID().toString();
-			profile.put("id", id);
-		}
-
-		if (this.profiles.containsKey(id)) {
-
-			createHandler.handle(Future.failedFuture("Profile already registered"));
+		final WeNetUserProfile model = Model.fromJsonObject(profile, WeNetUserProfile.class);
+		if (model == null) {
+			// bad profile
+			createHandler.handle(Future.failedFuture("Bad profile to store"));
 
 		} else {
 
-			this.profiles.put(id, profile);
-			createHandler.handle(Future.succeededFuture(profile));
+			String id = profile.getString("id");
+			if (id == null) {
+
+				id = UUID.randomUUID().toString();
+				profile.put("id", id);
+			}
+
+			if (this.profiles.containsKey(id)) {
+
+				createHandler.handle(Future.failedFuture("Profile already registered"));
+
+			} else {
+
+				this.profiles.put(id, profile);
+				createHandler.handle(Future.succeededFuture(profile));
+			}
 		}
 
 	}

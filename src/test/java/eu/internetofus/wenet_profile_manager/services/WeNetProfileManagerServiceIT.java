@@ -24,44 +24,22 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.api.models.wenet;
+package eu.internetofus.wenet_profile_manager.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.services.WeNetProfileManagerServiceOnMemory;
-import io.vertx.core.Vertx;
-import io.vertx.junit5.VertxExtension;
+import eu.internetofus.common.services.WeNetTaskManagerService;
+import eu.internetofus.common.services.WeNetTaskManagerServiceTestCase;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 
 /**
- * Test the {@link WeNetUserProfile}.
+ * Test the {@link WeNetTaskManagerService}.
  *
- * @see WeNetUserProfile
+ * @see WeNetTaskManagerService
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(VertxExtension.class)
-public class WeNetUserProfileTest extends WeNetUserProfileTestCase<WeNetUserProfile> {
-
-	/**
-	 * Register the necessary services before to test.
-	 *
-	 * @param vertx event bus to register the necessary services.
-	 */
-	@BeforeEach
-	public void registerServices(Vertx vertx) {
-
-		WeNetProfileManagerServiceOnMemory.register(vertx);
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected WeNetUserProfile createEmptyModel() {
-
-		return new WeNetUserProfile();
-	}
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class WeNetProfileManagerServiceIT extends WeNetTaskManagerServiceTestCase {
 
 }

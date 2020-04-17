@@ -29,7 +29,7 @@ package eu.internetofus.common.api.models.wenet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.services.WeNetProfileManagerServiceForUnitTest;
+import eu.internetofus.common.services.WeNetProfileManagerServiceOnMemory;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 
@@ -51,7 +51,7 @@ public class PlannedActivityTest extends PlannedActivityTestCase<PlannedActivity
 	@BeforeEach
 	public void registerServices(Vertx vertx) {
 
-		WeNetProfileManagerServiceForUnitTest.register(vertx);
+		WeNetProfileManagerServiceOnMemory.register(vertx);
 
 	}
 

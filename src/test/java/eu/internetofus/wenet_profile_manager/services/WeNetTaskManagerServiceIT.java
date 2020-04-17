@@ -26,15 +26,11 @@
 
 package eu.internetofus.wenet_profile_manager.services;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.services.WeNetTaskManagerService;
+import eu.internetofus.common.services.WeNetTaskManagerServiceTestCase;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import io.vertx.core.json.JsonObject;
-import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link WeNetTaskManagerService}.
@@ -44,84 +40,6 @@ import io.vertx.junit5.VertxTestContext;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class WeNetTaskManagerServiceIT {
-
-	/**
-	 * Should not create a bad task.
-	 *
-	 * @param service     to check that it can not create the task.
-	 * @param testContext context over the tests.
-	 */
-	@Test
-	public void shouldNotCreateBadTask(WeNetTaskManagerService service, VertxTestContext testContext) {
-
-		service.createTask(new JsonObject().put("undefinedField", "value"), testContext.failing(handler -> {
-			testContext.completeNow();
-
-		}));
-
-	}
-
-	/**
-	 * Should not retrieve undefined task.
-	 *
-	 * @param service     to check that it can not create the task.
-	 * @param testContext context over the tests.
-	 */
-	@Test
-	public void shouldNotRretrieveUndefinedTask(WeNetTaskManagerService service, VertxTestContext testContext) {
-
-		service.retrieveTask("undefined-task-identifier", testContext.failing(handler -> {
-			testContext.completeNow();
-
-		}));
-
-	}
-
-	/**
-	 * Should not delete undefined task.
-	 *
-	 * @param service     to check that it can not create the task.
-	 * @param testContext context over the tests.
-	 */
-	@Test
-	public void shouldNotDeleteUndefinedTask(WeNetTaskManagerService service, VertxTestContext testContext) {
-
-		service.deleteTask("undefined-task-identifier", testContext.failing(handler -> {
-			testContext.completeNow();
-
-		}));
-
-	}
-
-	/**
-	 * Should retrieve created task.
-	 *
-	 * @param service     to check that it can not create the task.
-	 * @param testContext context over the tests.
-	 */
-	@Test
-	public void shouldRetrieveCreatedTask(WeNetTaskManagerService service, VertxTestContext testContext) {
-
-		service.createTask(new JsonObject(), testContext.succeeding(create -> {
-
-			final String id = create.getString("taskId");
-			service.retrieveTask(id, testContext.succeeding(retrieve -> testContext.verify(() -> {
-
-				assertThat(create).isEqualTo(retrieve);
-				service.deleteTask(id, testContext.succeeding(empty -> {
-
-					service.retrieveTask(id, testContext.failing(handler -> {
-						testContext.completeNow();
-
-					}));
-
-				}));
-
-			})));
-
-		}));
-
-	}
+public class WeNetTaskManagerServiceIT extends WeNetTaskManagerServiceTestCase {
 
 }
