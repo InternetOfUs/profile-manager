@@ -448,6 +448,7 @@ public class ProfilesIT {
 						newProfile.id = storedProfile.id;
 						newProfile._creationTs = storedProfile._creationTs;
 						newProfile._lastUpdateTs = updated._lastUpdateTs;
+						newProfile.norms.get(0).id = updated.norms.get(0).id;
 						assertThat(updated).isEqualTo(newProfile);
 						testContext.completeNow();
 

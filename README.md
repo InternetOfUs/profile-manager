@@ -14,12 +14,17 @@ This project will be used to provide the API to storing and maintaining the WeNe
 
 ## Servers
 
-  - **Sever for the latest API** [http://ardid.iiia.csic.es/wenet-profile-manager/latest/](http://ardid.iiia.csic.es/wenet-profile-manager/latest/)
- - **Sever for the API 0.8.0 (Dummy)** [http://ardid.iiia.csic.es/dummy-wenet-profile-manager/](http://ardid.iiia.csic.es/dummy-wenet-profile-manager/)
-  - **Sever for the API 0.9.0** [http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/)
-  - **Sever for the API 0.10.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.10.0/)
-- **Sever for the API 0.11.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.11.0/)
-- **Sever for the API 0.12.0** [http://ardid.iiia.csic.es/wenet-profile-manager/0.12.0/](http://ardid.iiia.csic.es/wenet-profile-manager/0.12.0/)
+  - **[Latest API](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml)**
+    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/latest/)
+    * [Production server](https://wenet.u-hopper.com/profile_manager/)
+  - **API 0.8.0**
+    * [Dummy server](http://ardid.iiia.csic.es/dummy-wenet-profile-manager/)
+  - **API 0.9.0**
+    * [Test server](http://ardid.iiia.csic.es/dev-wenet-profile-manager/)
+  - **API 0.10.0**
+    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/)
+  - **API 0.11.0**
+    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/)
 
 ## Deploy with docker
 

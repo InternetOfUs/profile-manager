@@ -88,7 +88,7 @@ public class TaskTest extends ModelTestCase<Task> {
 		model.goal = new TaskGoalTest().createModelExample(index);
 		model.startTs = TimeManager.now() + 10000 * index;
 		model.endTs = model.startTs + 300000l + index;
-		model.deadlineTs = model.deadlineTs + 200000l + index;
+		model.deadlineTs = model.startTs + 200000l + index;
 		model.norms = new ArrayList<>();
 		model.norms.add(new NormTest().createModelExample(index));
 		model.attributes = new ArrayList<>();

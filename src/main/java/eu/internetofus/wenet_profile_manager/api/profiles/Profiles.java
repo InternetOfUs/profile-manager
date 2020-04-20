@@ -115,14 +115,14 @@ public interface Profiles {
 			required = true,
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The created profile",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "400",
@@ -150,7 +150,7 @@ public interface Profiles {
 			description = "The profile associated to the identifier",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "404",
@@ -181,14 +181,14 @@ public interface Profiles {
 			required = true,
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "200",
 			description = "The updated profile",
 			content = @Content(
 					schema = @Schema(
-							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/571266f9402fb78cf01bf1d9cdb23d2989a7882a/sources/wenet-models.yaml#/components/schemas/WeNetUserProfile"),
+							ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
 					examples = { @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
 	@ApiResponse(
 			responseCode = "400",
