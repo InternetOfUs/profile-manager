@@ -923,7 +923,7 @@ public class WeNetUserProfileTest extends ModelTestCase<WeNetUserProfile> {
 	}
 
 	/**
-	 * Check merge social practices profiles.
+	 * Check merge model norms.
 	 *
 	 * @param vertx       event bus to use.
 	 * @param testContext context to test.
