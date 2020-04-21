@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.atIndex;
 
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,7 +43,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ModelTestCase;
 import eu.internetofus.common.api.models.ValidationsTest;
+import eu.internetofus.common.services.WeNetTaskManagerService;
+import eu.internetofus.common.services.WeNetTaskManagerServiceOnMemory;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 
@@ -55,6 +59,18 @@ import io.vertx.junit5.VertxTestContext;
  */
 @ExtendWith(VertxExtension.class)
 public class TaskTypeTest extends ModelTestCase<TaskType> {
+
+	/**
+	 * Register the necessary services before to test.
+	 *
+	 * @param vertx event bus to register the necessary services.
+	 */
+	@BeforeEach
+	public void registerServices(Vertx vertx) {
+
+		WeNetTaskManagerServiceOnMemory.register(vertx);
+
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -93,6 +109,27 @@ public class TaskTypeTest extends ModelTestCase<TaskType> {
 
 		final TaskType model = this.createModelExample(index);
 		assertIsValid(model, vertx, testContext);
+
+	}
+
+	/**
+	 * Check that the model with id is not valid.
+	 *
+	 * @param vertx       event bus to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#validate(String, Vertx)
+	 */
+	@Test
+	public void shouldNotBeValidWithAnExistingId(Vertx vertx, VertxTestContext testContext) {
+
+		WeNetTaskManagerService.createProxy(vertx).createTaskType(new JsonObject(), testContext.succeeding(created -> {
+
+			final TaskType model = new TaskType();
+			model.id = created.getString("id");
+			assertIsNotValid(model, "id", vertx, testContext);
+
+		}));
 
 	}
 

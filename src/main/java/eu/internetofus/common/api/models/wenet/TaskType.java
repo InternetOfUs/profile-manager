@@ -34,6 +34,7 @@ import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.api.models.Validable;
 import eu.internetofus.common.api.models.ValidationErrorException;
 import eu.internetofus.common.api.models.Validations;
+import eu.internetofus.common.services.WeNetTaskManagerService;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
@@ -113,6 +114,28 @@ public class TaskType extends Model implements Validable, Mergeable<TaskType> {
 		final Promise<Void> promise = Promise.promise();
 		Future<Void> future = promise.future();
 		try {
+
+			this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
+			if (this.id != null) {
+
+				future = future.compose(mapper -> {
+
+					final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+					WeNetTaskManagerService.createProxy(vertx).retrieveTaskType(this.id, profile -> {
+
+						if (profile.failed()) {
+
+							verifyNotRepeatedIdPromise.complete();
+
+						} else {
+
+							verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".id",
+									"The user '" + this.id + "' has already a profile."));
+						}
+					});
+					return verifyNotRepeatedIdPromise.future();
+				});
+			}
 
 			this.name = Validations.validateNullableStringField(codePrefix, "name", 255, this.name);
 			this.description = Validations.validateNullableStringField(codePrefix, "description", 1023, this.description);
