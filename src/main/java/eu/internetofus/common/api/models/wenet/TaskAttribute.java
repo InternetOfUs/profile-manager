@@ -66,7 +66,7 @@ public class TaskAttribute extends Model implements Validable, Mergeable<TaskAtt
 		final Promise<Void> promise = Promise.promise();
 		try {
 
-			this.name = Validations.validateNullableStringField(codePrefix, "name", 255, this.name);
+			this.name = Validations.validateStringField(codePrefix, "name", 255, this.name);
 			promise.complete();
 
 		} catch (final ValidationErrorException validationError) {

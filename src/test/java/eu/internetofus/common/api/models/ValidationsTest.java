@@ -496,11 +496,106 @@ public class ValidationsTest {
 	 *      DateTimeFormatter,String)
 	 */
 	@Test
-	public void shouldNotBeValidABadIsoinstanceValue() {
+	public void shouldNotBeValidABadIsoInstanceValue() {
 
 		assertThat(
 				assertThrows(ValidationErrorException.class, () -> Validations.validateNullableStringDateField("codePrefix",
 						"fieldName", DateTimeFormatter.ISO_INSTANT, "bad date")).getCode()).isEqualTo("codePrefix.fieldName");
+	}
+
+	/**
+	 * Check that a field can not be a null value.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldNullStringFieldNotBeValid() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateStringField("codePrefix", "fieldName", 255, null)).getCode())
+						.isEqualTo("codePrefix.fieldName");
+
+	}
+
+	/**
+	 * Check that a field can not be an empty value.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldEmptyStringFieldNotBeValid() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateStringField("codePrefix", "fieldName", 255, "")).getCode())
+						.isEqualTo("codePrefix.fieldName");
+
+	}
+
+	/**
+	 * Check that a field can not be a white value.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldWhiteStringFieldNotBeValid() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateStringField("codePrefix", "fieldName", 255, "       ")).getCode())
+						.isEqualTo("codePrefix.fieldName");
+
+	}
+
+	/**
+	 * Check that a field can not be a white value.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldStringFieldNotBeValidBecauseIsTooLong() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateStringField("codePrefix", "fieldName", 5, "123456")).getCode())
+						.isEqualTo("codePrefix.fieldName");
+
+	}
+
+	/**
+	 * Check that a field can not be a white value.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldStringFieldNotBeValidBecauseValueNotAllowed() {
+
+		assertThat(assertThrows(ValidationErrorException.class,
+				() -> Validations.validateStringField("codePrefix", "fieldName", 255, "   value    ", "1", "2", "3")).getCode())
+						.isEqualTo("codePrefix.fieldName");
+
+	}
+
+	/**
+	 * Check that a non empty string is valid.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldStringBeValid() {
+
+		assertThatCode(() -> assertThat(Validations.validateStringField("codePrefix", "fieldName", 255, "   value    "))
+				.isEqualTo("value")).doesNotThrowAnyException();
+	}
+
+	/**
+	 * Check that a non empty string is valid.
+	 *
+	 * @see Validations#validateStringField(String, String, int, String, String...)
+	 */
+	@Test
+	public void shouldStringBeValidFomrAsetOfValues() {
+
+		assertThatCode(() -> assertThat(
+				Validations.validateStringField("codePrefix", "fieldName", 255, "   value    ", "val", "lue", "value"))
+						.isEqualTo("value")).doesNotThrowAnyException();
 	}
 
 }

@@ -30,6 +30,7 @@ import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
@@ -134,17 +135,18 @@ public interface Validations {
 	/**
 	 * Verify a string value.
 	 *
-	 * @param codePrefix the prefix of the code to use for the error message.
-	 * @param fieldName  name of the checking field.
-	 * @param maxSize    maximum size of the string.
-	 * @param value      to verify.
+	 * @param codePrefix     the prefix of the code to use for the error message.
+	 * @param fieldName      name of the checking field.
+	 * @param maxSize        maximum size of the string.
+	 * @param value          to verify.
+	 * @param possibleValues values that can have the value.
 	 *
 	 * @return the verified value.
 	 *
 	 * @throws ValidationErrorException If the value is not a valid string.
 	 */
-	static String validateStringField(String codePrefix, String fieldName, int maxSize, String value)
-			throws ValidationErrorException {
+	static String validateStringField(String codePrefix, String fieldName, int maxSize, String value,
+			String... possibleValues) throws ValidationErrorException {
 
 		final String trimedValue = validateNullableStringField(codePrefix, fieldName, maxSize, value);
 		if (trimedValue == null) {
@@ -153,6 +155,17 @@ public interface Validations {
 					"The '" + fieldName + "' can not be 'null' or contains an empty value.");
 
 		}
+		if (possibleValues != null && possibleValues.length > 0) {
+
+			if (!Arrays.stream(possibleValues).anyMatch(element -> trimedValue.equals(element))) {
+
+				throw new ValidationErrorException(codePrefix + "." + fieldName,
+						"'" + trimedValue + "' is not a valid value for the field '" + fieldName + "', because it expects any of '"
+								+ Arrays.toString(possibleValues) + "'.");
+
+			}
+		}
+
 		return trimedValue;
 	}
 
