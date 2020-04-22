@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.atIndex;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,6 +131,23 @@ public class TaskTypeTest extends ModelTestCase<TaskType> {
 			assertIsNotValid(model, "id", vertx, testContext);
 
 		}));
+
+	}
+
+	/**
+	 * Check that the model with an undefined identifier.
+	 *
+	 * @param vertx       event bus to use.
+	 * @param testContext context to test.
+	 *
+	 * @see WeNetUserProfile#validate(String, Vertx)
+	 */
+	@Test
+	public void shouldBeValidWithAnNotExistingId(Vertx vertx, VertxTestContext testContext) {
+
+		final TaskType model = new TaskType();
+		model.id = UUID.randomUUID().toString();
+		assertIsValid(model, vertx, testContext);
 
 	}
 

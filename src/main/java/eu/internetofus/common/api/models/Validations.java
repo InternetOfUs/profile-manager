@@ -429,35 +429,42 @@ public interface Validations {
 			boolean fromInclusive, Long to, boolean toInclusive) throws ValidationErrorException {
 
 		if (value != null) {
+
+			if (value < 0) {
+
+				throw new ValidationErrorException(codePrefix + "." + fieldName,
+						"The '" + value + "' is not valid time stamp because is less than '0'.");
+
+			}
 			long minValue = 0;
 			if (from != null) {
 
 				minValue = from;
 			}
 			if (fromInclusive) {
+
 				minValue--;
 			}
-			minValue = Math.max(0, minValue - 1);
 			long maxValue = Long.MAX_VALUE;
 			if (to != null) {
 
 				maxValue = to;
-				if (!toInclusive) {
+			}
+			if (!toInclusive) {
 
-					maxValue--;
-				}
+				maxValue--;
 			}
 			maxValue = Math.max(minValue + 1, maxValue);
 
-			if (value > minValue) {
+			if (value <= minValue) {
 
 				throw new ValidationErrorException(codePrefix + "." + fieldName,
 						"The time stamp '" + value + "' has to be greater than '" + minValue + "'.");
 
-			} else if (value <= maxValue) {
+			} else if (value > maxValue) {
 
 				throw new ValidationErrorException(codePrefix + "." + fieldName,
-						"The time stamp '" + value + "' has to be less than or equal to '" + maxValue + "'.");
+						"The '" + fieldName + "' time stamp '" + value + "' has to be less than or equal to '" + maxValue + "'.");
 
 			}
 		}

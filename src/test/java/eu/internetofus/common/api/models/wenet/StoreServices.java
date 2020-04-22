@@ -30,6 +30,7 @@ import static eu.internetofus.common.api.models.ValidationsTest.assertIsValid;
 
 import eu.internetofus.common.api.models.Model;
 import eu.internetofus.common.services.WeNetProfileManagerService;
+import eu.internetofus.common.services.WeNetServiceApiService;
 import eu.internetofus.common.services.WeNetTaskManagerService;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -156,6 +157,41 @@ public interface StoreServices {
 			assertIsValid(example, vertx, testContext, () -> storeTask(example, vertx, testContext, storeHandler));
 
 		}));
+
+	}
+
+	/**
+	 * Store an app.
+	 *
+	 * @param app          to store.
+	 * @param vertx        event bus to use.
+	 * @param testContext  test context to use.
+	 * @param storeHandler the component that will manage the stored model.
+	 */
+	static void storeApp(App app, Vertx vertx, VertxTestContext testContext, Handler<AsyncResult<App>> storeHandler) {
+
+		WeNetServiceApiService.createProxy(vertx).createApp(app.toJsonObject(), testContext.succeeding(created -> {
+
+			final App result = Model.fromJsonObject(created, App.class);
+			storeHandler.handle(Future.succeededFuture(result));
+
+		}));
+
+	}
+
+	/**
+	 * Store an app example.
+	 *
+	 * @param index        of the example to store.
+	 * @param vertx        event bus to use.
+	 * @param testContext  test context to use.
+	 * @param storeHandler the component that will manage the stored model.
+	 */
+	static void storeAppExample(int index, Vertx vertx, VertxTestContext testContext,
+			Handler<AsyncResult<App>> storeHandler) {
+
+		final App example = new AppTest().createModelExample(index);
+		storeApp(example, vertx, testContext, storeHandler);
 
 	}
 
