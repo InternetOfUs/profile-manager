@@ -61,7 +61,7 @@ public class HistoricWeNetUserProfile extends Model {
 	 */
 	@Schema(
 			description = "The profile on the period of time.",
-			ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9f1b7c5f64a5bb13c37601f0a7d63f2da399b7ee/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
+			ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
 	public WeNetUserProfile profile;
 
 }
