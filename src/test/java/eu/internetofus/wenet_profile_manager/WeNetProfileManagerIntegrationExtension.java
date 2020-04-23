@@ -102,11 +102,15 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModule
 		final int profileManagerApiPort = Containers.nextFreePort();
 		final int taskManagerApiPort = Containers.nextFreePort();
 		final int interactionProtocolEngineApiPort = Containers.nextFreePort();
-		Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort);
+		final int serviceApiPort = Containers.nextFreePort();
+		Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort,
+				serviceApiPort);
 
-		Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort, network);
+		Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort,
+				interactionProtocolEngineApiPort, serviceApiPort, network);
 		Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort,
-				profileManagerApiPort, taskManagerApiPort, network);
+				profileManagerApiPort, taskManagerApiPort, serviceApiPort, network);
+		Containers.createAndStartServiceApiSimulator(serviceApiPort);
 
 		return Containers.createProfileManagerContainersToStartWith(profileManagerApiPort, taskManagerApiPort,
 				interactionProtocolEngineApiPort, network);
