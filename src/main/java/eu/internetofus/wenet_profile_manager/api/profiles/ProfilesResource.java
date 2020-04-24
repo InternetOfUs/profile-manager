@@ -118,7 +118,7 @@ public class ProfilesResource implements Profiles {
 
 		} else {
 
-			profile.validate("bad_profile", this.vertx).setHandler(validation -> {
+			profile.validate("bad_profile", this.vertx).onComplete(validation -> {
 
 				if (validation.failed()) {
 
@@ -176,7 +176,7 @@ public class ProfilesResource implements Profiles {
 
 				} else {
 
-					target.merge(source, "bad_new_profile", this.vertx).setHandler(merge -> {
+					target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
 
 						if (merge.failed()) {
 
