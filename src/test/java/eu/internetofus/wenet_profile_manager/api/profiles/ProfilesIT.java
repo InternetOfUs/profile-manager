@@ -54,6 +54,7 @@ import eu.internetofus.common.api.models.wenet.Routine;
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationship;
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationshipType;
 import eu.internetofus.common.api.models.wenet.SocialPractice;
+import eu.internetofus.common.api.models.wenet.StoreServices;
 import eu.internetofus.common.api.models.wenet.UserName;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
@@ -104,7 +105,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that return a defined profile.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -112,9 +113,9 @@ public class ProfilesIT {
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+	public void shouldFoundProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfileTest().createModelExample(1), testContext.succeeding(profile -> {
+		StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
 			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id).expect(res -> testContext.verify(() -> {
 
@@ -233,7 +234,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that store an empty profile.
 	 *
-	 * @param repository  that manage the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -241,7 +242,7 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldStoreEmptyProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+	public void shouldStoreEmptyProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile._creationTs = 0;
@@ -256,12 +257,13 @@ public class ProfilesIT {
 			profile._creationTs = stored._creationTs;
 			profile._lastUpdateTs = stored._lastUpdateTs;
 			assertThat(stored).isEqualTo(profile);
-			repository.searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
+			ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
+					testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
-				assertThat(foundProfile).isEqualTo(stored);
-				testContext.completeNow();
+						assertThat(foundProfile).isEqualTo(stored);
+						testContext.completeNow();
 
-			})));
+					})));
 
 		}).sendJson(profile.toJsonObject(), testContext);
 
@@ -270,7 +272,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that store a simple profile.
 	 *
-	 * @param repository  that manage the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -278,7 +280,7 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldStoreSimpleProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+	public void shouldStoreSimpleProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfileTest().createModelExample(1);
 		testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
@@ -300,12 +302,13 @@ public class ProfilesIT {
 			profile.socialPractices.get(0).norms.get(0).id = stored.socialPractices.get(0).norms.get(0).id;
 			profile.personalBehaviors.get(0).id = stored.personalBehaviors.get(0).id;
 			assertThat(stored).isEqualTo(profile);
-			repository.searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
+			ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
+					testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
-				assertThat(foundProfile).isEqualTo(stored);
-				testContext.completeNow();
+						assertThat(foundProfile).isEqualTo(stored);
+						testContext.completeNow();
 
-			})));
+					})));
 
 		}).sendJson(profile.toJsonObject(), testContext);
 
@@ -339,7 +342,7 @@ public class ProfilesIT {
 	 * Verify that return error when try to update with a model that is not a
 	 * profile.
 	 *
-	 * @param repository  that manage the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -347,10 +350,9 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateProfileWithANotProfileObject(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldNotUpdateProfileWithANotProfileObject(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfileTest().createBasicExample(1), testContext.succeeding(profile -> {
+		StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
 			testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
@@ -367,7 +369,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that not update a profile if any change is done.
 	 *
-	 * @param repository  that manage the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -375,10 +377,10 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateProfileBecauseNotChangesHasDone(ProfilesRepository repository, WebClient client,
+	public void shouldNotUpdateProfileBecauseNotChangesHasDone(Vertx vertx, WebClient client,
 			VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfileTest().createBasicExample(1), testContext.succeeding(profile -> {
+		StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
 			testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
@@ -396,7 +398,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that not update a profile because the source is not valid.
 	 *
-	 * @param repository  that manage the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -404,10 +406,9 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateProfileBecauseBadSource(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldNotUpdateProfileBecauseBadSource(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfileTest().createBasicExample(1), testContext.succeeding(profile -> {
+		StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
 			testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
@@ -425,7 +426,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can update a basic profile with another.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -433,28 +434,29 @@ public class ProfilesIT {
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldUpdateBasicProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+	public void shouldUpdateBasicProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfileTest().createBasicExample(1), testContext.succeeding(storedProfile -> {
+		StoreServices.storeProfile(new WeNetUserProfileTest().createBasicExample(1), vertx, testContext,
+				testContext.succeeding(storedProfile -> {
 
-			final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
-			newProfile.id = UUID.randomUUID().toString();
-			testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-					.expect(res -> testContext.verify(() -> {
+					final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
+					newProfile.id = UUID.randomUUID().toString();
+					testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+							.expect(res -> testContext.verify(() -> {
 
-						assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-						final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-						assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-						newProfile.id = storedProfile.id;
-						newProfile._creationTs = storedProfile._creationTs;
-						newProfile._lastUpdateTs = updated._lastUpdateTs;
-						newProfile.norms.get(0).id = updated.norms.get(0).id;
-						assertThat(updated).isEqualTo(newProfile);
-						testContext.completeNow();
+								assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+								final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+								assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+								newProfile.id = storedProfile.id;
+								newProfile._creationTs = storedProfile._creationTs;
+								newProfile._lastUpdateTs = updated._lastUpdateTs;
+								newProfile.norms.get(0).id = updated.norms.get(0).id;
+								assertThat(updated).isEqualTo(newProfile);
+								testContext.completeNow();
 
-					})).sendJson(newProfile.toJsonObject(), testContext);
+							})).sendJson(newProfile.toJsonObject(), testContext);
 
-		}));
+				}));
 
 	}
 
@@ -471,48 +473,41 @@ public class ProfilesIT {
 	@Test
 	public void shouldUpdateProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+		StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
-			assertIsValid(created, vertx, testContext, () -> {
+			final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
+			newProfile.id = UUID.randomUUID().toString();
+			testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+					.expect(res -> testContext.verify(() -> {
 
-				final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
-				repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+						assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+						final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+						assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+						newProfile.id = storedProfile.id;
+						newProfile._creationTs = storedProfile._creationTs;
+						newProfile._lastUpdateTs = updated._lastUpdateTs;
+						newProfile.norms.get(0).id = updated.norms.get(0).id;
+						newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+						newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+						newProfile.relationships = updated.relationships;
+						newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
+						newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
+						newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
+						newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+						newProfile.personalBehaviors.get(0).id = updated.personalBehaviors.get(0).id;
+						assertThat(updated).isEqualTo(newProfile);
 
-					final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
-					newProfile.id = UUID.randomUUID().toString();
-					testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-							.expect(res -> testContext.verify(() -> {
+						ProfilesRepository.createProxy(vertx).searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true,
+								0, 100, testContext.succeeding(page -> {
 
-								assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-								final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-								assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-								newProfile.id = storedProfile.id;
-								newProfile._creationTs = storedProfile._creationTs;
-								newProfile._lastUpdateTs = updated._lastUpdateTs;
-								newProfile.norms.get(0).id = updated.norms.get(0).id;
-								newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
-								newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
-								newProfile.relationships = updated.relationships;
-								newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-								newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
-								newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
-								newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
-								newProfile.personalBehaviors.get(0).id = updated.personalBehaviors.get(0).id;
-								assertThat(updated).isEqualTo(newProfile);
+									assertThat(page.profiles).hasSize(1);
+									assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+									assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+									assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+									testContext.completeNow();
+								}));
 
-								repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100,
-										testContext.succeeding(page -> {
-
-											assertThat(page.profiles).hasSize(1);
-											assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-											assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
-											assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-											testContext.completeNow();
-										}));
-
-							})).sendJson(newProfile.toJsonObject(), testContext);
-				}));
-			});
+					})).sendJson(newProfile.toJsonObject(), testContext);
 		}));
 
 	}
@@ -543,7 +538,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can delete a profile.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -551,9 +546,9 @@ public class ProfilesIT {
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldDeleteProfile(ProfilesRepository repository, WebClient client, VertxTestContext testContext) {
+	public void shouldDeleteProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(storedProfile -> {
 
 			testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + storedProfile.id)
 					.expect(res -> testContext.verify(() -> {
@@ -570,7 +565,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can not obtain a historic page of a non defined profile.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -578,8 +573,7 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, Handler)
 	 */
 	@Test
-	public void shouldNotFoundHistoricOfANUndefinedProfile(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldNotFoundHistoricOfANUndefinedProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
 		testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier" + Profiles.HISTORIC_PATH)
 				.expect(res -> {
@@ -596,7 +590,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can not obtain a historic page of a non defined profile.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -604,10 +598,9 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, Handler)
 	 */
 	@Test
-	public void shouldNotFoundHistoricOfNonUpdateProfile(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldNotFoundHistoricOfNonUpdateProfile(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(storedProfile -> {
 			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
 					.expect(res -> {
 
@@ -625,7 +618,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can obtain a historic profile page.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -633,14 +626,13 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePage(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePage(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryIT.createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
 			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH)
 					.with(queryParam("limit", "100")).expect(res -> {
@@ -658,7 +650,7 @@ public class ProfilesIT {
 	/**
 	 * Verify that can obtain a historic profile page for a range of dates.
 	 *
-	 * @param repository  to access the profiles.
+	 * @param vertx       event bus to use.
 	 * @param client      to connect to the server.
 	 * @param testContext context to test.
 	 *
@@ -666,14 +658,13 @@ public class ProfilesIT {
 	 *      io.vertx.ext.web.api.OperationRequest, Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageForARange(ProfilesRepository repository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageForARange(Vertx vertx, WebClient client, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		ProfilesRepositoryIT.createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
 			testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH)
 					.with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "DESC"),

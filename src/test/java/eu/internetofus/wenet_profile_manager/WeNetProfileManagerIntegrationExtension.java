@@ -26,18 +26,12 @@
 
 package eu.internetofus.wenet_profile_manager;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ParameterContext;
-import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.Network;
 
 import eu.internetofus.common.AbstractMain;
 import eu.internetofus.common.AbstractWeNetModuleIntegrationExtension;
 import eu.internetofus.common.Containers;
-import eu.internetofus.common.WeNetModuleContext;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
-import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 
 /**
  * Extension used to run integration tests over the WeNet profile manager.
@@ -45,51 +39,6 @@ import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
  * @author UDT-IA, IIIA-CSIC
  */
 public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModuleIntegrationExtension {
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
-
-		final Class<?> type = parameterContext.getParameter().getType();
-		return super.supportsParameter(parameterContext, extensionContext) || type == ProfilesRepository.class
-				|| type == TrustsRepository.class;
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
-			throws ParameterResolutionException {
-
-		final Class<?> type = parameterContext.getParameter().getType();
-		if (type == ProfilesRepository.class) {
-
-			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-					.getOrComputeIfAbsent(ProfilesRepository.class.getName(), key -> {
-
-						final WeNetModuleContext context = this.getContext();
-						return ProfilesRepository.createProxy(context.vertx);
-					}, ProfilesRepository.class);
-
-		} else if (type == TrustsRepository.class) {
-
-			return extensionContext.getStore(ExtensionContext.Namespace.create(this.getClass().getName()))
-					.getOrComputeIfAbsent(TrustsRepository.class.getName(), key -> {
-
-						final WeNetModuleContext context = this.getContext();
-						return TrustsRepository.createProxy(context.vertx);
-					}, TrustsRepository.class);
-
-		} else {
-
-			return super.resolveParameter(parameterContext, extensionContext);
-		}
-	}
 
 	/**
 	 * {@inheritDoc}

@@ -41,9 +41,10 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.api.models.ErrorMessage;
 import eu.internetofus.common.api.models.ValidationsTest;
+import eu.internetofus.common.api.models.wenet.StoreServices;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
@@ -62,16 +63,14 @@ public class TrustsIT {
 	/**
 	 * Verify that return error when try to add an event that is not an event.
 	 *
-	 * @param profileRepository service to manage the profiles.
-	 * @param client            to connect to the server.
-	 * @param testContext       context to test.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
 	 *
 	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotAddEventBecauseIsNotAValidEvent(ProfilesRepository profileRepository, WebClient client,
-			VertxTestContext testContext) {
+	public void shouldNotAddEventBecauseIsNotAValidEvent(WebClient client, VertxTestContext testContext) {
 
 		testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
@@ -87,10 +86,10 @@ public class TrustsIT {
 	/**
 	 * Verify that return error when try to add an event with a bad target value.
 	 *
-	 * @param targetId          target that is not valid.
-	 * @param profileRepository service to manage the profiles.
-	 * @param client            to connect to the server.
-	 * @param testContext       context to test.
+	 * @param targetId    target that is not valid.
+	 * @param vertx       event bus to use.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
 	 *
 	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
 	 *      io.vertx.core.Handler)
@@ -98,10 +97,10 @@ public class TrustsIT {
 	@ParameterizedTest(name = "Should not be valid with the target:{0}")
 	@NullAndEmptySource
 	@ValueSource(strings = { " 2345678 ", "bf2743937ed6", ValidationsTest.STRING_256 })
-	public void shouldNotAddEventBecauseTargetIsNotValid(String targetId, ProfilesRepository profileRepository,
-			WebClient client, VertxTestContext testContext) {
+	public void shouldNotAddEventBecauseTargetIsNotValid(String targetId, Vertx vertx, WebClient client,
+			VertxTestContext testContext) {
 
-		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
 
 			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.sourceId = stored.id;
@@ -125,10 +124,10 @@ public class TrustsIT {
 	/**
 	 * Verify that return error when try to add an event with a bad source value.
 	 *
-	 * @param sourceId          source that is not valid.
-	 * @param profileRepository service to manage the profiles.
-	 * @param client            to connect to the server.
-	 * @param testContext       context to test.
+	 * @param sourceId    source that is not valid.
+	 * @param vertx       event bus to use.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
 	 *
 	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
 	 *      io.vertx.core.Handler)
@@ -136,10 +135,10 @@ public class TrustsIT {
 	@ParameterizedTest(name = "Should not be valid with the source:{0}")
 	@NullAndEmptySource
 	@ValueSource(strings = { " 2345678 ", "bf2743937ed6", ValidationsTest.STRING_256 })
-	public void shouldNotAddEventBecauseSourceIsNotValid(String sourceId, ProfilesRepository profileRepository,
-			WebClient client, VertxTestContext testContext) {
+	public void shouldNotAddEventBecauseSourceIsNotValid(String sourceId, Vertx vertx, WebClient client,
+			VertxTestContext testContext) {
 
-		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
 
 			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.targetId = stored.id;
@@ -163,18 +162,18 @@ public class TrustsIT {
 	/**
 	 * Verify that return error when try to add an event over an undefined user.
 	 *
-	 * @param profileRepository service to manage the profiles.
-	 * @param client            to connect to the server.
-	 * @param testContext       context to test.
+	 * @param vertx       event bus to use.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
 	 *
 	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotAddEventBecauseSourceAndTagetAreTheSameUser(ProfilesRepository profileRepository,
-			WebClient client, VertxTestContext testContext) {
+	public void shouldNotAddEventBecauseSourceAndTagetAreTheSameUser(Vertx vertx, WebClient client,
+			VertxTestContext testContext) {
 
-		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
 
 			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 			event.sourceId = stored.id;
@@ -197,10 +196,10 @@ public class TrustsIT {
 	/**
 	 * Verify that return error when try to add an event with a bad value.
 	 *
-	 * @param value             that is not valid.
-	 * @param profileRepository service to manage the profiles.
-	 * @param client            to connect to the server.
-	 * @param testContext       context to test.
+	 * @param value       that is not valid.
+	 * @param vertx       event bus to use.
+	 * @param client      to connect to the server.
+	 * @param testContext context to test.
 	 *
 	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
 	 *      io.vertx.core.Handler)
@@ -208,12 +207,12 @@ public class TrustsIT {
 	@ParameterizedTest(name = "Should not be valid with the value:{0}")
 	@NullSource
 	@ValueSource(doubles = { -0.01, 1.01 })
-	public void shouldNotAddEventBecauseValueIsNotValid(Double value, ProfilesRepository profileRepository,
-			WebClient client, VertxTestContext testContext) {
+	public void shouldNotAddEventBecauseValueIsNotValid(Double value, Vertx vertx, WebClient client,
+			VertxTestContext testContext) {
 
-		profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored1 -> {
+		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored1 -> {
 
-			profileRepository.storeProfile(new WeNetUserProfile(), testContext.succeeding(stored2 -> {
+			StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored2 -> {
 				final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
 				event.sourceId = stored1.id;
 				event.targetId = stored2.id;

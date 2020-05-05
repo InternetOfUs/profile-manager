@@ -46,6 +46,7 @@ import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfi
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
 
@@ -62,15 +63,15 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not found a profile if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotFoundUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotFoundUndefinedProfile(Vertx vertx, VertxTestContext testContext) {
 
-		repository.searchProfile("undefined user identifier", testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).searchProfile("undefined user identifier", testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -79,31 +80,33 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not found a profile object if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotFoundUndefinedProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotFoundUndefinedProfileObject(Vertx vertx, VertxTestContext testContext) {
 
-		repository.searchProfileObject("undefined user identifier", testContext.failing(failed -> {
-			testContext.completeNow();
-		}));
+		ProfilesRepository.createProxy(vertx).searchProfileObject("undefined user identifier",
+				testContext.failing(failed -> {
+					testContext.completeNow();
+				}));
 
 	}
 
 	/**
 	 * Verify that can found a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldFoundProfile(Vertx vertx, VertxTestContext testContext) {
 
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
 
 			repository.searchProfile(storedProfile.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -118,14 +121,15 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldFoundProfileObject(Vertx vertx, VertxTestContext testContext) {
 
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> {
 
 			repository.searchProfileObject(storedProfile.getString("id"),
@@ -141,13 +145,13 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not store a profile that can not be an object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
-	public void shouldNotStoreAProfileThatCanNotBeAnObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotStoreAProfileThatCanNotBeAnObject(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile() {
 
@@ -161,7 +165,7 @@ public class ProfilesRepositoryIT {
 			}
 		};
 		profile.id = "undefined user identifier";
-		repository.storeProfile(profile, testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).storeProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -170,39 +174,40 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can store a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
-	public void shouldStoreProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldStoreProfile(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile._creationTs = 0;
 		profile._lastUpdateTs = 1;
 		final long now = TimeManager.now();
-		repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).storeProfile(profile,
+				testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
-			assertThat(storedProfile).isNotNull();
-			assertThat(storedProfile.id).isNotEmpty();
-			assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-			assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
-			testContext.completeNow();
-		})));
+					assertThat(storedProfile).isNotNull();
+					assertThat(storedProfile.id).isNotEmpty();
+					assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
+					assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+					testContext.completeNow();
+				})));
 
 	}
 
 	/**
 	 * Verify that can store a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
-	public void shouldStoreProfileWithAnId(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldStoreProfileWithAnId(Vertx vertx, VertxTestContext testContext) {
 
 		final String id = UUID.randomUUID().toString();
 		final WeNetUserProfile profile = new WeNetUserProfile();
@@ -210,30 +215,32 @@ public class ProfilesRepositoryIT {
 		profile._creationTs = 0;
 		profile._lastUpdateTs = 1;
 		final long now = TimeManager.now();
-		repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).storeProfile(profile,
+				testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
-			assertThat(storedProfile.id).isEqualTo(id);
-			assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-			assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
-			testContext.completeNow();
-		})));
+					assertThat(storedProfile.id).isEqualTo(id);
+					assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
+					assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+					testContext.completeNow();
+				})));
 
 	}
 
 	/**
 	 * Verify that can store a profile with an id of an stored profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
-	public void shouldNotStoreTwoProfileWithTheSameId(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotStoreTwoProfileWithTheSameId(Vertx vertx, VertxTestContext testContext) {
 
 		final String id = UUID.randomUUID().toString();
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile.id = id;
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
 			repository.storeProfile(profile, testContext.failing(error -> testContext.completeNow()));
@@ -245,42 +252,43 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can store a profile object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
 	 */
 	@Test
-	public void shouldStoreProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldStoreProfileObject(Vertx vertx, VertxTestContext testContext) {
 
 		final long now = TimeManager.now();
-		repository.storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).storeProfile(new JsonObject(),
+				testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
-			assertThat(storedProfile).isNotNull();
-			final String id = storedProfile.getString("id");
-			assertThat(id).isNotEmpty();
-			assertThat(storedProfile.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-			assertThat(storedProfile.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
-			testContext.completeNow();
-		})));
+					assertThat(storedProfile).isNotNull();
+					final String id = storedProfile.getString("id");
+					assertThat(id).isNotEmpty();
+					assertThat(storedProfile.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
+					assertThat(storedProfile.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+					testContext.completeNow();
+				})));
 
 	}
 
 	/**
 	 * Verify that can not update a profile if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(WeNetUserProfile,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotUpdateUndefinedProfile(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile.id = "undefined user identifier";
-		repository.updateProfile(profile, testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -289,16 +297,16 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not update a profile if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(JsonObject, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateUndefinedProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotUpdateUndefinedProfileObject(Vertx vertx, VertxTestContext testContext) {
 
 		final JsonObject profile = new JsonObject().put("id", "undefined user identifier");
-		repository.updateProfile(profile, testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -307,14 +315,14 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not update a profile if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(WeNetUserProfile,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotUpdateAProfileThatCanNotBeAnObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotUpdateAProfileThatCanNotBeAnObject(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile() {
 
@@ -328,7 +336,7 @@ public class ProfilesRepositoryIT {
 			}
 		};
 		profile.id = "undefined user identifier";
-		repository.updateProfile(profile, testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).updateProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -337,17 +345,18 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can update a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(WeNetUserProfile,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldUpdateProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldUpdateProfile(Vertx vertx, VertxTestContext testContext) {
 
 		final WeNetUserProfile profile = new WeNetUserProfile();
 		profile.occupation = "Doctor";
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(profile, testContext.succeeding(stored -> testContext.verify(() -> {
 
 			final long now = TimeManager.now();
@@ -376,14 +385,15 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that update a defined profile object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(JsonObject, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldUpdateProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldUpdateProfileObject(Vertx vertx, VertxTestContext testContext) {
 
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(new JsonObject().put("nationality", "Italian"),
 				testContext.succeeding(stored -> testContext.verify(() -> {
 
@@ -406,15 +416,15 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not delete a profile if it is not defined.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotDeleteUndefinedProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldNotDeleteUndefinedProfile(Vertx vertx, VertxTestContext testContext) {
 
-		repository.deleteProfile("undefined user identifier", testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).deleteProfile("undefined user identifier", testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -423,14 +433,15 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can delete a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(JsonObject, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldDeleteProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldDeleteProfile(Vertx vertx, VertxTestContext testContext) {
 
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeProfile(new JsonObject(), testContext.succeeding(stored -> {
 
 			final String id = stored.getString("id");
@@ -451,15 +462,14 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can not store a profile that can not be an object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#updateProfile(WeNetUserProfile,
 	 *      io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldNotStoreAHistoricProfileThatCanNotBeAnObject(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldNotStoreAHistoricProfileThatCanNotBeAnObject(Vertx vertx, VertxTestContext testContext) {
 
 		final HistoricWeNetUserProfile profile = new HistoricWeNetUserProfile() {
 
@@ -472,7 +482,7 @@ public class ProfilesRepositoryIT {
 				return null;
 			}
 		};
-		repository.storeHistoricProfile(profile, testContext.failing(failed -> {
+		ProfilesRepository.createProxy(vertx).storeHistoricProfile(profile, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
 
@@ -481,39 +491,41 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can store a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldStoreHistoricProfile(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldStoreHistoricProfile(Vertx vertx, VertxTestContext testContext) {
 
 		final HistoricWeNetUserProfile profile = new HistoricWeNetUserProfile();
-		repository.storeHistoricProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).storeHistoricProfile(profile,
+				testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
-			assertThat(storedProfile).isNotNull();
-			testContext.completeNow();
-		})));
+					assertThat(storedProfile).isNotNull();
+					testContext.completeNow();
+				})));
 
 	}
 
 	/**
 	 * Verify that can store a profile object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldStoreHistoricProfileObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldStoreHistoricProfileObject(Vertx vertx, VertxTestContext testContext) {
 
-		repository.storeHistoricProfile(new JsonObject(), testContext.succeeding(storedProfile -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).storeHistoricProfile(new JsonObject(),
+				testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
-			assertThat(storedProfile).isNotNull();
-			testContext.completeNow();
-		})));
+					assertThat(storedProfile).isNotNull();
+					testContext.completeNow();
+				})));
 
 	}
 
@@ -521,18 +533,17 @@ public class ProfilesRepositoryIT {
 	 * Verify that can not found any historic profiles that match to an undefined
 	 * identifier.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchHistoricProfilePage(String, long, long,
 	 *      boolean, int, int, Handler)
 	 */
 	@Test
-	public void shouldNotFoundAnyHistoricProfileFromAnUdefinedId(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldNotFoundAnyHistoricProfileFromAnUdefinedId(Vertx vertx, VertxTestContext testContext) {
 
-		repository.searchHistoricProfilePage("undefined user identifier", 0, Long.MAX_VALUE, false, 0, 100,
-				testContext.succeeding(found -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).searchHistoricProfilePage("undefined user identifier", 0, Long.MAX_VALUE,
+				false, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 					assertThat(found.offset).isEqualTo(0);
 					assertThat(found.total).isEqualTo(0);
 					assertThat(found.profiles).isNull();
@@ -545,18 +556,17 @@ public class ProfilesRepositoryIT {
 	 * Verify that can not found any profile object that match to an undefined
 	 * identifier.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchHistoricProfilePageObject(String, long, long,
 	 *      boolean, int, int, Handler)
 	 */
 	@Test
-	public void shouldNotFoundAnyHistoricProfileObjectFromAnUdefinedId(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldNotFoundAnyHistoricProfileObjectFromAnUdefinedId(Vertx vertx, VertxTestContext testContext) {
 
-		repository.searchHistoricProfilePageObject("undefined user identifier", 0, Long.MAX_VALUE, true, 0, 100,
-				testContext.succeeding(found -> testContext.verify(() -> {
+		ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject("undefined user identifier", 0,
+				Long.MAX_VALUE, true, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 					assertThat(found.getLong("offset")).isEqualTo(0);
 					assertThat(found.getLong("total")).isEqualTo(0);
 					assertThat(found.getJsonArray("profiles")).isNull();
@@ -568,13 +578,13 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePage(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePage(Vertx vertx, VertxTestContext testContext) {
 
 		final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
 		historic.from = 10000;
@@ -582,6 +592,7 @@ public class ProfilesRepositoryIT {
 		historic.profile = new WeNetUserProfileTest().createBasicExample(1);
 		final String id = UUID.randomUUID().toString();
 		historic.profile.id = id;
+		final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
 		repository.storeHistoricProfile(historic, testContext.succeeding(storedProfile -> {
 
 			repository.searchHistoricProfilePage(id, 0, Long.MAX_VALUE, false, 0, 100,
@@ -603,13 +614,13 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Create a profile page.
 	 *
-	 * @param repository      to store the information.
+	 * @param vertx           event bus to use.
 	 * @param userId          identifier of the profile to get the historic.
 	 * @param page            that has to be created.
 	 * @param testContext     context to test.
 	 * @param creationHandler handler to apply when has been created the page.
 	 */
-	public static void createProfilePage(ProfilesRepository repository, String userId, HistoricWeNetUserProfilesPage page,
+	public static void createProfilePage(Vertx vertx, String userId, HistoricWeNetUserProfilesPage page,
 			VertxTestContext testContext, Handler<AsyncResult<HistoricWeNetUserProfilesPage>> creationHandler) {
 
 		final int numProfiles = page.profiles.size();
@@ -624,10 +635,10 @@ public class ProfilesRepositoryIT {
 			historic.from = numProfiles * 10000;
 			historic.to = (1 + numProfiles) * 10000;
 			historic.profile.id = userId;
-			repository.storeHistoricProfile(historic, testContext.succeeding(store -> {
+			ProfilesRepository.createProxy(vertx).storeHistoricProfile(historic, testContext.succeeding(store -> {
 
 				page.profiles.add(store);
-				createProfilePage(repository, userId, page, testContext, creationHandler);
+				createProfilePage(vertx, userId, page, testContext, creationHandler);
 
 			}));
 
@@ -638,21 +649,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObject(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObject(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -668,22 +679,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object from a date.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectWithFrom(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectWithFrom(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 70000, Long.MAX_VALUE, true, 0, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 70000, Long.MAX_VALUE, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -701,21 +711,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object to a date.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectWithTo(ProfilesRepository repository, VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectWithTo(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, 70000, true, 0, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, 70000, true, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -733,23 +743,22 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object on descending order.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchHistoricProfilePageObject(String, long, long,
 	 *      boolean, int, int, Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectOnDescendingOrder(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectOnDescendingOrder(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, false, 0, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, false, 0, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -766,22 +775,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object from an offset.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectWithOffset(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectWithOffset(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 5, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 5, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -799,22 +807,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that return empty page if the offset is greater than the total.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectWithOffsetBiggerThanTotal(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectWithOffsetBiggerThanTotal(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 21, 100,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 21, 100,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,
@@ -832,22 +839,21 @@ public class ProfilesRepositoryIT {
 	/**
 	 * Verify that can found a profile object with a limit.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see ProfilesRepository#searchProfileObject(String, io.vertx.core.Handler)
 	 */
 	@Test
-	public void shouldFoundHistoricProfilePageObjectWithLimit(ProfilesRepository repository,
-			VertxTestContext testContext) {
+	public void shouldFoundHistoricProfilePageObjectWithLimit(Vertx vertx, VertxTestContext testContext) {
 
 		final String userId = UUID.randomUUID().toString();
 		final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
 		page.total = 20;
 		page.profiles = new ArrayList<>();
-		createProfilePage(repository, userId, page, testContext, testContext.succeeding(created -> {
+		createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-			repository.searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 10,
+			ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(userId, 0, Long.MAX_VALUE, true, 0, 10,
 					testContext.succeeding(found -> testContext.verify(() -> {
 
 						final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found,

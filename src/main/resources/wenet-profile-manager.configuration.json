@@ -23,11 +23,13 @@
     "interactionProtocolEngine": {
       "host": "wenet.u-hopper.com",
       "port": 443,
+      "ssl": true,
       "apiPath": "/interaction_protocol_engine"
     },
 		"taskManager": {
 			"host": "wenet.u-hopper.com",
 			"port": 443,
+			"ssl": true,
 			"apiPath": "/task_manager"
 		}
 	}

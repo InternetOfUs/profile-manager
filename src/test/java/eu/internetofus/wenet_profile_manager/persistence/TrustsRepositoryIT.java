@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
 
@@ -48,13 +49,13 @@ public class TrustsRepositoryIT {
 	/**
 	 * Verify that can not store a trust that can not be an object.
 	 *
-	 * @param repository  to test.
+	 * @param vertx       event bus to use.
 	 * @param testContext context that executes the test.
 	 *
 	 * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
 	 */
 	@Test
-	public void shouldNotStoreATrustThatCanNotBeAnObject(TrustsRepository repository, VertxTestContext testContext) {
+	public void shouldNotStoreATrustThatCanNotBeAnObject(Vertx vertx, VertxTestContext testContext) {
 
 		final UserPerformanceRatingEvent trust = new UserPerformanceRatingEvent() {
 
@@ -67,28 +68,9 @@ public class TrustsRepositoryIT {
 				return null;
 			}
 		};
-		repository.storeTrustEvent(trust, testContext.failing(failed -> {
+		TrustsRepository.createProxy(vertx).storeTrustEvent(trust, testContext.failing(failed -> {
 			testContext.completeNow();
 		}));
-
-	}
-
-	/**
-	 * Verify that can store a trust event.
-	 *
-	 * @param repository  to test.
-	 * @param testContext context that executes the test.
-	 *
-	 * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
-	 */
-	@Test
-	public void shouldStoreTrust(TrustsRepository repository, VertxTestContext testContext) {
-
-		// final UserPerformanceRatingEvent trust = new
-		// TrustEventTest().createModelExample(1);
-		// repository.storeTrustEvent(trust, testContext.succeeding(empty -> {
-		testContext.completeNow();
-		// }));
 
 	}
 
