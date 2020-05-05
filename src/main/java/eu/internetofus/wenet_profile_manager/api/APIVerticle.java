@@ -98,6 +98,7 @@ public class APIVerticle extends AbstractAPIVerticle {
 		final JsonObject conf = new JsonObject();
 		conf.put("host", host);
 		conf.put("port", port);
+		conf.put("ssl", false);
 		conf.put("apiPath", "");
 		final WebClient client = WebClient.create(this.vertx);
 		WeNetProfileManagerService.register(this.vertx, client, conf);
