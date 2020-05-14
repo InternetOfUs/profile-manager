@@ -1,38 +1,37 @@
-# wenet-profile-manager
+# WeNet - Profile manager
 
-This project will be used to provide the API to storing and maintaining the WeNet user profile.
+## Introduction
 
- - [License](LICENSE)
- - [Changes](CHANGELOG)
- - [API specification](https://bitbucket.org/wenet/wenet-components-documentation/src/master/sources/wenet-profile_manager-openapi.yaml) ( [Swagger UI](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml) )
- - [API Examples with Postman](https://bitbucket.org/wenet/wenet-components-documentation/raw/b529541301d7dcc1f6b3fbf6afae3a18a18037f7/Postman_collections/wenet-profile_manager_api/wenet-profile-manager.postman_collection.json)
- - [Repository](https://rosell@bitbucket.org/wenet/wenet-profile-manager.git)
- - [Servers](#servers)
- - [Deploy with docker](#deploy-with-docker)
- - [Developing](#developing)
- - [Contact](#contact)
+The profile manager component is the one responsible for storing and maintaining the WeNet user profiles.
 
-## Servers
 
-  - **[Latest API](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml)**
-    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/latest/)
-    * [Production server](https://wenet.u-hopper.com/profile_manager/)
-  - **API 0.8.0**
-    * [Dummy server](http://ardid.iiia.csic.es/dummy-wenet-profile-manager/)
-  - **API 0.9.0**
-    * [Test server](http://ardid.iiia.csic.es/dev-wenet-profile-manager/)
-  - **API 0.10.0**
-    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/)
-  - **API 0.11.0**
-    * [Test server](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/)
+## Setup and configuration
 
-## Deploy with docker
+### Installation
 
-  You must install [docker](https://docs.docker.com/install/) and
-  [docker compose](https://docs.docker.com/compose/install/) to deploy
-  the **wenet-profile-manager**.
+The profile manager component required [Java version 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) or higher.
 
-### Create docker image
+All required java packages will be automatic installed by the compilation tool (`./mvnw clean install`).
+
+### Requirements
+
+The profile manager component requires:
+
+ - [MongoDB](https://docs.mongodb.com/manual/installation/)
+ - [WeNet - Profile manager](https://bitbucket.org/wenet/profile-manager/)
+ - [WeNet - Interaction protocol engine](https://bitbucket.org/wenet/wenet-interaction-protocol-engine/)
+ - [WeNet - Service API](https://bitbucket.org/wenet/wenet-service-api/)
+
+
+### Docker support
+
+To use this feature you must to install the next software.
+
+ - [docker](https://docs.docker.com/install/)
+ - [docker compose](https://docs.docker.com/compose/install/)
+
+
+#### Create docker image
 
 If you want to create an image execute the next command.
 
@@ -49,17 +48,19 @@ You can use the next arguments:
  - **DEFAULT_DB_NAME** to define the default mongo database name. By default is **wenetProfileManagerDB**.
  - **DEFAULT_DB_USER_NAME** to define the default mongo database user name. By default is **wenetProfileManager**.
  - **DEFAULT_DB_USER_PASSWORD** to define the default mongo database user password. By default is **password**.
+ - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/task_manager**.
+ - **DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/interaction_protocol_engine**.
+ - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/service**.
 
 This arguments are used to create a configurations files at **/usr/wenet/profile-manager/etc**.
 So you can mount a volume to this if you want to modify any configuration property at runtime.
 
-
-### Run docker image
+#### Run docker image
 
 To run a the created docker image, run the next command:
 
 ```
-docker run -t -i -p 8080:8080 --name wenet_profile_manager_api wenet/profile-manager
+docker run -t -i -p 8080:8080 --name wenet_TASK_MANAGER_API wenet/profile-manager
 ```
 
 You can modify use the next environment properties to modify some parameters of the server:
@@ -71,70 +72,84 @@ You can modify use the next environment properties to modify some parameters of 
  - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/task_manager**.
+ - **WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/interaction_protocol_engine**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/service**.
 
 Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
-If you want to start also a database and link both you can execute:
-
-```
-docker-compose -f src/main/docker/docker-compose.yml up -d
-```
+If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`):
 
 After that you can interact with the API at **http://localhost:80**. You can modify the listening port
 with the next environment properties:
 
  - **API_PORT** to define the port where the API has to bind to the localhost. By default is **80**.
 
+When the container is ready you can access the logs of the component, following the next steps:
 
-## Developing
-
-To develop you need the next software:
-
- - [JDK 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
- - [docker](https://docs.docker.com/install/)
- - [docker compose](https://docs.docker.com/compose/install/)
- - [Postman](https://www.postman.com/downloads/)
-
-After that you can compile the source, pass the tests and calculate the test coverage with:
-
-```
-./mvnw clean install
-```
-
-This process generate the next files:
-
- - The OpenAPI description of the web services at **target/classes/wenet-profile_manager-openapi.yml**
- - The execution java package at **target/wenet-profile-manager-VERSION.jar** where **VERSION** is the version of the software.
- - The necessary execution dependencies at **target/lib**.
+ - Discover the identifier of the container of the component (`docker container ls`).
+ - Open a shell to the container of the component (`docker exec -it c82f8f4a136c /bin/bash`).
+ - The logs are on the directory **/usr/wenet/profile-manager/var/log**.
 
 
-If you go to the **target** directory you can run the application with:
+## Usage
 
-```
-java -jar wenet-profile-manager-VERSION.jar
-```
+The project use the [Apache maven](https://maven.apache.org/) tool to solve the dependencies,
+generate the Open API documentation, compile the component and run the test.
 
-With the **-h** option you can see the arguments.
+ - Use `./mvnw dependency:list` to show the component dependencies.
+ - Use `./mvnw compile` to compile and generate the Open API documentation (**target/classes/wenet-profile_manager-openapi.yml**).
+ - Use `./mvnw tests` to run the test.
+ - Use `./mvnw site` to generate a HTML page (**target/site/index.html**) with all the reports (test, javadoc, PMD,CPD and coverage).
 
-```
-user@host:~/git/wenet-profile-manager/target$ java -jar wenet-profile-manager-VERSION.jar -h
-usage: wenet-profile-manager
- -c,--confDir <<etc>>         Define a directory where the configuration
-                              files are defined.
- -h,--help                    Show this help message.
- -p,--property <name=value>   Define a directory where the configuration
-                              files are defined.
- -v,--version                 Show the software version.
-```
 
-# Contact
+### Run and configure
 
-## Researcher
+We encourage you to use the docker image of this component instead the next commands, because it is easier to use.
 
- - [Nardine Osman](http://www.iiia.csic.es/~nardine/) ( [IIIA-CSIC](http://www.iiia.csic.es) ) nardine (at) iiia.csic.es
- - [Carles Sierra](http://www.iiia.csic.es/~sierra/) ( [IIIA-CSIC](http://www.iiia.csic.es) ) sierra (at) iiia.csic.es
+If you want to run this component you must to follow the next steps:
 
-## Developers
+ - Compile the project (`./mvnw clean install`)
+ - On the directory where you want to install the component (for example **~/profile-manager**) create the directories **etc** and **lib**.
+ - Copy the compiled jar (`cp target/wenet-profile-manager-VERSION.jar ~/profile-manager/.`).
+ - Copy the jar dependencies (`cp target/lib/* ~/profile-manager/lib/.`).
+ - Copy the default logging configuration (`cp src/main/resources/tinylog.properties ~/profile-manager/etc/log_configuration.properties.`).
+ - Copy the default component configuration (`cp src/main/resources/wenet-profile-manager.configuration.json ~/profile-manager/etc/configuration.conf.`).
+ - Edit the component configuration to fix the URL of the other components and the database connection.
+ - Go to the install directory and execute the command `java -jar -Dtinylog.configuration=etc/log_configuration.properties wenet-profile-manager-VERSION.jar -c etc`.
 
- - Joan Jené ( [UDT-IA, IIIA-CSIC](http://www.iiia.csic.es) ) jjene (at) iiia.csic.es
- - Bruno Rosell i Gui ( [UDT-IA, IIIA-CSIC](http://www.iiia.csic.es) ) rosell (at) iiia.csic.es
+
+## Documentation
+
+The latest APIs documentation is available [here](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml).
+
+
+## Instances
+
+The profile manager has the next available instances:
+
+ - WeNet production profile manager API is available at [https://wenet.u-hopper.com/profile_manager](https://wenet.u-hopper.com/profile_manager).
+ - WeNet development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
+ - The IIIA stable profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
+ - The IIIA development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
+ - The profile manager API 0.11.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
+ - The profile manager API 0.10.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
+ - The profile manager API 0.9.0 (Dummy version) is available at [http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/).
+
+
+## License
+
+This software is under the [MIT license](LICENSE)
+
+
+## Contact
+
+### Researcher
+
+ - [Nardine Osman](http://www.iiia.csic.es/~nardine/) ( [IIIA-CSIC](https://www.iiia.csic.es/~nardine/) ) nardine (at) iiia.csic.es
+ - [Carles Sierra](http://www.iiia.csic.es/~sierra/) ( [IIIA-CSIC](https://www.iiia.csic.es/~sierra/) ) sierra (at) iiia.csic.es
+
+### Developers
+
+ - Joan Jené ( [UDT-IA, IIIA-CSIC](https://www.iiia.csic.es/people/person/?person_id=19) ) jjene (at) iiia.csic.es
+ - Bruno Rosell i Gui ( [UDT-IA, IIIA-CSIC](https://www.iiia.csic.es/people/person/?person_id=27) ) rosell (at) iiia.csic.es

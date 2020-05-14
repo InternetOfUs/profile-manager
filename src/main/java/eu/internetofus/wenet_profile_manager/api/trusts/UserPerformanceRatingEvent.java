@@ -32,7 +32,6 @@ import eu.internetofus.common.api.models.Validations;
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationship;
 import eu.internetofus.common.api.models.wenet.SocialNetworkRelationshipType;
 import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
-import eu.internetofus.common.services.WeNetInteractionProtocolEngineService;
 import eu.internetofus.common.services.WeNetProfileManagerService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.AsyncResult;
@@ -161,7 +160,7 @@ public class UserPerformanceRatingEvent extends Model {
 
 								} else {
 
-									final WeNetUserProfile source = Model.fromJsonObject(searchSource.result(), WeNetUserProfile.class);
+									final WeNetUserProfile source = searchSource.result();
 									if (this.relationship != null && (source.relationships == null || !source.relationships
 											.contains(new SocialNetworkRelationship(this.relationship, this.targetId)))) {
 
@@ -172,22 +171,24 @@ public class UserPerformanceRatingEvent extends Model {
 									} else {
 
 										final Promise<Void> promise = Promise.promise();
-										Future<Void> future = promise.future();
+										final Future<Void> future = promise.future();
 										if (this.communityId != null) {
 
-											future = future.compose(mapper -> {
-
-												final WeNetInteractionProtocolEngineService interactionProtocolEngineService = WeNetInteractionProtocolEngineService
-														.createProxy(vertx);
-												interactionProtocolEngineService.retrieveCommunity(this.communityId, found -> {
-
-													// if( found.failed)
-
-												});
-
-												return Future.succeededFuture();
-
-											});
+											// future = future.compose(mapper -> {
+											//
+											// final WeNetInteractionProtocolEngineService interactionProtocolEngineService
+											// = WeNetInteractionProtocolEngineService
+											// .createProxy(vertx);
+											// interactionProtocolEngineService.retrieveCommunity(this.communityId, found ->
+											// {
+											//
+											// // if( found.failed)
+											//
+											// });
+											//
+											// return Future.succeededFuture();
+											//
+											// });
 
 										}
 

@@ -14,7 +14,7 @@ services:
       wenet_network:
 
   wenet_profile_manager_api:
-    image: wenet/profile-manager:0.12.0
+    image: wenet/profile-manager:latest
     restart: always
     depends_on:
       - wenet_profile_manager_database

@@ -24,63 +24,63 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.services;
+package eu.internetofus.common.api.models;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import java.io.IOException;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.WebClient;
 
 /**
- * The implementation of the {@link WeNetProfileManagerService}.
- *
- *
- * @see WeNetProfileManagerService
+ * The component to deserialize a {@link JsonObject} to any of it possible sub
+ * types.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class WeNetProfileManagerServiceImpl extends Service implements WeNetProfileManagerService {
+public class JsonObjectDeserializer extends StdDeserializer<JsonObject> {
 
 	/**
-	 * Create a new service to interact with the WeNet profile manager.
+	 * Serial version identifier.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The type for the deserializer.
+	 */
+	private final TypeReference<Map<String, Object>> type = new TypeReference<Map<String, Object>>() {
+	};
+
+	/**
+	 * Create a new deserializer
+	 */
+	public JsonObjectDeserializer() {
+
+		this(null);
+	}
+
+	/**
+	 * Create a new deserializer for a type.
 	 *
-	 * @param client to interact with the other modules.
-	 * @param conf   configuration.
+	 * @param type for the deserializer
 	 */
-	public WeNetProfileManagerServiceImpl(WebClient client, JsonObject conf) {
+	public JsonObjectDeserializer(final Class<?> type) {
 
-		super(client, conf);
-
+		super(type);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void createProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> createHandler) {
+	public JsonObject deserialize(final JsonParser jsonParser, final DeserializationContext context) throws IOException {
 
-		this.post("/profiles", profile, createHandler);
+		final ObjectCodec objectCodec = jsonParser.getCodec();
+		final Map<String, Object> value = objectCodec.readValue(jsonParser, this.type);
 
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void retrieveJsonProfile(String id, Handler<AsyncResult<JsonObject>> retrieveHandler) {
-
-		this.get("/profiles/" + id, retrieveHandler);
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void deleteProfile(String id, Handler<AsyncResult<JsonObject>> deleteHandler) {
-
-		this.delete("/profiles/" + id, deleteHandler);
-
+		return new JsonObject(value);
 	}
 
 }
