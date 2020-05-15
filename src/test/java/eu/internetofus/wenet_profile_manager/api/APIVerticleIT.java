@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.api.AbstractAPIVerticleIntegrationTestCase;
+import eu.internetofus.common.vertx.AbstractAPIVerticleIntegrationTestCase;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import io.vertx.core.json.JsonObject;

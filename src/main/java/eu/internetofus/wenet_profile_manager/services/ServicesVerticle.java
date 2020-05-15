@@ -26,9 +26,9 @@
 
 package eu.internetofus.wenet_profile_manager.services;
 
-import eu.internetofus.common.services.AbstractServicesVerticle;
-import eu.internetofus.common.services.WeNetInteractionProtocolEngineService;
-import eu.internetofus.common.services.WeNetTaskManagerService;
+import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngineService;
+import eu.internetofus.common.components.task_manager.WeNetTaskManagerService;
+import eu.internetofus.common.vertx.AbstractServicesVerticle;
 import io.vertx.core.json.JsonObject;
 
 /**

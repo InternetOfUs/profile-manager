@@ -36,8 +36,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import eu.internetofus.common.api.models.ErrorMessage;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
+import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

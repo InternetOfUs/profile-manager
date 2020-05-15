@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
+import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,10 +39,10 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import eu.internetofus.common.api.models.ErrorMessage;
-import eu.internetofus.common.api.models.ValidationsTest;
-import eu.internetofus.common.api.models.wenet.StoreServices;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
+import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.ValidationsTest;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;

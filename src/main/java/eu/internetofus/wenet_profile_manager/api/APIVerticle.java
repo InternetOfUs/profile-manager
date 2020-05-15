@@ -26,8 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
-import eu.internetofus.common.api.AbstractAPIVerticle;
-import eu.internetofus.common.services.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.vertx.AbstractAPIVerticle;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
 import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
 import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;

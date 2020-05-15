@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
-import eu.internetofus.common.api.AbstractAPIVerticleTestCase;
+import eu.internetofus.common.vertx.AbstractAPIVerticleTestCase;
 
 /**
  * Test the {@link APIVerticle}.

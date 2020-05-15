@@ -28,8 +28,8 @@ package eu.internetofus.wenet_profile_manager;
 import org.tinylog.Level;
 import org.tinylog.provider.InternalLogger;
 
-import eu.internetofus.common.AbstractMain;
-import eu.internetofus.common.AbstractMainVerticle;
+import eu.internetofus.common.vertx.AbstractMain;
+import eu.internetofus.common.vertx.AbstractMainVerticle;
 
 /**
  * Start the WeNet profile manager.

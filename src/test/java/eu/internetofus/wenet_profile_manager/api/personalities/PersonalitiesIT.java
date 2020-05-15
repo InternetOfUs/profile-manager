@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.personalities;
 
-import static eu.internetofus.common.api.HttpResponses.assertThatBodyIs;
+import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.requestHeader;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import eu.internetofus.common.api.models.ErrorMessage;
+import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;

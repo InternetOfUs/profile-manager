@@ -26,13 +26,13 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import eu.internetofus.common.api.models.Model;
-import eu.internetofus.common.api.models.ValidationErrorException;
-import eu.internetofus.common.api.models.Validations;
-import eu.internetofus.common.api.models.wenet.SocialNetworkRelationship;
-import eu.internetofus.common.api.models.wenet.SocialNetworkRelationshipType;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
-import eu.internetofus.common.services.WeNetProfileManagerService;
+import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ValidationErrorException;
+import eu.internetofus.common.components.Validations;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;

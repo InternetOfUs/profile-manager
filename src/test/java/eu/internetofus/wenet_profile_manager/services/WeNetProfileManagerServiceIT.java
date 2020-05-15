@@ -28,14 +28,14 @@ package eu.internetofus.wenet_profile_manager.services;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.services.WeNetProfileManagerServiceTestCase;
-import eu.internetofus.common.services.WeNetTaskManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManagerServiceTestCase;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 
 /**
- * Test the {@link WeNetTaskManagerService}.
+ * Test the {@link WeNetProfileManagerService}.
  *
- * @see WeNetTaskManagerService
+ * @see WeNetProfileManagerService
  *
  * @author UDT-IA, IIIA-CSIC
  */

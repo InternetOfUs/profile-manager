@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.persitences.Repository;
+import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

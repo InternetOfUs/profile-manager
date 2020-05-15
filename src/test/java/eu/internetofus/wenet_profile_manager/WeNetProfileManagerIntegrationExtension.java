@@ -29,9 +29,9 @@ package eu.internetofus.wenet_profile_manager;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.Network;
 
-import eu.internetofus.common.AbstractMain;
-import eu.internetofus.common.AbstractWeNetModuleIntegrationExtension;
 import eu.internetofus.common.Containers;
+import eu.internetofus.common.vertx.AbstractMain;
+import eu.internetofus.common.vertx.AbstractWeNetModuleIntegrationExtension;
 
 /**
  * Extension used to run integration tests over the WeNet profile manager.

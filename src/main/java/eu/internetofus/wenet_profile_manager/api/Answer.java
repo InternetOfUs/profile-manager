@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
-import eu.internetofus.common.api.models.Model;
+import eu.internetofus.common.components.Model;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**

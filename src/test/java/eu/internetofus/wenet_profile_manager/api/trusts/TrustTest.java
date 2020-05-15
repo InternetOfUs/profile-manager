@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import eu.internetofus.common.api.models.ModelTestCase;
+import eu.internetofus.common.components.ModelTestCase;
 
 /**
  * Test the {@link Trust}

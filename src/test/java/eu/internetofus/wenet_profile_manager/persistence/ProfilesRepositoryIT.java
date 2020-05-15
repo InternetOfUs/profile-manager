@@ -36,9 +36,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.api.models.Model;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfile;
-import eu.internetofus.common.api.models.wenet.WeNetUserProfileTest;
+import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;

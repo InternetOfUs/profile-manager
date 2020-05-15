@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api;
 
 import java.util.ArrayList;
 
-import eu.internetofus.common.api.models.ModelTestCase;
+import eu.internetofus.common.components.ModelTestCase;
 
 /**
  * Test the {@link QuestionnaireAnswers}.

@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.persitences.AbstractPersistenceVerticleTestCase;
+import eu.internetofus.common.vertx.AbstractPersistenceVerticleTestCase;
 
 /**
  * Test the {@link PersistenceVerticle}.
