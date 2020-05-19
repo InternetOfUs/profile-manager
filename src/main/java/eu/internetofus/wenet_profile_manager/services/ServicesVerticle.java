@@ -46,13 +46,10 @@ public class ServicesVerticle extends AbstractServicesVerticle {
 	protected void registerServices(JsonObject serviceConf) throws Exception {
 
 		// register the service to interact with the task manager
-		final JsonObject taskManagerConf = serviceConf.getJsonObject("taskManager", new JsonObject());
-		WeNetTaskManagerService.register(this.vertx, this.client, taskManagerConf);
+		WeNetTaskManagerService.register(this.vertx, this.client, serviceConf);
 
 		// register the service to interact with the interaction protocol engine
-		final JsonObject interactionProtocolEngineConf = serviceConf.getJsonObject("interactionProtocolEngine",
-				new JsonObject());
-		WeNetInteractionProtocolEngineService.register(this.vertx, this.client, interactionProtocolEngineConf);
+		WeNetInteractionProtocolEngineService.register(this.vertx, this.client, serviceConf);
 
 	}
 

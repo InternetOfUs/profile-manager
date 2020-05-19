@@ -3,6 +3,7 @@
 ## Introduction
 
 The profile manager component is the one responsible for storing and maintaining the WeNet user profiles.
+The profile is formed by a set of attributes that are filled in by the other components of the platform.
 
 
 ## Setup and configuration
