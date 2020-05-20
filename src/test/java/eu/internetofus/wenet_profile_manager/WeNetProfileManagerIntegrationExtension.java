@@ -30,8 +30,10 @@ import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.Network;
 
 import eu.internetofus.common.Containers;
+import eu.internetofus.common.components.service.ServiceApiSimulatorService;
 import eu.internetofus.common.vertx.AbstractMain;
 import eu.internetofus.common.vertx.AbstractWeNetModuleIntegrationExtension;
+import eu.internetofus.common.vertx.WeNetModuleContext;
 
 /**
  * Extension used to run integration tests over the WeNet profile manager.
@@ -39,6 +41,15 @@ import eu.internetofus.common.vertx.AbstractWeNetModuleIntegrationExtension;
  * @author UDT-IA, IIIA-CSIC
  */
 public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModuleIntegrationExtension {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void afterStarted(WeNetModuleContext context) {
+
+		ServiceApiSimulatorService.register(context);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +73,7 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModule
 		Containers.createAndStartServiceApiSimulator(serviceApiPort);
 
 		return Containers.createProfileManagerContainersToStartWith(profileManagerApiPort, taskManagerApiPort,
-				interactionProtocolEngineApiPort, network);
+				interactionProtocolEngineApiPort, serviceApiPort, network);
 	}
 
 	/**
