@@ -163,7 +163,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 			order = -1;
 		}
 		options.getSort().put("from", order);
-		this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", searchHandler);
+		this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", null, searchHandler);
 
 	}
 
