@@ -27,30 +27,33 @@
 package eu.internetofus.wenet_profile_manager.services;
 
 import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngineService;
+import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderService;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerService;
 import eu.internetofus.common.vertx.AbstractServicesVerticle;
 import io.vertx.core.json.JsonObject;
 
 /**
- * The verticle that provide the services to interact with the other WeNet
- * modules.
+ * The verticle that provide the services to interact with the other WeNet modules.
  *
  * @author UDT-IA, IIIA-CSIC
  */
 public class ServicesVerticle extends AbstractServicesVerticle {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void registerServices(JsonObject serviceConf) throws Exception {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void registerServices(final JsonObject serviceConf) throws Exception {
 
-		// register the service to interact with the task manager
-		WeNetTaskManagerService.register(this.vertx, this.client, serviceConf);
+    // register the service to interact with the task manager
+    WeNetTaskManagerService.register(this.vertx, this.client, serviceConf);
 
-		// register the service to interact with the interaction protocol engine
-		WeNetInteractionProtocolEngineService.register(this.vertx, this.client, serviceConf);
+    // register the service to interact with the interaction protocol engine
+    WeNetInteractionProtocolEngineService.register(this.vertx, this.client, serviceConf);
 
-	}
+    // register the service to interact with the social context builder
+    WeNetSocialContextBuilderService.register(this.vertx, this.client, serviceConf);
+
+  }
 
 }
