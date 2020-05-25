@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager;
 
 import org.testcontainers.Testcontainers;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
 import eu.internetofus.common.Containers;
@@ -42,49 +43,53 @@ import eu.internetofus.common.vertx.WeNetModuleContext;
  */
 public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModuleIntegrationExtension {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void afterStarted(WeNetModuleContext context) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void afterStarted(final WeNetModuleContext context) {
 
-		ServiceApiSimulatorService.register(context);
-	}
+    ServiceApiSimulatorService.register(context);
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String[] createMainStartArguments() {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String[] createMainStartArguments() {
 
-		final Network network = Network.newNetwork();
+    final Network network = Network.newNetwork();
 
-		final int profileManagerApiPort = Containers.nextFreePort();
-		final int taskManagerApiPort = Containers.nextFreePort();
-		final int interactionProtocolEngineApiPort = Containers.nextFreePort();
-		final int serviceApiPort = Containers.nextFreePort();
-		Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort,
-				serviceApiPort);
+    final int profileManagerApiPort = Containers.nextFreePort();
+    final int taskManagerApiPort = Containers.nextFreePort();
+    final int interactionProtocolEngineApiPort = Containers.nextFreePort();
+    final int serviceApiPort = Containers.nextFreePort();
+    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort);
 
-		Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort,
-				interactionProtocolEngineApiPort, serviceApiPort, network);
-		Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort,
-				profileManagerApiPort, taskManagerApiPort, serviceApiPort, network);
-		Containers.createAndStartServiceApiSimulator(serviceApiPort);
+    Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, network);
+    Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort, profileManagerApiPort, taskManagerApiPort, serviceApiPort, network);
+    Containers.createAndStartServiceApiSimulator(serviceApiPort);
 
-		return Containers.createProfileManagerContainersToStartWith(profileManagerApiPort, taskManagerApiPort,
-				interactionProtocolEngineApiPort, serviceApiPort, network);
-	}
+    final GenericContainer<?> persistenceContainer = Containers.createMongoContainerFor(Containers.WENET_PROFILE_MANAGER_DB_NAME, network);
+    persistenceContainer.start();
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @see Main
-	 */
-	@Override
-	protected AbstractMain createMain() {
+    return new String[] { "-papi.port=" + profileManagerApiPort, "-ppersistence.host=localhost", "-ppersistence.port=" + persistenceContainer.getMappedPort(Containers.EXPORT_MONGODB_PORT),
+        "-pwenetComponents.interactionProtocolEngine=\"http://localhost:" + interactionProtocolEngineApiPort + "\"", "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"",
+        "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"" ,
+        "-pwenetComponents.socialContextBuilder=\"http://localhost:" + this.getMoclkedServer().getLocalPort() + "/social_context_builder\""
+    };
 
-		return new Main();
-	}
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * @see Main
+   */
+  @Override
+  protected AbstractMain createMain() {
+
+    return new Main();
+  }
 
 }

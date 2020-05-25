@@ -20,6 +20,7 @@ ARG DEFAULT_DB_USER_NAME=wenetProfileManager
 ARG DEFAULT_DB_USER_PASSWORD=password
 ARG DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API="https://wenet.u-hopper.com/interaction_protocol_engine"
 ARG DEFAULT_WENET_TASK_MANAGER_API="https://wenet.u-hopper.com/task_manager"
+ARG DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API="https://wenet.u-hopper.com/social_context_builder"
 ENV API_HOST=${DEFAULT_API_HOST}
 ENV API_PORT=${DEFAULT_API_PORT}
 ENV DB_HOST=${DEFAULT_DB_HOST}
@@ -29,6 +30,7 @@ ENV DB_USER_NAME=${DEFAULT_DB_USER_NAME}
 ENV DB_USER_PASSWORD=${DEFAULT_DB_USER_PASSWORD}
 ENV WENET_INTERACTION_PROTOCOL_ENGINE_API=${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API}
 ENV WENET_TASK_MANAGER_API=${DEFAULT_WENET_TASK_MANAGER_API}
+ENV WENET_SOCIAL_CONTEXT_BUILDER_API=${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}
 ENV RUN_ARGS=""
 
 # Create running dierectories
@@ -48,6 +50,9 @@ RUN echo "{\"wenetComponents\":{\"interactionProtocolEngine\":\"${DEFAULT_WENET_
 # Create configuration for task manager component
 RUN echo "{\"wenetComponents\":{\"taskManager\":\"${DEFAULT_WENET_TASK_MANAGER_API}\"}}" > /usr/wenet/profile-manager/etc/taskManager.json
 
+# Create configuration for social context builderr component
+RUN echo "{\"wenetComponents\":{\"socialContextBuilder\":\"${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}\"}}" > /usr/wenet/profile-manager/etc/socialContextBuilder.json
+
 WORKDIR /usr/wenet/profile-manager
 COPY --from=build /build/target/wenet-profile-manager.jar /usr/wenet/profile-manager/wenet-profile-manager.jar
 COPY --from=build /build/target/lib/ /usr/wenet/profile-manager/lib/
@@ -63,4 +68,5 @@ CMD /wait && java -jar wenet-profile-manager.jar -c etc \
   -ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD}\
   -pwenetComponents.interactionProtocolEngine=${WENET_INTERACTION_PROTOCOL_ENGINE_API}\
   -pwenetComponents.taskManager=${WENET_TASK_MANAGER_API}\
+  -pwenetComponents.socialContextBuilder=${WENET_SOCIAL_CONTEXT_BUILDER_API}\
   ${RUN_ARGS}

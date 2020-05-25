@@ -26,13 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.social_context_builder.UserRelation;
+import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderService;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
@@ -49,249 +55,291 @@ import io.vertx.ext.web.api.OperationResponse;
  */
 public class ProfilesResource implements Profiles {
 
-	/**
-	 * The event bus that is using.
-	 */
-	protected Vertx vertx;
+  /**
+   * The event bus that is using.
+   */
+  protected Vertx vertx;
 
-	/**
-	 * The repository to manage the profiles.
-	 */
-	protected ProfilesRepository repository;
+  /**
+   * The repository to manage the profiles.
+   */
+  protected ProfilesRepository repository;
 
-	/**
-	 * Create an empty resource. This is only used for unit tests.
-	 */
-	protected ProfilesResource() {
+  /**
+   * Create an empty resource. This is only used for unit tests.
+   */
+  protected ProfilesResource() {
 
-	}
+  }
 
-	/**
-	 * Create a new instance to provide the services of the {@link Profiles}.
-	 *
-	 * @param vertx with the event bus to use.
-	 */
-	public ProfilesResource(Vertx vertx) {
+  /**
+   * Create a new instance to provide the services of the {@link Profiles}.
+   *
+   * @param vertx with the event bus to use.
+   */
+  public ProfilesResource(final Vertx vertx) {
 
-		this.vertx = vertx;
-		this.repository = ProfilesRepository.createProxy(vertx);
+    this.vertx = vertx;
+    this.repository = ProfilesRepository.createProxy(vertx);
 
-	}
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void retrieveProfile(String userId, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		this.repository.searchProfileObject(userId, search -> {
+    this.repository.searchProfileObject(userId, search -> {
 
-			final JsonObject profile = search.result();
-			if (profile == null) {
+      final JsonObject profile = search.result();
+      if (profile == null) {
 
-				Logger.debug(search.cause(), "Not found profile for the user {}", userId);
-				OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile",
-						"Does not exist a profile associated for the user '" + userId + "'.");
+        Logger.debug(search.cause(), "Not found profile for the user {}", userId);
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile", "Does not exist a profile associated for the user '" + userId + "'.");
 
-			} else {
+      } else {
 
-				OperationReponseHandlers.responseOk(resultHandler, profile);
+        OperationReponseHandlers.responseOk(resultHandler, profile);
 
-			}
-		});
-	}
+      }
+    });
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void createProfile(JsonObject body, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void createProfile(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		final WeNetUserProfile profile = Model.fromJsonObject(body, WeNetUserProfile.class);
-		if (profile == null) {
+    final WeNetUserProfile profile = Model.fromJsonObject(body, WeNetUserProfile.class);
+    if (profile == null) {
 
-			Logger.debug("The {} is not a valid WeNetUserProfile.", body);
-			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile",
-					"The profile is not right.");
+      Logger.debug("The {} is not a valid WeNetUserProfile.", body);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile", "The profile is not right.");
 
-		} else {
+    } else {
 
-			profile.validate("bad_profile", this.vertx).onComplete(validation -> {
+      profile.validate("bad_profile", this.vertx).onComplete(validation -> {
 
-				if (validation.failed()) {
+        if (validation.failed()) {
 
-					final Throwable cause = validation.cause();
-					Logger.debug(cause, "The {} is not valid.", profile);
-					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+          final Throwable cause = validation.cause();
+          Logger.debug(cause, "The {} is not valid.", profile);
+          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-				} else {
+        } else {
 
-					this.repository.storeProfile(profile, stored -> {
+          this.repository.storeProfile(profile, stored -> {
 
-						if (stored.failed()) {
+            if (stored.failed()) {
 
-							final Throwable cause = validation.cause();
-							Logger.debug(cause, "Cannot store {}.", profile);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+              final Throwable cause = validation.cause();
+              Logger.debug(cause, "Cannot store {}.", profile);
+              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-						} else {
+            } else {
 
-							OperationReponseHandlers.responseOk(resultHandler, stored.result());
-						}
-					});
-				}
+              final WeNetUserProfile storedProfile = stored.result();
+              OperationReponseHandlers.responseOk(resultHandler, storedProfile);
 
-			});
-		}
+              // Update the social context of the created user
+              WeNetSocialContextBuilderService.createProxy(this.vertx).retrieveSocialRelations(storedProfile.id, retrieve -> {
 
-	}
+                if (retrieve.failed()) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void updateProfile(String userId, JsonObject body, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+                  Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", storedProfile);
 
-		final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
-		if (source == null) {
+                } else {
 
-			Logger.debug("The {} is not a valid WeNetUserProfile to update.", body);
-			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_update",
-					"The profile to update is not right.");
+                  final List<UserRelation> relations = retrieve.result();
+                  if (relations != null && !relations.isEmpty()) {
 
-		} else {
+                    storedProfile.relationships = new ArrayList<>();
+                    for (final UserRelation relation : relations) {
 
-			this.repository.searchProfile(userId, search -> {
+                      final SocialNetworkRelationship relationship = relation.toSocialNetworkRelationship();
+                      storedProfile.relationships.add(relationship);
 
-				final WeNetUserProfile target = search.result();
-				if (target == null) {
+                    }
 
-					Logger.debug(search.cause(), "Not found profile {} to update", userId);
-					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND,
-							"not_found_profile_to_update",
-							"You can not update the profile of the user '" + userId + "', because it does not exist.");
+                    storedProfile.validate("bad_profile", this.vertx).onComplete(validations -> {
 
-				} else {
+                      if (validation.failed()) {
 
-					target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
+                        Logger.trace(validation.cause(), "Bad found social relations of {}.", storedProfile);
+                      }
+                      this.repository.updateProfile(storedProfile, update -> {
 
-						if (merge.failed()) {
+                        if (update.failed()) {
 
-							final Throwable cause = merge.cause();
-							Logger.debug(cause, "Cannot update {} with {}.", target, source);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+                          Logger.debug(update.cause(), "Cannot update the new social relations of {}.", storedProfile);
 
-						} else {
+                        } else {
 
-							final WeNetUserProfile merged = merge.result();
-							if (merged.equals(target)) {
+                          final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+                          historic.from = storedProfile._lastUpdateTs;
+                          historic.to = TimeManager.now();
+                          historic.profile = storedProfile;
+                          this.repository.storeHistoricProfile(historic, store -> {
 
-								OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
-										"profile_to_update_equal_to_original", "You can not update the profile of the user '" + userId
-												+ "', because the new values is equals to the current one.");
+                            if (store.failed()) {
 
-							} else {
-								this.repository.updateProfile(merged, update -> {
+                              Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
+                            }
 
-									if (update.failed()) {
+                          });
+                        }
+                      });
+                    });
+                  }
+                }
+              });
+            }
+          });
+        }
 
-										final Throwable cause = update.cause();
-										Logger.debug(cause, "Cannot update {}.", target);
-										OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+      });
+    }
 
-									} else {
+  }
 
-										final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
-										historic.from = target._lastUpdateTs;
-										historic.to = TimeManager.now();
-										historic.profile = target;
-										this.repository.storeHistoricProfile(historic, store -> {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-											if (store.failed()) {
+    final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
+    if (source == null) {
 
-												Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
-											}
-											OperationReponseHandlers.responseOk(resultHandler, merged);
+      Logger.debug("The {} is not a valid WeNetUserProfile to update.", body);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_update", "The profile to update is not right.");
 
-										});
+    } else {
 
-									}
+      this.repository.searchProfile(userId, search -> {
 
-								});
-							}
-						}
-					}
+        final WeNetUserProfile target = search.result();
+        if (target == null) {
 
-					);
+          Logger.debug(search.cause(), "Not found profile {} to update", userId);
+          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile_to_update", "You can not update the profile of the user '" + userId + "', because it does not exist.");
 
-				}
-			});
-		}
+        } else {
 
-	}
+          target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void deleteProfile(String userId, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+            if (merge.failed()) {
 
-		this.repository.deleteProfile(userId, delete -> {
+              final Throwable cause = merge.cause();
+              Logger.debug(cause, "Cannot update {} with {}.", target, source);
+              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-			if (delete.failed()) {
+            } else {
 
-				final Throwable cause = delete.cause();
-				Logger.debug(cause, "Cannot delete the profile of the user {}.", userId);
-				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+              final WeNetUserProfile merged = merge.result();
+              if (merged.equals(target)) {
 
-			} else {
+                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "profile_to_update_equal_to_original",
+                    "You can not update the profile of the user '" + userId + "', because the new values is equals to the current one.");
 
-				OperationReponseHandlers.responseOk(resultHandler);
-			}
+              } else {
+                this.repository.updateProfile(merged, update -> {
 
-		});
+                  if (update.failed()) {
 
-	}
+                    final Throwable cause = update.cause();
+                    Logger.debug(cause, "Cannot update {}.", target);
+                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void retrieveProfileHistoricPage(String userId, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+                  } else {
 
-		final JsonObject params = context.getParams().getJsonObject("query", new JsonObject());
-		final long from = params.getLong("from", 0l);
-		final long to = params.getLong("to", Long.MAX_VALUE);
-		final boolean ascending = "ASC".equals(params.getString("order", "ASC"));
-		final int offset = params.getInteger("offset", 0);
-		final int limit = params.getInteger("limit", 10);
-		this.repository.searchHistoricProfilePage(userId, from, to, ascending, offset, limit, search -> {
+                    final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+                    historic.from = target._lastUpdateTs;
+                    historic.to = TimeManager.now();
+                    historic.profile = target;
+                    this.repository.storeHistoricProfile(historic, store -> {
 
-			if (search.failed()) {
+                      if (store.failed()) {
 
-				final Throwable cause = search.cause();
-				Logger.debug(cause, "Cannot found historic profile for the user {}.", userId);
-				OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+                        Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
+                      }
+                      OperationReponseHandlers.responseOk(resultHandler, merged);
 
-			} else {
-				final HistoricWeNetUserProfilesPage page = search.result();
-				if (page.total == 0l) {
+                    });
 
-					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found",
-							"Not found any historic profile that match to the specific parameters.");
+                  }
 
-				} else {
-					OperationReponseHandlers.responseOk(resultHandler, page);
+                });
+              }
+            }
+          }
 
-				}
-			}
-		});
+              );
 
-	}
+        }
+      });
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.repository.deleteProfile(userId, delete -> {
+
+      if (delete.failed()) {
+
+        final Throwable cause = delete.cause();
+        Logger.debug(cause, "Cannot delete the profile of the user {}.", userId);
+        OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+
+      } else {
+
+        OperationReponseHandlers.responseOk(resultHandler);
+      }
+
+    });
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveProfileHistoricPage(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final JsonObject params = context.getParams().getJsonObject("query", new JsonObject());
+    final long from = params.getLong("from", 0l);
+    final long to = params.getLong("to", Long.MAX_VALUE);
+    final boolean ascending = "ASC".equals(params.getString("order", "ASC"));
+    final int offset = params.getInteger("offset", 0);
+    final int limit = params.getInteger("limit", 10);
+    this.repository.searchHistoricProfilePage(userId, from, to, ascending, offset, limit, search -> {
+
+      if (search.failed()) {
+
+        final Throwable cause = search.cause();
+        Logger.debug(cause, "Cannot found historic profile for the user {}.", userId);
+        OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+
+      } else {
+        final HistoricWeNetUserProfilesPage page = search.result();
+        if (page.total == 0l) {
+
+          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found", "Not found any historic profile that match to the specific parameters.");
+
+        } else {
+          OperationReponseHandlers.responseOk(resultHandler, page);
+
+        }
+      }
+    });
+
+  }
 
 }
