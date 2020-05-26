@@ -26,18 +26,13 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.social_context_builder.UserRelation;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
@@ -144,7 +139,7 @@ public class ProfilesResource implements Profiles {
               OperationReponseHandlers.responseOk(resultHandler, storedProfile);
 
               // Update the social context of the created user
-              WeNetSocialContextBuilder.createProxy(this.vertx).retrieveSocialRelations(storedProfile.id, retrieve -> {
+              WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(storedProfile.id, retrieve -> {
 
                 if (retrieve.failed()) {
 
@@ -152,47 +147,7 @@ public class ProfilesResource implements Profiles {
 
                 } else {
 
-                  final List<UserRelation> relations = retrieve.result();
-                  if (relations != null && !relations.isEmpty()) {
-
-                    storedProfile.relationships = new ArrayList<>();
-                    for (final UserRelation relation : relations) {
-
-                      final SocialNetworkRelationship relationship = relation.toSocialNetworkRelationship();
-                      storedProfile.relationships.add(relationship);
-
-                    }
-
-                    storedProfile.validate("bad_profile", this.vertx).onComplete(validations -> {
-
-                      if (validation.failed()) {
-
-                        Logger.trace(validation.cause(), "Bad found social relations of {}.", storedProfile);
-                      }
-                      this.repository.updateProfile(storedProfile, update -> {
-
-                        if (update.failed()) {
-
-                          Logger.debug(update.cause(), "Cannot update the new social relations of {}.", storedProfile);
-
-                        } else {
-
-                          final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
-                          historic.from = storedProfile._lastUpdateTs;
-                          historic.to = TimeManager.now();
-                          historic.profile = storedProfile;
-                          this.repository.storeHistoricProfile(historic, store -> {
-
-                            if (store.failed()) {
-
-                              Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
-                            }
-
-                          });
-                        }
-                      });
-                    });
-                  }
+                  Logger.trace("Obtained for the user {} the next social relations {}.", () -> storedProfile.id, () -> retrieve.result());
                 }
               });
             }
