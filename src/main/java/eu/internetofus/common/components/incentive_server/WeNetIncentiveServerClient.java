@@ -24,35 +24,30 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.services;
+package eu.internetofus.common.components.incentive_server;
 
-import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngineService;
-import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
-import eu.internetofus.common.components.task_manager.WeNetTaskManagerService;
-import eu.internetofus.common.vertx.AbstractServicesVerticle;
+import eu.internetofus.common.vertx.ComponentClient;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.WebClient;
 
 /**
- * The verticle that provide the services to interact with the other WeNet modules.
+ * The client to interact with the {@link WeNetIncentiveServer}.
+ *
+ * @see WeNetIncentiveServer#register(io.vertx.core.Vertx, WebClient, io.vertx.core.json.JsonObject)
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ServicesVerticle extends AbstractServicesVerticle {
+public class WeNetIncentiveServerClient extends ComponentClient implements WeNetIncentiveServer {
 
   /**
-   * {@inheritDoc}
+   * Create a new service.
+   *
+   * @param client to interact with the other modules.
+   * @param conf   configuration of the component.
    */
-  @Override
-  protected void registerServices(final JsonObject serviceConf) throws Exception {
+  public WeNetIncentiveServerClient(final WebClient client, final JsonObject conf) {
 
-    // register the service to interact with the task manager
-    WeNetTaskManagerService.register(this.vertx, this.client, serviceConf);
-
-    // register the service to interact with the interaction protocol engine
-    WeNetInteractionProtocolEngineService.register(this.vertx, this.client, serviceConf);
-
-    // register the service to interact with the social context builder
-    WeNetSocialContextBuilder.register(this.vertx, this.client, serviceConf);
+    super(client, conf.getString("incentiveServerr", "https://wenet.u-hopper.com/incentive_server"));
 
   }
 

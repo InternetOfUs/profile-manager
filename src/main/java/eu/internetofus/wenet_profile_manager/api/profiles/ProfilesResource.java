@@ -38,7 +38,7 @@ import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.UserRelation;
-import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderService;
+import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
@@ -144,7 +144,7 @@ public class ProfilesResource implements Profiles {
               OperationReponseHandlers.responseOk(resultHandler, storedProfile);
 
               // Update the social context of the created user
-              WeNetSocialContextBuilderService.createProxy(this.vertx).retrieveSocialRelations(storedProfile.id, retrieve -> {
+              WeNetSocialContextBuilder.createProxy(this.vertx).retrieveSocialRelations(storedProfile.id, retrieve -> {
 
                 if (retrieve.failed()) {
 
