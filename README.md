@@ -2,8 +2,18 @@
 
 ## Introduction
 
-The profile manager component is the one responsible for storing and maintaining the WeNet user profiles.
-The profile is formed by a set of attributes that are filled in by the other components of the platform.
+The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
+and its historic. An user profile is a set of attributes that define the state of the user. Some of these
+attributes are filled in by the user, such as name, email, telephone,..., or by  other components of
+the platform, such as social relationships, routines,.... Every time a profile is modified a copy of
+the previous profile values is stored in the historic. This allows to know, to the rest of components,
+how the state of the user evolves in the time.
+
+Another responsibility of the profile manager is to evaluate the trust of one user over another when it is
+doing some action. The trust is dynamic and will be updated every time they collaborate to achieve a task.
+When a user has received help it can rate the performance of the user that has helped it. For this it has to
+post a performance rating event to the profile manager. These events are used by the profile manager when
+it has to provide the trust that has an user that another does a certain action.
 
 
 ## Setup and configuration
@@ -37,7 +47,7 @@ To use this feature you must to install the next software.
 If you want to create an image execute the next command.
 
 ```
-docker build -f src/main/docker/Dockerfile -t wenet/profile-manager .
+docker build -f src/main/docker/Dockerfile -t wenet/profile-manager:latest .
 ```
 
 You can use the next arguments:
@@ -49,9 +59,9 @@ You can use the next arguments:
  - **DEFAULT_DB_NAME** to define the default mongo database name. By default is **wenetProfileManagerDB**.
  - **DEFAULT_DB_USER_NAME** to define the default mongo database user name. By default is **wenetProfileManager**.
  - **DEFAULT_DB_USER_PASSWORD** to define the default mongo database user password. By default is **password**.
- - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/task_manager**.
- - **DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/interaction_protocol_engine**.
- - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/service**.
+ - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
+ - **DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/prod/interaction_protocol_engine**.
+ - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
 
 This arguments are used to create a configurations files at **/usr/wenet/profile-manager/etc**.
 So you can mount a volume to this if you want to modify any configuration property at runtime.
@@ -61,7 +71,7 @@ So you can mount a volume to this if you want to modify any configuration proper
 To run a the created docker image, run the next command:
 
 ```
-docker run -t -i -p 8080:8080 --name wenet_TASK_MANAGER_API wenet/profile-manager
+docker run -t -i -p 8080:8080 --name profile_manager wenet/profile-manager
 ```
 
 You can modify use the next environment properties to modify some parameters of the server:
@@ -73,9 +83,11 @@ You can modify use the next environment properties to modify some parameters of 
  - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
- - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/task_manager**.
- - **WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/interaction_protocol_engine**.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_INTERACTION_PROTOCOL_ENGINE_API** to define the path to the interaction protocol engine component to use. By default is **https://wenet.u-hopper.com/prod/interaction_protocol_engine**.
  - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
+
 
 Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
@@ -129,10 +141,10 @@ The latest APIs documentation is available [here](http://swagger.u-hopper.com/?u
 
 The profile manager has the next available instances:
 
- - WeNet production profile manager API is available at [https://wenet.u-hopper.com/profile_manager](https://wenet.u-hopper.com/profile_manager).
+ - WeNet production profile manager API is available at [https://wenet.u-hopper.com/prod/profile_manager](https://wenet.u-hopper.com/prod/profile_manager).
  - WeNet development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
- - The IIIA stable profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
- - The IIIA development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager](https://wenet.u-hopper.com/dev/profile_manager).
+ - The IIIA stable profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/latest](http://ardid.iiia.csic.es/wenet/profile-manager/latest).
+ - The IIIA development profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/develop](http://ardid.iiia.csic.es/wenet/profile-manager/develop).
  - The profile manager API 0.11.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
  - The profile manager API 0.10.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
  - The profile manager API 0.9.0 (Dummy version) is available at [http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/).

@@ -1,103 +1,50 @@
 resourcePackages:
-    - eu.internetofus.wenet_profile_manager.api
+- eu.internetofus.wenet_profile_manager.api
 prettyPrint: true
 cacheTTL: 0
 openAPI:
-    tags:
-        - name: Other
-          description: Other services provided by the API.
-        - name: Intelligences
-          description: Provide the functionality to evaluate the intelligences of a person
-        - name: Personalities
-          description: Provide the functionality to evaluate the personality of a person
-        - name: Historic
-          description:
-              The functionality provided allows to access to the values of the models
-              in a previous dates.
-        - name: Profiles
-          description:
-              The functionality provided allows to access current and previous values
-              of user attributes that define the user profile.  It also allows you to modify
-              the current values.
-        - name: Trusts
-          description: The functionality provided allows to manage the trust over other users.
-
-    info:
-        # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-        version: "0.11.0"
-        title: WeNet - Profile manager API
-        description: >-
-            This API will be used to storing and maintaining the WeNet user profile. A profile
-            is a set of attributes, and their current values represent the state of the user.
-            These attributes can be:
-
-             * **id**: identifier of the WeNet user.
-             * **name**: the name of the user.
-             * **dateOfBirth**: the date of birth of the user.
-             * **gender**: the gender of the user.
-             * **email**: the email of the user.
-             * **phoneNumber**: the phone number of the user, on the E.164 format (^\+?[1-9]\d{1,14}$).
-             * **locale**: the locale used by the user.
-             * **avatar**: the URL to an image that can be used as an avatar of the user.
-             * **nationality**: the nationality of the user.
-             * **languages**: this is a set of languages that the user can understand.
-             * **occupation**: the occupation of the user.
-             * **norms**: the individual norms of the user.
-             * **plannedActivities**: the activities planned by the user.
-             * **relevantLocations**: the locations of interest for the user - may be the home or work location -.
-             * **relationships**: the relations of this user with other users.
-             * **socialPractices**: the social practices of the user.
-             * **personalBehaviours**: the personal behaviors of the user.
+  tags:
+    - name: Other
+      description: Other services provided by the API.
+    - name: Intelligences
+      description: Provide the functionality to evaluate the intelligences of a person
+    - name: Personalities
+      description: Provide the functionality to evaluate the personality of a person
+    - name: Historic
+      description: The functionality provided allows to access to the values of the models in a previous dates.
+    - name: Profiles
+      description: The functionality provided allows to access current and previous values of user attributes that define the user profile.  It also allows you to modify the current values.
+    - name: Trusts
+      description: The functionality provided allows to manage the trust over other users.
+  info:
+    # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
+    version: '0.11.0'
+    title: WeNet - Profile manager API
+    description:  >-
+      The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
+      and its historic. An user profile is a set of attributes that define the state of the user. Some of these
+      attributes are filled in by the user, such as name, email, telephone,..., or by  other components of
+      the platform, such as social relationships, routines,.... Every time a profile is modified a copy of
+      the previous profile values is stored in the historic. This allows to know, to the rest of components,
+      how the state of the user evolves in the time.
 
 
-            ### Language
+      Another responsibility of the profile manager is to evaluate the trust of one user over another when it is
+      doing some action. The trust is dynamic and will be updated every time they collaborate to achieve a task.
+      When a user has received help it can rate the performance of the user that has helped it. For this it has to
+      post a performance rating event to the profile manager. These events are used by the profile manager when
+      it has to provide the trust that has an user that another does a certain action.
 
-            The languages that a user can understand are defined by the **ISO 639-1** code of the language and
-            the linguistic ability level of the person. This level can be:
-
-             * **A0**: Beginner/False beginner. The person only knows a few words of the language, if that.
-             * **A1**: Elementary. The person can ask a few basic questions and ideas, but with a lot of mistakes.
-             * **A2**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
-                       It stills to make a lot of big mistakes.
-             * **B1**: Pre-intermediate. Limited vocabulary, but with some help the person can participate in basic conversations.
-                       It stills to make a lot of big mistakes.
-             * **B2**: Intermediate. Now the person can converse in many situations, with less serious errors.
-             * **C1**: Upper-intermediate. The person is comfortable in most situations, still some good mistakes.
-             * **C2**: Proficient. The person is fluent, pretty much mother tongue. Extremely comfortable, it has complete control over the language.
-
-
-            ### Gender
-
-            The gender of a user can be:
-
-             * **F**: A person whose gender identity matches the female sex.
-             * **M**: A person whose gender identity matches the male sex.
-
-            ### Trust
-
-            The trust over another user is dynamically and will be updated every time they collaborate
-            to achieve a task. When an user has received help it can rate the performance of the user
-            that had helped it. For this it has to post a **UserPerformanceRatingEvent**.
-
-            When an user want to konw its trust of another user it can ask for the trust for a community
-            or taskType, and also specify how the trust has to be calculated. The aggregation of
-            **UserPerformanceRatingEvent** that generated the trust of an user repect another, you can use
-            the next functions:
-
-             * **RECENCY_BASED** this is based on the recency rating events. It is the function used on uHelp.
-             * **AVERAGE** the trust is the average of the rating event.
-             * **MEDIAN** the trust is the median of the rating event.
-             * **MINIMUM** the trust is the minimum rating.
-             * **MAXIMUM** the trust is the maximum rating.
-
-        contact:
-            name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
-            email: rosell@iiia.csic.es
-        license:
-            name: MIT
-            url: https://opensource.org/licenses/MIT
-    servers:
-        - url: http://ardid.iiia.csic.es/wenet-profile-manager/0.12.0/
-          description: Testing server
-        - url: https://wenet.u-hopper.com/profile_manager/
-          description: Production server
+    contact:
+      name: Bruno Rosell i Gui (UDT-IA, IIIA-CSIC)
+      email: rosell@iiia.csic.es
+    license:
+      name: MIT
+      url: https://opensource.org/licenses/MIT
+  servers:
+    - url: https://wenet.u-hopper.com/prod/profile_manager
+      description: WeNet production server
+    - url: https://wenet.u-hopper.com/dev/profile_manager
+      description: WeNet development server server
+    - url: http://ardid.iiia.csic.es/wenet/profile-manager/0.3.0/
+      description: IIIA development server
