@@ -480,6 +480,7 @@ public class ProfilesIT {
         newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
         newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
         newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+        newProfile.personalBehaviors = storedProfile.personalBehaviors;
         assertThat(updated).isEqualTo(newProfile);
 
         ProfilesRepository.createProxy(vertx).searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> {
