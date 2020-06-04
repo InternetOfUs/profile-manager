@@ -56,7 +56,7 @@ import eu.internetofus.common.components.profile_manager.SocialNetworkRelationsh
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.components.profile_manager.UserName;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
@@ -164,7 +164,7 @@ public class ProfilesIT {
   @Test
   public void shouldNotStoreProfileWithExistingId(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    WeNetProfileManagerService.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
+    WeNetProfileManager.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
 
       final WeNetUserProfile profile = new WeNetUserProfile();
       profile.id = created.getString("id");

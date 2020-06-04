@@ -24,8 +24,9 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.components.service;
+package eu.internetofus.common.components.profile_manager;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,30 +36,43 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 
 /**
- * Test the {@link WeNetServiceApiServiceImpl}.
+ * Test the {@link WeNetProfileManager}.
  *
- * @see WeNetServiceApiServiceImpl
+ * @see WeNetProfileManager
+ * @see WeNetProfileManagerClient
+ * @see WeNetProfileManagerMocker
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(VertxExtension.class)
-public class WeNetServiceApiServiceImplTest extends WeNetServiceApiServiceTestCase {
+public class WeNetProfileManagerTest extends WeNetProfileManagerTestCase {
 
-	/**
-	 * Register the service.
-	 *
-	 * @param vertx event bus to use.
-	 */
-	@BeforeEach
-	public void registerService(Vertx vertx) {
+  /**
+   * The profile manager mocked server.
+   */
+  protected static WeNetProfileManagerMocker mocker;
 
-		final JsonObject conf = new JsonObject();
-		conf.put("port", 443);
-		conf.put("host", "wenet.u-hopper.com");
-		conf.put("apiPath", "/service");
-		final WebClient client = WebClient.create(vertx);
-		WeNetServiceApiService.register(vertx, client, conf);
 
-	}
+  /**
+   * Start the mocker server.
+   */
+  @BeforeAll
+  public static void startMocker() {
+
+    mocker = WeNetProfileManagerMocker.start();
+  }
+
+  /**
+   * Register the client.
+   *
+   * @param vertx event bus to use.
+   */
+  @BeforeEach
+  public void registerClient(final Vertx vertx) {
+
+    final WebClient client = WebClient.create(vertx);
+    final JsonObject conf = mocker.getComponentConfiguration();
+    WeNetProfileManager.register(vertx, client, conf);
+  }
 
 }

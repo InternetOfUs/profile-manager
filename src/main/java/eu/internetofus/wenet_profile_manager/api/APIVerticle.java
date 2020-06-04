@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api;
 
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.vertx.AbstractAPIVerticle;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
 import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
@@ -90,7 +90,7 @@ public class APIVerticle extends AbstractAPIVerticle {
 	 *
 	 * {@inheritDoc}
 	 *
-	 * @see WeNetProfileManagerService
+	 * @see WeNetProfileManager
 	 */
 	@Override
 	protected void startedServerAt(String host, int port) {
@@ -98,7 +98,7 @@ public class APIVerticle extends AbstractAPIVerticle {
 		final JsonObject conf = new JsonObject();
 		conf.put("profileManager", "http://" + host + ":" + port);
 		final WebClient client = WebClient.create(this.vertx);
-		WeNetProfileManagerService.register(this.vertx, client, conf);
+		WeNetProfileManager.register(this.vertx, client, conf);
 
 	}
 

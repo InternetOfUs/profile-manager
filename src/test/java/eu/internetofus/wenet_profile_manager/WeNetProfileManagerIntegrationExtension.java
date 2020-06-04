@@ -31,17 +31,22 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 
 import eu.internetofus.common.Containers;
-import eu.internetofus.common.components.service.ServiceApiSimulatorService;
+import eu.internetofus.common.components.service.WeNetServiceMocker;
+import eu.internetofus.common.components.service.WeNetServiceSimulator;
+import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderMocker;
 import eu.internetofus.common.vertx.AbstractMain;
-import eu.internetofus.common.vertx.AbstractWeNetModuleIntegrationExtension;
+import eu.internetofus.common.vertx.AbstractWeNetComponentIntegrationExtension;
 import eu.internetofus.common.vertx.WeNetModuleContext;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.WebClient;
 
 /**
  * Extension used to run integration tests over the WeNet profile manager.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModuleIntegrationExtension {
+public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetComponentIntegrationExtension {
 
   /**
    * {@inheritDoc}
@@ -49,7 +54,11 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModule
   @Override
   protected void afterStarted(final WeNetModuleContext context) {
 
-    ServiceApiSimulatorService.register(context);
+    final Vertx vertx = context.vertx;
+    final WebClient client = WebClient.create(vertx);
+    final JsonObject conf = context.configuration.getJsonObject("wenetComponents", new JsonObject());
+    WeNetServiceSimulator.register(vertx, client, conf);
+
   }
 
   /**
@@ -64,20 +73,20 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetModule
     final int taskManagerApiPort = Containers.nextFreePort();
     final int interactionProtocolEngineApiPort = Containers.nextFreePort();
     final int serviceApiPort = Containers.nextFreePort();
-    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort);
+    final int socialContextBuilderApiPort = Containers.nextFreePort();
+    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, socialContextBuilderApiPort);
 
     Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, network);
     Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort, profileManagerApiPort, taskManagerApiPort, serviceApiPort, network);
-    Containers.createAndStartServiceApiSimulator(serviceApiPort);
+    WeNetServiceMocker.start(serviceApiPort);
+    WeNetSocialContextBuilderMocker.start(socialContextBuilderApiPort);
 
     final GenericContainer<?> persistenceContainer = Containers.createMongoContainerFor(Containers.WENET_PROFILE_MANAGER_DB_NAME, network);
     persistenceContainer.start();
 
     return new String[] { "-papi.port=" + profileManagerApiPort, "-ppersistence.host=localhost", "-ppersistence.port=" + persistenceContainer.getMappedPort(Containers.EXPORT_MONGODB_PORT),
         "-pwenetComponents.interactionProtocolEngine=\"http://localhost:" + interactionProtocolEngineApiPort + "\"", "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"",
-        "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"" ,
-        "-pwenetComponents.socialContextBuilder=\"http://localhost:" + this.getMoclkedServer().getLocalPort() + "/social_context_builder\""
-    };
+        "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"", "-pwenetComponents.socialContextBuilder=\"http://localhost:" + socialContextBuilderApiPort + "\"" };
 
   }
 

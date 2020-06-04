@@ -24,34 +24,53 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.components.task_manager;
+package eu.internetofus.common.components.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerServiceOnMemory;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerServiceTestCase;
-import io.vertx.core.Vertx;
-import io.vertx.junit5.VertxExtension;
+import eu.internetofus.common.components.AbstractComponentMocker;
 
 /**
- * Test the {@link WeNetProfileManagerServiceOnMemory}.
+ * The mocked server for the {@link WeNetService}.
+ *
+ * @see WeNetService
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(VertxExtension.class)
-public class WeNetTaskManagerServiceOnMemoryTest extends WeNetProfileManagerServiceTestCase {
+public class WeNetServiceMocker extends AbstractComponentMocker {
 
-	/**
-	 * Register the necessary services before to test.
-	 *
-	 * @param vertx event bus to register the necessary services.
-	 */
-	@BeforeEach
-	public void registerServices(Vertx vertx) {
+  /**
+   * Start a mocker builder into a random port.
+   *
+   * @return the started mocker.
+   */
+  public static WeNetServiceMocker start() {
 
-		WeNetProfileManagerServiceOnMemory.register(vertx);
+    return start(0);
 
-	}
+  }
+
+  /**
+   * Start a mocker builder into a port.
+   *
+   * @param port to bind the server.
+   *
+   * @return the started mocker.
+   */
+  public static WeNetServiceMocker start(final int port) {
+
+    final WeNetServiceMocker mocker = new WeNetServiceMocker();
+    mocker.start(port, null);
+    return mocker;
+  }
+
+  /**
+   * {@inheridDoc}
+   *
+   * @see WeNetServiceClient#SERVICE_CONF_KEY
+   */
+  @Override
+  protected String getComponentConfigurationName() {
+
+    return WeNetServiceClient.SERVICE_CONF_KEY;
+  }
 
 }

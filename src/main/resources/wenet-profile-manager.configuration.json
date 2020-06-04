@@ -20,8 +20,8 @@
     "defaultPort": 80
   },
   "wenetComponents": {
-    "taskManager": "https://wenet.u-hopper.com/task_manager",
-    "interactionProtocolEngine": "https://wenet.u-hopper.com/interaction_protocol_engine",
-    "socialContextBuilder": "https://wenet.u-hopper.com/social_context_builder"
+    "taskManager": "https://wenet.u-hopper.com/prod/task_manager",
+    "interactionProtocolEngine": "https://wenet.u-hopper.com/prod/interaction_protocol_engine",
+    "socialContextBuilder": "https://wenet.u-hopper.com/prod/social_context_builder"
   }
 }

@@ -31,7 +31,7 @@ import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.Validations;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerService;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.AsyncResult;
@@ -141,7 +141,7 @@ public class UserPerformanceRatingEvent extends Model {
 							"You cannot provide a trust event over the same user.")));
 
 				} else {
-					final WeNetProfileManagerService profileManager = WeNetProfileManagerService.createProxy(vertx);
+					final WeNetProfileManager profileManager = WeNetProfileManager.createProxy(vertx);
 					profileManager.retrieveProfile(this.sourceId, searchSource -> {
 
 						if (searchSource.failed()) {

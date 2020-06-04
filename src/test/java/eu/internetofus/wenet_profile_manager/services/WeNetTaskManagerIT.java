@@ -26,34 +26,20 @@
 
 package eu.internetofus.wenet_profile_manager.services;
 
-import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngineService;
-import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
-import eu.internetofus.common.vertx.AbstractServicesVerticle;
-import io.vertx.core.json.JsonObject;
+import eu.internetofus.common.components.task_manager.WeNetTaskManagerTestCase;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 
 /**
- * The verticle that provide the services to interact with the other WeNet modules.
+ * Test the {@link WeNetTaskManager}.
+ *
+ * @see WeNetTaskManager
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ServicesVerticle extends AbstractServicesVerticle {
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void registerServices(final JsonObject serviceConf) throws Exception {
-
-    // register the service to interact with the task manager
-    WeNetTaskManager.register(this.vertx, this.client, serviceConf);
-
-    // register the service to interact with the interaction protocol engine
-    WeNetInteractionProtocolEngineService.register(this.vertx, this.client, serviceConf);
-
-    // register the service to interact with the social context builder
-    WeNetSocialContextBuilder.register(this.vertx, this.client, serviceConf);
-
-  }
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class WeNetTaskManagerIT extends WeNetTaskManagerTestCase {
 
 }
