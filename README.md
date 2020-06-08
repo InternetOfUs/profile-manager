@@ -155,6 +155,13 @@ The profile manager has the next available instances:
 This software is under the [MIT license](LICENSE)
 
 
+## Interaction with other WeNet components
+
+### Social context builder
+
+ - Inform every time a new user profile is created. (GET {{social_context_builder_api}}/social/relations/{{userId}})
+
+
 ## Contact
 
 ### Researcher
