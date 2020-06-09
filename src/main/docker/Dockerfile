@@ -18,8 +18,8 @@ ARG DEFAULT_DB_PORT=27017
 ARG DEFAULT_DB_NAME=wenetProfileManagerDB
 ARG DEFAULT_DB_USER_NAME=wenetProfileManager
 ARG DEFAULT_DB_USER_PASSWORD=password
-ARG DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API="https://wenet.u-hopper.com/prod/interaction_protocol_engine"
 ARG DEFAULT_WENET_TASK_MANAGER_API="https://wenet.u-hopper.com/prod/task_manager"
+ARG DEFAULT_WENET_SERVICE_API="https://wenet.u-hopper.com/prod/service"
 ARG DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API="https://wenet.u-hopper.com/prod/social_context_builder"
 ENV API_HOST=${DEFAULT_API_HOST}
 ENV API_PORT=${DEFAULT_API_PORT}
@@ -28,7 +28,6 @@ ENV DB_PORT=${DEFAULT_DB_PORT}
 ENV DB_NAME=${DEFAULT_DB_NAME}
 ENV DB_USER_NAME=${DEFAULT_DB_USER_NAME}
 ENV DB_USER_PASSWORD=${DEFAULT_DB_USER_PASSWORD}
-ENV WENET_INTERACTION_PROTOCOL_ENGINE_API=${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API}
 ENV WENET_TASK_MANAGER_API=${DEFAULT_WENET_TASK_MANAGER_API}
 ENV WENET_SOCIAL_CONTEXT_BUILDER_API=${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}
 ENV RUN_ARGS=""
@@ -44,13 +43,13 @@ RUN echo "{\"api\":{\"host\":\"${DEFAULT_API_HOST}\",\"port\":${DEFAULT_API_PORT
 # Create configuration for persistence
 RUN echo "{\"persistence\":{\"db_name\":\"${DEFAULT_DB_NAME}\",\"host\":\"${DEFAULT_DB_HOST}\",\"port\":${DEFAULT_DB_PORT},\"username\":\"${DEFAULT_DB_USER_NAME}\",\"password\":\"${DEFAULT_DB_USER_PASSWORD}\"}}" > /usr/wenet/profile-manager/etc/persistence.json
 
-# Create configuration for interaction protocol engine component
-RUN echo "{\"wenetComponents\":{\"interactionProtocolEngine\":\"${DEFAULT_WENET_INTERACTION_PROTOCOL_ENGINE_API}\"}}" > /usr/wenet/profile-manager/etc/interactionProtocolEngine.json
-
 # Create configuration for task manager component
 RUN echo "{\"wenetComponents\":{\"taskManager\":\"${DEFAULT_WENET_TASK_MANAGER_API}\"}}" > /usr/wenet/profile-manager/etc/taskManager.json
 
-# Create configuration for social context builderr component
+# Create configuration for service component
+RUN echo "{\"wenetComponents\":{\"service\":\"${DEFAULT_WENET_SERVICE_API}\"}}" > /usr/wenet/profile-manager/etc/service.json
+
+# Create configuration for social context builder component
 RUN echo "{\"wenetComponents\":{\"socialContextBuilder\":\"${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}\"}}" > /usr/wenet/profile-manager/etc/socialContextBuilder.json
 
 WORKDIR /usr/wenet/profile-manager
@@ -66,7 +65,7 @@ EXPOSE ${API_PORT}
 CMD /wait && java -jar wenet-profile-manager.jar -c etc \
   -papi.host=${API_HOST} -papi.port=${API_PORT}\
   -ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD}\
-  -pwenetComponents.interactionProtocolEngine=${WENET_INTERACTION_PROTOCOL_ENGINE_API}\
   -pwenetComponents.taskManager=${WENET_TASK_MANAGER_API}\
+  -pwenetComponents.service=${WENET_SERVICE_API}\
   -pwenetComponents.socialContextBuilder=${WENET_SOCIAL_CONTEXT_BUILDER_API}\
   ${RUN_ARGS}
