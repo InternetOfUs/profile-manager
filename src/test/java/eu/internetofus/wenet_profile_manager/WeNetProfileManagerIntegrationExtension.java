@@ -88,8 +88,8 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
     persistenceContainer.start();
 
     return new String[] { "-papi.port=" + profileManagerApiPort, "-ppersistence.host=localhost", "-ppersistence.port=" + persistenceContainer.getMappedPort(Containers.EXPORT_MONGODB_PORT),
-        "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"", "-pwenetComponents.interactionProtocolEngine=\"http://localhost:" + interactionProtocolEngineApiPort + "\"",
-        "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"", "-pwenetComponents.socialContextBuilder=\"http://localhost:" + socialContextBuilderApiPort + "\"" };
+        "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"", "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"",
+        "-pwenetComponents.socialContextBuilder=\"http://localhost:" + socialContextBuilderApiPort + "\"" };
 
   }
 
