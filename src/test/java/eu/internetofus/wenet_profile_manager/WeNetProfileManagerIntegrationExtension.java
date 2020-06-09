@@ -76,10 +76,10 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
     final int serviceApiPort = Containers.nextFreePort();
     final int socialContextBuilderApiPort = Containers.nextFreePort();
     final int incentiveServerApiPort = Containers.nextFreePort();
-    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, socialContextBuilderApiPort,incentiveServerApiPort);
+    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, socialContextBuilderApiPort, incentiveServerApiPort);
 
     Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApiPort, interactionProtocolEngineApiPort, serviceApiPort, network);
-    Containers.createAndStartContainersForInteractionProtocolEngine(interactionProtocolEngineApiPort, profileManagerApiPort, taskManagerApiPort, serviceApiPort, socialContextBuilderApiPort,incentiveServerApiPort,network);
+    WeNetIncentiveServerMocker.start(interactionProtocolEngineApiPort);
     WeNetServiceMocker.start(serviceApiPort);
     WeNetSocialContextBuilderMocker.start(socialContextBuilderApiPort);
     WeNetIncentiveServerMocker.start(incentiveServerApiPort);
@@ -88,8 +88,7 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
     persistenceContainer.start();
 
     return new String[] { "-papi.port=" + profileManagerApiPort, "-ppersistence.host=localhost", "-ppersistence.port=" + persistenceContainer.getMappedPort(Containers.EXPORT_MONGODB_PORT),
-        "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"",
-        "-pwenetComponents.interactionProtocolEngine=\"http://localhost:" + interactionProtocolEngineApiPort + "\"",
+        "-pwenetComponents.taskManager=\"http://localhost:" + taskManagerApiPort + "\"", "-pwenetComponents.interactionProtocolEngine=\"http://localhost:" + interactionProtocolEngineApiPort + "\"",
         "-pwenetComponents.service=\"http://localhost:" + serviceApiPort + "\"", "-pwenetComponents.socialContextBuilder=\"http://localhost:" + socialContextBuilderApiPort + "\"" };
 
   }

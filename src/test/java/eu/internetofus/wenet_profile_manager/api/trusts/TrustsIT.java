@@ -34,15 +34,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
+import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.ErrorMessage;
-import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -60,176 +54,82 @@ import io.vertx.junit5.VertxTestContext;
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class TrustsIT {
 
-	/**
-	 * Verify that return error when try to add an event that is not an event.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotAddEventBecauseIsNotAValidEvent(WebClient client, VertxTestContext testContext) {
+  /**
+   * Verify that return error when try to add an event that is not an event.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotAddEventBecauseIsNotAValidEvent(final WebClient client, final VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isNotEmpty();
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
 
-		}).sendJson(new JsonObject().put("key", "value"), testContext);
-	}
+    }).sendJson(new JsonObject().put("key", "value"), testContext);
+  }
 
-	/**
-	 * Verify that return error when try to add an event with a bad target value.
-	 *
-	 * @param targetId    target that is not valid.
-	 * @param vertx       event bus to use.
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
-	 */
-	@ParameterizedTest(name = "Should not be valid with the target:{0}")
-	@NullAndEmptySource
-	@ValueSource(strings = { " 2345678 ", "bf2743937ed6", ValidationsTest.STRING_256 })
-	public void shouldNotAddEventBecauseTargetIsNotValid(String targetId, Vertx vertx, WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that return error when try to add a bad event.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotAddBadEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
+    final UserPerformanceRatingEvent event = new UserPerformanceRatingEventTest().createModelExample(1);
+    testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
-			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
-			event.sourceId = stored.id;
-			event.targetId = targetId;
-			event.rating = Math.random();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty().endsWith(".sourceId");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
 
-			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
+    }).sendJson(event.toJsonObject(), testContext);
 
-				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-				assertThat(error.code).isNotEmpty().endsWith(".targetId");
-				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-				testContext.completeNow();
+  }
 
-			}).sendJson(event.toJsonObject(), testContext);
+  /**
+   * Verify can add an event.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldAddEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-		}));
+    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(event -> {
 
-	}
+      final long time = TimeManager.now();
+      testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
-	/**
-	 * Verify that return error when try to add an event with a bad source value.
-	 *
-	 * @param sourceId    source that is not valid.
-	 * @param vertx       event bus to use.
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
-	 */
-	@ParameterizedTest(name = "Should not be valid with the source:{0}")
-	@NullAndEmptySource
-	@ValueSource(strings = { " 2345678 ", "bf2743937ed6", ValidationsTest.STRING_256 })
-	public void shouldNotAddEventBecauseSourceIsNotValid(String sourceId, Vertx vertx, WebClient client,
-			VertxTestContext testContext) {
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final UserPerformanceRatingEvent stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
+        assertThat(stored).isNotNull();
+        assertThat(stored.reportTime).isGreaterThanOrEqualTo(time);
+        event.reportTime = time;
+        assertThat(stored).isEqualTo(event);
+        testContext.completeNow();
 
-		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
+      }).sendJson(event.toJsonObject(), testContext);
 
-			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
-			event.targetId = stored.id;
-			event.sourceId = sourceId;
-			event.rating = Math.random();
+    }));
 
-			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
-
-				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-				assertThat(error.code).isNotEmpty().endsWith(".sourceId");
-				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-				testContext.completeNow();
-
-			}).sendJson(event.toJsonObject(), testContext);
-
-		}));
-
-	}
-
-	/**
-	 * Verify that return error when try to add an event over an undefined user.
-	 *
-	 * @param vertx       event bus to use.
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotAddEventBecauseSourceAndTagetAreTheSameUser(Vertx vertx, WebClient client,
-			VertxTestContext testContext) {
-
-		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
-
-			final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
-			event.sourceId = stored.id;
-			event.targetId = stored.id;
-			event.rating = Math.random();
-
-			testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
-
-				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-				assertThat(error.code).isNotEmpty().endsWith(".targetId");
-				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-				testContext.completeNow();
-
-			}).sendJson(event.toJsonObject(), testContext);
-
-		}));
-	}
-
-	/**
-	 * Verify that return error when try to add an event with a bad value.
-	 *
-	 * @param value       that is not valid.
-	 * @param vertx       event bus to use.
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest,
-	 *      io.vertx.core.Handler)
-	 */
-	@ParameterizedTest(name = "Should not be valid with the value:{0}")
-	@NullSource
-	@ValueSource(doubles = { -0.01, 1.01 })
-	public void shouldNotAddEventBecauseValueIsNotValid(Double value, Vertx vertx, WebClient client,
-			VertxTestContext testContext) {
-
-		StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored1 -> {
-
-			StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored2 -> {
-				final UserPerformanceRatingEvent event = new UserPerformanceRatingEvent();
-				event.sourceId = stored1.id;
-				event.targetId = stored2.id;
-				event.rating = value;
-
-				testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
-
-					assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-					final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-					assertThat(error.code).isNotEmpty().endsWith(".value");
-					assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-					testContext.completeNow();
-
-				}).sendJson(event.toJsonObject(), testContext);
-
-			}));
-		}));
-	}
+  }
 
 }

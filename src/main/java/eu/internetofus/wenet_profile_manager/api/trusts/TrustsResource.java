@@ -31,8 +31,8 @@ import javax.ws.rs.core.Response.Status;
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -50,93 +50,93 @@ import io.vertx.ext.web.api.OperationResponse;
  */
 public class TrustsResource implements Trusts {
 
-	/**
-	 * The event bus that is using.
-	 */
-	protected Vertx vertx;
+  /**
+   * The event bus that is using.
+   */
+  protected Vertx vertx;
 
-	/**
-	 * The repository to manage the trusts events.
-	 */
-	protected TrustsRepository repository;
+  /**
+   * The repository to manage the trusts events.
+   */
+  protected TrustsRepository repository;
 
-	/**
-	 * Create an empty resource. This is only used for unit tests.
-	 */
-	protected TrustsResource() {
+  /**
+   * Create an empty resource. This is only used for unit tests.
+   */
+  protected TrustsResource() {
 
-	}
+  }
 
-	/**
-	 * Create a new instance to provide the services of the {@link Trusts}.
-	 *
-	 * @param vertx with the event bus to use.
-	 */
-	public TrustsResource(Vertx vertx) {
+  /**
+   * Create a new instance to provide the services of the {@link Trusts}.
+   *
+   * @param vertx with the event bus to use.
+   */
+  public TrustsResource(final Vertx vertx) {
 
-		this.vertx = vertx;
-		this.repository = TrustsRepository.createProxy(vertx);
+    this.vertx = vertx;
+    this.repository = TrustsRepository.createProxy(vertx);
 
-	}
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void addTrustEvent(JsonObject body, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addTrustEvent(final JsonObject body, final OperationRequest context,
+      final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		final UserPerformanceRatingEvent event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
-		if (event == null) {
+    final UserPerformanceRatingEvent event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
+    if (event == null) {
 
-			Logger.debug("The {} is not a valid TrustEvent.", body);
-			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event",
-					"The trust event is not right.");
+      Logger.debug("The {} is not a valid TrustEvent.", body);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event",
+          "The trust event is not right.");
 
-		} else {
+    } else {
 
-			event.validate("bad_trust_event", this.vertx, validate -> {
+      event.validate("bad_profile", this.vertx).onComplete(validation -> {
 
-				if (validate.failed()) {
+        if (validation.failed()) {
 
-					final Throwable cause = validate.cause();
-					Logger.debug(cause, "The {} is not valid.", event);
-					OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+          final Throwable cause = validation.cause();
+          Logger.debug(cause, "The {} is not valid.", event);
+          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-				} else {
+        } else {
 
-					this.repository.storeTrustEvent(event, store -> {
+          this.repository.storeTrustEvent(event, store -> {
 
-						if (store.failed()) {
+            if (store.failed()) {
 
-							final Throwable cause = validate.cause();
-							Logger.debug(cause, "Cannot store {}.", event);
-							OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+              final Throwable cause = store.cause();
+              Logger.debug(cause, "Cannot store {}.", event);
+              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-						} else {
+            } else {
 
-							OperationReponseHandlers.responseOk(resultHandler);
-						}
-					});
-				}
+              OperationReponseHandlers.responseOk(resultHandler);
+            }
+          });
+        }
 
-			});
-		}
+      });
+    }
 
-	}
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void calculateTrust(String sourceId, String targetId, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void calculateTrust(final String sourceId, final String targetId, final OperationRequest context,
+      final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		final Trust trust = new Trust();
-		trust.value = Math.random();
-		trust.calculatedTime = TimeManager.now();
-		OperationReponseHandlers.responseOk(resultHandler, trust);
+    final Trust trust = new Trust();
+    trust.value = Math.random();
+    trust.calculatedTime = TimeManager.now();
+    OperationReponseHandlers.responseOk(resultHandler, trust);
 
-	}
+  }
 
 }

@@ -27,188 +27,284 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.Validable;
 import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.Validations;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.service.WeNetService;
+import eu.internetofus.common.components.task_manager.Task;
+import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 /**
- * Contains information that rates the performance of an user over a task that
- * it has done in WeNet.
+ * Contains information that rates the performance of an user over a task that it has done in WeNet.
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(description = "The event is used to rate the performance of an user over a task that it has done in WeNet.")
-public class UserPerformanceRatingEvent extends Model {
+public class UserPerformanceRatingEvent extends Model implements Validable {
 
-	/**
-	 * The identifier of the user that provide the performance.
-	 */
-	@Schema(
-			name = "sourceId",
-			description = "The identifier of the user that is providing the performance of another user.",
-			example = "88cb96277edd")
-	public String sourceId;
+  /**
+   * The identifier of the user that provide the performance.
+   */
+  @Schema(name = "sourceId", description = "The identifier of the user that is providing the performance of another user.", example = "88cb96277edd")
+  public String sourceId;
 
-	/**
-	 * The identifier of the user that has perform the action.
-	 */
-	@Schema(
-			name = "targetId",
-			description = "The identifier of the user that has perform the task.",
-			example = "bf2743937ed6")
-	public String targetId;
+  /**
+   * The identifier of the user that has perform the action.
+   */
+  @Schema(name = "targetId", description = "The identifier of the user that has perform the task.", example = "bf2743937ed6")
+  public String targetId;
 
-	/**
-	 * The relationship with the user.
-	 */
-	@Schema(description = "The relationship with the user that has perform the task", example = "friend")
-	public SocialNetworkRelationshipType relationship;
+  /**
+   * The relationship with the user.
+   */
+  @Schema(description = "The relationship with the user that has perform the task", example = "friend")
+  public SocialNetworkRelationshipType relationship;
 
-	/**
-	 * The identifier of the community where the user has performed the action.
-	 */
-	@Schema(
-			description = "The identifier of the community where the user has performed the task",
-			example = "43937ed6ty32")
-	public String communityId;
+  /**
+   * The identifier of the application where the user has performed the action.
+   */
+  @Schema(description = "The identifier of the application where the user has performed the task", example = "7ens723h6ty32")
+  public String appId;
 
-	/**
-	 * The identifier of task type that the rating user has done.
-	 */
-	@Schema(description = "The identifier of task type that the rating user has done.", example = "4ty37ed63932")
-	public String taskTypeId;
+  /**
+   * The identifier of the community where the user has performed the action.
+   */
+  @Schema(description = "The identifier of the community where the user has performed the task", example = "43937ed6ty32")
+  public String communityId;
 
-	/**
-	 * The identifier of task that the rating user has done.
-	 */
-	@Schema(description = "The identifier of task that the rating user has done.", example = "d64ty39s7e32")
-	public String taskId;
+  /**
+   * The identifier of task type that the rating user has done.
+   */
+  @Schema(description = "The identifier of task type that the rating user has done.", example = "4ty37ed63932")
+  public String taskTypeId;
 
-	/**
-	 * The rating of the user performance. It has to be on the range {@code [0,1]}.
-	 */
-	@Schema(description = "The rating of the user performance. It has to be on the range [0,1].", example = "0.43")
-	public Double rating;
+  /**
+   * The identifier of task that the rating user has done.
+   */
+  @Schema(description = "The identifier of task that the rating user has done.", example = "d64ty39s7e32")
+  public String taskId;
 
-	/**
-	 * The time when this event is reported. It is measured as the difference,
-	 * measured in seconds, between the time when its was reported and midnight,
-	 * January 1, 1970 UTC.
-	 */
-	@Schema(
-			description = "The difference, measured in seconds, between the time when this event was reported and midnight, January 1, 1970 UTC.",
-			example = "1571412479710")
-	public long reportTime;
+  /**
+   * The rating of the user performance. It has to be on the range {@code [0,1]}.
+   */
+  @Schema(description = "The rating of the user performance. It has to be on the range [0,1].", example = "0.43")
+  public Double rating;
 
-	/**
-	 * Called when want to verify if a trust event is right.
-	 *
-	 * @param codePrefix      prefix for the error code.
-	 * @param vertx           the infrastructure for the event bus to use.
-	 * @param validateHandler the handler to manage the validation result.
-	 */
-	public void validate(String codePrefix, Vertx vertx, Handler<AsyncResult<Void>> validateHandler) {
+  /**
+   * The time when this event is reported. It is measured as the difference, measured in seconds, between the time when
+   * its was reported and midnight, January 1, 1970 UTC.
+   */
+  @Schema(description = "The difference, measured in seconds, between the time when this event was reported and midnight, January 1, 1970 UTC.", example = "1571412479710")
+  public long reportTime;
 
-		if (this.rating == null) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Future<Void> validate(final String codePrefix, final Vertx vertx) {
 
-			validateHandler.handle(Future
-					.failedFuture(new ValidationErrorException(codePrefix + ".value", "You must define the rating value.")));
+    final Promise<Void> promise = Promise.promise();
+    Future<Void> future = promise.future();
+    if (this.rating == null) {
 
-		} else if (this.rating < 0d || this.rating > 1d) {
+      promise.fail(new ValidationErrorException(codePrefix + ".rating", "You must define the rating value."));
 
-			validateHandler.handle(Future.failedFuture(
-					new ValidationErrorException(codePrefix + ".value", "The rating value has to be in the range [0,1].")));
+    } else if (this.rating < 0d || this.rating > 1d) {
 
-		} else {
+      promise.fail(new ValidationErrorException(codePrefix + ".rating", "The rating value has to be in the range [0,1]."));
 
-			try {
-				this.sourceId = Validations.validateStringField(codePrefix, "sourceId", 255, this.sourceId);
-				this.targetId = Validations.validateStringField(codePrefix, "targetId", 255, this.targetId);
-				this.communityId = Validations.validateNullableStringField(codePrefix, "communityId", 255, this.communityId);
-				this.taskTypeId = Validations.validateNullableStringField(codePrefix, "taskTypeId", 255, this.taskTypeId);
-				if (this.sourceId.equals(this.targetId)) {
+    } else {
 
-					validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".targetId",
-							"You cannot provide a trust event over the same user.")));
+      try {
 
-				} else {
-					final WeNetProfileManager profileManager = WeNetProfileManager.createProxy(vertx);
-					profileManager.retrieveProfile(this.sourceId, searchSource -> {
+        this.sourceId = Validations.validateStringField(codePrefix, "sourceId", 255, this.sourceId);
+        this.targetId = Validations.validateStringField(codePrefix, "targetId", 255, this.targetId);
+        this.appId = Validations.validateNullableStringField(codePrefix, "appId", 255, this.appId);
+        this.communityId = Validations.validateNullableStringField(codePrefix, "communityId", 255, this.communityId);
+        this.taskTypeId = Validations.validateNullableStringField(codePrefix, "taskTypeId", 255, this.taskTypeId);
+        this.taskId = Validations.validateNullableStringField(codePrefix, "taskId", 255, this.taskId);
+        if (this.sourceId.equals(this.targetId)) {
 
-						if (searchSource.failed()) {
+          promise.fail(new ValidationErrorException(codePrefix + ".targetId", "The 'targetId' can not be the same as the 'sourceId'."));
 
-							validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".sourceId",
-									"The user that will provide the trust is not defined.")));
+        } else {
 
-						} else {
+          future = future.compose(mapper -> {
 
-							profileManager.retrieveProfile(this.targetId, searchTarget -> {
+            final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
+            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId, search -> {
 
-								if (searchTarget.failed()) {
+              if (search.failed()) {
 
-									validateHandler.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".targetId",
-											"The user that the trust refers to is not defined.")));
+                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId", "The '" + this.sourceId + "' is not defined.", search.cause()));
 
-								} else {
+              } else {
 
-									final WeNetUserProfile source = searchSource.result();
-									if (this.relationship != null && (source.relationships == null || !source.relationships
-											.contains(new SocialNetworkRelationship(this.relationship, this.targetId)))) {
+                final WeNetUserProfile profile = search.result();
+                boolean validRelationship = true;
+                if (this.relationship != null) {
 
-										validateHandler
-												.handle(Future.failedFuture(new ValidationErrorException(codePrefix + ".relationship",
-														"The target user does not have the specified relationship with the source.")));
+                  validRelationship = false;
+                  if (profile.relationships != null) {
 
-									} else {
+                    for (final SocialNetworkRelationship relation : profile.relationships) {
 
-										final Promise<Void> promise = Promise.promise();
-										final Future<Void> future = promise.future();
-										if (this.communityId != null) {
+                      if (relation.type == this.relationship && relation.userId.equals(this.targetId)) {
+                        // exist relation between them
+                        validRelationship = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+                if (!validRelationship) {
 
-											// future = future.compose(mapper -> {
-											//
-											// final WeNetInteractionProtocolEngineService interactionProtocolEngineService
-											// = WeNetInteractionProtocolEngineService
-											// .createProxy(vertx);
-											// interactionProtocolEngineService.retrieveCommunity(this.communityId, found ->
-											// {
-											//
-											// // if( found.failed)
-											//
-											// });
-											//
-											// return Future.succeededFuture();
-											//
-											// });
+                  verifyRequesterIdExistPromise.fail(
+                      new ValidationErrorException(codePrefix + ".relationship", "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId + "' with the target user '" + this.targetId + "'.", search.cause()));
 
-										}
+                } else {
 
-										validateHandler.handle(future);
-									}
+                  verifyRequesterIdExistPromise.complete();
+                }
 
-								}
-							});
+              }
+            });
+            return verifyRequesterIdExistPromise.future();
+          });
+          future = future.compose(mapper -> {
 
-						}
-					});
+            final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
+            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.targetId, search -> {
 
-				}
+              if (!search.failed()) {
 
-			} catch (final ValidationErrorException error) {
+                verifyRequesterIdExistPromise.complete();
 
-				validateHandler.handle(Future.failedFuture(error));
+              } else {
 
-			}
-		}
-	}
+                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".targetId", "The '" + this.targetId + "' is not defined.", search.cause()));
+              }
+            });
+            return verifyRequesterIdExistPromise.future();
+          });
+
+          if (this.appId != null) {
+
+            future = future.compose(mapper -> {
+
+              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+              WeNetService.createProxy(vertx).retrieveApp(this.appId, app -> {
+
+                if (!app.failed()) {
+
+                  verifyNotRepeatedIdPromise.complete();
+
+                } else {
+
+                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not defined."));
+                }
+              });
+              return verifyNotRepeatedIdPromise.future();
+            });
+
+          }
+
+          // if( this.communityId != null ) {
+          //
+          // future = future.compose(mcommunityer -> {
+          //
+          // final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+          // WeNetService.createProxy(vertx).retrieveCommunity(this.communityId, community -> {
+          //
+          // if (!community.failed()) {
+          //
+          // verifyNotRepeatedIdPromise.complete();
+          //
+          // } else {
+          //
+          // verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".communityId", "The '" + this.communityId
+          // + "' is not defined."));
+          // }
+          // });
+          // return verifyNotRepeatedIdPromise.future();
+          // });
+          //
+          // }
+
+          if (this.taskTypeId != null) {
+
+            future = future.compose(mapper -> {
+
+              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+              WeNetTaskManager.createProxy(vertx).retrieveTaskType(this.taskTypeId, taskType -> {
+
+                if (!taskType.failed()) {
+
+                  verifyNotRepeatedIdPromise.complete();
+
+                } else {
+
+                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId", "The '" + this.taskTypeId + "' is not defined."));
+                }
+              });
+              return verifyNotRepeatedIdPromise.future();
+            });
+
+          }
+
+          if (this.taskId != null) {
+
+            future = future.compose(mapper -> {
+
+              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+              WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId, retrieve -> {
+
+                if (retrieve.failed()) {
+
+                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskId", "The '" + this.taskId + "' is not defined."));
+
+                } else {
+
+                  final Task task = retrieve.result();
+                  if (this.appId != null && !this.appId.equals(task.appId)) {
+
+                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
+
+                  } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
+
+                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId", "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
+
+                  } else {
+
+                    verifyNotRepeatedIdPromise.complete();
+
+                  }
+                }
+
+              });
+              return verifyNotRepeatedIdPromise.future();
+            });
+
+          }
+
+          promise.complete();
+        }
+
+      } catch (final ValidationErrorException validationError) {
+
+        promise.fail(validationError);
+      }
+    }
+    return future;
+
+  }
 
 }
