@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.services;
 
-import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngine;
+import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.vertx.AbstractServicesVerticle;
@@ -45,13 +45,13 @@ public class ServicesVerticle extends AbstractServicesVerticle {
   @Override
   protected void registerServices(final JsonObject serviceConf) throws Exception {
 
-    // register the service to interact with the task manager
+    // register the task manager
     WeNetTaskManager.register(this.vertx, this.client, serviceConf);
 
-    // register the service to interact with the interaction protocol engine
-    WeNetInteractionProtocolEngine.register(this.vertx, this.client, serviceConf);
+    // register the service
+    WeNetService.register(this.vertx, this.client, serviceConf);
 
-    // register the service to interact with the social context builder
+    // register the social context builder
     WeNetSocialContextBuilder.register(this.vertx, this.client, serviceConf);
 
   }

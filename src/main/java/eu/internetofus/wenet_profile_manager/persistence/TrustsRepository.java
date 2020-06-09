@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.common.components.Model;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trust;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.codegen.annotations.GenIgnore;
@@ -46,62 +47,79 @@ import io.vertx.serviceproxy.ServiceBinder;
 @ProxyGen
 public interface TrustsRepository {
 
-	/**
-	 * The address of this service.
-	 */
-	String ADDRESS = "wenet_profile_manager.persistence.trusts";
+  /**
+   * The address of this service.
+   */
+  String ADDRESS = "wenet_profile_manager.persistence.trusts";
 
-	/**
-	 * Create a proxy of the {@link TrustsRepository}.
-	 *
-	 * @param vertx where the service has to be used.
-	 *
-	 * @return the trust.
-	 */
-	static TrustsRepository createProxy(Vertx vertx) {
+  /**
+   * Create a proxy of the {@link TrustsRepository}.
+   *
+   * @param vertx where the service has to be used.
+   *
+   * @return the trust.
+   */
+  static TrustsRepository createProxy(final Vertx vertx) {
 
-		return new TrustsRepositoryVertxEBProxy(vertx, TrustsRepository.ADDRESS);
-	}
+    return new TrustsRepositoryVertxEBProxy(vertx, TrustsRepository.ADDRESS);
+  }
 
-	/**
-	 * Register this service.
-	 *
-	 * @param vertx that contains the event bus to use.
-	 * @param pool  to create the database connections.
-	 */
-	static void register(Vertx vertx, MongoClient pool) {
+  /**
+   * Register this service.
+   *
+   * @param vertx that contains the event bus to use.
+   * @param pool  to create the database connections.
+   */
+  static void register(final Vertx vertx, final MongoClient pool) {
 
-		new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class,
-				new TrustsRepositoryImpl(pool));
+    new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class, new TrustsRepositoryImpl(pool));
 
-	}
+  }
 
-	/**
-	 * Store a trust event.
-	 *
-	 * @param event        of trust to store.
-	 * @param storeHandler handler to manage the store.
-	 */
-	@GenIgnore
-	default void storeTrustEvent(UserPerformanceRatingEvent event, Handler<AsyncResult<Void>> storeHandler) {
+  /**
+   * Store a trust event.
+   *
+   * @param event        of trust to store.
+   * @param storeHandler handler to manage the store.
+   */
+  @GenIgnore
+  default void storeTrustEvent(final UserPerformanceRatingEvent event, final Handler<AsyncResult<UserPerformanceRatingEvent>> storeHandler) {
 
-		final JsonObject object = event.toJsonObject();
-		if (object == null) {
+    final JsonObject object = event.toJsonObject();
+    if (object == null) {
 
-			storeHandler.handle(Future.failedFuture("The trust event can not converted to JSON."));
+      storeHandler.handle(Future.failedFuture("The event can not converted to JSON."));
 
-		} else {
+    } else {
 
-			this.storeTrustEventObject(object, storeHandler);
-		}
+      this.storeTrustEvent(object, stored -> {
+        if (stored.failed()) {
 
-	}
+          storeHandler.handle(Future.failedFuture(stored.cause()));
 
-	/**
-	 * Store a trust event document.
-	 *
-	 * @param event        of trust to store.
-	 * @param storeHandler handler to manage the store.
-	 */
-	void storeTrustEventObject(JsonObject event, Handler<AsyncResult<Void>> storeHandler);
+        } else {
+
+          final JsonObject value = stored.result();
+          final UserPerformanceRatingEvent storedEvent = Model.fromJsonObject(value, UserPerformanceRatingEvent.class);
+          if (storedEvent == null) {
+
+            storeHandler.handle(Future.failedFuture("The stored event is not valid."));
+
+          } else {
+
+            storeHandler.handle(Future.succeededFuture(storedEvent));
+          }
+
+        }
+      });
+    }
+  }
+
+  /**
+   * Store a trust event document.
+   *
+   * @param event        of trust to store.
+   * @param storeHandler handler to manage the store.
+   */
+  void storeTrustEvent(JsonObject event, Handler<AsyncResult<JsonObject>> storeHandler);
 }

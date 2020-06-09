@@ -83,19 +83,17 @@ public class TrustsResource implements Trusts {
    * {@inheritDoc}
    */
   @Override
-  public void addTrustEvent(final JsonObject body, final OperationRequest context,
-      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addTrustEvent(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final UserPerformanceRatingEvent event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
     if (event == null) {
 
       Logger.debug("The {} is not a valid TrustEvent.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event",
-          "The trust event is not right.");
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event", "The trust event is not right.");
 
     } else {
 
-      event.validate("bad_profile", this.vertx).onComplete(validation -> {
+      event.validate("bad_event", this.vertx).onComplete(validation -> {
 
         if (validation.failed()) {
 
@@ -111,11 +109,12 @@ public class TrustsResource implements Trusts {
 
               final Throwable cause = store.cause();
               Logger.debug(cause, "Cannot store {}.", event);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+              OperationReponseHandlers.responseFailedWith(resultHandler, Status.INTERNAL_SERVER_ERROR, cause);
 
             } else {
 
-              OperationReponseHandlers.responseOk(resultHandler);
+              final UserPerformanceRatingEvent storedEvent = store.result();
+              OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedEvent);
             }
           });
         }
@@ -129,8 +128,7 @@ public class TrustsResource implements Trusts {
    * {@inheritDoc}
    */
   @Override
-  public void calculateTrust(final String sourceId, final String targetId, final OperationRequest context,
-      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void calculateTrust(final String sourceId, final String targetId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final Trust trust = new Trust();
     trust.value = Math.random();

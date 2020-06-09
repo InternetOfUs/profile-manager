@@ -44,43 +44,44 @@ import io.vertx.ext.mongo.MongoClient;
  */
 public class TrustsRepositoryImpl extends Repository implements TrustsRepository {
 
-	/**
-	 * The name of the collection that contains the trusts.
-	 */
-	public static final String TRUSTS_COLLECTION = "trusts";
+  /**
+   * The name of the collection that contains the trusts.
+   */
+  public static final String TRUSTS_COLLECTION = "trusts";
 
-	/**
-	 * Create a new repository.
-	 *
-	 * @param pool to create the connections.
-	 */
-	public TrustsRepositoryImpl(MongoClient pool) {
+  /**
+   * Create a new repository.
+   *
+   * @param pool to create the connections.
+   */
+  public TrustsRepositoryImpl(final MongoClient pool) {
 
-		super(pool);
+    super(pool);
 
-	}
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void storeTrustEventObject(JsonObject event, Handler<AsyncResult<Void>> storeHandler) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void storeTrustEvent(final JsonObject event, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-		final long now = TimeManager.now();
-		event.put("reportTime", now);
-		this.pool.save(TRUSTS_COLLECTION, event, store -> {
+    final long now = TimeManager.now();
+    event.put("reportTime", now);
+    this.pool.save(TRUSTS_COLLECTION, event, store -> {
 
-			if (store.failed()) {
+      if (store.failed()) {
 
-				storeHandler.handle(Future.failedFuture(store.cause()));
+        storeHandler.handle(Future.failedFuture(store.cause()));
 
-			} else {
+      } else {
 
-				storeHandler.handle(Future.succeededFuture());
-			}
+        event.remove("_id");
+        storeHandler.handle(Future.succeededFuture(event));
+      }
 
-		});
+    });
 
-	}
+  }
 
 }

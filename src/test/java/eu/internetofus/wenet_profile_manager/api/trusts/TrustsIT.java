@@ -118,7 +118,7 @@ public class TrustsIT {
       final long time = TimeManager.now();
       testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
         final UserPerformanceRatingEvent stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
         assertThat(stored).isNotNull();
         assertThat(stored.reportTime).isGreaterThanOrEqualTo(time);
