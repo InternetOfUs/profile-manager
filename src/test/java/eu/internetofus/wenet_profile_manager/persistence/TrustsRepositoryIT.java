@@ -124,7 +124,7 @@ public class TrustsRepositoryIT {
    *
    * @return the future with the created tasks.
    */
-  static Future<List<UserPerformanceRatingEvent>> storeMultipleTamesAnUserPerformanceRatingEvent(final int max, final Vertx vertx, final VertxTestContext testContext, final BiConsumer<Integer, UserPerformanceRatingEvent> change) {
+  public static Future<List<UserPerformanceRatingEvent>> storeMultipleTamesAnUserPerformanceRatingEvent(final int max, final Vertx vertx, final VertxTestContext testContext, final BiConsumer<Integer, UserPerformanceRatingEvent> change) {
 
     final Promise<List<UserPerformanceRatingEvent>> promise = Promise.promise();
     new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(pattern -> {

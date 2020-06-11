@@ -125,7 +125,7 @@ public class TrustsResource implements Trusts {
   public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,
       final TrustAggregator aggregator, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final JsonObject query = new QueryBuilder().with("sourceId", sourceId).with("targetId", sourceId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
+    final JsonObject query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
         .withEqOrRegex("taskId", taskId).withRange("reportTime", reportFrom, reportTo).build();
     this.repository.calculateTrustBy(aggregator, query, calculation -> {
 
