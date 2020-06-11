@@ -119,7 +119,7 @@ public class TrustsResource implements Trusts {
   }
 
   /**
-   * {@inheridDoc}
+   * {@inheritDoc}
    */
   @Override
   public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,

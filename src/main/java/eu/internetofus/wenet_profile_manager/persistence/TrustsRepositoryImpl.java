@@ -107,7 +107,7 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   }
 
   /**
-   * {@inheridDoc}
+   * {@inheritDoc}
    */
   @Override
   public void calculateTrustBy(final TrustAggregator aggregator, final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
