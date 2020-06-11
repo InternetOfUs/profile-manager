@@ -28,6 +28,7 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trust;
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
@@ -68,11 +69,12 @@ public interface TrustsRepository {
    * Register this service.
    *
    * @param vertx that contains the event bus to use.
+   * @param conf  configuration to use.
    * @param pool  to create the database connections.
    */
-  static void register(final Vertx vertx, final MongoClient pool) {
+  static void register(final Vertx vertx, final JsonObject conf, final MongoClient pool) {
 
-    new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class, new TrustsRepositoryImpl(pool));
+    new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class, new TrustsRepositoryImpl(conf, pool));
 
   }
 
@@ -122,4 +124,13 @@ public interface TrustsRepository {
    * @param storeHandler handler to manage the store.
    */
   void storeTrustEvent(JsonObject event, Handler<AsyncResult<JsonObject>> storeHandler);
+
+  /**
+   * Calculate the trust using the specified trust and the events that matches the query.
+   *
+   * @param aggregator   to use.
+   * @param query        that has to match the vents.
+   * @param trustHandler handler to manage the calculated trust.
+   */
+  void calculateTrustBy(TrustAggregator aggregator, JsonObject query, Handler<AsyncResult<Double>> trustHandler);
 }

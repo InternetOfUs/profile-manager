@@ -27,13 +27,18 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
+import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.UUID;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.ErrorMessage;
@@ -130,6 +135,59 @@ public class TrustsIT {
 
     }));
 
+  }
+
+  /**
+   * Verify that can calculate the trust with a bad regular expression.
+   *
+   * @param aggregator  that has to fail.
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
+   *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
+  @EnumSource(TrustAggregator.class)
+  public void shouldNotCalculateTrustWithBadRegex(final TrustAggregator aggregator, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    testRequest(client, HttpMethod.GET, Trusts.PATH + "/1/with/2").with(queryParam("aggregator", aggregator.name()), queryParam("appId", "/1(?:{/")).expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
+
+    }).send(testContext);
+  }
+
+  /**
+   * Verify that can calculate the trust because not events match the query.
+   *
+   * @param aggregator  that has to fail.
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
+   *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
+  @EnumSource(TrustAggregator.class)
+  public void shouldNotCalculateTrustWithNoMatchingEvents(final TrustAggregator aggregator, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    final String id = UUID.randomUUID().toString();
+    testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + id + "/with/" + id).with(queryParam("aggregator", aggregator.name())).expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
+
+    }).send(testContext);
   }
 
 }

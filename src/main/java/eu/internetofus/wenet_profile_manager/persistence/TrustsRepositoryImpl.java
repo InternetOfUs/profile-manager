@@ -26,12 +26,20 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import java.util.List;
+
+import org.tinylog.Logger;
+
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.vertx.Repository;
+import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.AggregateOptions;
+import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
@@ -50,13 +58,27 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   public static final String TRUSTS_COLLECTION = "trusts";
 
   /**
+   * The default value for n parameters used to {@link TrustAggregator#RECENCY_BASED}.
+   */
+  public static final int DEFAULT_N = 5;
+
+  /**
+   * The n parameters to use in the {@link TrustAggregator#RECENCY_BASED}.
+   *
+   * @see #calculateRecencyBasedTrust(JsonObject, Handler)
+   */
+  protected int n;
+
+  /**
    * Create a new repository.
    *
+   * @param conf configuration to use.
    * @param pool to create the connections.
    */
-  public TrustsRepositoryImpl(final MongoClient pool) {
+  public TrustsRepositoryImpl(final JsonObject conf, final MongoClient pool) {
 
     super(pool);
+    this.n = conf.getJsonObject("TrustAggregator", new JsonObject()).getJsonObject("RECENCY_BASED", new JsonObject()).getInteger("n", DEFAULT_N);
 
   }
 
@@ -82,6 +104,151 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
 
     });
 
+  }
+
+  /**
+   * {@inheridDoc}
+   */
+  @Override
+  public void calculateTrustBy(final TrustAggregator aggregator, final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
+
+    switch (aggregator) {
+
+    case MAXIMUM:
+      this.processAggregation(this.createMongoAggregationWith("max", query), trustHandler);
+      break;
+    case MINIMUM:
+      this.processAggregation(this.createMongoAggregationWith("min", query), trustHandler);
+      break;
+    case AVERAGE:
+      this.processAggregation(this.createMongoAggregationWith("avg", query), trustHandler);
+      break;
+    case MEDIAN:
+      this.calculateMedianTrust(query, trustHandler);
+      break;
+    case RECENCY_BASED:
+      this.calculateRecencyBasedTrust(query, trustHandler);
+      break;
+    default:
+      trustHandler.handle(Future.failedFuture("The aggregation '" + aggregator + "' is not implemeted."));
+    }
+  }
+
+  /**
+   * Create the command to do the aggregation of the trust events.
+   *
+   * @param aggregator name of the mongoDB aggregation function to use.
+   * @param query      for the events to aggregate.
+   *
+   * @return the aggregation command to execute.
+   */
+  protected JsonObject createMongoAggregationWith(final String aggregator, final JsonObject query) {
+
+    final JsonArray pipeline = new JsonArray();
+    pipeline.add(new JsonObject().put("$match", query));
+    pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$" + aggregator, "$rating"))));
+    return new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
+
+  }
+
+  /**
+   * Execute an aggregation
+   *
+   * @param command      for the aggregation.
+   * @param trustHandler handler to report the aggregation result.
+   */
+  private void processAggregation(final JsonObject command, final Handler<AsyncResult<Double>> trustHandler) {
+
+    this.pool.runCommand("aggregate", command, aggregation -> {
+
+      if (aggregation.failed()) {
+
+        trustHandler.handle(Future.failedFuture(aggregation.cause()));
+
+      } else {
+
+        final JsonObject result = aggregation.result();
+        try {
+
+          final JsonObject cursor = result.getJsonObject("cursor");
+          final JsonArray firstBatch = cursor.getJsonArray("firstBatch");
+          final JsonObject batch = firstBatch.getJsonObject(0);
+          final Double trust = batch.getDouble("trust");
+          trustHandler.handle(Future.succeededFuture(trust));
+
+        } catch (final Throwable error) {
+
+          Logger.trace(error, "The aggregation result {} is unexpected. May be no events match the query", result);
+          trustHandler.handle(Future.failedFuture("No events match the query."));
+        }
+      }
+    });
+
+  }
+
+
+  /**
+   * Calculate the median trust.
+   *
+   * @param query        for the events to aggregate.
+   * @param trustHandler handler of the calculated trust.
+   */
+  protected void calculateMedianTrust(final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
+
+    this.pool.count(TRUSTS_COLLECTION, query, counter -> {
+
+      if (counter.failed()) {
+
+        trustHandler.handle(Future.failedFuture(counter.cause()));
+
+      } else {
+
+        final long total = counter.result();
+        if (total == 0) {
+
+          trustHandler.handle(Future.failedFuture("No events match the query."));
+
+        } else {
+          final FindOptions options = new FindOptions();
+          final int skip = (int) Math.round(total / 2.0 - 1);
+          options.setSkip(skip);
+          options.setLimit(1);
+          options.setSort(new JsonObject().put("rating", 1));
+          this.pool.findWithOptions(TRUSTS_COLLECTION, query, options, find -> {
+
+            if (find.failed()) {
+
+              trustHandler.handle(Future.failedFuture(find.cause()));
+
+            } else {
+
+              final List<JsonObject> events = find.result();
+              final double trust = events.get(0).getDouble("rating");
+              trustHandler.handle(Future.succeededFuture(trust));
+            }
+          });
+        }
+      }
+
+    });
+
+  }
+
+  /**
+   * Calculate the recency based trust.
+   *
+   * @param query        for the events to aggregate.
+   * @param trustHandler handler of the calculated trust.
+   */
+  protected void calculateRecencyBasedTrust(final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
+
+    final JsonArray pipeline = new JsonArray();
+    pipeline.add(new JsonObject().put("$match", query));
+    pipeline.add(new JsonObject().put("$sort", new JsonObject().put("reportTime", -1)));
+    pipeline.add(new JsonObject().put("$limit", this.n));
+    pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$avg", "$rating"))));
+    final JsonObject command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
+    this.processAggregation(command, trustHandler);
   }
 
 }

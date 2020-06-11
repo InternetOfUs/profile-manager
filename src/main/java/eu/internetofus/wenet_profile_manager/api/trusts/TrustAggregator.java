@@ -26,38 +26,36 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import static org.mockito.Mockito.mock;
-
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
-import io.vertx.core.Vertx;
-import io.vertx.junit5.VertxExtension;
-
 /**
- * Test the {@link TrustsResource}.
- *
- * @see TrustsResource
- *
- * @author UDT-IA, IIIA-CSIC
+ * Type of aggregation function used to calculate the trust.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(VertxExtension.class)
-public class TrustsResourceTest {
+public enum TrustAggregator {
 
-	/**
-	 * Create a resource where the repository is a mocked class.
-	 *
-	 * @return the created class with the mocked repository.
-	 */
-	public static TrustsResource createTrustsResource() {
+  /**
+   * This is based on the recency rating events. It is the function used on uHelp.
+   */
+  RECENCY_BASED,
 
-		final TrustsResource resource = new TrustsResource();
-		resource.vertx = mock(Vertx.class);
-		resource.repository = mock(TrustsRepository.class);
-		return resource;
+  /**
+   * The trust is the average of the rating event.
+   */
+  AVERAGE,
 
-	}
+  /**
+   * The trust is the median of the rating event.
+   */
+  MEDIAN,
+
+  /**
+   * The trust is the minimum rating.
+   */
+  MINIMUM,
+
+  /**
+   * The trust is the maximum rating.
+   */
+  MAXIMUM;
 
 }

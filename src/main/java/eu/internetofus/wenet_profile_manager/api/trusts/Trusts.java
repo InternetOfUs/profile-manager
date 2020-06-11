@@ -27,17 +27,18 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.common.components.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -102,6 +103,14 @@ public interface Trusts {
    *
    * @param sourceId      identifier of the user that inform of the trust with another user.
    * @param targetId      identifier of the user that would obtain the trust.
+   * @param appId         application identifier to match for the events to use on the calculus.
+   * @param communityId   community identifier to match for the events to use on the calculus.
+   * @param taskTypeId    task type identifier to match for the events to use on the calculus.
+   * @param taskId        task identifier to match for the events to use on the calculus.
+   * @param relationship  to match for the events to use on the calculus.
+   * @param reportFrom    minimum report time that the events has to be reported to use on the calculus.
+   * @param reportTo      maximum report time that the events has to be reported to use on the calculus.
+   * @param aggregator    type of trust calculus.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
@@ -109,17 +118,18 @@ public interface Trusts {
   @Path(BETWEEN_USERS_TRUST_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Calculate the trust of an user respect another", description = "Allow to obtain the trust that an user have respect another in general, respect the relationship, on a community or by task type.")
-  @Parameter(in = ParameterIn.QUERY, name = "membership", description = "The type of relationship with the user that is calculating the trust. It can be a Perl compatible regular expressions (PCRE) that has to match the relationships on the trust events to aggregate.", required = false, schema = @Schema(type = "string", example = "friend"))
-  @Parameter(in = ParameterIn.QUERY, name = "communityId", description = "The identifier of the community to get the trust. It can be a Perl compatible regular expressions (PCRE) that has to match the community identifiers on the trust events to aggregate.", required = false, schema = @Schema(type = "string", example = "88cb96277edd"))
-  @Parameter(in = ParameterIn.QUERY, name = "taskTypeId", description = "The identifier of the task type to get the trust. It can be a Perl compatible regular expressions (PCRE) that has to match the task type identifiers on the trust events to aggregate.", required = false, schema = @Schema(type = "string", example = "77edd88cb962"))
-  @Parameter(in = ParameterIn.QUERY, name = "reportFrom", description = "The time stamp inclusive that mark the older limit in witch the trust event has reported. It is the difference, measured in seconds, between the time when the trust events were reported and midnight, January 1, 1970 UTC.", required = false, schema = @Schema(type = "integer", defaultValue = "0", example = "1457166440"))
-  @Parameter(in = ParameterIn.QUERY, name = "reportTo", description = "The time stamp inclusive that mark the newest limit in witch the trust event has reported. It is the difference, measured in seconds, between the time when the trust events were reported and midnight, January 1, 1970 UTC.", required = false, schema = @Schema(type = "integer", defaultValue = "92233720368547757", example = "1571664406"))
-  @Parameter(in = ParameterIn.QUERY, name = "aggregation", description = "The type of aggregation that has to be used to calculate the trust.", required = false, schema = @Schema(type = "string", defaultValue = "RECENCY_BASED", allowableValues = {
-      "RECENCY_BASED", "AVERAGE", "MEDIAN", "MINIMUM", "MAXIMUM" }, example = "1571664406"))
   @ApiResponse(responseCode = "200", description = "The calculated trust", content = @Content(schema = @Schema(implementation = Trust.class)))
   @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void calculateTrust(@PathParam("sourceId") @Parameter(description = "The identifier as reference that want to obtain the trust respect its point of view") String sourceId,
-      @PathParam("targetId") @Parameter(description = "The identifier of the user that want to have the trust") String targetId, @Parameter(hidden = true, required = false) OperationRequest context,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("targetId") @Parameter(description = "The identifier of the user that want to have the trust") String targetId,
+      @QueryParam(value = "appId") @Parameter(description = "An application identifier to be equals on the events to use on the calculus. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the events to use on the calculus if you write between '/'. For example to use the events for the aplications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.", example = "1", required = false) String appId,
+      @QueryParam(value = "communityId") @Parameter(description = "An community identifier to be equals on the events to use on the calculus. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of events to use on the calculus if you write between '/'. For example to use the events for the communities '1' and '2' you must pass as 'communityId' '/^[1|2]$/'.", example = "1", required = false) String communityId,
+      @QueryParam(value = "taskTypeId") @Parameter(description = "An task type identifier to be equals on the events to use on the calculus. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of events to use on the calculus if you write between '/'. For example to use the events for the task types '1' and '2' you must pass as 'taskTypeId' '/^[1|2]$/'.", example = "1", required = false) String taskTypeId,
+      @QueryParam(value = "taskId") @Parameter(description = "An task identifier to be equals on the events to use on the calculus. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the events to use on the calculus if you write between '/'. For example to use the events for the tasks '1' and '2' you must pass as 'taskId' '/^[1|2]$/'.", example = "1", required = false) String taskId,
+      @QueryParam(value = "relationship") @Parameter(description = "A relationship to be equals on the events to use on the calculus. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the tasks to return if you write between '/'. For example to use the events for the relationships 'friend' and 'family' you must pass as 'relationship' '/^[friend|family]$/'.", example = "1", required = false) String relationship,
+      @QueryParam(value = "reportFrom") @Parameter(description = "The difference, measured in seconds, between the minimum report time stamp of the event and midnight, January 1, 1970 UTC.", example = "1457166440", required = false) Long reportFrom,
+      @QueryParam(value = "reportTo") @Parameter(description = "The difference, measured in seconds, between the maximum report time stamp of the event and midnight, January 1, 1970 UTC.", example = "1571664406", required = false) Long reportTo,
+      @QueryParam(value = "aggregator") @Parameter(description = "The type of aggregation that has to be used to calculate the trust.", required = false, schema = @Schema(implementation = TrustAggregator.class, example = "MAXIMUM")) @DefaultValue("RECENCY_BASED") TrustAggregator aggregator,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

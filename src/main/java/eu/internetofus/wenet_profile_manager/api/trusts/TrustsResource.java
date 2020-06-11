@@ -33,6 +33,7 @@ import org.tinylog.Logger;
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
+import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -59,13 +60,6 @@ public class TrustsResource implements Trusts {
    * The repository to manage the trusts events.
    */
   protected TrustsRepository repository;
-
-  /**
-   * Create an empty resource. This is only used for unit tests.
-   */
-  protected TrustsResource() {
-
-  }
 
   /**
    * Create a new instance to provide the services of the {@link Trusts}.
@@ -125,15 +119,32 @@ public class TrustsResource implements Trusts {
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheridDoc}
    */
   @Override
-  public void calculateTrust(final String sourceId, final String targetId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,
+      final TrustAggregator aggregator, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final Trust trust = new Trust();
-    trust.value = Math.random();
-    trust.calculatedTime = TimeManager.now();
-    OperationReponseHandlers.responseOk(resultHandler, trust);
+    final JsonObject query = new QueryBuilder().with("sourceId", sourceId).with("targetId", sourceId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
+        .withEqOrRegex("taskId", taskId).withRange("reportTime", reportFrom, reportTo).build();
+    this.repository.calculateTrustBy(aggregator, query, calculation -> {
+
+      if (calculation.failed()) {
+
+        final Throwable cause = calculation.cause();
+        Logger.debug(cause, "Cannot calculate the trust {} for {}.", aggregator, query);
+        OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+      } else {
+
+        final Trust trust = new Trust();
+        trust.value = calculation.result();
+        trust.calculatedTime = TimeManager.now();
+        OperationReponseHandlers.responseOk(resultHandler, trust);
+
+      }
+
+    });
 
   }
 
