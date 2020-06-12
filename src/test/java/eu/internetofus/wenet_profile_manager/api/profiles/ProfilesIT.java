@@ -62,6 +62,8 @@ import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -483,14 +485,18 @@ public class ProfilesIT {
         newProfile.personalBehaviors = storedProfile.personalBehaviors;
         assertThat(updated).isEqualTo(newProfile);
 
-        ProfilesRepository.createProxy(vertx).searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> {
+        testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+          assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
           assertThat(page.profiles).hasSize(1);
           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
           assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
           testContext.completeNow();
-        }));
+
+        }).send(testContext);
 
       })).sendJson(newProfile.toJsonObject(), testContext);
     }));
@@ -551,7 +557,8 @@ public class ProfilesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#retrieveProfileHistoricPage(String, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Profiles#retrieveProfileHistoricPage(String, Long, Long, String, int, int,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
   public void shouldNotFoundHistoricOfANUndefinedProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -574,7 +581,8 @@ public class ProfilesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#retrieveProfileHistoricPage(String, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Profiles#retrieveProfileHistoricPage(String, Long, Long, String, int, int,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
   public void shouldNotFoundHistoricOfNonUpdateProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -600,7 +608,8 @@ public class ProfilesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#retrieveProfileHistoricPage(String, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Profiles#retrieveProfileHistoricPage(String, Long, Long, String, int, int,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
   public void shouldFoundHistoricProfilePage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -630,7 +639,8 @@ public class ProfilesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#retrieveProfileHistoricPage(String, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Profiles#retrieveProfileHistoricPage(String, Long, Long, String, int, int,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
   public void shouldFoundHistoricProfilePageForARange(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -641,7 +651,7 @@ public class ProfilesIT {
     page.profiles = new ArrayList<>();
     ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "DESC"), queryParam("offset", "5"), queryParam("limit", "3"))
+      testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "-"), queryParam("offset", "5"), queryParam("limit", "3"))
       .expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -696,7 +706,10 @@ public class ProfilesIT {
             storedProfile.name.middle = newMiddleName;
             assertThat(updated).isEqualTo(storedProfile);
 
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -705,7 +718,8 @@ public class ProfilesIT {
               storedProfile.name.middle = old_middle;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
               testContext.completeNow();
-            }));
+
+            }).send(testContext);
 
           })).sendJson(newProfile.toJsonObject(), testContext);
         }));
@@ -747,7 +761,10 @@ public class ProfilesIT {
             storedProfile.dateOfBirth.day = 1;
             assertThat(updated).isEqualTo(storedProfile);
 
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -756,7 +773,8 @@ public class ProfilesIT {
               storedProfile.dateOfBirth.day = 24;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
               testContext.completeNow();
-            }));
+
+            }).send(testContext);
 
           })).sendJson(newProfile.toJsonObject(), testContext);
         }));
@@ -797,7 +815,10 @@ public class ProfilesIT {
             storedProfile.gender = Gender.M;
             assertThat(updated).isEqualTo(storedProfile);
 
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -806,7 +827,8 @@ public class ProfilesIT {
               storedProfile.gender = Gender.F;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
               testContext.completeNow();
-            }));
+
+            }).send(testContext);
 
           })).sendJson(newProfile.toJsonObject(), testContext);
         }));
@@ -861,7 +883,10 @@ public class ProfilesIT {
             storedProfile.languages.add(new Language());
             storedProfile.languages.get(1).name = "English";
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page).isEqualTo(expected);
               newProfile.languages = new ArrayList<>();
@@ -870,7 +895,7 @@ public class ProfilesIT {
               newProfile.languages.get(0).code = "English";
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
 
-                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                assertThat(res2.statusCode()).isEqualTo(Status.OK.getStatusCode());
                 final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
                 assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
@@ -886,19 +911,52 @@ public class ProfilesIT {
                 storedProfile.languages.get(0).code = "en";
                 storedProfile.languages.get(0).name = "English";
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
+
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
-                })));
+
+                }).send(testContext);
 
               })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+
+            }).send(testContext);
 
           })).sendJson(newProfile.toJsonObject(), testContext);
         }));
       });
     }));
+
+  }
+
+  /**
+   * Called to obtain the historic profiles of an user.
+   *
+   * @param userId      identifier of the user to obtain the historic profiles.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   * @param pageHandler handler to inform of the historic profiles.
+   */
+  protected void searchHistoricProfilePageFor(final String userId, final WebClient client, final VertxTestContext testContext, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> pageHandler) {
+
+    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+      assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+      final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+      if (page == null) {
+
+        pageHandler.handle(Future.failedFuture("The returned JSON is not a HistoricWeNetUserProfilesPage"));
+
+      } else {
+
+        pageHandler.handle(Future.succeededFuture(page));
+      }
+
+    }).send(testContext);
 
   }
 
@@ -947,7 +1005,7 @@ public class ProfilesIT {
             storedProfile.norms.get(0).id = updated.norms.get(0).id;
             storedProfile.norms.get(1).attribute = "Attribute";
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.norms = new ArrayList<>();
@@ -971,7 +1029,7 @@ public class ProfilesIT {
                 storedProfile.norms.remove(1);
                 storedProfile.norms.get(0).attribute = "Attribute2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1033,7 +1091,7 @@ public class ProfilesIT {
             storedProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
             storedProfile.plannedActivities.get(1).description = "Description";
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.plannedActivities = new ArrayList<>();
@@ -1057,7 +1115,7 @@ public class ProfilesIT {
                 storedProfile.plannedActivities.remove(1);
                 storedProfile.plannedActivities.get(0).description = "Description2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1120,7 +1178,7 @@ public class ProfilesIT {
             storedProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
             storedProfile.relevantLocations.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.relevantLocations = new ArrayList<>();
@@ -1144,7 +1202,7 @@ public class ProfilesIT {
                 storedProfile.relevantLocations.remove(1);
                 storedProfile.relevantLocations.get(0).label = "Label2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1205,7 +1263,7 @@ public class ProfilesIT {
             storedProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
             storedProfile.socialPractices.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.socialPractices = new ArrayList<>();
@@ -1229,7 +1287,7 @@ public class ProfilesIT {
                 storedProfile.socialPractices.remove(1);
                 storedProfile.socialPractices.get(0).label = "Label2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1292,7 +1350,7 @@ public class ProfilesIT {
             storedProfile.personalBehaviors.get(0).user_id = storedProfile.id;
             storedProfile.personalBehaviors.get(1).user_id = storedProfile.id;
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               testContext.completeNow();
@@ -1352,7 +1410,7 @@ public class ProfilesIT {
             storedProfile.relationships.get(0).userId = storedProfile.relationships.get(1).userId;
             storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
             assertThat(updated).isEqualTo(storedProfile);
-            repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext,testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.relationships = new ArrayList<>();
@@ -1375,7 +1433,7 @@ public class ProfilesIT {
                 storedProfile.relationships = new ArrayList<>();
                 storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
                 assertThat(updated2).isEqualTo(storedProfile);
-                repository.searchHistoricProfilePage(storedProfile.id, 0, Long.MAX_VALUE, true, 0, 100, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();

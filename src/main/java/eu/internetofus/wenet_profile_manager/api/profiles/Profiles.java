@@ -28,19 +28,20 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -110,26 +111,12 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Create a profile", description = "Create a new WeNet user profile")
-  @RequestBody(
-      description = "The new profile to create",
-      required = true,
-      content = @Content(
-          schema = @Schema(
-              ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
-          examples = { @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
-  @ApiResponse(
-      responseCode = "200",
-      description = "The created profile",
-      content = @Content(
-          schema = @Schema(
-              ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
-          examples = { @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
-  @ApiResponse(
-      responseCode = "400",
-      description = "Bad profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void createProfile(@Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context,
+  @RequestBody(description = "The new profile to create", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
+  @ApiResponse(responseCode = "200", description = "The created profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
+  @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void createProfile(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -142,25 +129,11 @@ public interface Profiles {
   @GET
   @Path(PROFILE_ID_PATH)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(
-      summary = "Return a profile",
-      description = "Allow to get the profile with the specified identifier")
-  @ApiResponse(
-      responseCode = "200",
-      description = "The profile associated to the identifier",
-      content = @Content(
-          schema = @Schema(
-              ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
-          examples = { @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
-  @ApiResponse(
-      responseCode = "404",
-      description = "Not found profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void retrieveProfile(
-      @PathParam("userId") @Parameter(
-          description = "The identifier of the user to get",
-          example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context,
+  @Operation(summary = "Return a profile", description = "Allow to get the profile with the specified identifier")
+  @ApiResponse(responseCode = "200", description = "The profile associated to the identifier", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void retrieveProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -176,35 +149,14 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify a profile", description = "Change the attributes of a profile")
-  @RequestBody(
-      description = "The new values for the profile",
-      required = true,
-      content = @Content(
-          schema = @Schema(
-              ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
-          examples = { @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
-  @ApiResponse(
-      responseCode = "200",
-      description = "The updated profile",
-      content = @Content(
-          schema = @Schema(
-              ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"),
-          examples = { @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
-  @ApiResponse(
-      responseCode = "400",
-      description = "Bad profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(
-      responseCode = "404",
-      description = "Not found profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void updateProfile(
-      @PathParam("userId") @Parameter(
-          description = "The identifier of the user to update",
-          example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  @RequestBody(description = "The new values for the profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
+  @ApiResponse(responseCode = "200", description = "The updated profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
+  @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void updateProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a profile.
@@ -216,74 +168,38 @@ public interface Profiles {
   @DELETE
   @Path(PROFILE_ID_PATH)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(
-      summary = "Delete a profiler",
-      description = "Allow to delete a profile with an specific identifier")
+  @Operation(summary = "Delete a profiler", description = "Allow to delete a profile with an specific identifier")
   @ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
-  @ApiResponse(
-      responseCode = "404",
-      description = "Not found profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void deleteProfile(
-      @PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context,
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void deleteProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get the historic values of the profile.
    *
    * @param userId        identifier of the user to get the historic values.
+   * @param from          the minimum time stamp that define the range the profile is active.
+   * @param to            the maximum time stamp that define the range the profile is active.
+   * @param order         of the profiles to return.
+   * @param offset        index of the first task to return.
+   * @param limit         number maximum of tasks to return.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @GET
   @Path(PROFILE_ID_PATH + HISTORIC_PATH)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(
-      summary = "Get the status of the profile in specific time period",
-      description = "Allow to obtain the historic of profile changes")
-  @Parameter(
-      in = ParameterIn.QUERY,
-      name = "from",
-      description = "The time stamp inclusive that mark the older limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has to be valid and midnight, January 1, 1970 UTC.",
-      required = false,
-      schema = @Schema(type = "integer", defaultValue = "0", example = "1457166440"))
-  @Parameter(
-      in = ParameterIn.QUERY,
-      name = "to",
-      description = "The time stamp inclusive that mark the newest limit in witch the profile has to be active. It is the difference, measured in milliseconds, between the time when the profile has not more valid and midnight, January 1, 1970 UTC.",
-      required = false,
-      schema = @Schema(type = "integer", defaultValue = "92233720368547757", example = "1571664406"))
-  @Parameter(
-      in = ParameterIn.QUERY,
-      name = "order",
-      description = "The order in witch has to return the profiles. From the newest to the oldest (DESC) or from the oldest to the newest (ASC).",
-      required = false,
-      schema = @Schema(allowableValues = { "DESC", "ASC" }, defaultValue = "ASC", example = "ASC"))
-  @Parameter(
-      in = ParameterIn.QUERY,
-      name = "offset",
-      description = "Index of the first profile to return.",
-      required = false,
-      schema = @Schema(type = "integer", defaultValue = "0", example = "10"))
-  @Parameter(
-      in = ParameterIn.QUERY,
-      name = "limit",
-      description = "Number maximum of profiles to return.",
-      required = false,
-      schema = @Schema(type = "integer", defaultValue = "10", example = "100"))
-  @ApiResponse(
-      responseCode = "200",
-      description = "The found profiles",
-      content = @Content(schema = @Schema(implementation = HistoricWeNetUserProfilesPage.class)))
-  @ApiResponse(
-      responseCode = "404",
-      description = "Not found profile",
-      content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Operation(summary = "Get the status of the profile in specific time period", description = "Allow to obtain the historic of profile changes")
+  @ApiResponse(responseCode = "200", description = "The found profiles", content = @Content(schema = @Schema(implementation = HistoricWeNetUserProfilesPage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Historic")
-  void retrieveProfileHistoricPage(
-      @PathParam("userId") @Parameter(description = "The identifier of the user to get") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void retrieveProfileHistoricPage(@PathParam("userId") @Parameter(description = "The identifier of the user to get the historic profiles") String userId,
+      @QueryParam(value = "from") @Parameter(description = "The difference, measured in seconds, between the minimum time stamp when the profile was enabled and midnight, January 1, 1970 UTC.", example = "1457166440", required = false) Long from,
+      @QueryParam(value = "to") @Parameter(description = "The difference, measured in seconds, between the maximum time stamp when the profile was enabled and midnight, January 1, 1970 UTC.", example = "1571664406", required = false) Long to,
+      @QueryParam(value = "order") @Parameter(description = "The order in witch has to return the profiles. From the newest to the oldest (descendant '-') or from the oldest to the newest (ascendant '+').", required = false, schema = @Schema(allowableValues = {
+          "-", "+" }, defaultValue = "+", example = "-")) String order,
+      @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first task type to return.", example = "4", required = false) int offset,
+      @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of task types to return", example = "100", required = false) int limit,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

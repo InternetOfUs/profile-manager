@@ -50,203 +50,195 @@ import io.vertx.junit5.VertxTestContext;
 @ExtendWith(VertxExtension.class)
 public class ProfilesRepositoryTest {
 
-	/**
-	 * Verify that can not found a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotFoundProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+  /**
+   * Verify that can not found a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotFoundProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler) {
+      @Override
+      public void searchProfileObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-				searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+        searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
 
-			}
-		};
+      }
+    };
 
-		repository.searchProfile("any identifier", testContext.failing(fail -> {
-			testContext.completeNow();
-		}));
+    repository.searchProfile("any identifier", testContext.failing(fail -> {
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not store a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
-	 */
-	@Test
-	public void shouldNotStoreProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+  /**
+   * Verify that can not store a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
+   */
+  @Test
+  public void shouldNotStoreProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+      @Override
+      public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-				storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
-			}
-		};
+        storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+      }
+    };
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
-			testContext.completeNow();
-		}));
+    repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not store a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
-	 */
-	@Test
-	public void shouldNotStoreProfileBecauseStoreFailed(VertxTestContext testContext) {
+  /**
+   * Verify that can not store a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#storeProfile(WeNetUserProfile, Handler)
+   */
+  @Test
+  public void shouldNotStoreProfileBecauseStoreFailed(final VertxTestContext testContext) {
 
-		final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+      @Override
+      public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-				storeHandler.handle(Future.failedFuture(cause));
-			}
+        storeHandler.handle(Future.failedFuture(cause));
+      }
 
-		};
+    };
 
-		repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
-			assertThat(fail).isEqualTo(cause);
-			testContext.completeNow();
-		}));
+    repository.storeProfile(new WeNetUserProfile(), testContext.failing(fail -> {
+      assertThat(fail).isEqualTo(cause);
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not update a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotUpdateProfileBecauseUpdateFailed(VertxTestContext testContext) {
+  /**
+   * Verify that can not update a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotUpdateProfileBecauseUpdateFailed(final VertxTestContext testContext) {
 
-		final Throwable cause = new IllegalArgumentException("Cause that can not be updated");
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final Throwable cause = new IllegalArgumentException("Cause that can not be updated");
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler) {
+      @Override
+      public void updateProfile(final JsonObject profile, final Handler<AsyncResult<Void>> updateHandler) {
 
-				updateHandler.handle(Future.failedFuture(cause));
-			}
-		};
+        updateHandler.handle(Future.failedFuture(cause));
+      }
+    };
 
-		repository.updateProfile(new WeNetUserProfile(), testContext.failing(fail -> {
+    repository.updateProfile(new WeNetUserProfile(), testContext.failing(fail -> {
 
-			assertThat(fail).isEqualTo(cause);
-			testContext.completeNow();
-		}));
+      assertThat(fail).isEqualTo(cause);
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not store a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotStoreHistoricProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+  /**
+   * Verify that can not store a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotStoreHistoricProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+      @Override
+      public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-				storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
-			}
-		};
+        storeHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+      }
+    };
 
-		repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail -> {
-			testContext.completeNow();
-		}));
+    repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail -> {
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not store a profile because that returned by repository is
-	 * not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
-	 */
-	@Test
-	public void shouldNotStoreHistoricProfileBecauseStoreFailed(VertxTestContext testContext) {
+  /**
+   * Verify that can not store a profile because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#searchProfile(String, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotStoreHistoricProfileBecauseStoreFailed(final VertxTestContext testContext) {
 
-		final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			@Override
-			public void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler) {
+      @Override
+      public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-				storeHandler.handle(Future.failedFuture(cause));
-			}
+        storeHandler.handle(Future.failedFuture(cause));
+      }
 
-		};
+    };
 
-		repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail ->
+    repository.storeHistoricProfile(new HistoricWeNetUserProfile(), testContext.failing(fail ->
 
-		{
+    {
 
-			assertThat(fail).isEqualTo(cause);
-			testContext.completeNow();
-		}));
+      assertThat(fail).isEqualTo(cause);
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Verify that can not found a historic profile page because that returned by
-	 * repository is not right.
-	 *
-	 * @param testContext context that executes the test.
-	 *
-	 * @see ProfilesRepository#searchHistoricProfilePage(String, long, long,
-	 *      boolean, int, int, Handler)
-	 */
-	@Test
-	public void shouldNotFoundHistoricProfileBecauseReturnedJsonObjectIsNotRight(VertxTestContext testContext) {
+  /**
+   * Verify that can not found a historic profile page because that returned by repository is not right.
+   *
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#searchHistoricProfilePage(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldNotFoundHistoricProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-		final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
 
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void searchHistoricProfilePageObject(String userId, long from, long to, boolean ascending, int offset,
-					int limit, Handler<AsyncResult<JsonObject>> searchHandler) {
+      /**
+       * {@inheritDoc}
+       */
+      @Override
+      public void searchHistoricProfilePageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-				searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
-			}
-		};
+        searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
+      }
+    };
+    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery("any identifier", 0l, 100l);
+    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+    repository.searchHistoricProfilePage(query, sort, 0, 100, testContext.failing(fail -> {
+      testContext.completeNow();
+    }));
 
-		repository.searchHistoricProfilePage("any identifier", 0, 100, true, 0, 100, testContext.failing(fail -> {
-			testContext.completeNow();
-		}));
-
-	}
+  }
 }

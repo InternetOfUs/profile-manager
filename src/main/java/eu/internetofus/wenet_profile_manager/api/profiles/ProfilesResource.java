@@ -266,15 +266,12 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileHistoricPage(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order, final int offset, final int limit, final OperationRequest context,
+      final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final JsonObject params = context.getParams().getJsonObject("query", new JsonObject());
-    final long from = params.getLong("from", 0l);
-    final long to = params.getLong("to", Long.MAX_VALUE);
-    final boolean ascending = "ASC".equals(params.getString("order", "ASC"));
-    final int offset = params.getInteger("offset", 0);
-    final int limit = params.getInteger("limit", 10);
-    this.repository.searchHistoricProfilePage(userId, from, to, ascending, offset, limit, search -> {
+    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
+    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort(order);
+    this.repository.searchHistoricProfilePage(query, sort, offset, limit, search -> {
 
       if (search.failed()) {
 

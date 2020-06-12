@@ -28,6 +28,7 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import io.vertx.codegen.annotations.GenIgnore;
@@ -48,278 +49,278 @@ import io.vertx.serviceproxy.ServiceBinder;
 @ProxyGen
 public interface ProfilesRepository {
 
-	/**
-	 * The address of this service.
-	 */
-	String ADDRESS = "wenet_profile_manager.persistence.profiles";
+  /**
+   * The address of this service.
+   */
+  String ADDRESS = "wenet_profile_manager.persistence.profiles";
 
-	/**
-	 * Create a proxy of the {@link ProfilesRepository}.
-	 *
-	 * @param vertx where the service has to be used.
-	 *
-	 * @return the profile.
-	 */
-	static ProfilesRepository createProxy(Vertx vertx) {
+  /**
+   * Create a proxy of the {@link ProfilesRepository}.
+   *
+   * @param vertx where the service has to be used.
+   *
+   * @return the profile.
+   */
+  static ProfilesRepository createProxy(final Vertx vertx) {
 
-		return new ProfilesRepositoryVertxEBProxy(vertx, ProfilesRepository.ADDRESS);
-	}
+    return new ProfilesRepositoryVertxEBProxy(vertx, ProfilesRepository.ADDRESS);
+  }
 
-	/**
-	 * Register this service.
-	 *
-	 * @param vertx that contains the event bus to use.
-	 * @param pool  to create the database connections.
-	 */
-	static void register(Vertx vertx, MongoClient pool) {
+  /**
+   * Register this service.
+   *
+   * @param vertx that contains the event bus to use.
+   * @param pool  to create the database connections.
+   */
+  static void register(final Vertx vertx, final MongoClient pool) {
 
-		new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class,
-				new ProfilesRepositoryImpl(pool));
+    new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class, new ProfilesRepositoryImpl(pool));
 
-	}
+  }
 
-	/**
-	 * Search for the profile with the specified identifier.
-	 *
-	 * @param id            identifier of the user to search.
-	 * @param searchHandler handler to manage the search.
-	 */
-	@GenIgnore
-	default void searchProfile(String id, Handler<AsyncResult<WeNetUserProfile>> searchHandler) {
+  /**
+   * Search for the profile with the specified identifier.
+   *
+   * @param id            identifier of the user to search.
+   * @param searchHandler handler to manage the search.
+   */
+  @GenIgnore
+  default void searchProfile(final String id, final Handler<AsyncResult<WeNetUserProfile>> searchHandler) {
 
-		this.searchProfileObject(id, search -> {
+    this.searchProfileObject(id, search -> {
 
-			if (search.failed()) {
+      if (search.failed()) {
 
-				searchHandler.handle(Future.failedFuture(search.cause()));
+        searchHandler.handle(Future.failedFuture(search.cause()));
 
-			} else {
+      } else {
 
-				final JsonObject value = search.result();
-				final WeNetUserProfile profile = Model.fromJsonObject(value, WeNetUserProfile.class);
-				if (profile == null) {
+        final JsonObject value = search.result();
+        final WeNetUserProfile profile = Model.fromJsonObject(value, WeNetUserProfile.class);
+        if (profile == null) {
 
-					searchHandler.handle(Future.failedFuture("The stored profile is not valid."));
+          searchHandler.handle(Future.failedFuture("The stored profile is not valid."));
 
-				} else {
+        } else {
 
-					searchHandler.handle(Future.succeededFuture(profile));
-				}
-			}
-		});
-	}
+          searchHandler.handle(Future.succeededFuture(profile));
+        }
+      }
+    });
+  }
 
-	/**
-	 * Search for the profile with the specified identifier.
-	 *
-	 * @param id            identifier of the user to search.
-	 * @param searchHandler handler to manage the search.
-	 */
-	void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
+  /**
+   * Search for the profile with the specified identifier.
+   *
+   * @param id            identifier of the user to search.
+   * @param searchHandler handler to manage the search.
+   */
+  void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
 
-	/**
-	 * Store a profile.
-	 *
-	 * @param profile      to store.
-	 * @param storeHandler handler to manage the store.
-	 */
-	@GenIgnore
-	default void storeProfile(WeNetUserProfile profile, Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
+  /**
+   * Store a profile.
+   *
+   * @param profile      to store.
+   * @param storeHandler handler to manage the store.
+   */
+  @GenIgnore
+  default void storeProfile(final WeNetUserProfile profile, final Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
 
-		final JsonObject object = profile.toJsonObject();
-		if (object == null) {
+    final JsonObject object = profile.toJsonObject();
+    if (object == null) {
 
-			storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
 
-		} else {
+    } else {
 
-			this.storeProfile(object, stored -> {
-				if (stored.failed()) {
+      this.storeProfile(object, stored -> {
+        if (stored.failed()) {
 
-					storeHandler.handle(Future.failedFuture(stored.cause()));
+          storeHandler.handle(Future.failedFuture(stored.cause()));
 
-				} else {
+        } else {
 
-					final JsonObject value = stored.result();
-					final WeNetUserProfile storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
-					if (storedProfile == null) {
+          final JsonObject value = stored.result();
+          final WeNetUserProfile storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
+          if (storedProfile == null) {
 
-						storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
+            storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
 
-					} else {
+          } else {
 
-						storeHandler.handle(Future.succeededFuture(storedProfile));
-					}
+            storeHandler.handle(Future.succeededFuture(storedProfile));
+          }
 
-				}
-			});
-		}
-	}
+        }
+      });
+    }
+  }
 
-	/**
-	 * Store a profile.
-	 *
-	 * @param profile      to store.
-	 * @param storeHandler handler to manage the store.
-	 */
-	void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
+  /**
+   * Store a profile.
+   *
+   * @param profile      to store.
+   * @param storeHandler handler to manage the store.
+   */
+  void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
 
-	/**
-	 * Update a profile.
-	 *
-	 * @param profile       to update.
-	 * @param updateHandler handler to manage the update.
-	 */
-	@GenIgnore
-	default void updateProfile(WeNetUserProfile profile, Handler<AsyncResult<Void>> updateHandler) {
+  /**
+   * Update a profile.
+   *
+   * @param profile       to update.
+   * @param updateHandler handler to manage the update.
+   */
+  @GenIgnore
+  default void updateProfile(final WeNetUserProfile profile, final Handler<AsyncResult<Void>> updateHandler) {
 
-		final JsonObject object = profile.toJsonObject();
-		if (object == null) {
+    final JsonObject object = profile.toJsonObject();
+    if (object == null) {
 
-			updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
 
-		} else {
+    } else {
 
-			this.updateProfile(object, updateHandler);
-		}
+      this.updateProfile(object, updateHandler);
+    }
 
-	}
+  }
 
-	/**
-	 * Update a profile.
-	 *
-	 * @param profile       to update.
-	 * @param updateHandler handler to manage the update result.
-	 */
-	void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler);
+  /**
+   * Update a profile.
+   *
+   * @param profile       to update.
+   * @param updateHandler handler to manage the update result.
+   */
+  void updateProfile(JsonObject profile, Handler<AsyncResult<Void>> updateHandler);
 
-	/**
-	 * Delete a profile.
-	 *
-	 * @param id            identifier of the user to delete.
-	 * @param deleteHandler handler to manage the delete result.
-	 */
-	void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
+  /**
+   * Delete a profile.
+   *
+   * @param id            identifier of the user to delete.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
 
-	/**
-	 * Store a historic profile.
-	 *
-	 * @param profile      to store.
-	 * @param storeHandler handler to manage the store.
-	 */
-	@GenIgnore
-	default void storeHistoricProfile(HistoricWeNetUserProfile profile,
-			Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
+  /**
+   * Store a historic profile.
+   *
+   * @param profile      to store.
+   * @param storeHandler handler to manage the store.
+   */
+  @GenIgnore
+  default void storeHistoricProfile(final HistoricWeNetUserProfile profile, final Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
 
-		final JsonObject object = profile.toJsonObject();
-		if (object == null) {
+    final JsonObject object = profile.toJsonObject();
+    if (object == null) {
 
-			storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
 
-		} else {
+    } else {
 
-			this.storeHistoricProfile(object, stored -> {
-				if (stored.failed()) {
+      this.storeHistoricProfile(object, stored -> {
+        if (stored.failed()) {
 
-					storeHandler.handle(Future.failedFuture(stored.cause()));
+          storeHandler.handle(Future.failedFuture(stored.cause()));
 
-				} else {
+        } else {
 
-					final JsonObject value = stored.result();
-					value.remove("_id");
-					final HistoricWeNetUserProfile storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
-					if (storedProfile == null) {
+          final JsonObject value = stored.result();
+          value.remove("_id");
+          final HistoricWeNetUserProfile storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
+          if (storedProfile == null) {
 
-						storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
+            storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
 
-					} else {
+          } else {
 
-						storeHandler.handle(Future.succeededFuture(storedProfile));
-					}
+            storeHandler.handle(Future.succeededFuture(storedProfile));
+          }
 
-				}
-			});
-		}
-	}
+        }
+      });
+    }
+  }
 
-	/**
-	 * Store a historic profile.
-	 *
-	 * @param profile      to store.
-	 * @param storeHandler handler to manage the search.
-	 */
-	void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
+  /**
+   * Store a historic profile.
+   *
+   * @param profile      to store.
+   * @param storeHandler handler to manage the search.
+   */
+  void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
 
-	/**
-	 * Search for some historic profiles.
-	 *
-	 *
-	 * @param userId        identifier of the user to get the historic values.
-	 * @param from          the date inclusive that mark the older limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has to be valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param to            the date inclusive that mark the newest limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has not more valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param ascending     this is {@code true} if it has to return in ascending
-	 *                      order.
-	 * @param offset        index of the first profile to return.
-	 * @param limit         number maximum of profiles to return.
-	 * @param searchHandler handler to manage the search.
-	 */
-	@GenIgnore
-	default void searchHistoricProfilePage(String userId, long from, long to, boolean ascending, int offset, int limit,
-			Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
+  /**
+   * Search for some historic profiles.
+   *
+   *
+   * @param query         that define the historic profiles to return.
+   * @param sort          define the order in with the historic profiles has to be returned.
+   * @param offset        index of the first profile to return.
+   * @param limit         number maximum of profiles to return.
+   * @param searchHandler handler to manage the search.
+   */
+  @GenIgnore
+  default void searchHistoricProfilePage(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
 
-		this.searchHistoricProfilePageObject(userId, from, to, ascending, offset, limit, search -> {
+    this.searchHistoricProfilePageObject(query, sort, offset, limit, search -> {
 
-			if (search.failed()) {
+      if (search.failed()) {
 
-				searchHandler.handle(Future.failedFuture(search.cause()));
+        searchHandler.handle(Future.failedFuture(search.cause()));
 
-			} else {
+      } else {
 
-				final JsonObject value = search.result();
-				final HistoricWeNetUserProfilesPage page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
-				if (page == null) {
+        final JsonObject value = search.result();
+        final HistoricWeNetUserProfilesPage page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
+        if (page == null) {
 
-					searchHandler.handle(Future.failedFuture("The stored page is not valid."));
+          searchHandler.handle(Future.failedFuture("The stored page is not valid."));
 
-				} else {
+        } else {
 
-					searchHandler.handle(Future.succeededFuture(page));
-				}
-			}
-		});
+          searchHandler.handle(Future.succeededFuture(page));
+        }
+      }
+    });
 
-	}
+  }
 
-	/**
-	 * Search for some historic profiles.
-	 *
-	 *
-	 * @param userId        identifier of the user to get the historic values.
-	 * @param from          the date inclusive that mark the older limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has to be valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param to            the date inclusive that mark the newest limit in witch
-	 *                      the profile has to be active. It is the difference,
-	 *                      measured in milliseconds, between the time when the
-	 *                      profile has not more valid and midnight, January 1, 1970
-	 *                      UTC.
-	 * @param ascending     this is {@code true} if it has to return in ascending
-	 *                      order.
-	 * @param offset        index of the first profile to return.
-	 * @param limit         number maximum of profiles to return.
-	 * @param searchHandler handler to manage the search.
-	 */
-	void searchHistoricProfilePageObject(String userId, long from, long to, boolean ascending, int offset, int limit,
-			Handler<AsyncResult<JsonObject>> searchHandler);
+  /**
+   * Search for some historic profiles.
+   *
+   *
+   * @param query         that define the historic profiles to return.
+   * @param sort          define the order in with the historic profiles has to be returned.
+   * @param offset        index of the first profile to return.
+   * @param limit         number maximum of profiles to return.
+   * @param searchHandler handler to manage the search.
+   */
+  void searchHistoricProfilePageObject(JsonObject query, JsonObject sort, int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
+
+  /**
+   * Create the query to obtain the historic pages that match the specified parameters.
+   *
+   * @param userId identifier of the user to get the historic values.
+   * @param from   the minimum time stamp that define the range the profile is active.
+   * @param to     the maximum time stamp that define the range the profile is active.
+   *
+   * @return the query to obtain the page with the profiles with the specified parameters.
+   */
+  static JsonObject createProfileHistoricPageQuery(final String userId, final Long from, final Long to) {
+
+    return new QueryBuilder().with("profile.id", userId).withRange("from", from, null).withRange("to", null, to).build();
+  }
+
+  /**
+   * Create the sort to obtain the historic profiles.
+   *
+   * @param order in with the profiles has to returned.
+   *
+   * @return the object that define the profiles order.
+   */
+  static JsonObject createProfileHistoricPageSort(final String order) {
+
+    return new JsonObject().put("from", Integer.parseInt(order+ "1"));
+  }
 
 }
