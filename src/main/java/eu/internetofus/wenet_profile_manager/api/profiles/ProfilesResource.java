@@ -183,24 +183,27 @@ public class ProfilesResource implements Profiles {
 
         } else {
 
-          target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
+          source.id = null;
+          source.validate("bad_new_profile", this.vertx).onComplete(validate -> {
 
-            if (merge.failed()) {
+            if (validate.failed()) {
 
-              final Throwable cause = merge.cause();
+              final Throwable cause = validate.cause();
               Logger.debug(cause, "Cannot update {} with {}.", target, source);
               OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
             } else {
 
-              final WeNetUserProfile merged = merge.result();
-              if (merged.equals(target)) {
+              source.id = target.id;
+              source._creationTs = target._creationTs;
+              source._lastUpdateTs = target._lastUpdateTs;
+              if (source.equals(target)) {
 
                 OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "profile_to_update_equal_to_original",
                     "You can not update the profile of the user '" + userId + "', because the new values is equals to the current one.");
 
               } else {
-                this.repository.updateProfile(merged, update -> {
+                this.repository.updateProfile(source, update -> {
 
                   if (update.failed()) {
 
@@ -219,6 +222,82 @@ public class ProfilesResource implements Profiles {
                       if (store.failed()) {
 
                         Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
+                      }
+                      source._lastUpdateTs = historic.to;
+                      OperationReponseHandlers.responseOk(resultHandler, source);
+
+                    });
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+    }
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
+    if (source == null) {
+
+      Logger.debug("The {} is not a valid WeNetUserProfile to merge.", body);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_merge", "The profile to merge is not right.");
+
+    } else {
+
+      this.repository.searchProfile(userId, search -> {
+
+        final WeNetUserProfile target = search.result();
+        if (target == null) {
+
+          Logger.debug(search.cause(), "Not found profile {} to update", userId);
+          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile_to_merge", "You can not merge the profile of the user '" + userId + "', because it does not exist.");
+
+        } else {
+
+          target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
+
+            if (merge.failed()) {
+
+              final Throwable cause = merge.cause();
+              Logger.debug(cause, "Cannot merge {} with {}.", target, source);
+              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+            } else {
+
+              final WeNetUserProfile merged = merge.result();
+              if (merged.equals(target)) {
+
+                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "profile_to_merge_equal_to_original",
+                    "You can not merge the profile of the user '" + userId + "', because the new values is equals to the current one.");
+
+              } else {
+                this.repository.updateProfile(merged, update -> {
+
+                  if (update.failed()) {
+
+                    final Throwable cause = update.cause();
+                    Logger.debug(cause, "Cannot merge {}.", target);
+                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+                  } else {
+
+                    final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+                    historic.from = target._lastUpdateTs;
+                    historic.to = TimeManager.now();
+                    historic.profile = target;
+                    this.repository.storeHistoricProfile(historic, store -> {
+
+                      if (store.failed()) {
+
+                        Logger.debug(store.cause(), "Cannot store the merged profile as historic.");
                       }
                       OperationReponseHandlers.responseOk(resultHandler, merged);
 

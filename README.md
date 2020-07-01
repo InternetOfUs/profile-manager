@@ -148,12 +148,12 @@ The latest APIs documentation is available [here](http://swagger.u-hopper.com/?u
 The profile manager has the next available instances:
 
  - WeNet production profile manager API is available at [https://wenet.u-hopper.com/prod/profile_manager/](https://wenet.u-hopper.com/prod/profile_manager/).
- - WeNet development profile manager API is available at ["https://wenet.u-hopper.com/dev/profile_manager/](https://wenet.u-hopper.com/dev/profile_manager/).
+ - WeNet development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager/](https://wenet.u-hopper.com/dev/profile_manager/).
  - The IIIA stable profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/latest/](http://ardid.iiia.csic.es/wenet/profile-manager/latest/).
  - The IIIA development profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/dev/](http://ardid.iiia.csic.es/wenet/profile-manager/dev/).
- - The profile manager API 0.12.X is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.12/](http://ardid.iiia.csic.es/wenet/profile-manager/0.12/).
- - The profile manager API 0.11.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
- - The profile manager API 0.10.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
+ - The profile manager API 0.12 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.12/](http://ardid.iiia.csic.es/wenet/profile-manager/0.12/).
+ - The profile manager API 0.11 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
+ - The profile manager API 0.10 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
 
 
 ## License

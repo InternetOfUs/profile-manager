@@ -361,7 +361,7 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that not update a profile if any change is done.
+   * Verify that return error when try to update with a profile that is not valid.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -371,11 +371,175 @@ public class ProfilesIT {
    *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotUpdateProfileBecauseNotChangesHasDone(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotUpdateProfileWithABadProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      final WeNetUserProfile newProfile = new WeNetUserProfile();
+      newProfile.nationality = ValidationsTest.STRING_256;
+      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty().contains("nationality");
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).sendJson(newProfile.toJsonObject(), testContext);
+    }));
+  }
+
+  /**
+   * Verify that return error when try to update with a profile that has the same vlaues that the original.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotUpdateProfileWithSameProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isEqualTo("profile_to_update_equal_to_original");
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).sendJson(profile.toJsonObject(), testContext);
+    }));
+  }
+
+  /**
+   * Verify that can update a profile with another.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldUpdateProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
+
+      new WeNetUserProfileTest().createModelExample(2, vertx, testContext, testContext.succeeding(newProfile->{
+
+        testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+          assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+          newProfile.id = storedProfile.id;
+          newProfile._creationTs = storedProfile._creationTs;
+          newProfile._lastUpdateTs = updated._lastUpdateTs;
+          newProfile.norms.get(0).id = updated.norms.get(0).id;
+          newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+          newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+          newProfile.relationships = updated.relationships;
+          newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
+          newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
+          newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
+          newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+          newProfile.personalBehaviors = storedProfile.personalBehaviors;
+          assertThat(updated).isEqualTo(newProfile);
+
+          testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+            assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+            assertThat(page.profiles).hasSize(1);
+            assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+            assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+            assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+            testContext.completeNow();
+
+          }).send(testContext);
+
+        })).sendJson(newProfile.toJsonObject(), testContext);
+
+      }));
+
+    }));
+
+  }
+
+
+  /**
+   * Verify that return error when try to merge an undefined profile.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
+
+    final WeNetUserProfile profile = new WeNetUserProfileTest().createBasicExample(1);
+    testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
+
+    }).sendJson(profile.toJsonObject(), testContext);
+  }
+
+  /**
+   * Verify that return error when try to merge with a model that is not a profile.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileWithANotProfileObject(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
+    }));
+  }
+
+  /**
+   * Verify that not merge a profile if any change is done.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileBecauseNotChangesHasDone(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -389,21 +553,21 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that not update a profile because the source is not valid.
+   * Verify that not merge a profile because the source is not valid.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
    *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotUpdateProfileBecauseBadSource(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotMergeProfileBecauseBadSource(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
@@ -417,7 +581,7 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that can update a basic profile with another.
+   * Verify that can merge a basic profile with another.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -426,22 +590,22 @@ public class ProfilesIT {
    * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
    */
   @Test
-  public void shouldUpdateBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldMergeBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfile(new WeNetUserProfileTest().createBasicExample(1), vertx, testContext, testContext.succeeding(storedProfile -> {
 
       final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
       newProfile.id = UUID.randomUUID().toString();
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
         newProfile.id = storedProfile.id;
         newProfile._creationTs = storedProfile._creationTs;
-        newProfile._lastUpdateTs = updated._lastUpdateTs;
-        newProfile.norms.get(0).id = updated.norms.get(0).id;
-        assertThat(updated).isEqualTo(newProfile);
+        newProfile._lastUpdateTs = merged._lastUpdateTs;
+        newProfile.norms.get(0).id = merged.norms.get(0).id;
+        assertThat(merged).isEqualTo(newProfile);
         testContext.completeNow();
 
       })).sendJson(newProfile.toJsonObject(), testContext);
@@ -451,7 +615,7 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that can update a complex profile with another.
+   * Verify that can merge a complex profile with another.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -460,30 +624,30 @@ public class ProfilesIT {
    * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
    */
   @Test
-  public void shouldUpdateProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldMergeProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
       final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
       newProfile.id = UUID.randomUUID().toString();
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
         newProfile.id = storedProfile.id;
         newProfile._creationTs = storedProfile._creationTs;
-        newProfile._lastUpdateTs = updated._lastUpdateTs;
-        newProfile.norms.get(0).id = updated.norms.get(0).id;
-        newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
-        newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
-        newProfile.relationships = updated.relationships;
-        newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-        newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
-        newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
-        newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+        newProfile._lastUpdateTs = merged._lastUpdateTs;
+        newProfile.norms.get(0).id = merged.norms.get(0).id;
+        newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
+        newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
+        newProfile.relationships = merged.relationships;
+        newProfile.socialPractices.get(0).id = merged.socialPractices.get(0).id;
+        newProfile.socialPractices.get(0).materials.id = merged.socialPractices.get(0).materials.id;
+        newProfile.socialPractices.get(0).competences.id = merged.socialPractices.get(0).competences.id;
+        newProfile.socialPractices.get(0).norms.get(0).id = merged.socialPractices.get(0).norms.get(0).id;
         newProfile.personalBehaviors = storedProfile.personalBehaviors;
-        assertThat(updated).isEqualTo(newProfile);
+        assertThat(merged).isEqualTo(newProfile);
 
         testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
@@ -1005,7 +1169,7 @@ public class ProfilesIT {
             storedProfile.norms.get(0).id = updated.norms.get(0).id;
             storedProfile.norms.get(1).attribute = "Attribute";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.norms = new ArrayList<>();
@@ -1029,7 +1193,7 @@ public class ProfilesIT {
                 storedProfile.norms.remove(1);
                 storedProfile.norms.get(0).attribute = "Attribute2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1091,7 +1255,7 @@ public class ProfilesIT {
             storedProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
             storedProfile.plannedActivities.get(1).description = "Description";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.plannedActivities = new ArrayList<>();
@@ -1115,7 +1279,7 @@ public class ProfilesIT {
                 storedProfile.plannedActivities.remove(1);
                 storedProfile.plannedActivities.get(0).description = "Description2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1178,7 +1342,7 @@ public class ProfilesIT {
             storedProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
             storedProfile.relevantLocations.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.relevantLocations = new ArrayList<>();
@@ -1202,7 +1366,7 @@ public class ProfilesIT {
                 storedProfile.relevantLocations.remove(1);
                 storedProfile.relevantLocations.get(0).label = "Label2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();
@@ -1263,7 +1427,7 @@ public class ProfilesIT {
             storedProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
             storedProfile.socialPractices.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.socialPractices = new ArrayList<>();
@@ -1350,7 +1514,7 @@ public class ProfilesIT {
             storedProfile.personalBehaviors.get(0).user_id = storedProfile.id;
             storedProfile.personalBehaviors.get(1).user_id = storedProfile.id;
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               testContext.completeNow();
@@ -1410,7 +1574,7 @@ public class ProfilesIT {
             storedProfile.relationships.get(0).userId = storedProfile.relationships.get(1).userId;
             storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext,testContext.succeeding(page -> testContext.verify(() -> {
+            this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page -> testContext.verify(() -> {
 
               assertThat(page).isEqualTo(expected);
               newProfile.relationships = new ArrayList<>();
@@ -1433,7 +1597,7 @@ public class ProfilesIT {
                 storedProfile.relationships = new ArrayList<>();
                 storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
 
                   assertThat(page2).isEqualTo(expected);
                   testContext.completeNow();

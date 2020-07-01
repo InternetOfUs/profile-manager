@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -140,7 +141,7 @@ public interface Profiles {
    * Called when want to modify a profile.
    *
    * @param userId        identifier of the user to modify.
-   * @param body          the new profile attributes.
+   * @param body          the new profile.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
@@ -148,14 +149,36 @@ public interface Profiles {
   @Path(PROFILE_ID_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Modify a profile", description = "Change the attributes of a profile")
-  @RequestBody(description = "The new values for the profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @Operation(summary = "Modify a profile", description = "Change a profile")
+  @RequestBody(description = "The new profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
   @ApiResponse(responseCode = "200", description = "The updated profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void updateProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to modify partially a profile.
+   *
+   * @param userId        identifier of the user to modify.
+   * @param body          the new profile attributes.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Modify partially a profile", description = "Change some attributes of a profile")
+  @RequestBody(description = "The new values for the profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
+  @ApiResponse(responseCode = "200", description = "The merged profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+      @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
+  @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void mergeProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
