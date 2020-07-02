@@ -442,13 +442,13 @@ public class ProfilesIT {
           newProfile._lastUpdateTs = updated._lastUpdateTs;
           newProfile.norms.get(0).id = updated.norms.get(0).id;
           newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+          newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
           newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
           newProfile.relationships = updated.relationships;
           newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
           newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
           newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
           newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
-          newProfile.personalBehaviors = storedProfile.personalBehaviors;
           assertThat(updated).isEqualTo(newProfile);
 
           testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
@@ -471,7 +471,6 @@ public class ProfilesIT {
     }));
 
   }
-
 
   /**
    * Verify that return error when try to merge an undefined profile.

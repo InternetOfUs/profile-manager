@@ -43,6 +43,7 @@ import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -77,7 +78,7 @@ public interface Profiles {
   String ADDRESS = "wenet_profile_manager.api.profiles";
 
   /**
-   * The sub path to retrieve a profile.
+   * The sub path with an user identifier.
    */
   String PROFILE_ID_PATH = "/{userId}";
 
@@ -100,6 +101,66 @@ public interface Profiles {
    * The path to the profile past attributes resource.
    */
   String HISTORIC_PATH = "/historic";
+
+  /**
+   * The path to edit the norms of a profile.
+   */
+  String NORMS_PATH = "/norms";
+
+  /**
+   * The sub path with a norm identifier.
+   */
+  String NORMS_AND_ID_PATH = NORMS_PATH + "/{normId}";
+
+  /**
+   * The path to the planned activities of a profile.
+   */
+  String PLANNED_ACTIVITIES_PATH = "/plannedActivities";
+
+  /**
+   * The sub path with a planned activity identifier.
+   */
+  String PLANNED_ACTIVITIES_AND_ID_PATH = PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}";
+
+  /**
+   * The path to the relevant locations of a profile.
+   */
+  String RELEVANT_LOCATIONS_PATH = "/relevantLocations";
+
+  /**
+   * The sub path with a relevant location identifier.
+   */
+  String RELEVANT_LOCATIONS_AND_ID_PATH = RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}";
+
+  /**
+   * The path to the relationships of a profile.
+   */
+  String RELATIONSHIPS_PATH = "/SocialNetworkRelationships";
+
+  /**
+   * The sub path with a relationship identifier.
+   */
+  String RELATIONSHIPS_AND_ID_PATH = RELATIONSHIPS_PATH + "/{relationshipId}";
+
+  /**
+   * The path to the social practices of a profile.
+   */
+  String SOCIAL_PRACTICES_PATH = "/socialPractices";
+
+  /**
+   * The sub path with a social practice identifier.
+   */
+  String SOCIAL_PRACTICES_AND_ID_PATH = SOCIAL_PRACTICES_PATH + "/{socialPracticeId}";
+
+  /**
+   * The path to the personal behaviors of a profile.
+   */
+  String PERSONAL_BEHAVIORS_PATH = "/personalBehaviors";
+
+  /**
+   * The sub path with a personal behavior identifier.
+   */
+  String PERSONAL_BEHAVIORS_AND_ID_PATH = PERSONAL_BEHAVIORS_PATH + "/{personalBehaviorId}";
 
   /**
    * Called when want to create an user profile.
@@ -223,6 +284,727 @@ public interface Profiles {
           "-", "+" }, defaultValue = "+", example = "-")) String order,
       @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first task type to return.", example = "4", required = false) int offset,
       @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of task types to return", example = "100", required = false) int limit,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to add a norm into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the norm.
+   * @param body          norm to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + NORMS_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a norm into a profile", description = "Insert a new norm into a profile")
+  @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "201", description = "The added norm into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void addNorm(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the norm", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the norm from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all norms.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + NORMS_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the norms from a profile", description = "Allow to get all the norms defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The norms defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void retrieveNorms(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a norm from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the norm is defined.
+   * @param normId        identifier of the norm to get.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a norm from a profile", description = "Allow to get a norm defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The norm defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void retrieveNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a norm from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the norm is defined.
+   * @param normId        identifier of the norm to update.
+   * @param body          the new values for the norm.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a norm from a profile", description = "Allow to modify a norm defined into a profile")
+  @RequestBody(description = "The new values to update the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "200", description = "The updated norm", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "400", description = "Bad norm to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void updateNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a norm from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the norm is defined.
+   * @param normId        identifier of the norm to merge.
+   * @param body          the new values for the norm.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a norm from a profile", description = "Allow to modify parts of a norm defined into a profile")
+  @RequestBody(description = "The new values to merge the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "200", description = "The current values of the norm after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "400", description = "Bad norm to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void mergeNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a norm from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the norm is defined.
+   * @param normId        identifier of the norm to delete.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a norm from a profile", description = "Allow to delete a defined norm from a profile")
+  @ApiResponse(responseCode = "204", description = "The norm defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Norms")
+  void deleteNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to add a planned activity into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the plannedActivity.
+   * @param body          planned activity to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a planned activity into a profile", description = "Insert a new planned activity into a profile")
+  @RequestBody(description = "The new planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "201", description = "The added planned activity into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "400", description = "Bad planned activity to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void addPlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the planned activity", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the planned activity from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all plannedactivities.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the planned activities from a profile", description = "Allow to get all the planned activities defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The planned activities defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void retrievePlannedActivities(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a planned activity from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the planned activity is defined.
+   * @param plannedActivityId identifier of the planned activity to get.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a planned activity from a profile", description = "Allow to get a planned activity defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The planned activity defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void retrievePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a planned activity from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the planned activity is defined.
+   * @param plannedActivityId identifier of the planned activity to update.
+   * @param body              the new values for the planned activity.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a planned activity from a profile", description = "Allow to modify a planned activity defined into a profile")
+  @RequestBody(description = "The new values to update the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "200", description = "The updated planned activity", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "400", description = "Bad planned activity to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void updatePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a planned activity from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the planned activity is defined.
+   * @param plannedActivityId identifier of the planned activity to merge.
+   * @param body              the new values for the planned activity.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a planned activity from a profile", description = "Allow to modify parts of a planned activity defined into a profile")
+  @RequestBody(description = "The new values to merge the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "200", description = "The current values of the planned activity after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "400", description = "Bad planned activity to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void mergePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a planned activity from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the planned activity is defined.
+   * @param plannedActivityId identifier of the planned activity to delete.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a planned activity from a profile", description = "Allow to delete a defined planned activity from a profile")
+  @ApiResponse(responseCode = "204", description = "The planned activity defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Planned activities")
+  void deletePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to add a relevant location into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the relevantLocation.
+   * @param body          relevant location to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a relevant location into a profile", description = "Insert a new relevant location into a profile")
+  @RequestBody(description = "The new relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "201", description = "The added relevant location into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "400", description = "Bad relevant location to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void addRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relevant location", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the relevant location from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all relevantlocations.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the relevant locations from a profile", description = "Allow to get all the relevant locations defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The relevant locations defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void retrieveRelevantLocations(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a relevant location from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param relevantLocationId identifier of the relevant location to get.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a relevant location from a profile", description = "Allow to get a relevant location defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The relevant location defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void retrieveRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a relevant location from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param relevantLocationId identifier of the relevant location to update.
+   * @param body              the new values for the relevant location.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a relevant location from a profile", description = "Allow to modify a relevant location defined into a profile")
+  @RequestBody(description = "The new values to update the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "200", description = "The updated relevant location", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "400", description = "Bad relevant location to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void updateRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a relevant location from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param relevantLocationId identifier of the relevant location to merge.
+   * @param body              the new values for the relevant location.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a relevant location from a profile", description = "Allow to modify parts of a relevant location defined into a profile")
+  @RequestBody(description = "The new values to merge the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "200", description = "The current values of the relevant location after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "400", description = "Bad relevant location to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void mergeRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a relevant location from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param relevantLocationId identifier of the relevant location to delete.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a relevant location from a profile", description = "Allow to delete a defined relevant location from a profile")
+  @ApiResponse(responseCode = "204", description = "The relevant location defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relevant locations")
+  void deleteRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to add a relationship into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the relationship.
+   * @param body          relationship to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a relationship into a profile", description = "Insert a new relationship into a profile")
+  @RequestBody(description = "The new relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "201", description = "The added relationship into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "400", description = "Bad relationship to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void addRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the relationship from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all relationships.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the relationships from a profile", description = "Allow to get all the relationships defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void retrieveRelationships(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a relationship from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the relationship is defined.
+   * @param relationshipId        identifier of the relationship to get.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a relationship from a profile", description = "Allow to get a relationship defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The relationship defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void retrieveRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a relationship from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the relationship is defined.
+   * @param relationshipId        identifier of the relationship to update.
+   * @param body          the new values for the relationship.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a relationship from a profile", description = "Allow to modify a relationship defined into a profile")
+  @RequestBody(description = "The new values to update the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "200", description = "The updated relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void updateRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a relationship from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the relationship is defined.
+   * @param relationshipId        identifier of the relationship to merge.
+   * @param body          the new values for the relationship.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a relationship from a profile", description = "Allow to modify parts of a relationship defined into a profile")
+  @RequestBody(description = "The new values to merge the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "200", description = "The current values of the relationship after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "400", description = "Bad relationship to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void mergeRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a relationship from a profile.
+   *
+   * @param userId        identifier of the user for the profile where the relationship is defined.
+   * @param relationshipId        identifier of the relationship to delete.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a relationship from a profile", description = "Allow to delete a defined relationship from a profile")
+  @ApiResponse(responseCode = "204", description = "The relationship defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void deleteRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to add a social practice into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the socialPractice.
+   * @param body          social practice to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a social practice into a profile", description = "Insert a new social practice into a profile")
+  @RequestBody(description = "The new social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "201", description = "The added social practice into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "400", description = "Bad social practice to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void addSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the social practice", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the social practice from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all socialpractices.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the social practices from a profile", description = "Allow to get all the social practices defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The social practices defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void retrieveSocialPractices(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a social practice from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param socialPracticeId identifier of the social practice to get.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a social practice from a profile", description = "Allow to get a social practice defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The social practice defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void retrieveSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a social practice from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param socialPracticeId identifier of the social practice to update.
+   * @param body              the new values for the social practice.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a social practice from a profile", description = "Allow to modify a social practice defined into a profile")
+  @RequestBody(description = "The new values to update the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "200", description = "The updated social practice", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "400", description = "Bad social practice to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void updateSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a social practice from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param socialPracticeId identifier of the social practice to merge.
+   * @param body              the new values for the social practice.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a social practice from a profile", description = "Allow to modify parts of a social practice defined into a profile")
+  @RequestBody(description = "The new values to merge the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "200", description = "The current values of the social practice after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(responseCode = "400", description = "Bad social practice to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void mergeSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a social practice from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param socialPracticeId identifier of the social practice to delete.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a social practice from a profile", description = "Allow to delete a defined social practice from a profile")
+  @ApiResponse(responseCode = "204", description = "The social practice defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void deleteSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+
+  /**
+   * Called when want to add a personal behavior into a profile.
+   *
+   * @param userId        identifier of the user for the profile to add the personalBehavior.
+   * @param body          personal behavior to add to the profile.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add a personal behavior into a profile", description = "Insert a new personal behavior into a profile")
+  @RequestBody(description = "The new personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "201", description = "The added personal behavior into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "400", description = "Bad personal behavior to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void addPersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the personal behavior", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get all the personal behavior from a profile.
+   *
+   * @param userId        identifier of the user for the profile to get all personalbehaviors.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return the personal behaviors from a profile", description = "Allow to get all the personal behaviors defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The personal behaviors defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior"))))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void retrievePersonalBehaviors(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get a personal behavior from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the personal behavior is defined.
+   * @param personalBehaviorId identifier of the personal behavior to get.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @GET
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return a personal behavior from a profile", description = "Allow to get a personal behavior defined into a profile")
+  @ApiResponse(responseCode = "200", description = "The personal behavior defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void retrievePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to update a personal behavior from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the personal behavior is defined.
+   * @param personalBehaviorId identifier of the personal behavior to update.
+   * @param body              the new values for the personal behavior.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PUT
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Update a personal behavior from a profile", description = "Allow to modify a personal behavior defined into a profile")
+  @RequestBody(description = "The new values to update the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "200", description = "The updated personal behavior", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "400", description = "Bad personal behavior to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void updatePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to partially modify a personal behavior from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the personal behavior is defined.
+   * @param personalBehaviorId identifier of the personal behavior to merge.
+   * @param body              the new values for the personal behavior.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @PATCH
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Change a personal behavior from a profile", description = "Allow to modify parts of a personal behavior defined into a profile")
+  @RequestBody(description = "The new values to merge the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "200", description = "The current values of the personal behavior after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PersonalBehavior")))
+  @ApiResponse(responseCode = "400", description = "Bad personal behavior to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void mergePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to delete a personal behavior from a profile.
+   *
+   * @param userId            identifier of the user for the profile where the personal behavior is defined.
+   * @param personalBehaviorId identifier of the personal behavior to delete.
+   * @param context           of the request.
+   * @param resultHandler     to inform of the response.
+   */
+  @DELETE
+  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Delete a personal behavior from a profile", description = "Allow to delete a defined personal behavior from a profile")
+  @ApiResponse(responseCode = "204", description = "The personal behavior defined into the profile")
+  @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Personal behaviors")
+  void deletePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
       @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

@@ -373,4 +373,364 @@ public class ProfilesResource implements Profiles {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addNorm(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveNorms(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addPlannedActivity(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrievePlannedActivities(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addRelevantLocation(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveRelevantLocations(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addRelationship(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveRelationships(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveRelationship(final String userId, final String relationshipId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateRelationship(final String userId, final String relationshipId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeRelationship(final String userId, final String relationshipId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteRelationship(final String userId, final String relationshipId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveSocialPractices(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addPersonalBehavior(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrievePersonalBehaviors(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrievePersonalBehavior(final String userId, final String personalBehaviorId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updatePersonalBehavior(final String userId, final String personalBehaviorId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergePersonalBehavior(final String userId, final String personalBehaviorId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deletePersonalBehavior(final String userId, final String personalBehaviorId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
 }
