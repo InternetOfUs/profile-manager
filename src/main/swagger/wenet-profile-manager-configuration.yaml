@@ -4,18 +4,30 @@ prettyPrint: true
 cacheTTL: 0
 openAPI:
   tags:
-    - name: Other
-      description: Other services provided by the API.
+    - name: Profiles
+      description: The functionality provided allows to access current and previous values of user attributes that define the user profile.  It also allows you to modify the current values.
     - name: Intelligences
       description: Provide the functionality to evaluate the intelligences of a person
     - name: Personalities
       description: Provide the functionality to evaluate the personality of a person
     - name: Historic
       description: The functionality provided allows to access to the values of the models in a previous dates.
-    - name: Profiles
-      description: The functionality provided allows to access current and previous values of user attributes that define the user profile.  It also allows you to modify the current values.
     - name: Trusts
       description: The functionality provided allows to manage the trust over other users.
+    - name: Norms
+      description: The functionality provided allows to manage the norms defined into an user profile.
+    - name: Planned activities
+      description: The functionality provided allows to manage the planned activities defined into an user profile.
+    - name: Relevant locations
+      description: The functionality provided allows to manage the relevant locations defined into an user profile.
+    - name: Relationships
+      description: The functionality provided allows to manage the relationships defined into an user profile.
+    - name: Social practices
+      description: The functionality provided allows to manage the social practices defined into an user profile.
+    - name: Personal behaviors
+      description: The functionality provided allows to manage the personal behaviors defined into an user profile.
+    - name: Other
+      description: Other services provided by the API.
   info:
     # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
     version: '0.12.0'
