@@ -23,43 +23,33 @@
  *
  * -----------------------------------------------------------------------------
  */
+
 package eu.internetofus.wenet_profile_manager.api.versions;
 
-import eu.internetofus.common.components.Model;
-import io.swagger.v3.oas.annotations.media.Schema;
+import eu.internetofus.common.components.ModelTestCase;
 
 /**
- * A model with the status report information.
+ * Test the {@link APIInfo}.
+ *
+ * @see APIInfo
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "version", description = "Provide the version information of the API")
-public class Version extends Model {
+public class APIInfoTest extends ModelTestCase<APIInfo> {
 
-	/**
-	 * The current version of the API.
-	 */
-	@Schema(description = "Contain the implementation version number of the API", example = "1.0.0")
-	public String api;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public APIInfo createModelExample(final int index) {
 
-	/**
-	 * The current version of the software.
-	 */
-	@Schema(description = "Contain the implementation version number of the software", example = "1.0.0")
-	public String software;
+    final APIInfo version = new APIInfo();
+    version.name = "name" + index;
+    version.apiVersion = "0.0." + index;
+    version.softwareVersion = "0." + index + ".0";
+    version.vendor = "vendor" + index;
+    version.license = "license" + index;
+    return version;
+  }
 
-	/**
-	 * The current vendor of the API.
-	 */
-	@Schema(
-			description = "Contain information of the organization that has implemented the API",
-			example = "UDT-IA, IIIA-CSIC")
-	public String vendor;
-
-	/**
-	 * Create a new version.
-	 */
-	public Version() {
-
-	}
 }

@@ -41,30 +41,51 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * The integration test over the {@link Versions}.
+ * The integration test over the {@link Help}.
  *
- * @see Versions
+ * @see Help
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class VersionsIT {
+public class HelpIT {
 
-	/**
-	 * Verify that return the version.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 */
-	@Test
-	public void shouldReturnVersion(WebClient client, VertxTestContext testContext) {
+  /**
+   * Verify that return the api information.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldReturnApiInfo(final WebClient client, final VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.GET, Versions.PATH).expect(res -> {
-			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-			final Version version = assertThatBodyIs(Version.class, res);
-			assertThat(version.api).isNotEmpty();
-			assertThat(version.software).isNotEmpty();
-			assertThat(version.vendor).isNotEmpty();
-		}).send(testContext);
-	}
+    testRequest(client, HttpMethod.GET, Help.PATH + Help.INFO_PATH).expect(res -> {
+      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+      final APIInfo info = assertThatBodyIs(APIInfo.class, res);
+      assertThat(info.name).isNotEmpty();
+      assertThat(info.apiVersion).isNotEmpty();
+      assertThat(info.softwareVersion).isNotEmpty();
+      assertThat(info.vendor).isNotEmpty();
+      assertThat(info.license).isNotEmpty();
+    }).send(testContext);
+  }
+
+
+  /**
+   * Verify that return the OpenAPI description.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldReturnOpenAPiVersion(final WebClient client, final VertxTestContext testContext) {
+
+    testRequest(client, HttpMethod.GET, Help.PATH + Help.OPENAPI_YAML_PATH).expect(res -> {
+      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+      final String body = res.bodyAsString();
+      assertThat(body).isNotEmpty();
+    }).send(testContext);
+  }
+
+
 }
