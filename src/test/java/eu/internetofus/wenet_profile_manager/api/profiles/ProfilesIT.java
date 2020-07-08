@@ -430,7 +430,7 @@ public class ProfilesIT {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
-      new WeNetUserProfileTest().createModelExample(2, vertx, testContext, testContext.succeeding(newProfile->{
+      new WeNetUserProfileTest().createModelExample(2, vertx, testContext, testContext.succeeding(newProfile -> {
 
         testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
@@ -1661,4 +1661,5 @@ public class ProfilesIT {
     }).sendJson(new JsonObject().put("id", id), testContext);
 
   }
+
 }

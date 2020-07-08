@@ -26,12 +26,26 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.Validable;
+import eu.internetofus.common.components.profile_manager.Norm;
+import eu.internetofus.common.components.profile_manager.PlannedActivity;
+import eu.internetofus.common.components.profile_manager.RelevantLocation;
+import eu.internetofus.common.components.profile_manager.Routine;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
+import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
@@ -39,6 +53,7 @@ import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -302,16 +317,11 @@ public class ProfilesResource implements Profiles {
                       OperationReponseHandlers.responseOk(resultHandler, merged);
 
                     });
-
                   }
-
                 });
               }
             }
-          }
-
-              );
-
+          });
         }
       });
     }
@@ -359,16 +369,164 @@ public class ProfilesResource implements Profiles {
         OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
       } else {
+
         final HistoricWeNetUserProfilesPage page = search.result();
         if (page.total == 0l) {
 
           OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found", "Not found any historic profile that match to the specific parameters.");
 
         } else {
-          OperationReponseHandlers.responseOk(resultHandler, page);
 
+          OperationReponseHandlers.responseOk(resultHandler, page);
         }
       }
+    });
+
+  }
+
+  /**
+   * Validate a model.
+   *
+   * @param type          of model to validate.
+   * @param value         of the model to verify.
+   * @param modelName     name of teh type.
+   * @param resultHandler handler for the http response.
+   * @param success       component to call if the model is valid.
+   *
+   * @param <T>           type of model to test.
+   */
+  protected <T extends Model & Validable> void validate(final Class<T> type, final JsonObject value, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler, final Consumer<T> success) {
+
+    final T model = Model.fromJsonObject(value, type);
+    if (model == null) {
+
+      Logger.debug("The JSON {} does not represents a {}.", value, modelName);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_json", "The JSON does not represents a " + modelName + ".");
+
+    } else {
+
+      final String codePrefix = "bad_" + modelName;
+      model.validate(codePrefix, this.vertx).onComplete(valid -> {
+
+        if (valid.failed()) {
+
+          final Throwable cause = valid.cause();
+          Logger.debug(cause, "The {} is not a valid {}.", model, modelName);
+          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+        } else {
+
+          success.accept(model);
+        }
+      });
+
+    }
+  }
+
+  /**
+   * Search for a profile.
+   *
+   * @param userId        identifier of the user to get the profile.
+   * @param resultHandler handler for the http response.
+   * @param success       component to call when the profile is found.
+   */
+  protected void searchProfile(final String userId, final Handler<AsyncResult<OperationResponse>> resultHandler, final Consumer<WeNetUserProfile> success) {
+
+    this.repository.searchProfile(userId, search -> {
+
+      final WeNetUserProfile target = search.result();
+      if (target == null) {
+
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "profile_not_defined", "Does not exist a profile associated to the user identifier.");
+
+      } else {
+
+        success.accept(target);
+      }
+    });
+
+  }
+
+  /**
+   * Update a profile.
+   *
+   * @param original      profile before update.
+   * @param profile       to update.
+   * @param resultHandler handler for the response.
+   * @param success       called when the profile is updated.
+   */
+  protected void updateProfile(final WeNetUserProfile original, final WeNetUserProfile profile, final Handler<AsyncResult<OperationResponse>> resultHandler, final Runnable success) {
+
+    this.repository.updateProfile(profile, update -> {
+
+      if (update.failed()) {
+
+        final Throwable cause = update.cause();
+        Logger.debug(cause, "Cannot update profile {}.", profile);
+        OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+      } else {
+
+        final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+        historic.from = original._lastUpdateTs;
+        historic.to = TimeManager.now();
+        historic.profile = original;
+        this.repository.storeHistoricProfile(historic, store -> {
+
+          if (store.failed()) {
+
+            Logger.debug(store.cause(), "Cannot update profile historic.");
+          }
+          success.run();
+
+        });
+      }
+    });
+  }
+
+  /**
+   * Add a model into a profile.
+   *
+   * @param type          of model.
+   * @param value         of the model to add.
+   * @param modelName     name of the type to validate.
+   * @param userId        identifier of the user
+   * @param getModels     function to get the models from the profile.
+   * @param setModels     function to set the models for the profile.
+   * @param equalsId      function to check if two model has the same identifier.
+   * @param resultHandler handler for the response.
+   */
+  protected <T extends Model & Validable> void addModelToProfile(final Class<T> type, final JsonObject value, final String modelName, final String userId, final Function<WeNetUserProfile, List<T>> getModels,
+      final BiConsumer<WeNetUserProfile, List<T>> setModels, final BiPredicate<T, T> equalsId, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.validate(type, value, modelName, resultHandler, model -> {
+
+      this.searchProfile(userId, resultHandler, profile -> {
+
+        final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+        List<T> models = getModels.apply(newProfile);
+        if (models == null) {
+
+          models = new ArrayList<>();
+          setModels.accept(newProfile, models);
+
+        } else {
+
+          for (final T defined : models) {
+
+            if (equalsId.test(defined, model)) {
+
+              OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "duplicated_" + modelName + "_identifier", "Already exist a " + modelName + " with the specified identifier.");
+              return;
+            }
+
+          }
+        }
+
+        models.add(model);
+        this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, model));
+
+      });
     });
 
   }
@@ -379,7 +537,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addNorm(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(Norm.class, body, "norm", userId, profile -> profile.norms, (profile, norms) -> profile.norms = norms, (norm1, norm2) -> norm1.id.equals(norm2.id), resultHandler);
 
   }
 
@@ -389,7 +547,36 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveNorms(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.norms, resultHandler);
+
+  }
+
+  /**
+   * Retrieve the models defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param modelsIn      return the models defined in a profile.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T extends Model> void retrieveModelsFromProfile(final String userId, final Function<WeNetUserProfile, List<T>> modelsIn, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.searchProfile(userId, resultHandler, profile -> {
+
+      final List<T> models = modelsIn.apply(profile);
+      JsonArray array = null;
+      if (models != null) {
+
+        array = Model.toJsonArray(models);
+
+      } else {
+
+        array = new JsonArray();
+
+      }
+
+      OperationReponseHandlers.responseOk(resultHandler, array);
+
+    });
 
   }
 
@@ -399,7 +586,42 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, normId, profile -> profile.norms, (norm, id) -> norm.id.equals(id), "norm", resultHandler);
+
+  }
+
+  /**
+   * Retrieve the model defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param modelId       identifier of the model.
+   * @param modelsIn      return the models defined in a profile.
+   * @param checkId       function to check the identifier.
+   * @param modelName     name of the model.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T extends Model> void retrieveModelFromProfile(final String userId, final String modelId, final Function<WeNetUserProfile, List<T>> modelsIn, final BiPredicate<T, String> checkId, final String modelName,
+      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.searchProfile(userId, resultHandler, profile -> {
+
+      final List<T> models = modelsIn.apply(profile);
+      if (models != null) {
+
+        for (final T model : models) {
+
+          if (checkId.test(model, modelId)) {
+
+            OperationReponseHandlers.responseOk(resultHandler, model);
+            return;
+          }
+
+        }
+      }
+
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+
+    });
 
   }
 
@@ -409,7 +631,56 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.updateModelFromProfile(userId, normId, body, Norm.class, profile -> profile.norms, norm -> norm.id, (id, norm) -> norm.id = id, "norm", resultHandler);
+
+  }
+
+  /**
+   * Update a model defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param modelId       identifier of the model.
+   * @param value         for the model.
+   * @param type          of the model.
+   * @param modelsIn      return the models defined in a profile.
+   * @param getId         function to get the identifier.
+   * @param setId         function to set the identifier.
+   * @param modelName     name of the model.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T extends Model & Validable> void updateModelFromProfile(final String userId, final String modelId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn,
+      final Function<T, String> getId, final BiConsumer<String, T> setId, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.validate(type, value, modelName, resultHandler, model -> {
+
+      setId.accept(modelId, model);
+      this.searchProfile(userId, resultHandler, profile -> {
+
+        final List<T> models = modelsIn.apply(profile);
+        if (models != null) {
+
+          final int max = models.size();
+          for (int i = 0; i < max; i++) {
+
+            final T definedModel = models.get(i);
+            if (modelId.equals(getId.apply(definedModel))) {
+
+              final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+              final List<T> newProfileModels = modelsIn.apply(newProfile);
+              newProfileModels.remove(i);
+              newProfileModels.add(i, model);
+              this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, model));
+              return;
+            }
+
+          }
+
+        }
+
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+
+      });
+    });
 
   }
 
@@ -439,7 +710,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addPlannedActivity(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(PlannedActivity.class, body, "planned_activity", userId, profile -> profile.plannedActivities, (profile, plannedActivities) -> profile.plannedActivities = plannedActivities,
+        (plannedActivity1, plannedActivity2) -> plannedActivity1.id.equals(plannedActivity2.id), resultHandler);
 
   }
 
@@ -499,7 +771,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addRelevantLocation(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(RelevantLocation.class, body, "relevant_location", userId, profile -> profile.relevantLocations, (profile, relevantLocations) -> profile.relevantLocations = relevantLocations,
+        (relevantLocation1, relevantLocation2) -> relevantLocation1.id.equals(relevantLocation2.id), resultHandler);
 
   }
 
@@ -559,7 +832,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addRelationship(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(SocialNetworkRelationship.class, body, "relationship", userId, profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships,
+        (relationship1, relationship2) -> relationship1.equals(relationship2), resultHandler);
 
   }
 
@@ -619,7 +893,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(SocialPractice.class, body, "social_practice", userId, profile -> profile.socialPractices, (profile, socialPractices) -> profile.socialPractices = socialPractices,
+        (socialPractice1, socialPractice2) -> socialPractice1.id.equals(socialPractice2.id), resultHandler);
 
   }
 
@@ -679,7 +954,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addPersonalBehavior(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.addModelToProfile(Routine.class, body, "personal_behaviour", userId, profile -> profile.personalBehaviors, (profile, personalBehaviors) -> profile.personalBehaviors = personalBehaviors,
+        (personalBehavior1, personalBehavior2) -> personalBehavior1.equals(personalBehavior2), resultHandler);
 
   }
 
