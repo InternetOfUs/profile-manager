@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response.Status;
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.components.Mergeable;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.Validable;
 import eu.internetofus.common.components.profile_manager.Norm;
@@ -690,8 +691,74 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, normId, body, Norm.class, profile -> profile.norms, norm -> norm.id, (id, norm) -> norm.id = id, "norm", resultHandler);
 
+  }
+
+  /**
+   * Merge a model defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param modelId       identifier of the model.
+   * @param value         for the model.
+   * @param type          of the model.
+   * @param modelsIn      return the models defined in a profile.
+   * @param getId         function to get the identifier.
+   * @param setId         function to set the identifier.
+   * @param modelName     name of the model.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T extends Model & Mergeable<T>> void mergeModelFromProfile(final String userId, final String modelId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn,
+      final Function<T, String> getId, final BiConsumer<String, T> setId, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final T source = Model.fromJsonObject(value, type);
+    if (source == null) {
+
+      Logger.debug("The JSON {} does not represents a {}.", value, modelName);
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_json", "The JSON does not represents a " + modelName + ".");
+
+    } else {
+
+      this.searchProfile(userId, resultHandler, profile -> {
+
+        final List<T> models = modelsIn.apply(profile);
+        if (models != null) {
+
+          final int max = models.size();
+          for (int i = 0; i < max; i++) {
+
+            final T target = models.get(i);
+            if (modelId.equals(getId.apply(target))) {
+
+              final int index = i;
+              target.merge(source, "bad_" + modelName, this.vertx).onComplete(merge -> {
+                if (merge.failed()) {
+
+                  final Throwable cause = merge.cause();
+                  Logger.debug(cause, "The {} can not be merged with {}.", source, target);
+                  OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+
+                } else {
+
+                  final T merged = merge.result();
+                  final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+                  final List<T> newProfileModels = modelsIn.apply(newProfile);
+                  newProfileModels.remove(index);
+                  newProfileModels.add(index, merged);
+                  this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, merged));
+                }
+              });
+              return;
+            }
+
+          }
+
+        }
+
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+
+      });
+    }
   }
 
   /**
@@ -700,7 +767,46 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.deleteModelFromProfile(userId, normId, "norm", profile -> profile.norms, norm -> norm.id, resultHandler);
+
+  }
+
+  /**
+   * Delete a model defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param modelId       identifier of the model.
+   * @param modelsIn      return the models defined in a profile.
+   * @param modelName     name of the model to remove.
+   * @param getId         function to get the identifier.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T> void deleteModelFromProfile(final String userId, final String modelId, final String modelName, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<T, String> getId,
+      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.searchProfile(userId, resultHandler, profile -> {
+
+      final List<T> models = modelsIn.apply(profile);
+      if (models != null) {
+
+        final int max = models.size();
+        for (int i = 0; i < max; i++) {
+
+          final T target = models.get(i);
+          if (modelId.equals(getId.apply(target))) {
+
+            final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+            final List<T> newProfileModels = modelsIn.apply(newProfile);
+            newProfileModels.remove(i);
+            this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler));
+            return;
+          }
+        }
+      }
+
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+
+    });
 
   }
 

@@ -354,6 +354,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a norm from a profile", description = "Allow to modify a norm defined into a profile")
   @RequestBody(description = "The new values to update the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
@@ -376,6 +377,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a norm from a profile", description = "Allow to modify parts of a norm defined into a profile")
   @RequestBody(description = "The new values to merge the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
@@ -397,7 +399,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a norm from a profile", description = "Allow to delete a defined norm from a profile")
   @ApiResponse(responseCode = "204", description = "The norm defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -474,6 +475,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a planned activity from a profile", description = "Allow to modify a planned activity defined into a profile")
   @RequestBody(description = "The new values to update the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
@@ -496,6 +498,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a planned activity from a profile", description = "Allow to modify parts of a planned activity defined into a profile")
   @RequestBody(description = "The new values to merge the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
@@ -517,7 +520,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a planned activity from a profile", description = "Allow to delete a defined planned activity from a profile")
   @ApiResponse(responseCode = "204", description = "The planned activity defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -594,6 +596,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a relevant location from a profile", description = "Allow to modify a relevant location defined into a profile")
   @RequestBody(description = "The new values to update the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
@@ -616,6 +619,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a relevant location from a profile", description = "Allow to modify parts of a relevant location defined into a profile")
   @RequestBody(description = "The new values to merge the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
@@ -637,7 +641,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a relevant location from a profile", description = "Allow to delete a defined relevant location from a profile")
   @ApiResponse(responseCode = "204", description = "The relevant location defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -714,6 +717,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a relationship from a profile", description = "Allow to modify a relationship defined into a profile")
   @RequestBody(description = "The new values to update the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
@@ -736,6 +740,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a relationship from a profile", description = "Allow to modify parts of a relationship defined into a profile")
   @RequestBody(description = "The new values to merge the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
@@ -757,7 +762,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a relationship from a profile", description = "Allow to delete a defined relationship from a profile")
   @ApiResponse(responseCode = "204", description = "The relationship defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -834,6 +838,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a social practice from a profile", description = "Allow to modify a social practice defined into a profile")
   @RequestBody(description = "The new values to update the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
@@ -856,6 +861,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a social practice from a profile", description = "Allow to modify parts of a social practice defined into a profile")
   @RequestBody(description = "The new values to merge the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
@@ -877,7 +883,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a social practice from a profile", description = "Allow to delete a defined social practice from a profile")
   @ApiResponse(responseCode = "204", description = "The social practice defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -955,6 +960,7 @@ public interface Profiles {
    */
   @PUT
   @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a personal behavior from a profile", description = "Allow to modify a personal behavior defined into a profile")
   @RequestBody(description = "The new values to update the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
@@ -977,6 +983,7 @@ public interface Profiles {
    */
   @PATCH
   @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a personal behavior from a profile", description = "Allow to modify parts of a personal behavior defined into a profile")
   @RequestBody(description = "The new values to merge the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
@@ -998,7 +1005,6 @@ public interface Profiles {
    */
   @DELETE
   @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a personal behavior from a profile", description = "Allow to delete a defined personal behavior from a profile")
   @ApiResponse(responseCode = "204", description = "The personal behavior defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))

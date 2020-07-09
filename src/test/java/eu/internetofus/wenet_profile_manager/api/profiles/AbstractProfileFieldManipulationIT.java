@@ -574,7 +574,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
   }
 
   /**
-   * Should not add a model if the profile is not defined.
+   * Should not update a model if the profile is not defined.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -602,7 +602,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
   }
 
   /**
-   * Should not add a model if the model is not defined.
+   * Should not update a model if the model is not defined.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -682,4 +682,326 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
   }
 
+  /**
+   * Should not merge a model if the profile is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailMergeModelToUndefinedProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    this.createValidModel(1, vertx, testContext).onComplete(testContext.succeeding(model -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/1").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).sendJson(model.toJsonObject(), testContext);
+
+    }));
+
+  }
+
+  /**
+   * Should not merge a model if the model is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailMergeModelToUndefinedModel(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(model -> {
+
+      StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+        testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/undefinedModelId").expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          assertThat(error.code).isNotEmpty();
+          assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+          testContext.completeNow();
+
+        }).sendJson(model.toJsonObject(), testContext);
+
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Should not merge a model if the models are empty.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailMergeModelToEmptyModels(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(model -> {
+
+      StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile -> {
+        testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/1").expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          assertThat(error.code).isNotEmpty();
+          assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+          testContext.completeNow();
+
+        }).sendJson(model.toJsonObject(), testContext);
+
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Should not merge a bad coded json model.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldFailMergeBadCodedJson(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      final List<T> models = this.modelsIn(profile);
+      final T model = models.get(0);
+      final String modelId = this.idOf(model);
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/" + modelId).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).sendJson(new JsonObject().put("undefinedKey", "undefinedValue"), testContext);
+
+    }));
+
+  }
+
+  /**
+   * Should not merge an invalid model.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldFailMergeInvalidModel(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    this.createInvalidModel(vertx, testContext).onComplete(testContext.succeeding(invalidModel -> {
+
+      StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+        final List<T> models = this.modelsIn(profile);
+        final T model = models.get(0);
+        final String modelId = this.idOf(model);
+        testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/" + modelId).expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          assertThat(error.code).isNotEmpty();
+          assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+          testContext.completeNow();
+
+        }).sendJson(invalidModel.toJsonObject(), testContext);
+
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Should merge a model.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldMergeModel(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(target -> {
+
+        final List<T> models = this.modelsIn(profile);
+        final T source = models.get(0);
+        final String modelId = this.idOf(source);
+        testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/" + modelId).expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final T mergedModel = assertThatBodyIs(this.modelClass(), res);
+          this.idFrom(modelId, target);
+          assertThat(mergedModel).isEqualTo(target);
+          ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(mergedProfile -> {
+
+            final List<T> mergedModels = this.modelsIn(mergedProfile);
+            assertThat(mergedModels).contains(mergedModel).doesNotContain(source);
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              assertThat(page).isNotNull();
+              final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+              assertThat(historicProfile).isEqualTo(profile);
+              testContext.completeNow();
+
+            }).send(testContext);
+
+          }));
+
+        }).sendJson(target.toJsonObject(), testContext);
+
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Should not delete a model if the profile is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailDeleteModelToUndefinedProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/1").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+      testContext.completeNow();
+
+    }).send(testContext);
+
+  }
+
+  /**
+   * Should not delete a model if the model is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailDeleteModelToUndefinedModel(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+      testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/undefinedModelId").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).send(testContext);
+
+    }));
+
+  }
+
+  /**
+   * Should not delete a model if the models are empty.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldFailDeleteModelToEmptyModels(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile -> {
+      testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/1").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        testContext.completeNow();
+
+      }).send(testContext);
+
+    }));
+
+  }
+
+  /**
+   * Should delete a model.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldDeleteModel(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      final List<T> models = this.modelsIn(profile);
+      final T source = models.get(0);
+      final String modelId = this.idOf(source);
+      testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/" + modelId).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.NO_CONTENT.getStatusCode());
+        ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(deletedProfile -> {
+
+          final List<T> deletedModels = this.modelsIn(deletedProfile);
+          assertThat(deletedModels).doesNotContain(source);
+          testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+            assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+            assertThat(page).isNotNull();
+            final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+            assertThat(historicProfile).isEqualTo(profile);
+            testContext.completeNow();
+
+          }).send(testContext);
+
+        }));
+
+      }).send(testContext);
+
+    }));
+
+  }
 }
