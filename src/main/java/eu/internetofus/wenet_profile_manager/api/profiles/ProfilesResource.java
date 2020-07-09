@@ -890,7 +890,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveRelevantLocations(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.relevantLocations, resultHandler);
 
   }
 
@@ -900,7 +900,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, relevantLocationId, profile -> profile.relevantLocations, (relevantLocation, id) -> relevantLocation.id.equals(id), "relevant_location", resultHandler);
 
   }
 
@@ -910,7 +910,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.updateModelFromProfile(userId, relevantLocationId, body, RelevantLocation.class, profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, (id, relevantLocation) -> relevantLocation.id = id,
+        "relevant_location", resultHandler);
 
   }
 
@@ -920,7 +921,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, relevantLocationId, body, RelevantLocation.class, profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, (id, relevantLocation) -> relevantLocation.id = id, "relevant_location",
+        resultHandler);
 
   }
 
@@ -930,7 +932,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.deleteModelFromProfile(userId, relevantLocationId, "relevant_location", profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, resultHandler);
 
   }
 
