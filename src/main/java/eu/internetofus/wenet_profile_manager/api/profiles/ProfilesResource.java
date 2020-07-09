@@ -827,7 +827,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrievePlannedActivities(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.plannedActivities, resultHandler);
 
   }
 
@@ -837,7 +837,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, plannedActivityId, profile -> profile.plannedActivities, (plannedActivity, id) -> plannedActivity.id.equals(id), "planned_activity", resultHandler);
 
   }
 
@@ -847,7 +847,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.updateModelFromProfile(userId, plannedActivityId, body, PlannedActivity.class, profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, (id, plannedActivity) -> plannedActivity.id = id, "planned_activity",
+        resultHandler);
 
   }
 
@@ -857,7 +858,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, plannedActivityId, body, PlannedActivity.class, profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, (id, plannedActivity) -> plannedActivity.id = id, "planned_activity",
+        resultHandler);
 
   }
 
@@ -867,7 +869,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.deleteModelFromProfile(userId, plannedActivityId, "planned_activity", profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, resultHandler);
 
   }
 
