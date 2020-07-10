@@ -24,7 +24,7 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.versions;
+package eu.internetofus.wenet_profile_manager.api.help;
 
 import java.io.InputStream;
 
@@ -72,10 +72,10 @@ public class HelpResource implements Help {
   public HelpResource(final APIVerticle apiVerticle) {
 
     this.info = new APIInfo();
-    final JsonObject conf = apiVerticle.config().getJsonObject("help", new JsonObject());
+    final JsonObject conf = apiVerticle.config().getJsonObject("help", new JsonObject()).getJsonObject("info", new JsonObject());
     this.info.name = conf.getString("name", "wenet/profile-manager");
-    this.info.apiVersion = conf.getString("api", "Undefined");
-    this.info.softwareVersion = conf.getString("software", "Undefined");
+    this.info.apiVersion = conf.getString("apiVersion", "Undefined");
+    this.info.softwareVersion = conf.getString("softwareVersion", "Undefined");
     this.info.vendor = conf.getString("vendor", "UDT-IA, IIIA-CSIC");
     this.info.license = conf.getString("license", "MIT");
 

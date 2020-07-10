@@ -23,33 +23,53 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.help;
 
-package eu.internetofus.wenet_profile_manager.api.versions;
-
-import eu.internetofus.common.components.ModelTestCase;
+import eu.internetofus.common.components.Model;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * Test the {@link APIInfo}.
- *
- * @see APIInfo
+ * A model with information about the API.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class APIInfoTest extends ModelTestCase<APIInfo> {
+@Schema(name = "Info", description = "Provide the version information of the API")
+public class APIInfo extends Model {
 
   /**
-   * {@inheritDoc}
+   * The current version of the API.
    */
-  @Override
-  public APIInfo createModelExample(final int index) {
+  @Schema(description = "Contain the name of the API", example = "wenet/profile-manager")
+  public String name;
 
-    final APIInfo version = new APIInfo();
-    version.name = "name" + index;
-    version.apiVersion = "0.0." + index;
-    version.softwareVersion = "0." + index + ".0";
-    version.vendor = "vendor" + index;
-    version.license = "license" + index;
-    return version;
+  /**
+   * The current version of the API.
+   */
+  @Schema(description = "Contain the implementation version number of the API", example = "1.0.0")
+  public String apiVersion;
+
+  /**
+   * The current version of the software.
+   */
+  @Schema(description = "Contain the implementation version number of the software", example = "1.0.0")
+  public String softwareVersion;
+
+  /**
+   * The current vendor of the API.
+   */
+  @Schema(description = "Contain information of the organization that has implemented the API", example = "UDT-IA, IIIA-CSIC")
+  public String vendor;
+
+  /**
+   * The current vendor of the API.
+   */
+  @Schema(description = "Contain information of the license of the API", example = "MIT")
+  public String license;
+
+  /**
+   * Create a new version.
+   */
+  public APIInfo() {
+
   }
-
 }

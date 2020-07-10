@@ -28,6 +28,8 @@ package eu.internetofus.wenet_profile_manager.api;
 
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.vertx.AbstractAPIVerticle;
+import eu.internetofus.wenet_profile_manager.api.help.Help;
+import eu.internetofus.wenet_profile_manager.api.help.HelpResource;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
 import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
 import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
@@ -36,8 +38,6 @@ import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
-import eu.internetofus.wenet_profile_manager.api.versions.Help;
-import eu.internetofus.wenet_profile_manager.api.versions.HelpResource;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory;
 import io.vertx.ext.web.client.WebClient;

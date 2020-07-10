@@ -24,7 +24,7 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.versions;
+package eu.internetofus.wenet_profile_manager.api.help;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
