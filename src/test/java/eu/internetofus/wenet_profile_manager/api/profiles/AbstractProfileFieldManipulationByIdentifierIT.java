@@ -94,7 +94,7 @@ public abstract class AbstractProfileFieldManipulationByIdentifierIT<T extends M
   }
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected void assertEqualsAdded(final T addedModel,final T model) {

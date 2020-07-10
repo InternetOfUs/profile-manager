@@ -497,6 +497,8 @@ public class ProfilesResource implements Profiles {
    * @param setModels     function to set the models for the profile.
    * @param equalsId      function to check if two model has the same identifier.
    * @param resultHandler handler for the response.
+   *
+   * @param <T>           type of model to add.
    */
   protected <T extends Model & Validable> void addModelToProfile(final Class<T> type, final JsonObject value, final String modelName, final String userId, final Function<WeNetUserProfile, List<T>> getModels,
       final BiConsumer<WeNetUserProfile, List<T>> setModels, final BiPredicate<T, T> equalsId, final Handler<AsyncResult<OperationResponse>> resultHandler) {
@@ -559,6 +561,8 @@ public class ProfilesResource implements Profiles {
    * @param userId        identifier of the user of the profile.
    * @param modelsIn      return the models defined in a profile.
    * @param resultHandler to fill in with the response.
+   *
+   * @param <T>           type of model to retrieve.
    */
   protected <T extends Model> void retrieveModelsFromProfile(final String userId, final Function<WeNetUserProfile, List<T>> modelsIn, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
@@ -601,7 +605,6 @@ public class ProfilesResource implements Profiles {
    * @param <T>      type of models to check.
    *
    * @return the model associated to the identifier.
-   *
    */
   protected <T> Function<WeNetUserProfile, T> searchModelById(final Function<WeNetUserProfile, List<T>> modelsIn, final Predicate<T> checkId) {
 
@@ -634,6 +637,8 @@ public class ProfilesResource implements Profiles {
    *                      found.
    * @param modelName     name of the model.
    * @param resultHandler to fill in with the response.
+   *
+   * @param <T>           type of model to retrieve.
    */
   protected <T extends Model> void retrieveModelFromProfile(final String userId, final Function<WeNetUserProfile, T> seachModel, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
@@ -708,6 +713,8 @@ public class ProfilesResource implements Profiles {
    * @param modelIndex    function to return the index where the model is in the models list.
    * @param modelName     name of the model.
    * @param resultHandler to fill in with the response.
+   *
+   * @param <T>           type of model to update.
    */
   protected <T extends Model & Validable> void updateModelFromProfile(final String userId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
       final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
@@ -759,6 +766,8 @@ public class ProfilesResource implements Profiles {
    * @param modelIndex    function to return the index where the model is in the models list.
    * @param modelName     name of the model.
    * @param resultHandler to fill in with the response.
+   *
+   * @param <T>           type of model to merge.
    */
   protected <T extends Model & Mergeable<T>> void mergeModelFromProfile(final String userId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
       final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
@@ -825,6 +834,8 @@ public class ProfilesResource implements Profiles {
    * @param modelsIn      return the models defined in a profile.
    * @param modelIndex    function to return the index where the model is in the models list.
    * @param resultHandler to fill in with the response.
+   *
+   * @param <T>           type of model to delete.
    */
   protected <T> void deleteModelFromProfile(final String userId, final String modelName, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
       final Handler<AsyncResult<OperationResponse>> resultHandler) {
@@ -1015,6 +1026,8 @@ public class ProfilesResource implements Profiles {
    * @param index    of the model to return.
    *
    * @return the function to obtain the model at the index or {@code null} if any model is defined on the index.
+   *
+   * @param <T> type of model to search.
    */
   protected <T> Function<WeNetUserProfile, T> seachByIndex(final int index, final Function<WeNetUserProfile, List<T>> modelsIn) {
 
@@ -1039,6 +1052,8 @@ public class ProfilesResource implements Profiles {
    * @param index to validate.
    *
    * @return the function that will check if the index is valid for the models list.
+   *
+   * @param <T> type of model on the list.
    */
   protected <T> Function<List<T>, Integer> checkIndexOnModels(final int index) {
 

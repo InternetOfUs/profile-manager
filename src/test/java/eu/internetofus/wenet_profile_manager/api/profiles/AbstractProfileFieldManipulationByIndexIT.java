@@ -59,7 +59,7 @@ import io.vertx.junit5.VertxTestContext;
 public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model & Validable> extends AbstractProfileFieldManipulationIT<T> {
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected void assertEqualsAdded(final T addedModel, final T model) {
