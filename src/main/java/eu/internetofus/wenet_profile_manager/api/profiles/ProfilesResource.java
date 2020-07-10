@@ -1014,7 +1014,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveSocialPractices(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.socialPractices, resultHandler);
 
   }
 
@@ -1024,7 +1024,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, socialPracticeId, profile -> profile.socialPractices, (socialPractice, id) -> socialPractice.id.equals(id), "social_practice", resultHandler);
 
   }
 
@@ -1034,7 +1034,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.updateModelFromProfile(userId, socialPracticeId, body, SocialPractice.class, profile -> profile.socialPractices, socialPractice -> socialPractice.id, (id, socialPractice) -> socialPractice.id = id, "social_practice",
+        resultHandler);
 
   }
 
@@ -1044,7 +1045,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, socialPracticeId, body, SocialPractice.class, profile -> profile.socialPractices, socialPractice -> socialPractice.id, (id, socialPractice) -> socialPractice.id = id, "social_practice", resultHandler);
 
   }
 
@@ -1054,7 +1055,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.deleteModelFromProfile(userId, socialPracticeId, "social_practice", profile -> profile.socialPractices, socialPractice -> socialPractice.id, resultHandler);
 
   }
 

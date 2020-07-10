@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,9 +80,9 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void idFrom(final String id, final RelevantLocation model) {
+  protected void updateIdsTo(final RelevantLocation source,final RelevantLocation target) {
 
-    model.id = id;
+    target.id = source.id;
 
   }
 
@@ -105,17 +103,6 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
   protected List<RelevantLocation> modelsIn(final WeNetUserProfile profile) {
 
     return profile.relevantLocations;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void assertEqualsAddedModel(final RelevantLocation model, final RelevantLocation addedModel) {
-
-    model.id = addedModel.id;
-    assertThat(addedModel).isEqualTo(model);
-
   }
 
   /**

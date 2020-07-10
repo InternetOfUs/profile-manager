@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,9 +79,9 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationIT<Norm> {
    * {@inheritDoc}
    */
   @Override
-  protected void idFrom(final String id,final Norm model) {
+  protected void updateIdsTo(final Norm source,final Norm target) {
 
-    model.id = id;
+    target.id = source.id;
 
   }
 
@@ -105,17 +103,6 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationIT<Norm> {
   protected List<Norm> modelsIn(final WeNetUserProfile profile) {
 
     return profile.norms;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected void assertEqualsAddedModel(final Norm model, final Norm addedModel) {
-
-    model.id = addedModel.id;
-    assertThat(addedModel).isEqualTo(model);
-
   }
 
   /**

@@ -193,8 +193,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
         final List<T> models = this.modelsIn(profile);
         final T model = models.get(0);
-        final String modelId = this.idOf(model);
-        this.idFrom(modelId, newModel);
+        this.updateIdsTo(model, newModel);
         testRequest(client, HttpMethod.POST, Profiles.PATH + "/" + profile.id + this.fieldPath()).expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
@@ -212,12 +211,12 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
   }
 
   /**
-   * Change the identifier of a model.
+   * Update the identifiers of a model with the identifiers of another.
    *
-   * @param modelId identifier to set.
-   * @param model   to set the identifier.
+   * @param source to get the identifiers.
+   * @param target to set the identifiers.
    */
-  protected abstract void idFrom(String modelId, T model);
+  protected abstract void updateIdsTo(T source, T target);
 
   /**
    * Should add some models.
@@ -241,12 +240,14 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
             final T addedModel1 = assertThatBodyIs(this.modelClass(), res);
-            this.assertEqualsAddedModel(model1, addedModel1);
+            this.updateIdsTo(addedModel1, model1);
+            assertThat(addedModel1).isEqualTo(model1);
             testRequest(client, HttpMethod.POST, Profiles.PATH + "/" + profile.id + this.fieldPath()).expect(res2 -> {
 
               assertThat(res2.statusCode()).isEqualTo(Status.OK.getStatusCode());
               final T addedModel2 = assertThatBodyIs(this.modelClass(), res2);
-              this.assertEqualsAddedModel(model2, addedModel2);
+              this.updateIdsTo(addedModel2, model2);
+              assertThat(addedModel2).isEqualTo(model2);
               ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(newProfile -> {
 
                 final List<T> models = this.modelsIn(newProfile);
@@ -298,14 +299,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
    * @return the models associated to the profile.
    */
   protected abstract List<T> modelsIn(WeNetUserProfile profile);
-
-  /**
-   * Check that a model is equals to the added model.
-   *
-   * @param model      to be equals to the added.
-   * @param addedModel the added model result.
-   */
-  protected abstract void assertEqualsAddedModel(T model, T addedModel);
 
   /**
    * REturn the class of the model that is testing.
@@ -655,7 +648,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
           final T updatedModel = assertThatBodyIs(this.modelClass(), res);
-          this.idFrom(modelId, target);
+          this.updateIdsTo(target, updatedModel);
           assertThat(updatedModel).isEqualTo(target);
           ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(updatedProfile -> {
 
@@ -857,7 +850,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
           final T mergedModel = assertThatBodyIs(this.modelClass(), res);
-          this.idFrom(modelId, target);
+          this.updateIdsTo(target, mergedModel);
           assertThat(mergedModel).isEqualTo(target);
           ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(mergedProfile -> {
 

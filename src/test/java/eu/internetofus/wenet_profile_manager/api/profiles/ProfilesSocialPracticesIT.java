@@ -30,20 +30,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.PlannedActivity;
-import eu.internetofus.common.components.profile_manager.PlannedActivityTest;
+import eu.internetofus.common.components.profile_manager.SocialPractice;
+import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Check the manipulation of the {@link PlannedActivity}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the {@link SocialPractice}s in a {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulationIT<PlannedActivity> {
+public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationIT<SocialPractice> {
 
   /**
    * {@inheritDoc}
@@ -51,30 +50,18 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
   @Override
   protected String fieldPath() {
 
-    return Profiles.PLANNED_ACTIVITIES_PATH;
+    return Profiles.SOCIAL_PRACTICES_PATH;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Future<PlannedActivity> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected Future<SocialPractice> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final PlannedActivity plannedActivity = new PlannedActivity();
-    plannedActivity.description = ValidationsTest.STRING_1024;
-    return Future.succeededFuture(plannedActivity);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<PlannedActivity> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<PlannedActivity> promise = Promise.promise();
-    new PlannedActivityTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> promise.complete(model)));
-    return promise.future();
+    final SocialPractice socialPractice = new SocialPractice();
+    socialPractice.label = ValidationsTest.STRING_1024;
+    return Future.succeededFuture(socialPractice);
 
   }
 
@@ -82,9 +69,26 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final PlannedActivity source,final PlannedActivity target) {
+  protected Future<SocialPractice> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+
+    final SocialPractice model = new SocialPracticeTest().createModelExample(index);
+    return Future.succeededFuture(model);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void updateIdsTo(final SocialPractice source, final SocialPractice target) {
 
     target.id = source.id;
+    target.competences.id = source.competences.id;
+    target.materials.id = source.materials.id;
+    for (int i = 0; i < target.norms.size(); i++) {
+
+      target.norms.get(i).id = source.norms.get(i).id;
+    }
 
   }
 
@@ -92,35 +96,35 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<PlannedActivity> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<SocialPractice> initiModelsIn(final WeNetUserProfile profile) {
 
-    profile.plannedActivities = new ArrayList<>();
-    return profile.plannedActivities;
+    profile.socialPractices = new ArrayList<>();
+    return profile.socialPractices;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<PlannedActivity> modelsIn(final WeNetUserProfile profile) {
+  protected List<SocialPractice> modelsIn(final WeNetUserProfile profile) {
 
-    return profile.plannedActivities;
+    return profile.socialPractices;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<PlannedActivity> modelClass() {
+  protected Class<SocialPractice> modelClass() {
 
-    return PlannedActivity.class;
+    return SocialPractice.class;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected String idOf(final PlannedActivity model) {
+  protected String idOf(final SocialPractice model) {
 
     return model.id;
   }
