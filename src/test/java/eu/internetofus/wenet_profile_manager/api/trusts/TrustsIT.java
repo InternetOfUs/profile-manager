@@ -131,7 +131,7 @@ public class TrustsIT {
         final UserPerformanceRatingEvent stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
         assertThat(stored).isNotNull();
         assertThat(stored.reportTime).isGreaterThanOrEqualTo(time);
-        event.reportTime = time;
+        event.reportTime = stored.reportTime;
         assertThat(stored).isEqualTo(event);
         testContext.completeNow();
 

@@ -1176,7 +1176,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrievePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.personalBehaviors), "personal_behaviour", resultHandler);
 
   }
 
@@ -1186,7 +1186,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updatePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.updateModelFromProfile(userId, body, Routine.class, profile -> profile.personalBehaviors, this.checkIndexOnModels(index), "personal_behaviour", resultHandler);
 
   }
 
@@ -1196,7 +1196,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, body, Routine.class, profile -> profile.personalBehaviors, this.checkIndexOnModels(index), "personal_behaviour", resultHandler);
 
   }
 
@@ -1206,8 +1206,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deletePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
-
+    this.deleteModelFromProfile(userId, "personal_behaviour", profile -> profile.personalBehaviors, this.checkIndexOnModels(index), resultHandler);
   }
 
 }
