@@ -32,6 +32,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -587,40 +588,66 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.retrieveModelFromProfile(userId, normId, profile -> profile.norms, (norm, id) -> norm.id.equals(id), "norm", resultHandler);
+    this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.norms, norm -> norm.id.equals(normId)), "norm", resultHandler);
 
   }
 
   /**
-   * Retrieve the model defined in a profile.
+   * Search model by identifier.
    *
-   * @param userId        identifier of the user of the profile.
-   * @param modelId       identifier of the model.
-   * @param modelsIn      return the models defined in a profile.
-   * @param checkId       function to check the identifier.
-   * @param modelName     name of the model.
-   * @param resultHandler to fill in with the response.
+   * @param modelsIn function to obtain the models from a profile.
+   * @param checkId  function to check if the model has the specified identifier.
+   *
+   * @param <T>      type of models to check.
+   *
+   * @return the model associated to the identifier.
+   *
    */
-  protected <T extends Model> void retrieveModelFromProfile(final String userId, final String modelId, final Function<WeNetUserProfile, List<T>> modelsIn, final BiPredicate<T, String> checkId, final String modelName,
-      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  protected <T> Function<WeNetUserProfile, T> searchModelById(final Function<WeNetUserProfile, List<T>> modelsIn, final Predicate<T> checkId) {
 
-    this.searchProfile(userId, resultHandler, profile -> {
+    return profile -> {
 
       final List<T> models = modelsIn.apply(profile);
       if (models != null) {
 
         for (final T model : models) {
 
-          if (checkId.test(model, modelId)) {
+          if (checkId.test(model)) {
 
-            OperationReponseHandlers.responseOk(resultHandler, model);
-            return;
+            return model;
           }
-
         }
+
       }
 
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+      // Not found
+      return null;
+
+    };
+  }
+
+  /**
+   * Retrieve the model defined in a profile.
+   *
+   * @param userId        identifier of the user of the profile.
+   * @param seachModel    function to search the model that has the specified identifier. It return {@code null} if not
+   *                      found.
+   * @param modelName     name of the model.
+   * @param resultHandler to fill in with the response.
+   */
+  protected <T extends Model> void retrieveModelFromProfile(final String userId, final Function<WeNetUserProfile, T> seachModel, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.searchProfile(userId, resultHandler, profile -> {
+
+      final T model = seachModel.apply(profile);
+      if (model == null) {
+
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+
+      } else {
+
+        OperationReponseHandlers.responseOk(resultHandler, model);
+      }
 
     });
 
@@ -632,53 +659,80 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.updateModelFromProfile(userId, normId, body, Norm.class, profile -> profile.norms, norm -> norm.id, (id, norm) -> norm.id = id, "norm", resultHandler);
+    this.updateModelFromProfile(userId, body.put("id", normId), Norm.class, profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), "norm", resultHandler);
 
+  }
+
+  /**
+   * Search index of model by identifier.
+   *
+   * @param checkId function to check if the model has the specified identifier.
+   *
+   * @param <T>     type of models to check.
+   *
+   * @return a function that can be used to get the index of the model that has the specified identifier if not found
+   *         return {@code -1}.
+   *
+   */
+  protected <T> Function<List<T>, Integer> searchModelIndexById(final Predicate<T> checkId) {
+
+    return models -> {
+
+      if (models != null) {
+
+        final int max = models.size();
+        for (int i = 0; i < max; i++) {
+
+          final T model = models.get(i);
+          if (checkId.test(model)) {
+
+            return i;
+          }
+        }
+
+      }
+
+      // Not found
+      return -1;
+
+    };
   }
 
   /**
    * Update a model defined in a profile.
    *
    * @param userId        identifier of the user of the profile.
-   * @param modelId       identifier of the model.
    * @param value         for the model.
    * @param type          of the model.
    * @param modelsIn      return the models defined in a profile.
-   * @param getId         function to get the identifier.
-   * @param setId         function to set the identifier.
+   * @param modelIndex    function to return the index where the model is in the models list.
    * @param modelName     name of the model.
    * @param resultHandler to fill in with the response.
    */
-  protected <T extends Model & Validable> void updateModelFromProfile(final String userId, final String modelId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn,
-      final Function<T, String> getId, final BiConsumer<String, T> setId, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  protected <T extends Model & Validable> void updateModelFromProfile(final String userId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
+      final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.validate(type, value, modelName, resultHandler, model -> {
 
-      setId.accept(modelId, model);
       this.searchProfile(userId, resultHandler, profile -> {
 
         final List<T> models = modelsIn.apply(profile);
         if (models != null) {
 
-          final int max = models.size();
-          for (int i = 0; i < max; i++) {
+          final int index = modelIndex.apply(models);
+          if (index > -1) {
 
-            final T definedModel = models.get(i);
-            if (modelId.equals(getId.apply(definedModel))) {
-
-              final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-              final List<T> newProfileModels = modelsIn.apply(newProfile);
-              newProfileModels.remove(i);
-              newProfileModels.add(i, model);
-              this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, model));
-              return;
-            }
-
+            final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+            final List<T> newProfileModels = modelsIn.apply(newProfile);
+            newProfileModels.remove(index);
+            newProfileModels.add(index, model);
+            this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, model));
+            return;
           }
 
         }
 
-        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Cannot found a " + modelName + " with the specified parameters on the profile.");
 
       });
     });
@@ -691,7 +745,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.mergeModelFromProfile(userId, normId, body, Norm.class, profile -> profile.norms, norm -> norm.id, (id, norm) -> norm.id = id, "norm", resultHandler);
+    this.mergeModelFromProfile(userId, body.put("id", normId), Norm.class, profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), "norm", resultHandler);
 
   }
 
@@ -699,17 +753,15 @@ public class ProfilesResource implements Profiles {
    * Merge a model defined in a profile.
    *
    * @param userId        identifier of the user of the profile.
-   * @param modelId       identifier of the model.
    * @param value         for the model.
    * @param type          of the model.
    * @param modelsIn      return the models defined in a profile.
-   * @param getId         function to get the identifier.
-   * @param setId         function to set the identifier.
+   * @param modelIndex    function to return the index where the model is in the models list.
    * @param modelName     name of the model.
    * @param resultHandler to fill in with the response.
    */
-  protected <T extends Model & Mergeable<T>> void mergeModelFromProfile(final String userId, final String modelId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn,
-      final Function<T, String> getId, final BiConsumer<String, T> setId, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  protected <T extends Model & Mergeable<T>> void mergeModelFromProfile(final String userId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
+      final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final T source = Model.fromJsonObject(value, type);
     if (source == null) {
@@ -724,38 +776,32 @@ public class ProfilesResource implements Profiles {
         final List<T> models = modelsIn.apply(profile);
         if (models != null) {
 
-          final int max = models.size();
-          for (int i = 0; i < max; i++) {
+          final int index = modelIndex.apply(models);
+          if (index > -1) {
 
-            final T target = models.get(i);
-            if (modelId.equals(getId.apply(target))) {
+            final T target = models.get(index);
+            target.merge(source, "bad_" + modelName, this.vertx).onComplete(merge -> {
+              if (merge.failed()) {
 
-              final int index = i;
-              target.merge(source, "bad_" + modelName, this.vertx).onComplete(merge -> {
-                if (merge.failed()) {
+                final Throwable cause = merge.cause();
+                Logger.debug(cause, "The {} can not be merged with {}.", source, target);
+                OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
-                  final Throwable cause = merge.cause();
-                  Logger.debug(cause, "The {} can not be merged with {}.", source, target);
-                  OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+              } else {
 
-                } else {
-
-                  final T merged = merge.result();
-                  final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-                  final List<T> newProfileModels = modelsIn.apply(newProfile);
-                  newProfileModels.remove(index);
-                  newProfileModels.add(index, merged);
-                  this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, merged));
-                }
-              });
-              return;
-            }
-
+                final T merged = merge.result();
+                final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+                final List<T> newProfileModels = modelsIn.apply(newProfile);
+                newProfileModels.remove(index);
+                newProfileModels.add(index, merged);
+                this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, merged));
+              }
+            });
+            return;
           }
-
         }
 
-        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Cannot found a " + modelName + " with the specified parameters on the profile.");
 
       });
     }
@@ -767,7 +813,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.deleteModelFromProfile(userId, normId, "norm", profile -> profile.norms, norm -> norm.id, resultHandler);
+    this.deleteModelFromProfile(userId, "norm", profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), resultHandler);
 
   }
 
@@ -775,13 +821,12 @@ public class ProfilesResource implements Profiles {
    * Delete a model defined in a profile.
    *
    * @param userId        identifier of the user of the profile.
-   * @param modelId       identifier of the model.
+   * @param modelName     name of the model.
    * @param modelsIn      return the models defined in a profile.
-   * @param modelName     name of the model to remove.
-   * @param getId         function to get the identifier.
+   * @param modelIndex    function to return the index where the model is in the models list.
    * @param resultHandler to fill in with the response.
    */
-  protected <T> void deleteModelFromProfile(final String userId, final String modelId, final String modelName, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<T, String> getId,
+  protected <T> void deleteModelFromProfile(final String userId, final String modelName, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
       final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.searchProfile(userId, resultHandler, profile -> {
@@ -789,22 +834,18 @@ public class ProfilesResource implements Profiles {
       final List<T> models = modelsIn.apply(profile);
       if (models != null) {
 
-        final int max = models.size();
-        for (int i = 0; i < max; i++) {
+        final int index = modelIndex.apply(models);
+        if (index > -1) {
 
-          final T target = models.get(i);
-          if (modelId.equals(getId.apply(target))) {
-
-            final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-            final List<T> newProfileModels = modelsIn.apply(newProfile);
-            newProfileModels.remove(i);
-            this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler));
-            return;
-          }
+          final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+          final List<T> newProfileModels = modelsIn.apply(newProfile);
+          newProfileModels.remove(index);
+          this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler));
+          return;
         }
       }
 
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Cannot found a " + modelName + " with the specified parameters on the profile.");
 
     });
 
@@ -837,7 +878,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.retrieveModelFromProfile(userId, plannedActivityId, profile -> profile.plannedActivities, (plannedActivity, id) -> plannedActivity.id.equals(id), "planned_activity", resultHandler);
+    this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id.equals(plannedActivityId)), "planned_activity", resultHandler);
 
   }
 
@@ -847,8 +888,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.updateModelFromProfile(userId, plannedActivityId, body, PlannedActivity.class, profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, (id, plannedActivity) -> plannedActivity.id = id, "planned_activity",
-        resultHandler);
+    this.updateModelFromProfile(userId, body.put("id", plannedActivityId), PlannedActivity.class, profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)),
+        "planned_activity", resultHandler);
 
   }
 
@@ -858,8 +899,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.mergeModelFromProfile(userId, plannedActivityId, body, PlannedActivity.class, profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, (id, plannedActivity) -> plannedActivity.id = id, "planned_activity",
-        resultHandler);
+    this.mergeModelFromProfile(userId, body.put("id", plannedActivityId), PlannedActivity.class, profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)),
+        "planned_activity", resultHandler);
 
   }
 
@@ -869,7 +910,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.deleteModelFromProfile(userId, plannedActivityId, "planned_activity", profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id, resultHandler);
+    this.deleteModelFromProfile(userId, "planned_activity", profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)), resultHandler);
 
   }
 
@@ -900,7 +941,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.retrieveModelFromProfile(userId, relevantLocationId, profile -> profile.relevantLocations, (relevantLocation, id) -> relevantLocation.id.equals(id), "relevant_location", resultHandler);
+    this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id.equals(relevantLocationId)), "relevant_location", resultHandler);
 
   }
 
@@ -910,7 +951,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.updateModelFromProfile(userId, relevantLocationId, body, RelevantLocation.class, profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, (id, relevantLocation) -> relevantLocation.id = id,
+    this.updateModelFromProfile(userId, body.put("id", relevantLocationId), RelevantLocation.class, profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)),
         "relevant_location", resultHandler);
 
   }
@@ -921,8 +962,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.mergeModelFromProfile(userId, relevantLocationId, body, RelevantLocation.class, profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, (id, relevantLocation) -> relevantLocation.id = id, "relevant_location",
-        resultHandler);
+    this.mergeModelFromProfile(userId, body.put("id", relevantLocationId), RelevantLocation.class, profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)),
+        "relevant_location", resultHandler);
 
   }
 
@@ -932,7 +973,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.deleteModelFromProfile(userId, relevantLocationId, "relevant_location", profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id, resultHandler);
+    this.deleteModelFromProfile(userId, "relevant_location", profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)), resultHandler);
 
   }
 
@@ -953,7 +994,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveRelationships(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.relationships, resultHandler);
 
   }
 
@@ -961,9 +1002,67 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelationship(final String userId, final String relationshipId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveRelationship(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.relationships), "relationship", resultHandler);
+
+  }
+
+  /**
+   * Search a model by its position on the models list.
+   *
+   * @param modelsIn function to obtain the models from a profile.
+   * @param index    of the model to return.
+   *
+   * @return the function to obtain the model at the index or {@code null} if any model is defined on the index.
+   */
+  protected <T> Function<WeNetUserProfile, T> seachByIndex(final int index, final Function<WeNetUserProfile, List<T>> modelsIn) {
+
+    return profile -> {
+
+      final List<T> models = modelsIn.apply(profile);
+      if (models != null && index > -1 && index < models.size()) {
+
+        return models.get(index);
+
+      } else {
+        // Not found
+        return null;
+      }
+
+    };
+  }
+
+  /**
+   * Validate that the index is valid for the specified models.
+   *
+   * @param index to validate.
+   *
+   * @return the function that will check if the index is valid for the models list.
+   */
+  protected <T> Function<List<T>, Integer> checkIndexOnModels(final int index) {
+
+    return models -> {
+
+      if (index > -1 && index < models.size()) {
+
+        return index;
+
+      } else {
+
+        return -1;
+      }
+
+    };
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateRelationship(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.updateModelFromProfile(userId, body, SocialNetworkRelationship.class, profile -> profile.relationships, this.checkIndexOnModels(index), "relationship", resultHandler);
 
   }
 
@@ -971,19 +1070,9 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateRelationship(final String userId, final String relationshipId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeRelationship(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void mergeRelationship(final String userId, final String relationshipId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.mergeModelFromProfile(userId, body, SocialNetworkRelationship.class, profile -> profile.relationships, this.checkIndexOnModels(index), "relationship", resultHandler);
 
   }
 
@@ -991,9 +1080,9 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteRelationship(final String userId, final String relationshipId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteRelationship(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.deleteModelFromProfile(userId, "relationship", profile -> profile.relationships, this.checkIndexOnModels(index), resultHandler);
 
   }
 
@@ -1024,7 +1113,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.retrieveModelFromProfile(userId, socialPracticeId, profile -> profile.socialPractices, (socialPractice, id) -> socialPractice.id.equals(id), "social_practice", resultHandler);
+    this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.socialPractices, socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice", resultHandler);
 
   }
 
@@ -1034,7 +1123,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.updateModelFromProfile(userId, socialPracticeId, body, SocialPractice.class, profile -> profile.socialPractices, socialPractice -> socialPractice.id, (id, socialPractice) -> socialPractice.id = id, "social_practice",
+    this.updateModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice",
         resultHandler);
 
   }
@@ -1045,7 +1134,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.mergeModelFromProfile(userId, socialPracticeId, body, SocialPractice.class, profile -> profile.socialPractices, socialPractice -> socialPractice.id, (id, socialPractice) -> socialPractice.id = id, "social_practice", resultHandler);
+    this.mergeModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice",
+        resultHandler);
 
   }
 
@@ -1055,7 +1145,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.deleteModelFromProfile(userId, socialPracticeId, "social_practice", profile -> profile.socialPractices, socialPractice -> socialPractice.id, resultHandler);
+    this.deleteModelFromProfile(userId, "social_practice", profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), resultHandler);
 
   }
 
@@ -1076,7 +1166,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrievePersonalBehaviors(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+    this.retrieveModelsFromProfile(userId, profile -> profile.personalBehaviors, resultHandler);
 
   }
 
@@ -1084,17 +1174,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePersonalBehavior(final String userId, final String personalBehaviorId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void updatePersonalBehavior(final String userId, final String personalBehaviorId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrievePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
 
@@ -1104,7 +1184,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergePersonalBehavior(final String userId, final String personalBehaviorId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updatePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
 
@@ -1114,7 +1194,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deletePersonalBehavior(final String userId, final String personalBehaviorId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deletePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_IMPLEMENTED, "not_implmeneted", "Sorry not implemented yet");
 

@@ -42,7 +42,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulationIT<RelevantLocation> {
+public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulationByIdentifierIT<RelevantLocation> {
 
   /**
    * {@inheritDoc}

@@ -42,7 +42,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationIT<SocialPractice> {
+public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationByIdentifierIT<SocialPractice> {
 
   /**
    * {@inheritDoc}

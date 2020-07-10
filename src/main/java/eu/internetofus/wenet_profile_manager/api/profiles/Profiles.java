@@ -78,11 +78,6 @@ public interface Profiles {
   String ADDRESS = "wenet_profile_manager.api.profiles";
 
   /**
-   * The sub path with an user identifier.
-   */
-  String PROFILE_ID_PATH = "/{userId}";
-
-  /**
    * An example of a {@link WeNetUserProfile} that can be created.
    */
   String PROFILE_TO_CREATE_EXAMPLE = "{\"name\":{\"prefix\":\"Dr.\",\"first\":\"John\",\"middle\":\"Fidgerald\",\"last\":\"Kenedy\",\"suffix\":\"Jr\"},\"dateOfBirth\":{\"year\":1973,\"month\":2,\"day\":24},\"gender\":\"M\",\"email\":\"jfk@president.gov\",\"phoneNumber\":\"+1202-456-1111\",\"locale\":\"en_US\",\"avatar\":\"https://upload.wikimedia.org/wikipedia/commons/1/1e/JFK_White_House_portrait_looking_up_lighting_corrected.jpg\",\"nationality\":\"American\",\"languages\":[{\"name\":\"English\",\"code\":\"en\",\"level\":\"C2\"}],\"occupation\":\"President\",\"norms\":[],\"plannedActivities\":[{\"startTime\":\"2017-07-21T17:32:03Z\",\"endTime\":\"2019-07-21T17:32:23Z\",\"description\":\"Visit Marilyn\",\"status\":\"cancelled\"},{\"startTime\":\"2017-07-21T17:32:03Z\",\"endTime\":\"2019-07-21T17:32:23Z\",\"description\":\"Go to Dallas\",\"status\":\"confirmed\"}],\"relevantLocations\":[{\"label\":\"White house\",\"latitude\":38.897957,\"longitude\":-77.03656}],\"relationships\":[],\"socialPractices\":[],\"personalBehaviors\":[]}";
@@ -108,19 +103,9 @@ public interface Profiles {
   String NORMS_PATH = "/norms";
 
   /**
-   * The sub path with a norm identifier.
-   */
-  String NORMS_AND_ID_PATH = NORMS_PATH + "/{normId}";
-
-  /**
    * The path to the planned activities of a profile.
    */
   String PLANNED_ACTIVITIES_PATH = "/plannedActivities";
-
-  /**
-   * The sub path with a planned activity identifier.
-   */
-  String PLANNED_ACTIVITIES_AND_ID_PATH = PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}";
 
   /**
    * The path to the relevant locations of a profile.
@@ -128,19 +113,9 @@ public interface Profiles {
   String RELEVANT_LOCATIONS_PATH = "/relevantLocations";
 
   /**
-   * The sub path with a relevant location identifier.
-   */
-  String RELEVANT_LOCATIONS_AND_ID_PATH = RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}";
-
-  /**
    * The path to the relationships of a profile.
    */
   String RELATIONSHIPS_PATH = "/SocialNetworkRelationships";
-
-  /**
-   * The sub path with a relationship identifier.
-   */
-  String RELATIONSHIPS_AND_ID_PATH = RELATIONSHIPS_PATH + "/{relationshipId}";
 
   /**
    * The path to the social practices of a profile.
@@ -148,19 +123,9 @@ public interface Profiles {
   String SOCIAL_PRACTICES_PATH = "/socialPractices";
 
   /**
-   * The sub path with a social practice identifier.
-   */
-  String SOCIAL_PRACTICES_AND_ID_PATH = SOCIAL_PRACTICES_PATH + "/{socialPracticeId}";
-
-  /**
    * The path to the personal behaviors of a profile.
    */
   String PERSONAL_BEHAVIORS_PATH = "/personalBehaviors";
-
-  /**
-   * The sub path with a personal behavior identifier.
-   */
-  String PERSONAL_BEHAVIORS_AND_ID_PATH = PERSONAL_BEHAVIORS_PATH + "/{personalBehaviorId}";
 
   /**
    * Called when want to create an user profile.
@@ -189,7 +154,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH)
+  @Path("/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a profile", description = "Allow to get the profile with the specified identifier")
   @ApiResponse(responseCode = "200", description = "The profile associated to the identifier", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
@@ -207,7 +172,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH)
+  @Path("/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify a profile", description = "Change a profile")
@@ -229,7 +194,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH)
+  @Path("/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify partially a profile", description = "Change some attributes of a profile")
@@ -250,7 +215,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH)
+  @Path("/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Delete a profiler", description = "Allow to delete a profile with an specific identifier")
   @ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
@@ -271,7 +236,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + HISTORIC_PATH)
+  @Path("/{userId}" + HISTORIC_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Get the status of the profile in specific time period", description = "Allow to obtain the historic of profile changes")
   @ApiResponse(responseCode = "200", description = "The found profiles", content = @Content(schema = @Schema(implementation = HistoricWeNetUserProfilesPage.class)))
@@ -295,7 +260,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + NORMS_PATH)
+  @Path("/{userId}" + NORMS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a norm into a profile", description = "Insert a new norm into a profile")
@@ -315,7 +280,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + NORMS_PATH)
+  @Path("/{userId}" + NORMS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the norms from a profile", description = "Allow to get all the norms defined into a profile")
   @ApiResponse(responseCode = "200", description = "The norms defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
@@ -333,7 +298,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Path("/{userId}" + NORMS_PATH + "/{normId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a norm from a profile", description = "Allow to get a norm defined into a profile")
   @ApiResponse(responseCode = "200", description = "The norm defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
@@ -353,7 +318,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Path("/{userId}" + NORMS_PATH + "/{normId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a norm from a profile", description = "Allow to modify a norm defined into a profile")
@@ -376,7 +341,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Path("/{userId}" + NORMS_PATH + "/{normId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a norm from a profile", description = "Allow to modify parts of a norm defined into a profile")
@@ -398,7 +363,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + NORMS_AND_ID_PATH)
+  @Path("/{userId}" + NORMS_PATH + "/{normId}")
   @Operation(summary = "Delete a norm from a profile", description = "Allow to delete a defined norm from a profile")
   @ApiResponse(responseCode = "204", description = "The norm defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -416,7 +381,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a planned activity into a profile", description = "Insert a new planned activity into a profile")
@@ -436,7 +401,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the planned activities from a profile", description = "Allow to get all the planned activities defined into a profile")
   @ApiResponse(responseCode = "200", description = "The planned activities defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity"))))
@@ -454,7 +419,7 @@ public interface Profiles {
    * @param resultHandler     to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a planned activity from a profile", description = "Allow to get a planned activity defined into a profile")
   @ApiResponse(responseCode = "200", description = "The planned activity defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
@@ -474,7 +439,7 @@ public interface Profiles {
    * @param resultHandler     to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a planned activity from a profile", description = "Allow to modify a planned activity defined into a profile")
@@ -497,7 +462,7 @@ public interface Profiles {
    * @param resultHandler     to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a planned activity from a profile", description = "Allow to modify parts of a planned activity defined into a profile")
@@ -519,7 +484,7 @@ public interface Profiles {
    * @param resultHandler     to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + PLANNED_ACTIVITIES_AND_ID_PATH)
+  @Path("/{userId}" + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
   @Operation(summary = "Delete a planned activity from a profile", description = "Allow to delete a defined planned activity from a profile")
   @ApiResponse(responseCode = "204", description = "The planned activity defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -537,7 +502,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a relevant location into a profile", description = "Insert a new relevant location into a profile")
@@ -557,7 +522,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the relevant locations from a profile", description = "Allow to get all the relevant locations defined into a profile")
   @ApiResponse(responseCode = "200", description = "The relevant locations defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation"))))
@@ -569,13 +534,13 @@ public interface Profiles {
   /**
    * Called when want to get a relevant location from a profile.
    *
-   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to get.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param context            of the request.
+   * @param resultHandler      to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a relevant location from a profile", description = "Allow to get a relevant location defined into a profile")
   @ApiResponse(responseCode = "200", description = "The relevant location defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
@@ -588,14 +553,14 @@ public interface Profiles {
   /**
    * Called when want to update a relevant location from a profile.
    *
-   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to update.
-   * @param body              the new values for the relevant location.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param body               the new values for the relevant location.
+   * @param context            of the request.
+   * @param resultHandler      to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a relevant location from a profile", description = "Allow to modify a relevant location defined into a profile")
@@ -611,14 +576,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a relevant location from a profile.
    *
-   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to merge.
-   * @param body              the new values for the relevant location.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param body               the new values for the relevant location.
+   * @param context            of the request.
+   * @param resultHandler      to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a relevant location from a profile", description = "Allow to modify parts of a relevant location defined into a profile")
@@ -634,13 +599,13 @@ public interface Profiles {
   /**
    * Called when want to delete a relevant location from a profile.
    *
-   * @param userId            identifier of the user for the profile where the relevant location is defined.
+   * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to delete.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param context            of the request.
+   * @param resultHandler      to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + RELEVANT_LOCATIONS_AND_ID_PATH)
+  @Path("/{userId}" + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
   @Operation(summary = "Delete a relevant location from a profile", description = "Allow to delete a defined relevant location from a profile")
   @ApiResponse(responseCode = "204", description = "The relevant location defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -658,7 +623,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a relationship into a profile", description = "Insert a new relationship into a profile")
@@ -678,7 +643,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the relationships from a profile", description = "Allow to get all the relationships defined into a profile")
   @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
@@ -691,32 +656,32 @@ public interface Profiles {
    * Called when want to get a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
-   * @param relationshipId        identifier of the relationship to get.
+   * @param index         of the relationship to get.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a relationship from a profile", description = "Allow to get a relationship defined into a profile")
   @ApiResponse(responseCode = "200", description = "The relationship defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void retrieveRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the relationship to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to update a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
-   * @param relationshipId        identifier of the relationship to update.
+   * @param index         of the relationship to update.
    * @param body          the new values for the relationship.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a relationship from a profile", description = "Allow to modify a relationship defined into a profile")
@@ -726,20 +691,20 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void updateRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) JsonObject body,
+      @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
-   * @param relationshipId        identifier of the relationship to merge.
+   * @param index         of the relationship to merge.
    * @param body          the new values for the relationship.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a relationship from a profile", description = "Allow to modify parts of a relationship defined into a profile")
@@ -749,37 +714,37 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void mergeRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) JsonObject body,
+      @PathParam("index") @Parameter(description = "The identifier of the relationship to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
-   * @param relationshipId        identifier of the relationship to delete.
+   * @param index         of the relationship to delete.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + RELATIONSHIPS_AND_ID_PATH)
+  @Path("/{userId}" + RELATIONSHIPS_PATH + "/{index:0-9}")
   @Operation(summary = "Delete a relationship from a profile", description = "Allow to delete a defined relationship from a profile")
   @ApiResponse(responseCode = "204", description = "The relationship defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void deleteRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("relationshipId") @Parameter(description = "The identifier of the relationship to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relationshipId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to add a social practice into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the socialPractice.
+   * @param userId        identifier of the user for the profile to add the social practice.
    * @param body          social practice to add to the profile.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a social practice into a profile", description = "Insert a new social practice into a profile")
@@ -794,12 +759,12 @@ public interface Profiles {
   /**
    * Called when want to get all the social practice from a profile.
    *
-   * @param userId        identifier of the user for the profile to get all socialpractices.
+   * @param userId        identifier of the user for the profile to get all social practices.
    * @param context       of the request.
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the social practices from a profile", description = "Allow to get all the social practices defined into a profile")
   @ApiResponse(responseCode = "200", description = "The social practices defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
@@ -811,13 +776,13 @@ public interface Profiles {
   /**
    * Called when want to get a social practice from a profile.
    *
-   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param userId           identifier of the user for the profile where the social practice is defined.
    * @param socialPracticeId identifier of the social practice to get.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param context          of the request.
+   * @param resultHandler    to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a social practice from a profile", description = "Allow to get a social practice defined into a profile")
   @ApiResponse(responseCode = "200", description = "The social practice defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
@@ -830,14 +795,14 @@ public interface Profiles {
   /**
    * Called when want to update a social practice from a profile.
    *
-   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param userId           identifier of the user for the profile where the social practice is defined.
    * @param socialPracticeId identifier of the social practice to update.
-   * @param body              the new values for the social practice.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param body             the new values for the social practice.
+   * @param context          of the request.
+   * @param resultHandler    to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a social practice from a profile", description = "Allow to modify a social practice defined into a profile")
@@ -847,20 +812,20 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
   void updateSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a social practice from a profile.
    *
-   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param userId           identifier of the user for the profile where the social practice is defined.
    * @param socialPracticeId identifier of the social practice to merge.
-   * @param body              the new values for the social practice.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param body             the new values for the social practice.
+   * @param context          of the request.
+   * @param resultHandler    to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a social practice from a profile", description = "Allow to modify parts of a social practice defined into a profile")
@@ -870,19 +835,19 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
   void mergeSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a social practice from a profile.
    *
-   * @param userId            identifier of the user for the profile where the social practice is defined.
+   * @param userId           identifier of the user for the profile where the social practice is defined.
    * @param socialPracticeId identifier of the social practice to delete.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param context          of the request.
+   * @param resultHandler    to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + SOCIAL_PRACTICES_AND_ID_PATH)
+  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Operation(summary = "Delete a social practice from a profile", description = "Allow to delete a defined social practice from a profile")
   @ApiResponse(responseCode = "204", description = "The social practice defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -890,7 +855,6 @@ public interface Profiles {
   void deleteSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
-
 
   /**
    * Called when want to add a personal behavior into a profile.
@@ -901,7 +865,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a personal behavior into a profile", description = "Insert a new personal behavior into a profile")
@@ -921,7 +885,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the personal behaviors from a profile", description = "Allow to get all the personal behaviors defined into a profile")
   @ApiResponse(responseCode = "200", description = "The personal behaviors defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine"))))
@@ -933,33 +897,33 @@ public interface Profiles {
   /**
    * Called when want to get a personal behavior from a profile.
    *
-   * @param userId            identifier of the user for the profile where the personal behavior is defined.
-   * @param personalBehaviorId identifier of the personal behavior to get.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param userId        identifier of the user for the profile where the personal behavior is defined.
+   * @param index         of the personal behavior to get.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
    */
   @GET
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a personal behavior from a profile", description = "Allow to get a personal behavior defined into a profile")
   @ApiResponse(responseCode = "200", description = "The personal behavior defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void retrievePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("index") @Parameter(description = "The index of the personal behavior to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to update a personal behavior from a profile.
    *
-   * @param userId            identifier of the user for the profile where the personal behavior is defined.
-   * @param personalBehaviorId identifier of the personal behavior to update.
-   * @param body              the new values for the personal behavior.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param userId        identifier of the user for the profile where the personal behavior is defined.
+   * @param index         of the personal behavior to update.
+   * @param body          the new values for the personal behavior.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a personal behavior from a profile", description = "Allow to modify a personal behavior defined into a profile")
@@ -969,20 +933,20 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void updatePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("index") @Parameter(description = "The index of the personal behavior to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a personal behavior from a profile.
    *
-   * @param userId            identifier of the user for the profile where the personal behavior is defined.
-   * @param personalBehaviorId identifier of the personal behavior to merge.
-   * @param body              the new values for the personal behavior.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param userId        identifier of the user for the profile where the personal behavior is defined.
+   * @param index         of the personal behavior to merge.
+   * @param body          the new values for the personal behavior.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a personal behavior from a profile", description = "Allow to modify parts of a personal behavior defined into a profile")
@@ -992,25 +956,25 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void mergePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a personal behavior from a profile.
    *
-   * @param userId            identifier of the user for the profile where the personal behavior is defined.
-   * @param personalBehaviorId identifier of the personal behavior to delete.
-   * @param context           of the request.
-   * @param resultHandler     to inform of the response.
+   * @param userId        identifier of the user for the profile where the personal behavior is defined.
+   * @param index         of the personal behavior to delete.
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path(PROFILE_ID_PATH + PERSONAL_BEHAVIORS_AND_ID_PATH)
+  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
   @Operation(summary = "Delete a personal behavior from a profile", description = "Allow to delete a defined personal behavior from a profile")
   @ApiResponse(responseCode = "204", description = "The personal behavior defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void deletePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("personalBehaviorId") @Parameter(description = "The identifier of the personal behavior to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String personalBehaviorId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

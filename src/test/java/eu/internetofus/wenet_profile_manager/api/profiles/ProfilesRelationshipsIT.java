@@ -29,20 +29,20 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.profile_manager.NormTest;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelantionshipTest;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Check the manipulation of the {@link Norm}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the {@link SocialNetworkRelationship}s in a {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifierIT<Norm> {
+public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByIndexIT<SocialNetworkRelationship> {
 
   /**
    * {@inheritDoc}
@@ -50,18 +50,28 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifie
   @Override
   protected String fieldPath() {
 
-    return Profiles.NORMS_PATH;
+    return Profiles.RELATIONSHIPS_PATH;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Future<Norm> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected Future<SocialNetworkRelationship> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Norm norm = new Norm();
-    norm.attribute = ValidationsTest.STRING_256;
-    return Future.succeededFuture(norm);
+    final SocialNetworkRelationship model = new SocialNetworkRelantionshipTest().createModelExample(1);
+    return Future.succeededFuture(model);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Future<SocialNetworkRelationship> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+
+    final Promise<SocialNetworkRelationship> promise = Promise.promise();
+    new SocialNetworkRelantionshipTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> promise.complete(model)));
+    return promise.future();
 
   }
 
@@ -69,58 +79,28 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifie
    * {@inheritDoc}
    */
   @Override
-  protected Future<Norm> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+  protected List<SocialNetworkRelationship> initiModelsIn(final WeNetUserProfile profile) {
 
-    final Norm norm = new NormTest().createModelExample(index);
-    return Future.succeededFuture(norm);
+    profile.relationships = new ArrayList<>();
+    return profile.relationships;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final Norm source,final Norm target) {
+  protected List<SocialNetworkRelationship> modelsIn(final WeNetUserProfile profile) {
 
-    target.id = source.id;
-
-  }
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected List<Norm> initiModelsIn(final WeNetUserProfile profile) {
-
-    profile.norms = new ArrayList<>();
-    return profile.norms;
+    return profile.relationships;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<Norm> modelsIn(final WeNetUserProfile profile) {
+  protected Class<SocialNetworkRelationship> modelClass() {
 
-    return profile.norms;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Class<Norm> modelClass() {
-
-    return Norm.class;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected String idOf(final Norm model) {
-
-    return model.id;
+    return SocialNetworkRelationship.class;
   }
 
 }

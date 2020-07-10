@@ -43,7 +43,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulationIT<PlannedActivity> {
+public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulationByIdentifierIT<PlannedActivity> {
 
   /**
    * {@inheritDoc}
