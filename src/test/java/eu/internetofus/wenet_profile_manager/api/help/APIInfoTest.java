@@ -27,7 +27,6 @@
 package eu.internetofus.wenet_profile_manager.api.help;
 
 import eu.internetofus.common.components.ModelTestCase;
-import eu.internetofus.wenet_profile_manager.api.help.APIInfo;
 
 /**
  * Test the {@link APIInfo}.

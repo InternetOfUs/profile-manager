@@ -173,7 +173,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default void updateProfile(final WeNetUserProfile profile, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final JsonObject object = profile.toJsonObject();
+    final JsonObject object = profile.toJsonObjectWithEmptyValues();
     if (object == null) {
 
       updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
@@ -320,7 +320,7 @@ public interface ProfilesRepository {
    */
   static JsonObject createProfileHistoricPageSort(final String order) {
 
-    return new JsonObject().put("from", Integer.parseInt(order+ "1"));
+    return new JsonObject().put("from", Integer.parseInt(order + "1"));
   }
 
 }

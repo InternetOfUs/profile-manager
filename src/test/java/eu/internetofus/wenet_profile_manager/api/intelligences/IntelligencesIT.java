@@ -63,257 +63,249 @@ import io.vertx.junit5.VertxTestContext;
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class IntelligencesIT {
 
-	/**
-	 * Verify that retrieve the intelligences questionnaire.
-	 *
-	 * @param lang        language to obtain the questionnaire.
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#retrieveIntelligencesQuestionnaire(io.vertx.ext.web.api.OperationRequest,
-	 *      Handler)
-	 */
-	@ParameterizedTest(name = "Should return intelligences questionnaire for language {0}")
-	@EmptySource
-	@ValueSource(strings = { "*", "en", "es", "ca", "es-US,es;q=0.5", "ca,es,en", "en-US,en,es", "it" })
-	public void shouldRetrieveIntelligencesQuestionnaire(String lang, WebClient client, VertxTestContext testContext) {
+  /**
+   * Verify that retrieve the intelligences questionnaire.
+   *
+   * @param lang        language to obtain the questionnaire.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#retrieveIntelligencesQuestionnaire(io.vertx.ext.web.api.OperationRequest,
+   *      Handler)
+   */
+  @ParameterizedTest(name = "Should return intelligences questionnaire for language {0}")
+  @EmptySource
+  @ValueSource(strings = { "*", "en", "es", "ca", "es-US,es;q=0.5", "ca,es,en", "en-US,en,es", "it" })
+  public void shouldRetrieveIntelligencesQuestionnaire(final String lang, final WebClient client, final VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.GET, Intelligences.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es"))
-				.expect(res -> {
+    testRequest(client, HttpMethod.GET, Intelligences.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es"))
+    .expect(res -> {
 
-					assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-					final Questionnaire questionnaire = assertThatBodyIs(Questionnaire.class, res);
-					assertThat(questionnaire.questions).hasSize(40);
-					testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+      final Questionnaire questionnaire = assertThatBodyIs(Questionnaire.class, res);
+      assertThat(questionnaire.questions).hasSize(40);
 
-				}).send(testContext);
+    }).send(testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because no answers are passed.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseNoAnswers(WebClient client, VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because no answers are passed.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseNoAnswers(final WebClient client, final VertxTestContext testContext) {
 
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_number_of_answers");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isEqualTo("bad_number_of_answers");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-		}).sendJson(new QuestionnaireAnswers(), testContext);
+    }).sendJson(new QuestionnaireAnswers(), testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because no provide an empty
-	 * answers list.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseNotEmptyAnswers(WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because no provide an empty
+   * answers list.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseNotEmptyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_number_of_answers");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isEqualTo("bad_number_of_answers");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-		}).sendJson(answers, testContext);
+    }).sendJson(answers, testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because no provide enough
-	 * answers.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseNotEnoughAnswers(WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because no provide enough
+   * answers.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseNotEnoughAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		for (int i = 0; i < 39; i++) {
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    for (int i = 0; i < 39; i++) {
 
-			answers.answerValues.add(0d);
-			testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+      answers.answerValues.add(0d);
+      testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-				assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-				final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-				assertThat(error.code).isEqualTo("bad_number_of_answers");
-				assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-				testContext.completeNow();
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isEqualTo("bad_number_of_answers");
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-			}).sendJson(answers, testContext);
+      }).sendJson(answers, testContext);
 
-		}
+    }
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because provide too many answers.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseTooManyAnswers(WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because provide too many answers.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseTooManyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		for (int i = 0; i < 41; i++) {
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    for (int i = 0; i < 41; i++) {
 
-			answers.answerValues.add(0d);
+      answers.answerValues.add(0d);
 
-		}
+    }
 
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_number_of_answers");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isEqualTo("bad_number_of_answers");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-		}).sendJson(answers, testContext);
+    }).sendJson(answers, testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because an answer value is too
-	 * low.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooLow(WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because an answer value is too
+   * low.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooLow(final WebClient client,
+      final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		for (int i = 0; i < 40; i++) {
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    for (int i = 0; i < 40; i++) {
 
-			answers.answerValues.add(0d);
+      answers.answerValues.add(0d);
 
-		}
+    }
 
-		answers.answerValues.set(7, -0.01d);
+    answers.answerValues.set(7, -0.01d);
 
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_answer_value_at_7");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isEqualTo("bad_answer_value_at_7");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-		}).sendJson(answers, testContext);
+    }).sendJson(answers, testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that not calculate the intelligences because an answer value is too
-	 * high.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooHigh(WebClient client,
-			VertxTestContext testContext) {
+  /**
+   * Verify that not calculate the intelligences because an answer value is too
+   * high.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooHigh(final WebClient client,
+      final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		for (int i = 0; i < 40; i++) {
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    for (int i = 0; i < 40; i++) {
 
-			answers.answerValues.add(0d);
+      answers.answerValues.add(0d);
 
-		}
+    }
 
-		answers.answerValues.set(17, 1.01d);
+    answers.answerValues.set(17, 1.01d);
 
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-			assertThat(error.code).isEqualTo("bad_answer_value_at_17");
-			assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isEqualTo("bad_answer_value_at_17");
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-		}).sendJson(answers, testContext);
+    }).sendJson(answers, testContext);
 
-	}
+  }
 
-	/**
-	 * Verify that calculate intelligences.
-	 *
-	 * @param client      to connect to the server.
-	 * @param testContext context to test.
-	 *
-	 * @see Intelligences#calculateGardnerIntelligences(JsonObject,
-	 *      io.vertx.ext.web.api.OperationRequest, Handler)
-	 */
-	@Test
-	public void shouldcalculateGardnerIntelligences(WebClient client, VertxTestContext testContext) {
+  /**
+   * Verify that calculate intelligences.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   */
+  @Test
+  public void shouldcalculateGardnerIntelligences(final WebClient client, final VertxTestContext testContext) {
 
-		final QuestionnaireAnswers answers = new QuestionnaireAnswers();
-		answers.answerValues = new ArrayList<Double>();
-		Collections.addAll(answers.answerValues, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d,
-				1d, 0.5d, 1d, 1d, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d, 1d, 0.5d, 1d, 1d);
+    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    answers.answerValues = new ArrayList<Double>();
+    Collections.addAll(answers.answerValues, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d,
+        1d, 0.5d, 1d, 1d, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d, 1d, 0.5d, 1d, 1d);
 
-		testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
+    testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
-			assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-			final GardnerIntelligences intelligences = assertThatBodyIs(GardnerIntelligences.class, res);
-			assertThat(intelligences).isNotNull();
-			assertThat(intelligences.interpersonal).isEqualTo(0.5d);
-			assertThat(intelligences.intrapersonal).isEqualTo(0.9d);
-			assertThat(intelligences.kinestesicaCorporal).isEqualTo(0.6d);
-			assertThat(intelligences.logicMathematics).isEqualTo(0.8d);
-			assertThat(intelligences.musicalRhythmic).isEqualTo(0.4d);
-			assertThat(intelligences.naturalistEnvironmental).isEqualTo(0.6d);
-			assertThat(intelligences.verbal).isEqualTo(0.7d);
-			assertThat(intelligences.visualSpatial).isEqualTo(0.5d);
-			testContext.completeNow();
+      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+      final GardnerIntelligences intelligences = assertThatBodyIs(GardnerIntelligences.class, res);
+      assertThat(intelligences).isNotNull();
+      assertThat(intelligences.interpersonal).isEqualTo(0.5d);
+      assertThat(intelligences.intrapersonal).isEqualTo(0.9d);
+      assertThat(intelligences.kinestesicaCorporal).isEqualTo(0.6d);
+      assertThat(intelligences.logicMathematics).isEqualTo(0.8d);
+      assertThat(intelligences.musicalRhythmic).isEqualTo(0.4d);
+      assertThat(intelligences.naturalistEnvironmental).isEqualTo(0.6d);
+      assertThat(intelligences.verbal).isEqualTo(0.7d);
+      assertThat(intelligences.visualSpatial).isEqualTo(0.5d);
 
-		}).sendJson(answers, testContext);
+    }).sendJson(answers, testContext);
 
-	}
+  }
 
 }

@@ -115,7 +115,7 @@ public interface Profiles {
   /**
    * The path to the relationships of a profile.
    */
-  String RELATIONSHIPS_PATH = "/SocialNetworkRelationships";
+  String RELATIONSHIPS_PATH = "/relationships";
 
   /**
    * The path to the social practices of a profile.

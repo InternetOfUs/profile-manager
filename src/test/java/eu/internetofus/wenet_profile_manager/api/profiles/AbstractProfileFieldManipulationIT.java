@@ -51,6 +51,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.junit5.Checkpoint;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -81,7 +82,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
       }).sendJson(new JsonObject().put("undefinedKey", "undefinedValue"), testContext);
 
@@ -116,7 +116,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
           final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-          testContext.completeNow();
 
         }).sendJson(model.toJsonObject(), testContext);
 
@@ -167,7 +166,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
       }).sendJson(model.toJsonObject(), testContext);
 
@@ -193,6 +191,7 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
 
         this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(model2 -> {
 
+          final Checkpoint checkpoint = testContext.checkpoint(3);
           testRequest(client, HttpMethod.POST, Profiles.PATH + "/" + profile.id + this.fieldPath()).expect(res -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -219,15 +218,14 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
                   profileModels.add(addedModel1);
                   profile._lastUpdateTs = page.profiles.get(1).profile._lastUpdateTs;
                   assertThat(page.profiles.get(1).profile).isEqualTo(profile);
-                  testContext.completeNow();
 
-                }).send(testContext);
+                }).send(testContext, checkpoint);
 
               }));
 
-            }).sendJson(model2.toJsonObject(), testContext);
+            }).sendJson(model2.toJsonObject(), testContext, checkpoint);
 
-          }).sendJson(model1.toJsonObject(), testContext);
+          }).sendJson(model1.toJsonObject(), testContext, checkpoint);
 
         }));
 
@@ -288,7 +286,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
 
@@ -313,7 +310,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
         final JsonArray array = res.bodyAsJsonArray();
         assertThat(array).isEqualTo(new JsonArray());
-        testContext.completeNow();
 
       }).send(testContext);
 
@@ -341,7 +337,6 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
         final JsonArray array = res.bodyAsJsonArray();
         final List<T> models = Model.fromJsonArray(array, this.modelClass());
         assertThat(models).isEqualTo(this.modelsIn(profile));
-        testContext.completeNow();
 
       }).send(testContext);
 

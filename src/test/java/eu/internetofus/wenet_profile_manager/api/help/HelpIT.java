@@ -36,8 +36,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.help.APIInfo;
-import eu.internetofus.wenet_profile_manager.api.help.Help;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
@@ -72,7 +70,6 @@ public class HelpIT {
     }).send(testContext);
   }
 
-
   /**
    * Verify that return the OpenAPI description.
    *
@@ -88,6 +85,5 @@ public class HelpIT {
       assertThat(body).isNotEmpty();
     }).send(testContext);
   }
-
 
 }
