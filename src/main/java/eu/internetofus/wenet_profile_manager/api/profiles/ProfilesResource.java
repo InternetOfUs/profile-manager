@@ -220,6 +220,7 @@ public class ProfilesResource implements Profiles {
                     "You can not update the profile of the user '" + userId + "', because the new values is equals to the current one.");
 
               } else {
+
                 this.repository.updateProfile(source, update -> {
 
                   if (update.failed()) {
