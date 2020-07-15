@@ -25,7 +25,7 @@
  */
 
 /**
- * The components to provide the version of the API.
+ * The components to provide help abpout the API.
  *
  * @author UDT-IA, IIIA-CSIC
  */
