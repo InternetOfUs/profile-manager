@@ -97,12 +97,14 @@ You can modify use the next environment properties to modify some parameters of 
 
 Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
-If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`):
+If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`).  To modify the component to links or the port to deploy use the next variables:
 
-After that you can interact with the API at **http://localhost:80**. You can modify the listening port
-with the next environment properties:
-
- - **API_PORT** to define the port where the API has to bind to the localhost. By default is **80**.
+ - **INTERACTION_PROTOCOL_ENGINE_API_PORT** to define the port to listen for the API calls. By default is **8083**.
+ - **MONGO_ROOT_USER** to define the root user for the MongoDB. By default is **root**.
+ - **MONGO_ROOT_PASSWORD** to define the password of the root user for the MongoDB. By default is **password**.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
 
 When the container is ready you can access the logs of the component, following the next steps:
 
