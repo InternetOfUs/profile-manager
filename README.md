@@ -169,7 +169,14 @@ This software is under the [MIT license](LICENSE)
 
  - Inform every time a new user profile is created. (GET {{social_context_builder_api}}/social/relations/{{userId}})
 
+### Profile manager
 
+ - Used to validate that an user is defined (GET {{profile_manager_api}}/profiles/{{userId}}).
+ 
+### Service
+
+ - Used to validate that an application is defined (GET {{service_api}}/app/{{appId}}).
+ 
 ## Contact
 
 ### Researcher
