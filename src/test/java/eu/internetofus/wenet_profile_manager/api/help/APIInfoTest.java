@@ -24,30 +24,32 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.versions;
+package eu.internetofus.wenet_profile_manager.api.help;
 
 import eu.internetofus.common.components.ModelTestCase;
 
 /**
- * Test the {@link Version}.
+ * Test the {@link APIInfo}.
  *
- * @see Version
+ * @see APIInfo
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class VersionTest extends ModelTestCase<Version> {
+public class APIInfoTest extends ModelTestCase<APIInfo> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Version createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public APIInfo createModelExample(final int index) {
 
-		final Version version = new Version();
-		version.api = "0.0." + index;
-		version.software = "0." + index + ".0";
-		version.vendor = "UDT-IA, IIIA-CSIC";
-		return version;
-	}
+    final APIInfo version = new APIInfo();
+    version.name = "name" + index;
+    version.apiVersion = "0.0." + index;
+    version.softwareVersion = "0." + index + ".0";
+    version.vendor = "vendor" + index;
+    version.license = "license" + index;
+    return version;
+  }
 
 }

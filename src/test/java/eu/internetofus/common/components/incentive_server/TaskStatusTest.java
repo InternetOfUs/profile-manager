@@ -35,6 +35,7 @@ import eu.internetofus.common.components.ModelTestCase;
  *
  * @author UDT-IA, IIIA-CSIC
  */
+
 public class TaskStatusTest extends ModelTestCase<TaskStatus> {
 
   /**

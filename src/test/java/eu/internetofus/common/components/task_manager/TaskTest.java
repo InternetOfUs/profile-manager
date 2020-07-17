@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,17 @@ public class TaskTest extends ModelTestCase<Task> {
     profileManagerMocker = WeNetProfileManagerMocker.start();
     taskManagerMocker = WeNetTaskManagerMocker.start();
     serviceMocker = WeNetServiceMocker.start();
+  }
+
+  /**
+   * Stop the mocker server.
+   */
+  @AfterAll
+  public static void stopMockers() {
+
+    profileManagerMocker.stop();
+    taskManagerMocker.stop();
+    serviceMocker.stop();
   }
 
   /**
@@ -1175,4 +1187,43 @@ public class TaskTest extends ModelTestCase<Task> {
 
   }
 
+  /**
+   * Check that can not be valid without a goal.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext test context to use.
+   *
+   * @see Task#validate(String, Vertx)
+   */
+  @Test
+  public void shouldNotBeValidWithoutGoal(final Vertx vertx, final VertxTestContext testContext) {
+
+    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+
+      model.goal = null;
+      assertIsNotValid(model, "goal", vertx, testContext);
+
+    }));
+
+  }
+
+  /**
+   * Check that can not be valid with a too soon close time stamp.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext test context to use.
+   *
+   * @see Task#validate(String, Vertx)
+   */
+  @Test
+  public void shouldNotBeValidWithATooSoonCloseTimeStampn(final Vertx vertx, final VertxTestContext testContext) {
+
+    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+
+      model.closeTs = model._creationTs - 1;
+      assertIsNotValid(model, "closeTs", vertx, testContext);
+
+    }));
+
+  }
 }

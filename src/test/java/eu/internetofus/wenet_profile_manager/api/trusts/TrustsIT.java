@@ -80,7 +80,6 @@ public class TrustsIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).sendJson(new JsonObject().put("key", "value"), testContext);
   }
@@ -104,7 +103,6 @@ public class TrustsIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty().endsWith(".sourceId");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).sendJson(event.toJsonObject(), testContext);
 
@@ -131,9 +129,8 @@ public class TrustsIT {
         final UserPerformanceRatingEvent stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
         assertThat(stored).isNotNull();
         assertThat(stored.reportTime).isGreaterThanOrEqualTo(time);
-        event.reportTime = time;
+        event.reportTime = stored.reportTime;
         assertThat(stored).isEqualTo(event);
-        testContext.completeNow();
 
       }).sendJson(event.toJsonObject(), testContext);
 
@@ -162,7 +159,6 @@ public class TrustsIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
   }
@@ -189,7 +185,6 @@ public class TrustsIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
   }
@@ -232,7 +227,6 @@ public class TrustsIT {
         assertThat(trust.value).isNotNull();
         assertThat(trust.value.doubleValue()).isEqualTo(expectedTrust, offset(0.0000000001d));
         assertThat(trust.calculatedTime).isGreaterThanOrEqualTo(now);
-        testContext.completeNow();
 
       }).send(testContext);
 

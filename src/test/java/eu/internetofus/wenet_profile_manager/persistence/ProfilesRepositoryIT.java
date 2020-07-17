@@ -37,6 +37,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
@@ -845,8 +846,37 @@ public class ProfilesRepositoryIT {
         created.profiles = created.profiles.subList(0, 10);
         assertThat(foundModel).isEqualTo(created);
         testContext.completeNow();
+
       })));
 
+    }));
+
+  }
+
+  /**
+   * Should update a full profile to an empty one.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldUpdateToEmptyProfile(final Vertx vertx, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      final WeNetUserProfile emptyProfile = new WeNetUserProfile();
+      emptyProfile.id = profile.id;
+      final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+      repository.updateProfile(emptyProfile, testContext.succeeding(stored -> {
+
+        repository.searchProfile(profile.id, testContext.succeeding(found -> testContext.verify(() -> {
+
+          emptyProfile._lastUpdateTs = found._lastUpdateTs;
+          assertThat(found).isEqualTo(emptyProfile);
+          testContext.completeNow();
+
+        })));
+      }));
     }));
 
   }

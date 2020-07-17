@@ -97,12 +97,14 @@ You can modify use the next environment properties to modify some parameters of 
 
 Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
-If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`):
+If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`).  To modify the component to links or the port to deploy use the next variables:
 
-After that you can interact with the API at **http://localhost:80**. You can modify the listening port
-with the next environment properties:
-
- - **API_PORT** to define the port where the API has to bind to the localhost. By default is **80**.
+ - **INTERACTION_PROTOCOL_ENGINE_API_PORT** to define the port to listen for the API calls. By default is **8083**.
+ - **MONGO_ROOT_USER** to define the root user for the MongoDB. By default is **root**.
+ - **MONGO_ROOT_PASSWORD** to define the password of the root user for the MongoDB. By default is **password**.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
 
 When the container is ready you can access the logs of the component, following the next steps:
 
@@ -147,13 +149,13 @@ The latest APIs documentation is available [here](http://swagger.u-hopper.com/?u
 
 The profile manager has the next available instances:
 
- - WeNet production profile manager API is available at ["https://wenet.u-hopper.com/prod/profile_manager]("https://wenet.u-hopper.com/prod/profile_manager).
- - WeNet development profile manager API is available at ["https://wenet.u-hopper.com/dev/profile_manager]("https://wenet.u-hopper.com/dev/profile_manager).
- - The IIIA stable profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/latest](http://ardid.iiia.csic.es/wenet/profile-manager/latest).
- - The IIIA development profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/develop](http://ardid.iiia.csic.es/wenet/profile-manager/develop).
- - The profile manager API 0.11.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
- - The profile manager API 0.10.0 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
- - The profile manager API 0.9.0 (Dummy version) is available at [http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/](http://ardid.iiia.csic.es/dev-wenet-profile-manager/).
+ - WeNet production profile manager API is available at [https://wenet.u-hopper.com/prod/profile_manager/](https://wenet.u-hopper.com/prod/profile_manager/).
+ - WeNet development profile manager API is available at [https://wenet.u-hopper.com/dev/profile_manager/](https://wenet.u-hopper.com/dev/profile_manager/).
+ - The IIIA stable profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/latest/](http://ardid.iiia.csic.es/wenet/profile-manager/latest/).
+ - The IIIA development profile manager API is available at [http://ardid.iiia.csic.es/wenet/profile-manager/dev/](http://ardid.iiia.csic.es/wenet/profile-manager/dev/).
+ - The profile manager API 0.12 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.12/](http://ardid.iiia.csic.es/wenet/profile-manager/0.12/).
+ - The profile manager API 0.11 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.11/](http://ardid.iiia.csic.es/wenet/profile-manager/0.11.0/).
+ - The profile manager API 0.10 is available at [http://ardid.iiia.csic.es/wenet/profile-manager/0.10/](http://ardid.iiia.csic.es/wenet/profile-manager/0.10.0/).
 
 
 ## License
@@ -167,7 +169,14 @@ This software is under the [MIT license](LICENSE)
 
  - Inform every time a new user profile is created. (GET {{social_context_builder_api}}/social/relations/{{userId}})
 
+### Profile manager
 
+ - Used to validate that an user is defined (GET {{profile_manager_api}}/profiles/{{userId}}).
+ 
+### Service
+
+ - Used to validate that an application is defined (GET {{service_api}}/app/{{appId}}).
+ 
 ## Contact
 
 ### Researcher

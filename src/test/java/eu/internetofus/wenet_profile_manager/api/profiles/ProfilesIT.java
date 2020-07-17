@@ -62,13 +62,12 @@ import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.junit5.Checkpoint;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -98,7 +97,6 @@ public class ProfilesIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
   }
@@ -122,7 +120,6 @@ public class ProfilesIT {
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
         final WeNetUserProfile found = assertThatBodyIs(WeNetUserProfile.class, res);
         assertThat(found).isEqualTo(profile);
-        testContext.completeNow();
 
       })).send(testContext);
 
@@ -148,7 +145,6 @@ public class ProfilesIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty().isEqualTo("bad_profile");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
   }
@@ -176,7 +172,6 @@ public class ProfilesIT {
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().isEqualTo("bad_profile.id");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
       }).sendJson(profile.toJsonObject(), testContext);
 
@@ -223,7 +218,7 @@ public class ProfilesIT {
 
         })));
 
-      }).sendJson(profile.toJsonObject(), testContext);
+      }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
     }));
 
@@ -262,7 +257,7 @@ public class ProfilesIT {
 
       })));
 
-    }).sendJson(profile.toJsonObject(), testContext);
+    }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
   }
 
@@ -305,7 +300,7 @@ public class ProfilesIT {
 
       })));
 
-    }).sendJson(profile.toJsonObject(), testContext);
+    }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
   }
 
@@ -328,7 +323,6 @@ public class ProfilesIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).sendJson(profile.toJsonObject(), testContext);
   }
@@ -354,14 +348,13 @@ public class ProfilesIT {
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
       }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
     }));
   }
 
   /**
-   * Verify that not update a profile if any change is done.
+   * Verify that return error when try to update with a profile that is not valid.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -371,25 +364,25 @@ public class ProfilesIT {
    *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotUpdateProfileBecauseNotChangesHasDone(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotUpdateProfileWithABadProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
+      final WeNetUserProfile newProfile = new WeNetUserProfile();
+      newProfile.nationality = ValidationsTest.STRING_256;
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty();
+        assertThat(error.code).isNotEmpty().contains("nationality");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
-      }).sendJson(new JsonObject(), testContext);
+      }).sendJson(newProfile.toJsonObject(), testContext);
     }));
-
   }
 
   /**
-   * Verify that not update a profile because the source is not valid.
+   * Verify that return error when try to update with a profile that has the same vlaues that the original.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -399,7 +392,7 @@ public class ProfilesIT {
    *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotUpdateProfileBecauseBadSource(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotUpdateProfileWithSameProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
@@ -407,51 +400,15 @@ public class ProfilesIT {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty().endsWith(".nationality");
+        assertThat(error.code).isEqualTo("profile_to_update_equal_to_original");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
-      }).sendJson(new JsonObject().put("nationality", ValidationsTest.STRING_256), testContext);
+      }).sendJson(profile.toJsonObject(), testContext);
     }));
-
   }
 
   /**
-   * Verify that can update a basic profile with another.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldUpdateBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfile(new WeNetUserProfileTest().createBasicExample(1), vertx, testContext, testContext.succeeding(storedProfile -> {
-
-      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
-      newProfile.id = UUID.randomUUID().toString();
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-        newProfile.id = storedProfile.id;
-        newProfile._creationTs = storedProfile._creationTs;
-        newProfile._lastUpdateTs = updated._lastUpdateTs;
-        newProfile.norms.get(0).id = updated.norms.get(0).id;
-        assertThat(updated).isEqualTo(newProfile);
-        testContext.completeNow();
-
-      })).sendJson(newProfile.toJsonObject(), testContext);
-
-    }));
-
-  }
-
-  /**
-   * Verify that can update a complex profile with another.
+   * Verify that can update a profile with another.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
@@ -464,26 +421,219 @@ public class ProfilesIT {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
-      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
+      new WeNetUserProfileTest().createModelExample(2, vertx, testContext, testContext.succeeding(newProfile -> {
+
+        final Checkpoint checkpoint = testContext.checkpoint(2);
+        testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+          assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+          newProfile.id = storedProfile.id;
+          newProfile._creationTs = storedProfile._creationTs;
+          newProfile._lastUpdateTs = updated._lastUpdateTs;
+          newProfile.norms.get(0).id = updated.norms.get(0).id;
+          newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+          newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
+          newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+          newProfile.relationships = updated.relationships;
+          newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
+          newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
+          newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
+          newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+          assertThat(updated).isEqualTo(newProfile);
+
+          testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+            assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+            assertThat(page.profiles).hasSize(1);
+            assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+            assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+            assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+          }).send(testContext, checkpoint);
+
+        })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Verify that return error when try to merge an undefined profile.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
+
+    final WeNetUserProfile profile = new WeNetUserProfileTest().createBasicExample(1);
+    testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+    }).sendJson(profile.toJsonObject(), testContext);
+  }
+
+  /**
+   * Verify that return error when try to merge with a model that is not a profile.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileWithANotProfileObject(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
+    }));
+  }
+
+  /**
+   * Verify that not merge a profile if any change is done.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileBecauseNotChangesHasDone(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(new JsonObject(), testContext);
+    }));
+
+  }
+
+  /**
+   * Verify that not merge a profile because the source is not valid.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
+   *      io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldNotMergeProfileBecauseBadSource(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
+
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty().endsWith(".nationality");
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(new JsonObject().put("nationality", ValidationsTest.STRING_256), testContext);
+    }));
+
+  }
+
+  /**
+   * Verify that can merge a basic profile with another.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldMergeBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfile(new WeNetUserProfileTest().createBasicExample(1), vertx, testContext, testContext.succeeding(storedProfile -> {
+
+      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
       newProfile.id = UUID.randomUUID().toString();
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
         newProfile.id = storedProfile.id;
         newProfile._creationTs = storedProfile._creationTs;
-        newProfile._lastUpdateTs = updated._lastUpdateTs;
-        newProfile.norms.get(0).id = updated.norms.get(0).id;
-        newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
-        newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
-        newProfile.relationships = updated.relationships;
-        newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-        newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
-        newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
-        newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
+        newProfile._lastUpdateTs = merged._lastUpdateTs;
+        newProfile.norms.get(0).id = merged.norms.get(0).id;
+        assertThat(merged).isEqualTo(newProfile);
+
+      })).sendJson(newProfile.toJsonObject(), testContext);
+
+    }));
+
+  }
+
+  /**
+   * Verify that can merge a complex profile with another.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldMergeProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
+
+      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
+      newProfile.id = UUID.randomUUID().toString();
+      final Checkpoint checkpoint = testContext.checkpoint(2);
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+        newProfile.id = storedProfile.id;
+        newProfile._creationTs = storedProfile._creationTs;
+        newProfile._lastUpdateTs = merged._lastUpdateTs;
+        newProfile.norms.get(0).id = merged.norms.get(0).id;
+        newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
+        newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
+        newProfile.relationships = merged.relationships;
+        newProfile.socialPractices.get(0).id = merged.socialPractices.get(0).id;
+        newProfile.socialPractices.get(0).materials.id = merged.socialPractices.get(0).materials.id;
+        newProfile.socialPractices.get(0).competences.id = merged.socialPractices.get(0).competences.id;
+        newProfile.socialPractices.get(0).norms.get(0).id = merged.socialPractices.get(0).norms.get(0).id;
         newProfile.personalBehaviors = storedProfile.personalBehaviors;
-        assertThat(updated).isEqualTo(newProfile);
+        assertThat(merged).isEqualTo(newProfile);
 
         testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
@@ -494,11 +644,10 @@ public class ProfilesIT {
           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
           assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-          testContext.completeNow();
 
-        }).send(testContext);
+        }).send(testContext, checkpoint);
 
-      })).sendJson(newProfile.toJsonObject(), testContext);
+      })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
     }));
 
   }
@@ -520,7 +669,6 @@ public class ProfilesIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
   }
@@ -542,7 +690,6 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NO_CONTENT.getStatusCode());
-        testContext.completeNow();
 
       })).send(testContext);
 
@@ -569,7 +716,6 @@ public class ProfilesIT {
       final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-      testContext.completeNow();
 
     }).send(testContext);
   }
@@ -594,7 +740,6 @@ public class ProfilesIT {
         final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-        testContext.completeNow();
 
       }).send(testContext);
 
@@ -625,7 +770,6 @@ public class ProfilesIT {
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
         final HistoricWeNetUserProfilesPage found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
         assertThat(found).isEqualTo(created);
-        testContext.completeNow();
 
       }).send(testContext);
     }));
@@ -664,7 +808,6 @@ public class ProfilesIT {
         expected.profiles.add(created.profiles.get(8));
         expected.profiles.add(created.profiles.get(7));
         assertThat(found).isEqualTo(expected);
-        testContext.completeNow();
 
       }).send(testContext);
     }));
@@ -695,6 +838,7 @@ public class ProfilesIT {
           newProfile.name = new UserName();
           final String newMiddleName = "NEW middle name";
           newProfile.name.middle = newMiddleName;
+          final Checkpoint checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -717,11 +861,10 @@ public class ProfilesIT {
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.name.middle = old_middle;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-              testContext.completeNow();
 
-            }).send(testContext);
+            }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -751,6 +894,7 @@ public class ProfilesIT {
           final WeNetUserProfile newProfile = new WeNetUserProfile();
           newProfile.dateOfBirth = new AliveBirthDate();
           newProfile.dateOfBirth.day = 1;
+          final Checkpoint checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -772,11 +916,10 @@ public class ProfilesIT {
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.dateOfBirth.day = 24;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-              testContext.completeNow();
 
-            }).send(testContext);
+            }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -805,6 +948,7 @@ public class ProfilesIT {
 
           final WeNetUserProfile newProfile = new WeNetUserProfile();
           newProfile.gender = Gender.M;
+          final Checkpoint checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -826,11 +970,10 @@ public class ProfilesIT {
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.gender = Gender.F;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
-              testContext.completeNow();
 
-            }).send(testContext);
+            }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -862,6 +1005,7 @@ public class ProfilesIT {
           newProfile.languages.get(0).code = "es";
           newProfile.languages.add(new Language());
           newProfile.languages.get(1).name = "English";
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -917,46 +1061,17 @@ public class ProfilesIT {
                   final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
 
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
 
-                }).send(testContext);
+                }).send(testContext, checkpoint);
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
 
-            }).send(testContext);
+            }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
-
-  }
-
-  /**
-   * Called to obtain the historic profiles of an user.
-   *
-   * @param userId      identifier of the user to obtain the historic profiles.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   * @param pageHandler handler to inform of the historic profiles.
-   */
-  protected void searchHistoricProfilePageFor(final String userId, final WebClient client, final VertxTestContext testContext, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> pageHandler) {
-
-    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).expect(resPage -> {
-
-      assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
-
-      if (page == null) {
-
-        pageHandler.handle(Future.failedFuture("The returned JSON is not a HistoricWeNetUserProfilesPage"));
-
-      } else {
-
-        pageHandler.handle(Future.succeededFuture(page));
-      }
-
-    }).send(testContext);
 
   }
 
@@ -986,6 +1101,7 @@ public class ProfilesIT {
           newProfile.norms.add(new Norm());
           newProfile.norms.get(1).id = storedProfile.norms.get(0).id;
           newProfile.norms.get(1).attribute = "Attribute";
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1005,8 +1121,10 @@ public class ProfilesIT {
             storedProfile.norms.get(0).id = updated.norms.get(0).id;
             storedProfile.norms.get(1).attribute = "Attribute";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.norms = new ArrayList<>();
               newProfile.norms.add(new Norm());
@@ -1029,16 +1147,19 @@ public class ProfilesIT {
                 storedProfile.norms.remove(1);
                 storedProfile.norms.get(0).attribute = "Attribute2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
-                })));
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+                }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+            }).send(testContext, checkpoint);
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -1071,6 +1192,7 @@ public class ProfilesIT {
           newProfile.plannedActivities.add(new PlannedActivity());
           newProfile.plannedActivities.get(1).id = storedProfile.plannedActivities.get(0).id;
           newProfile.plannedActivities.get(1).description = "Description";
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1091,8 +1213,10 @@ public class ProfilesIT {
             storedProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
             storedProfile.plannedActivities.get(1).description = "Description";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.plannedActivities = new ArrayList<>();
               newProfile.plannedActivities.add(new PlannedActivity());
@@ -1115,16 +1239,19 @@ public class ProfilesIT {
                 storedProfile.plannedActivities.remove(1);
                 storedProfile.plannedActivities.get(0).description = "Description2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
-                })));
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+                }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+            }).send(testContext, checkpoint);
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -1159,6 +1286,7 @@ public class ProfilesIT {
           newProfile.relevantLocations.get(1).label = "Label";
           newProfile.relevantLocations.get(1).latitude = -24;
           newProfile.relevantLocations.get(1).longitude = 24;
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1178,7 +1306,10 @@ public class ProfilesIT {
             storedProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
             storedProfile.relevantLocations.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page).isEqualTo(expected);
               newProfile.relevantLocations = new ArrayList<>();
@@ -1202,14 +1333,17 @@ public class ProfilesIT {
                 storedProfile.relevantLocations.remove(1);
                 storedProfile.relevantLocations.get(0).label = "Label2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
-                })));
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+                }).send(testContext, checkpoint);
+
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+            }).send(testContext, checkpoint);
 
           })).sendJson(newProfile.toJsonObject(), testContext);
         }));
@@ -1244,6 +1378,7 @@ public class ProfilesIT {
           newProfile.socialPractices.add(new SocialPractice());
           newProfile.socialPractices.get(1).id = storedProfile.socialPractices.get(0).id;
           newProfile.socialPractices.get(1).label = "Label";
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1263,8 +1398,10 @@ public class ProfilesIT {
             storedProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
             storedProfile.socialPractices.get(1).label = "Label";
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.socialPractices = new ArrayList<>();
               newProfile.socialPractices.add(new SocialPractice());
@@ -1287,16 +1424,19 @@ public class ProfilesIT {
                 storedProfile.socialPractices.remove(1);
                 storedProfile.socialPractices.get(0).label = "Label2";
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client, testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
-                })));
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+                }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+            }).send(testContext, checkpoint);
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -1329,6 +1469,7 @@ public class ProfilesIT {
           newProfile.personalBehaviors.add(new RoutineTest().createModelExample(2));
           newProfile.personalBehaviors.get(0).user_id = storedProfile.id;
           newProfile.personalBehaviors.get(1).user_id = storedProfile.id;
+          final Checkpoint checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1350,13 +1491,15 @@ public class ProfilesIT {
             storedProfile.personalBehaviors.get(0).user_id = storedProfile.id;
             storedProfile.personalBehaviors.get(1).user_id = storedProfile.id;
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
-              testContext.completeNow();
-            })));
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+            }).send(testContext, checkpoint);
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -1391,6 +1534,7 @@ public class ProfilesIT {
           newProfile.relationships.add(new SocialNetworkRelationship());
           newProfile.relationships.get(1).userId = storedProfile.relationships.get(0).userId;
           newProfile.relationships.get(1).type = SocialNetworkRelationshipType.acquaintance;
+          final Checkpoint checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -1410,8 +1554,10 @@ public class ProfilesIT {
             storedProfile.relationships.get(0).userId = storedProfile.relationships.get(1).userId;
             storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
             assertThat(updated).isEqualTo(storedProfile);
-            this.searchHistoricProfilePageFor(storedProfile.id, client,testContext,testContext.succeeding(page -> testContext.verify(() -> {
+            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
+              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.relationships = new ArrayList<>();
               newProfile.relationships.add(new SocialNetworkRelationship());
@@ -1433,16 +1579,19 @@ public class ProfilesIT {
                 storedProfile.relationships = new ArrayList<>();
                 storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
                 assertThat(updated2).isEqualTo(storedProfile);
-                this.searchHistoricProfilePageFor(storedProfile.id, client,testContext, testContext.succeeding(page2 -> testContext.verify(() -> {
+                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
+                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
-                  testContext.completeNow();
-                })));
 
-              })).sendJson(newProfile.toJsonObject(), testContext);
-            })));
+                }).send(testContext, checkpoint);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+            }).send(testContext, checkpoint);
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
         }));
       });
     }));
@@ -1495,7 +1644,8 @@ public class ProfilesIT {
 
       })));
 
-    }).sendJson(new JsonObject().put("id", id), testContext);
+    }).sendJson(new JsonObject().put("id", id), testContext, testContext.checkpoint(2));
 
   }
+
 }

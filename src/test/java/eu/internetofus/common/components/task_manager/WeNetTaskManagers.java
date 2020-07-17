@@ -24,9 +24,50 @@
  * -----------------------------------------------------------------------------
  */
 
+package eu.internetofus.common.components.task_manager;
+
+import java.util.function.Predicate;
+
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
+
 /**
- * The components to provide the version of the API.
+ * Utility methods to interact with the {@link WeNetTaskManager}.
+ *
+ * @see WeNetTaskManager
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.versions;
+public interface WeNetTaskManagers {
+
+  /**
+   * Wait until the task satisfy a predicate.
+   *
+   * @param taskId      identifier of the task to get the information.
+   * @param checkTask   the function that has to be true to the task is on the state that is waiting.
+   * @param vertx       event bus to use.
+   * @param testContext context to do the test.
+   *
+   * @return the future that will return the task that satisfy the predicate.
+   */
+  static Future<Task> waitUntilTask(final String taskId, final Predicate<Task> checkTask, final Vertx vertx, final VertxTestContext testContext) {
+
+    final Promise<Task> promise = Promise.promise();
+    WeNetTaskManager.createProxy(vertx).retrieveTask(taskId, testContext.succeeding(task -> {
+
+      if (checkTask.test(task)) {
+
+        promise.complete(task);
+
+      } else {
+
+        waitUntilTask(taskId, checkTask, vertx, testContext).onComplete(testContext.succeeding(result -> promise.complete(result)));
+      }
+
+    }));
+
+    return promise.future();
+  }
+}

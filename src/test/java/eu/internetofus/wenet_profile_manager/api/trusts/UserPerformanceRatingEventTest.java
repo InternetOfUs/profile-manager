@@ -152,7 +152,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       profile.relationships = new ArrayList<>();
       profile.relationships.add(new SocialNetworkRelationship());
       profile.relationships.get(0).userId = task.requesterId;
-      final SocialNetworkRelationshipType relationship = SocialNetworkRelationshipType.values()[index % (SocialNetworkRelationshipType.values().length - 1)];
+      final SocialNetworkRelationshipType relationship = SocialNetworkRelationshipType.values()[index % SocialNetworkRelationshipType.values().length];
       profile.relationships.get(0).type = relationship;
       StoreServices.storeProfile(profile, vertx, testContext, testContext.succeeding(stored -> {
 
