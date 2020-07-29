@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Material;
 import eu.internetofus.common.components.profile_manager.MaterialTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -50,7 +51,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
   @Override
   protected String fieldPath() {
 
-    return Profiles.PERSONAL_BEHAVIORS_PATH;
+    return Profiles.MATERIALS_PATH;
   }
 
   /**
@@ -60,6 +61,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
   protected Future<Material> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
     final Material model = new MaterialTest().createModelExample(1);
+    model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
 

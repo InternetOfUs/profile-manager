@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Meaning;
 import eu.internetofus.common.components.profile_manager.MeaningTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -50,7 +51,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
   @Override
   protected String fieldPath() {
 
-    return Profiles.PERSONAL_BEHAVIORS_PATH;
+    return Profiles.MEANINGS_PATH;
   }
 
   /**
@@ -60,6 +61,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
   protected Future<Meaning> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
     final Meaning model = new MeaningTest().createModelExample(1);
+    model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
 

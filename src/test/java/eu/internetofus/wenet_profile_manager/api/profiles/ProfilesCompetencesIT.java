@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Competence;
 import eu.internetofus.common.components.profile_manager.CompetenceTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -50,7 +51,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByInd
   @Override
   protected String fieldPath() {
 
-    return Profiles.PERSONAL_BEHAVIORS_PATH;
+    return Profiles.COMPETENCES_PATH;
   }
 
   /**
@@ -60,6 +61,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByInd
   protected Future<Competence> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
     final Competence model = new CompetenceTest().createModelExample(1);
+    model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
 

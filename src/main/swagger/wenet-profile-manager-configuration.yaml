@@ -15,17 +15,23 @@ openAPI:
     - name: Trusts
       description: The functionality provided allows to manage the trust over other users.
     - name: Norms
-      description: The functionality provided allows to manage the norms defined into an user profile.
+      description: The functionality provided allows to manage the norms defined into a user profile.
     - name: Planned activities
-      description: The functionality provided allows to manage the planned activities defined into an user profile.
+      description: The functionality provided allows to manage the planned activities defined into a user profile.
     - name: Relevant locations
-      description: The functionality provided allows to manage the relevant locations defined into an user profile.
+      description: The functionality provided allows to manage the relevant locations defined into a user profile.
     - name: Relationships
-      description: The functionality provided allows to manage the relationships defined into an user profile.
+      description: The functionality provided allows to manage the relationships defined into a user profile.
     - name: Social practices
-      description: The functionality provided allows to manage the social practices defined into an user profile.
+      description: The functionality provided allows to manage the social practices defined into a user profile.
     - name: Personal behaviors
-      description: The functionality provided allows to manage the personal behaviors defined into an user profile.
+      description: The functionality provided allows to manage the personal behaviors defined into a user profile.
+    - name: Materials
+      description: The functionality provided allows to manage the materials defined into a user profile.
+    - name: Competences
+      description: The functionality provided allows to manage the competences defined into a user profile.
+    - name: Meanings
+      description: The functionality provided allows to manage the meanings defined into a user profile.
     - name: Other
       description: Other services provided by the API.
   info:
@@ -34,7 +40,7 @@ openAPI:
     title: WeNet - Profile manager API
     description:  >-
       The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
-      and its historic. An user profile is a set of attributes that define the state of the user. Some of these
+      and its historic. a user profile is a set of attributes that define the state of the user. Some of these
       attributes are filled in by the user, such as name, email, telephone,..., or by  other components of
       the platform, such as social relationships, routines,.... Every time a profile is modified a copy of
       the previous profile values is stored in the historic. This allows to know, to the rest of components,
@@ -45,7 +51,7 @@ openAPI:
       doing some action. The trust is dynamic and will be updated every time they collaborate to achieve a task.
       When a user has received help it can rate the performance of the user that has helped it. For this it has to
       post a performance rating event to the profile manager. These events are used by the profile manager when
-      it has to provide the trust that has an user that another does a certain action. When you want to calculate
+      it has to provide the trust that has a user that another does a certain action. When you want to calculate
       the trust, you must specify some parameters that are used to select with events has to be aggregated to obtain
       the trust. Also you must define the aggregation function, that can be:
 

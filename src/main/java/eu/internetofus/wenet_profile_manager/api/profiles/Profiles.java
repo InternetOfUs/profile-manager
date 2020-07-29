@@ -128,6 +128,22 @@ public interface Profiles {
   String PERSONAL_BEHAVIORS_PATH = "/personalBehaviors";
 
   /**
+   * The path to the materials of a profile.
+   */
+  String MATERIALS_PATH = "/materials";
+
+  /**
+   * The path to the competences of a profile.
+   */
+  String COMPETENCES_PATH = "/competences";
+
+  /**
+   * The path to the meanings of a profile.
+   */
+  String MEANINGS_PATH = "/meanings";
+
+
+  /**
    * Called when want to create an user profile.
    *
    * @param body          the new profile to create.
@@ -987,7 +1003,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + MATERIALS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a material into a profile", description = "Insert a new material into a profile")
@@ -1007,7 +1023,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + MATERIALS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the materials from a profile", description = "Allow to get all the materials defined into a profile")
   @ApiResponse(responseCode = "200", description = "The materials defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Material"))))
@@ -1025,7 +1041,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MATERIALS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a material from a profile", description = "Allow to get a material defined into a profile")
   @ApiResponse(responseCode = "200", description = "The material defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
@@ -1045,7 +1061,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MATERIALS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a material from a profile", description = "Allow to modify a material defined into a profile")
@@ -1068,7 +1084,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MATERIALS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a material from a profile", description = "Allow to modify parts of a material defined into a profile")
@@ -1090,7 +1106,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MATERIALS_PATH + "/{index:0-9}")
   @Operation(summary = "Delete a material from a profile", description = "Allow to delete a defined material from a profile")
   @ApiResponse(responseCode = "204", description = "The material defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -1108,7 +1124,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + COMPETENCES_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a competence into a profile", description = "Insert a new competence into a profile")
@@ -1128,7 +1144,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + COMPETENCES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the competences from a profile", description = "Allow to get all the competences defined into a profile")
   @ApiResponse(responseCode = "200", description = "The competences defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Competence"))))
@@ -1146,7 +1162,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + COMPETENCES_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a competence from a profile", description = "Allow to get a competence defined into a profile")
   @ApiResponse(responseCode = "200", description = "The competence defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
@@ -1166,7 +1182,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + COMPETENCES_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a competence from a profile", description = "Allow to modify a competence defined into a profile")
@@ -1189,7 +1205,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + COMPETENCES_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a competence from a profile", description = "Allow to modify parts of a competence defined into a profile")
@@ -1211,7 +1227,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + COMPETENCES_PATH + "/{index:0-9}")
   @Operation(summary = "Delete a competence from a profile", description = "Allow to delete a defined competence from a profile")
   @ApiResponse(responseCode = "204", description = "The competence defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -1230,7 +1246,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @POST
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + MEANINGS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a meaning into a profile", description = "Insert a new meaning into a profile")
@@ -1250,7 +1266,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH)
+  @Path("/{userId}" + MEANINGS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the meanings from a profile", description = "Allow to get all the meanings defined into a profile")
   @ApiResponse(responseCode = "200", description = "The meanings defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
@@ -1268,7 +1284,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MEANINGS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a meaning from a profile", description = "Allow to get a meaning defined into a profile")
   @ApiResponse(responseCode = "200", description = "The meaning defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
@@ -1288,7 +1304,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MEANINGS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a meaning from a profile", description = "Allow to modify a meaning defined into a profile")
@@ -1311,7 +1327,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MEANINGS_PATH + "/{index:0-9}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a meaning from a profile", description = "Allow to modify parts of a meaning defined into a profile")
@@ -1333,7 +1349,7 @@ public interface Profiles {
    * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path("/{userId}" + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
+  @Path("/{userId}" + MEANINGS_PATH + "/{index:0-9}")
   @Operation(summary = "Delete a meaning from a profile", description = "Allow to delete a defined meaning from a profile")
   @ApiResponse(responseCode = "204", description = "The meaning defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
