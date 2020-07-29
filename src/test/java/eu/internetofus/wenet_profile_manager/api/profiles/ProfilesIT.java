@@ -47,7 +47,6 @@ import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.AliveBirthDate;
 import eu.internetofus.common.components.profile_manager.Gender;
-import eu.internetofus.common.components.profile_manager.Language;
 import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.profile_manager.PlannedActivity;
 import eu.internetofus.common.components.profile_manager.RelevantLocation;
@@ -207,8 +206,6 @@ public class ProfilesIT {
         profile.plannedActivities.get(1).id = stored.plannedActivities.get(1).id;
         profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
         profile.socialPractices.get(0).id = stored.socialPractices.get(0).id;
-        profile.socialPractices.get(0).materials.id = stored.socialPractices.get(0).materials.id;
-        profile.socialPractices.get(0).competences.id = stored.socialPractices.get(0).competences.id;
         profile.socialPractices.get(0).norms.get(0).id = stored.socialPractices.get(0).norms.get(0).id;
         assertThat(stored).isEqualTo(profile);
         ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -289,8 +286,6 @@ public class ProfilesIT {
       profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
       profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
       profile.socialPractices.get(0).id = stored.socialPractices.get(0).id;
-      profile.socialPractices.get(0).materials.id = stored.socialPractices.get(0).materials.id;
-      profile.socialPractices.get(0).competences.id = stored.socialPractices.get(0).competences.id;
       profile.socialPractices.get(0).norms.get(0).id = stored.socialPractices.get(0).norms.get(0).id;
       assertThat(stored).isEqualTo(profile);
       ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -438,8 +433,6 @@ public class ProfilesIT {
           newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
           newProfile.relationships = updated.relationships;
           newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-          newProfile.socialPractices.get(0).materials.id = updated.socialPractices.get(0).materials.id;
-          newProfile.socialPractices.get(0).competences.id = updated.socialPractices.get(0).competences.id;
           newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
           assertThat(updated).isEqualTo(newProfile);
 
@@ -629,8 +622,6 @@ public class ProfilesIT {
         newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
         newProfile.relationships = merged.relationships;
         newProfile.socialPractices.get(0).id = merged.socialPractices.get(0).id;
-        newProfile.socialPractices.get(0).materials.id = merged.socialPractices.get(0).materials.id;
-        newProfile.socialPractices.get(0).competences.id = merged.socialPractices.get(0).competences.id;
         newProfile.socialPractices.get(0).norms.get(0).id = merged.socialPractices.get(0).norms.get(0).id;
         newProfile.personalBehaviors = storedProfile.personalBehaviors;
         assertThat(merged).isEqualTo(newProfile);
@@ -980,100 +971,6 @@ public class ProfilesIT {
 
   }
 
-  /**
-   * Verify that can update the languages of an user.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldUpdateProfileLanguage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
-
-      assertIsValid(created, vertx, testContext, () -> {
-
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
-        repository.storeProfile(created, testContext.succeeding(storedProfile -> {
-
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
-          newProfile.languages = new ArrayList<>();
-          newProfile.languages.add(new Language());
-          newProfile.languages.get(0).code = "es";
-          newProfile.languages.add(new Language());
-          newProfile.languages.get(1).name = "English";
-          final Checkpoint checkpoint = testContext.checkpoint(4);
-          testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
-
-            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-            assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
-            expected.profiles = new ArrayList<>();
-            expected.profiles.add(new HistoricWeNetUserProfile());
-            expected.profiles.get(0).from = storedProfile._creationTs;
-            expected.profiles.get(0).to = updated._lastUpdateTs;
-            expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(), WeNetUserProfile.class);
-            expected.total++;
-
-            storedProfile._lastUpdateTs = updated._lastUpdateTs;
-            storedProfile.languages = new ArrayList<>();
-            storedProfile.languages.add(new Language());
-            storedProfile.languages.get(0).code = "es";
-            storedProfile.languages.add(new Language());
-            storedProfile.languages.get(1).name = "English";
-            assertThat(updated).isEqualTo(storedProfile);
-            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
-
-              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
-
-              assertThat(page).isEqualTo(expected);
-              newProfile.languages = new ArrayList<>();
-              newProfile.languages.add(new Language());
-              newProfile.languages.get(0).code = "en";
-              newProfile.languages.get(0).code = "English";
-              testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
-
-                assertThat(res2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
-                assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-                expected.profiles.add(new HistoricWeNetUserProfile());
-                expected.profiles.get(1).from = updated._lastUpdateTs;
-                expected.profiles.get(1).to = updated2._lastUpdateTs;
-                expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(), WeNetUserProfile.class);
-                expected.total++;
-
-                storedProfile._lastUpdateTs = updated2._lastUpdateTs;
-                storedProfile.languages = new ArrayList<>();
-                storedProfile.languages.add(new Language());
-                storedProfile.languages.get(0).code = "en";
-                storedProfile.languages.get(0).name = "English";
-                assertThat(updated2).isEqualTo(storedProfile);
-                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
-
-                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
-
-                  assertThat(page2).isEqualTo(expected);
-
-                }).send(testContext, checkpoint);
-
-              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-
-            }).send(testContext, checkpoint);
-
-          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-        }));
-      });
-    }));
-
-  }
 
   /**
    * Verify that can update the norms of an user.
@@ -1629,7 +1526,6 @@ public class ProfilesIT {
       assertThat(stored.locale).isNull();
       assertThat(stored.avatar).isNull();
       assertThat(stored.nationality).isNull();
-      assertThat(stored.languages).isNull();
       assertThat(stored.occupation).isNull();
       assertThat(stored.norms).isNull();
       assertThat(stored.plannedActivities).isNull();
@@ -1637,6 +1533,9 @@ public class ProfilesIT {
       assertThat(stored.relationships).isNull();
       assertThat(stored.socialPractices).isNull();
       assertThat(stored.personalBehaviors).isNull();
+      assertThat(stored.materials).isNull();
+      assertThat(stored.competences).isNull();
+      assertThat(stored.meanings).isNull();
       ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
         assertThat(foundProfile).isEqualTo(stored);

@@ -29,20 +29,20 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.ArrayList;
 import java.util.List;
 
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.SocialPractice;
-import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
+import eu.internetofus.common.components.profile_manager.Competence;
+import eu.internetofus.common.components.profile_manager.CompetenceTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Check the manipulation of the {@link SocialPractice}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the personal behaviors ({@link Competence}) in a {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationByIdentifierIT<SocialPractice> {
+public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByIndexIT<Competence> {
 
   /**
    * {@inheritDoc}
@@ -50,29 +50,29 @@ public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationB
   @Override
   protected String fieldPath() {
 
-    return Profiles.SOCIAL_PRACTICES_PATH;
+    return Profiles.PERSONAL_BEHAVIORS_PATH;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Future<SocialPractice> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected Future<Competence> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final SocialPractice socialPractice = new SocialPractice();
-    socialPractice.label = ValidationsTest.STRING_1024;
-    return Future.succeededFuture(socialPractice);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<SocialPractice> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final SocialPractice model = new SocialPracticeTest().createModelExample(index);
+    final Competence model = new CompetenceTest().createModelExample(1);
     return Future.succeededFuture(model);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Future<Competence> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+
+    final Promise<Competence> promise = Promise.promise();
+    final Competence model = new CompetenceTest().createModelExample(index);
+    promise.complete(model);
+    return promise.future();
 
   }
 
@@ -80,51 +80,28 @@ public class ProfilesSocialPracticesIT extends AbstractProfileFieldManipulationB
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final SocialPractice source, final SocialPractice target) {
+  protected List<Competence> initiModelsIn(final WeNetUserProfile profile) {
 
-    target.id = source.id;
-    for (int i = 0; i < target.norms.size(); i++) {
-
-      target.norms.get(i).id = source.norms.get(i).id;
-    }
-
+    profile.competences = new ArrayList<>();
+    return profile.competences;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<SocialPractice> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Competence> modelsIn(final WeNetUserProfile profile) {
 
-    profile.socialPractices = new ArrayList<>();
-    return profile.socialPractices;
+    return profile.competences;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<SocialPractice> modelsIn(final WeNetUserProfile profile) {
+  protected Class<Competence> modelClass() {
 
-    return profile.socialPractices;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Class<SocialPractice> modelClass() {
-
-    return SocialPractice.class;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected String idOf(final SocialPractice model) {
-
-    return model.id;
+    return Competence.class;
   }
 
 }

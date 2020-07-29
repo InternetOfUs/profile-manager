@@ -42,6 +42,9 @@ import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Mergeable;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.Validable;
+import eu.internetofus.common.components.profile_manager.Competence;
+import eu.internetofus.common.components.profile_manager.Material;
+import eu.internetofus.common.components.profile_manager.Meaning;
 import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.profile_manager.PlannedActivity;
 import eu.internetofus.common.components.profile_manager.RelevantLocation;
@@ -1223,6 +1226,186 @@ public class ProfilesResource implements Profiles {
   public void deletePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "personal_behaviour", profile -> profile.personalBehaviors, this.checkIndexOnModels(index), resultHandler);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addMaterial(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.addModelToProfile(Material.class, body, "material", userId, profile -> profile.materials, (profile, materials) -> profile.materials = materials,
+        (material1, material2) -> material1.equals(material2), resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveMaterials(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelsFromProfile(userId, profile -> profile.materials, resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveMaterial(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.materials), "material", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateMaterial(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.updateModelFromProfile(userId, body, Material.class, profile -> profile.materials, this.checkIndexOnModels(index), "material", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeMaterial(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.mergeModelFromProfile(userId, body, Material.class, profile -> profile.materials, this.checkIndexOnModels(index), "material", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteMaterial(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.deleteModelFromProfile(userId, "material", profile -> profile.materials, this.checkIndexOnModels(index), resultHandler);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addCompetence(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.addModelToProfile(Competence.class, body, "competence", userId, profile -> profile.competences, (profile, competences) -> profile.competences = competences,
+        (competence1, competence2) -> competence1.equals(competence2), resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCompetences(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelsFromProfile(userId, profile -> profile.competences, resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCompetence(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.competences), "competence", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateCompetence(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.updateModelFromProfile(userId, body, Competence.class, profile -> profile.competences, this.checkIndexOnModels(index), "competence", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeCompetence(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.mergeModelFromProfile(userId, body, Competence.class, profile -> profile.competences, this.checkIndexOnModels(index), "competence", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteCompetence(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.deleteModelFromProfile(userId, "competence", profile -> profile.competences, this.checkIndexOnModels(index), resultHandler);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addMeaning(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.addModelToProfile(Meaning.class, body, "meaning", userId, profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings,
+        (meaning1, meaning2) -> meaning1.equals(meaning2), resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveMeanings(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelsFromProfile(userId, profile -> profile.meanings, resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveMeaning(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.meanings), "meaning", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateMeaning(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.updateModelFromProfile(userId, body, Meaning.class, profile -> profile.meanings, this.checkIndexOnModels(index), "meaning", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeMeaning(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.mergeModelFromProfile(userId, body, Meaning.class, profile -> profile.meanings, this.checkIndexOnModels(index), "meaning", resultHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteMeaning(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    this.deleteModelFromProfile(userId, "meaning", profile -> profile.meanings, this.checkIndexOnModels(index), resultHandler);
   }
 
 }
