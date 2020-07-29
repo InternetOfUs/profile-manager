@@ -26,11 +26,8 @@
 
 package eu.internetofus.common.components.profile_manager;
 
-import java.util.UUID;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import eu.internetofus.common.components.Mergeable;
+import eu.internetofus.common.components.Merges;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.Validable;
 import eu.internetofus.common.components.ValidationErrorException;
@@ -45,22 +42,37 @@ import io.vertx.core.Vertx;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(description = "A material necessary for do a social practice.")
-@JsonDeserialize(using = MaterialDeserialize.class)
+@Schema(hidden = true, name = "Material", description = "It describes an object that is available to a user.")
 public class Material extends Model implements Validable, Mergeable<Material> {
 
   /**
-   * The identifier of the material.
+   * The name of the material.
    */
-  @Schema(description = "The identifier of the material", example = "aisufh9sdokjnd")
-  public String id;
+  @Schema(description = "The name of the object", example = "car")
+  public String name;
 
   /**
-   * Create a new empty material.
+   * The description of the material.
    */
-  public Material() {
+  @Schema(description = "A description of the object", example = "Fiat 500")
+  public String description;
 
-  }
+  /**
+   * The quantity of the material.
+   */
+  @Schema(description = "The amount of units available", example = "1")
+  public Integer quantity;
+
+  /**
+   * The classification of the material.
+   *
+   * <ul>
+   * <li>Global Product Classification (https://www.gs1.org/standards/gpc)</li>
+   * <li>NICE classification (Classification of Goods and Services)</li>
+   * </ul>
+   */
+  @Schema(description = "The classification used for representing the object, such as Global Product Classification (https://www.gs1.org/standards/gpc) or NICE classification (Classification of Goods and Services)", example = "nice")
+  public String classification;
 
   /**
    * {@inheritDoc}
@@ -71,11 +83,10 @@ public class Material extends Model implements Validable, Mergeable<Material> {
     final Promise<Void> promise = Promise.promise();
     try {
 
-      this.id = Validations.validateNullableStringField(codePrefix, "id", 255, this.id);
-      if (this.id == null) {
-
-        this.id = UUID.randomUUID().toString();
-      }
+      this.name = Validations.validateStringField(codePrefix, "name", 255, this.name);
+      this.description = Validations.validateNullableStringField(codePrefix, "description", 1023, this.description);
+      this.quantity = Validations.validateNumberOnRange(codePrefix, "quantity", this.quantity, false, 1, null);
+      this.classification = Validations.validateStringField(codePrefix, "classification", 255, this.classification);
       promise.complete();
 
     } catch (final ValidationErrorException validationError) {
@@ -92,27 +103,45 @@ public class Material extends Model implements Validable, Mergeable<Material> {
   @Override
   public Future<Material> merge(final Material source, final String codePrefix, final Vertx vertx) {
 
-    if (source == null) {
+    final Promise<Material> promise = Promise.promise();
+    Future<Material> future = promise.future();
+    if (source != null) {
 
-      return Future.succeededFuture(this);
+      final Material merged = new Material();
+      merged.name = source.name;
+      if (merged.name == null) {
 
-    } else if ((source.id == null || this.id.equals(source.id)) && this instanceof Car && source instanceof Car) {
+        merged.name = this.name;
+      }
 
-      return ((Car) this).mergeCar((Car) source, codePrefix, vertx).map(car -> {
+      merged.description = source.description;
+      if (merged.description == null) {
 
-        car.id = this.id;
-        return (Material) car;
+        merged.description = this.description;
+      }
 
-      });
+      merged.quantity = source.quantity;
+      if (merged.quantity == null) {
+
+        merged.quantity = this.quantity;
+      }
+
+      merged.classification = source.classification;
+      if (merged.classification == null) {
+
+        merged.classification = this.classification;
+      }
+
+      promise.complete(merged);
+
+      // Validate the merged value
+      future = future.compose(Merges.validateMerged(codePrefix, vertx));
 
     } else {
 
-      return source.validate(codePrefix, vertx).map(validation -> {
-        source.id = this.id;
-        return source;
-      });
-
+      promise.complete(this);
     }
+    return future;
   }
 
 }
