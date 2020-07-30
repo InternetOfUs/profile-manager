@@ -30,6 +30,7 @@ import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.requestHeader;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,6 +45,8 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.Meaning;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
@@ -278,13 +281,19 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final Personality personality = assertThatBodyIs(Personality.class, res);
+      final var personality = Model.fromJsonArray(res.bodyAsJsonArray(), Meaning.class);
       assertThat(personality).isNotNull();
-      assertThat(personality.extrovert).isEqualTo(1d);
-      assertThat(personality.perception).isEqualTo(1d);
-      assertThat(personality.judgment).isEqualTo(1d);
-      assertThat(personality.attitude).isEqualTo(1d);
-      assertThat(personality.MBTI).isEqualTo("ENTJ");
+      for (var factor = 0; factor < PersonalitiesResource.FACTOR_NAMES.length; factor++) {
+
+        assertPersonality(personality.get(factor), factor, 1d);
+
+      }
+
+      final var mbti = personality.get(PersonalitiesResource.FACTOR_NAMES.length);
+      assertThat(mbti).isNotNull();
+      assertThat(mbti.name).isEqualTo("MBTI");
+      assertThat(mbti.category).isEqualTo(PersonalitiesResource.MEANING_CATEGORY);
+      assertThat(mbti.level).isEqualTo(15, offset(0.0000001d));
 
     }).sendJson(answers, testContext);
 
@@ -312,13 +321,19 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final Personality personality = assertThatBodyIs(Personality.class, res);
+      final var personality = Model.fromJsonArray(res.bodyAsJsonArray(), Meaning.class);
       assertThat(personality).isNotNull();
-      assertThat(personality.extrovert).isEqualTo(-1d);
-      assertThat(personality.perception).isEqualTo(-1d);
-      assertThat(personality.judgment).isEqualTo(-1d);
-      assertThat(personality.attitude).isEqualTo(-1d);
-      assertThat(personality.MBTI).isEqualTo("ISFP");
+      for (var factor = 0; factor < PersonalitiesResource.FACTOR_NAMES.length; factor++) {
+
+        assertPersonality(personality.get(factor), factor, -1d);
+
+      }
+
+      final var mbti = personality.get(PersonalitiesResource.FACTOR_NAMES.length);
+      assertThat(mbti).isNotNull();
+      assertThat(mbti.name).isEqualTo("MBTI");
+      assertThat(mbti.category).isEqualTo(PersonalitiesResource.MEANING_CATEGORY);
+      assertThat(mbti.level).isEqualTo(0, offset(0.0000001d));
 
     }).sendJson(answers, testContext);
 
@@ -342,15 +357,38 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final Personality personality = assertThatBodyIs(Personality.class, res);
+      final var personality = Model.fromJsonArray(res.bodyAsJsonArray(), Meaning.class);
       assertThat(personality).isNotNull();
-      assertThat(personality.extrovert).isEqualTo(-0.4d);
-      assertThat(personality.perception).isEqualTo(0.2d);
-      assertThat(personality.judgment).isEqualTo(0.2d);
-      assertThat(personality.attitude).isEqualTo(0.4d);
-      assertThat(personality.MBTI).isEqualTo("INTJ");
+      final double[] values = { -0.4d, 0.2d, 0.2d, 0.4d };
+      for (var factor = 0; factor < PersonalitiesResource.FACTOR_NAMES.length; factor++) {
+
+        assertPersonality(personality.get(factor), factor, values[factor]);
+
+      }
+
+      final var mbti = personality.get(PersonalitiesResource.FACTOR_NAMES.length);
+      assertThat(mbti).isNotNull();
+      assertThat(mbti.name).isEqualTo("MBTI");
+      assertThat(mbti.category).isEqualTo(PersonalitiesResource.MEANING_CATEGORY);
+      assertThat(mbti.level).isEqualTo(7, offset(0.0000001d));
 
     }).sendJson(answers, testContext);
+
+  }
+
+  /**
+   * Verify that a meaning contains the specific personality factor with the specified value.
+   *
+   * @param meaning to check that contains the personality.
+   * @param factor  index of the factor to check.
+   * @param value   for the personality.
+   */
+  public static void assertPersonality(final Meaning meaning, final int factor, final double value) {
+
+    assertThat(meaning).isNotNull();
+    assertThat(meaning.name).isEqualTo(PersonalitiesResource.FACTOR_NAMES[factor]);
+    assertThat(meaning.category).isEqualTo(PersonalitiesResource.MEANING_CATEGORY);
+    assertThat(meaning.level).isEqualTo(value, offset(0.0000001d));
 
   }
 

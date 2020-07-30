@@ -26,15 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.personalities;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.core.Response.Status;
 
-import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.Meaning;
+import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -46,156 +50,134 @@ import io.vertx.ext.web.api.OperationResponse;
  */
 public class PersonalitiesResource implements Personalities {
 
-	/**
-	 * Factor used to evaluate the judgment of a person.
-	 */
-	private static final int JUDGMENT_FACTOR = 0;
+  /**
+   * Factor used to evaluate the judgment of a person.
+   */
+  public static final int EXTROVERT_FACTOR = 0;
 
-	/**
-	 * Factor used to evaluate the judgment of a person.
-	 */
-	private static final int ATTITUDE_FACTOR = 1;
+  /**
+   * Factor used to evaluate the judgment of a person.
+   */
+  public static final int PERCEPTION_FACTOR = 1;
 
-	/**
-	 * Factor used to evaluate the judgment of a person.
-	 */
-	private static final int PERCEPTION_FACTOR = 2;
+  /**
+   * Factor used to evaluate the judgment of a person.
+   */
+  public static final int JUDGMENT_FACTOR = 2;
 
-	/**
-	 * Factor used to evaluate the judgment of a person.
-	 */
-	private static final int EXTROVERT_FACTOR = 3;
+  /**
+   * Factor used to evaluate the judgment of a person.
+   */
+  public static final int ATTITUDE_FACTOR = 3;
 
-	/**
-	 * The types associated to each question.
-	 */
-	private static final int[] QUESTION_FACTORS = { JUDGMENT_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR,
-			JUDGMENT_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, JUDGMENT_FACTOR,
-			EXTROVERT_FACTOR, JUDGMENT_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, EXTROVERT_FACTOR, PERCEPTION_FACTOR,
-			JUDGMENT_FACTOR, PERCEPTION_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR };
+  /**
+   * The names of the personality factors.
+   */
+  public static final String[] FACTOR_NAMES = { "Extrovert", "Perception", "Judgment", "Attitude" };
 
-	/**
-	 * The number of questions that have the personality test.
-	 */
-	private static final int NUMBER_OF_QUESTION_IN_PERSONALITY_TEST = QUESTION_FACTORS.length;
+  /**
+   * The types associated to each question.
+   */
+  public static final int[] QUESTION_FACTORS = { JUDGMENT_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, JUDGMENT_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, JUDGMENT_FACTOR,
+      EXTROVERT_FACTOR, JUDGMENT_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, EXTROVERT_FACTOR, PERCEPTION_FACTOR, JUDGMENT_FACTOR, PERCEPTION_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR };
 
-	/**
-	 * The environment where this service is registered.
-	 */
-	protected Vertx vertx;
 
-	/**
-	 * Create a new instance to provide the services of the {@link Personalities}.
-	 *
-	 * @param vertx where resource is defined.
-	 */
-	public PersonalitiesResource(Vertx vertx) {
+  /**
+   * The name of the category to store the meaning that refers to the personality.
+   */
+  public static final String MEANING_CATEGORY = "Post Jungian concepts";
 
-		this.vertx = vertx;
-	}
+  /**
+   * The environment where this service is registered.
+   */
+  protected Vertx vertx;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void retrievePersonalityQuestionnaire(OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * Create a new instance to provide the services of the {@link Personalities}.
+   *
+   * @param vertx where resource is defined.
+   */
+  public PersonalitiesResource(final Vertx vertx) {
 
-		QuestionnaireResources.retrieveQuestionnaire(
-				lang -> "eu/internetofus/wenet_profile_manager/api/personalities/PersonalityQuestionnaire." + lang + ".json",
-				this.vertx, context, resultHandler);
+    this.vertx = vertx;
+  }
 
-	}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrievePersonalityQuestionnaire(final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void calculatePersonality(JsonObject body, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+    QuestionnaireResources.retrieveQuestionnaire(lang -> "eu/internetofus/wenet_profile_manager/api/personalities/PersonalityQuestionnaire." + lang + ".json", this.vertx, context, resultHandler);
 
-		final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
-		if (questionnaireAnswers.answerValues == null
-				|| questionnaireAnswers.answerValues.size() != NUMBER_OF_QUESTION_IN_PERSONALITY_TEST) {
+  }
 
-			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
-					"To calculate the personality it is necessary the " + NUMBER_OF_QUESTION_IN_PERSONALITY_TEST
-							+ " responses of the personality questionnaire test.");
-		} else {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void calculatePersonality(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-			final Personality personality = new Personality();
-			final double[] total = { 0d, 0d, 0d, 0d };
-			for (int index = 0; index < NUMBER_OF_QUESTION_IN_PERSONALITY_TEST; index++) {
+    final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
+    if (questionnaireAnswers.answerValues == null || questionnaireAnswers.answerValues.size() != QUESTION_FACTORS.length) {
 
-				final double value = questionnaireAnswers.answerValues.get(index);
-				if (value < -1d || value > 1d) {
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
+          "To calculate the personality it is necessary the " + QUESTION_FACTORS.length + " responses of the personality questionnaire test.");
+    } else {
 
-					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
-							"bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [-1,1]");
-					return;
+      final double[] total = new double[FACTOR_NAMES.length];
+      final int[] quantity = new int[FACTOR_NAMES.length];
+      for (int index = 0; index < QUESTION_FACTORS.length; index++) {
 
-				}
-				switch (QUESTION_FACTORS[index]) {
-				case JUDGMENT_FACTOR:
-					personality.judgment += value;
-					total[0]++;
-					break;
-				case ATTITUDE_FACTOR:
-					personality.attitude += value;
-					total[1]++;
-					break;
-				case PERCEPTION_FACTOR:
-					personality.perception += value;
-					total[2]++;
-					break;
-				default:
-					// EXTROVERT_FACTOR:
-					personality.extrovert += value;
-					total[3]++;
-				}
-			}
-			personality.judgment = personality.judgment / total[0];
-			personality.attitude = personality.attitude / total[1];
-			personality.perception = personality.perception / total[2];
-			personality.extrovert = personality.extrovert / total[3];
-			personality.MBTI = "";
-			if (personality.extrovert > 0) {
+        final double value = questionnaireAnswers.answerValues.get(index);
+        if (value < -1d || value > 1d) {
 
-				personality.MBTI += 'E';
+          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [-1,1]");
+          return;
 
-			} else {
+        }
+        final int factor = QUESTION_FACTORS[index];
+        total[factor] += value;
+        quantity[factor]++;
+      }
+      final var personality = new ArrayList<Meaning>();
+      final StringBuilder mbti = new StringBuilder();
+      for (var i = 0; i < FACTOR_NAMES.length; i++) {
 
-				personality.MBTI += 'I';
-			}
-			if (personality.perception > 0) {
+        if (quantity[i] > 0) {
 
-				personality.MBTI += 'N';
+          final var meaning = new Meaning();
+          meaning.category = MEANING_CATEGORY;
+          meaning.name = FACTOR_NAMES[i];
+          meaning.level = total[i] / quantity[i];
+          personality.add(meaning);
+          if (meaning.level > 0) {
 
-			} else {
+            mbti.append('1');
 
-				personality.MBTI += 'S';
-			}
-			if (personality.judgment > 0) {
+          } else {
 
-				personality.MBTI += 'T';
+            mbti.append('0');
+          }
 
-			} else {
+        }
 
-				personality.MBTI += 'F';
-			}
-			if (personality.attitude > 0) {
+      }
 
-				personality.MBTI += 'J';
+      if (mbti.length() == 4) {
 
-			} else {
+        final var meaning = new Meaning();
+        meaning.category = "Post Jungian concepts";
+        meaning.name = "MBTI";
+        meaning.level = (double) Integer.parseInt(mbti.toString(), 2);
+        personality.add(meaning);
 
-				personality.MBTI += 'P';
-			}
+      }
+      final JsonArray array = Model.toJsonArray(personality);
+      OperationReponseHandlers.responseOk(resultHandler,  array);
 
-			OperationReponseHandlers.responseOk(resultHandler, personality);
+    }
 
-		}
-
-	}
+  }
 
 }

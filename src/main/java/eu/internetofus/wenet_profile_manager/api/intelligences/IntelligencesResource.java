@@ -26,15 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.intelligences;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.core.Response.Status;
 
-import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.Meaning;
+import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -46,169 +50,134 @@ import io.vertx.ext.web.api.OperationResponse;
  */
 public class IntelligencesResource implements Intelligences {
 
-	/**
-	 * Factor used to evaluate the verbal intelligence.
-	 */
-	private static final int VERBAL_FACTOR = 0;
+  /**
+   * Factor used to evaluate the verbal intelligence.
+   */
+  public static final int LINGUISTIC = 0;
 
-	/**
-	 * Factor used to evaluate the logic/mathematics intelligence.
-	 */
-	private static final int LOGIC_MATHEMATICS_FACTOR = 1;
+  /**
+   * Factor used to evaluate the logic/mathematics intelligence.
+   */
+  public static final int LOGICAL_MATHEMATICAL = 1;
 
-	/**
-	 * Factor used to evaluate the visual/spatial intelligence.
-	 */
-	private static final int VISUAL_SPATIAL_FACTOR = 2;
+  /**
+   * Factor used to evaluate the visual/spatial intelligence.
+   */
+  public static final int SPATIAL = 2;
 
-	/**
-	 * Factor used to evaluate the kinestesica/corporal intelligence.
-	 */
-	private static final int KINESTESICA_CORPORAL_FACTOR = 3;
+  /**
+   * Factor used to evaluate the kinestesica/corporal intelligence.
+   */
+  public static final int BODILY_KINESTHETIC = 3;
 
-	/**
-	 * Factor used to evaluate the musical/rhythmic intelligence.
-	 */
-	private static final int MUSICAL_RHYTHMIC_FACTOR = 4;
+  /**
+   * Factor used to evaluate the musical/rhythmic intelligence.
+   */
+  public static final int MUSICAL = 4;
 
-	/**
-	 * Factor used to evaluate the intrapersonal intelligence.
-	 */
-	private static final int INTRAPERSONAL_FACTOR = 5;
+  /**
+   * Factor used to evaluate the intrapersonal intelligence.
+   */
+  public static final int INTRAPERSONAL = 5;
 
-	/**
-	 * Factor used to evaluate the interpersonal intelligence.
-	 */
-	private static final int INTERPERSONAL_FACTOR = 6;
+  /**
+   * Factor used to evaluate the interpersonal intelligence.
+   */
+  public static final int INTERPERSONAL = 6;
 
-	/**
-	 * Factor used to evaluate the naturalist/environmental intelligence.
-	 */
-	private static final int NATURALIST_ENVIRONMENTAL_FACTOR = 7;
+  /**
+   * Factor used to evaluate the naturalist/environmental intelligence.
+   */
+  public static final int ENVIRONMENTAL = 7;
 
-	/**
-	 * The types associated to each question.
-	 */
-	private static final int[] QUESTION_FACTORS = { VERBAL_FACTOR, VISUAL_SPATIAL_FACTOR, INTRAPERSONAL_FACTOR,
-			MUSICAL_RHYTHMIC_FACTOR, MUSICAL_RHYTHMIC_FACTOR, LOGIC_MATHEMATICS_FACTOR, INTRAPERSONAL_FACTOR,
-			LOGIC_MATHEMATICS_FACTOR, KINESTESICA_CORPORAL_FACTOR, VERBAL_FACTOR, VISUAL_SPATIAL_FACTOR, INTERPERSONAL_FACTOR,
-			NATURALIST_ENVIRONMENTAL_FACTOR, MUSICAL_RHYTHMIC_FACTOR, VISUAL_SPATIAL_FACTOR, LOGIC_MATHEMATICS_FACTOR,
-			KINESTESICA_CORPORAL_FACTOR, VERBAL_FACTOR, INTERPERSONAL_FACTOR, KINESTESICA_CORPORAL_FACTOR,
-			LOGIC_MATHEMATICS_FACTOR, KINESTESICA_CORPORAL_FACTOR, VERBAL_FACTOR, VISUAL_SPATIAL_FACTOR,
-			NATURALIST_ENVIRONMENTAL_FACTOR, MUSICAL_RHYTHMIC_FACTOR, LOGIC_MATHEMATICS_FACTOR, INTRAPERSONAL_FACTOR,
-			VISUAL_SPATIAL_FACTOR, MUSICAL_RHYTHMIC_FACTOR, NATURALIST_ENVIRONMENTAL_FACTOR, KINESTESICA_CORPORAL_FACTOR,
-			VERBAL_FACTOR, INTRAPERSONAL_FACTOR, INTERPERSONAL_FACTOR, NATURALIST_ENVIRONMENTAL_FACTOR, INTRAPERSONAL_FACTOR,
-			INTERPERSONAL_FACTOR, INTERPERSONAL_FACTOR, NATURALIST_ENVIRONMENTAL_FACTOR };
+  /**
+   * The names of the intelligence factors.
+   */
+  public static final String[] FACTOR_NAMES = { "Linguistic", "Logical mathematical", "Spatial", "Bodily kinesthetic", "Musical", "Intrapersonal", "Interpersonal", "Environmental" };
 
-	/**
-	 * The number of questions that have the intelligences test.
-	 */
-	private static final int NUMBER_OF_QUESTION_IN_INTELLIGENCES_TEST = QUESTION_FACTORS.length;
+  /**
+   * The types associated to each question.
+   */
+  public static final int[] QUESTION_FACTORS = { LINGUISTIC, LINGUISTIC, LINGUISTIC, LINGUISTIC, LOGICAL_MATHEMATICAL, LOGICAL_MATHEMATICAL, LOGICAL_MATHEMATICAL, LOGICAL_MATHEMATICAL, SPATIAL, SPATIAL, SPATIAL, SPATIAL, BODILY_KINESTHETIC,
+      BODILY_KINESTHETIC, BODILY_KINESTHETIC, BODILY_KINESTHETIC, MUSICAL, MUSICAL, MUSICAL, MUSICAL, INTERPERSONAL, INTERPERSONAL, INTERPERSONAL, INTERPERSONAL, INTRAPERSONAL, INTRAPERSONAL, INTRAPERSONAL, INTRAPERSONAL, ENVIRONMENTAL,
+      ENVIRONMENTAL, ENVIRONMENTAL };
 
-	/**
-	 * The environment where this service is registered.
-	 */
-	protected Vertx vertx;
+  /**
+   * The name of the category to store the meaning that refers to the intelligences.
+   */
+  public static final String MEANING_CATEGORY = "Gardner intelligences";
 
-	/**
-	 * Create a new instance to provide the services of the {@link Intelligences}.
-	 *
-	 * @param vertx where resource is defined.
-	 */
-	public IntelligencesResource(Vertx vertx) {
+  /**
+   * The environment where this service is registered.
+   */
+  protected Vertx vertx;
 
-		this.vertx = vertx;
-	}
+  /**
+   * Create a new instance to provide the services of the {@link Intelligences}.
+   *
+   * @param vertx where resource is defined.
+   */
+  public IntelligencesResource(final Vertx vertx) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void retrieveIntelligencesQuestionnaire(OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+    this.vertx = vertx;
+  }
 
-		QuestionnaireResources.retrieveQuestionnaire(
-				lang -> "eu/internetofus/wenet_profile_manager/api/intelligences/IntelligencesQuestionnaire." + lang + ".json",
-				this.vertx, context, resultHandler);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveIntelligencesQuestionnaire(final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-	}
+    QuestionnaireResources.retrieveQuestionnaire(lang -> "eu/internetofus/wenet_profile_manager/api/intelligences/IntelligencesQuestionnaire." + lang + ".json", this.vertx, context, resultHandler);
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void calculateGardnerIntelligences(JsonObject body, OperationRequest context,
-			Handler<AsyncResult<OperationResponse>> resultHandler) {
+  }
 
-		final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
-		if (questionnaireAnswers.answerValues == null
-				|| questionnaireAnswers.answerValues.size() != NUMBER_OF_QUESTION_IN_INTELLIGENCES_TEST) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void calculateGardnerIntelligences(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-			OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
-					"To calculate the personality it is necessary the " + NUMBER_OF_QUESTION_IN_INTELLIGENCES_TEST
-							+ " responses of the personality questionnaire test.");
-		} else {
+    final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
+    if (questionnaireAnswers.answerValues == null || questionnaireAnswers.answerValues.size() != QUESTION_FACTORS.length) {
 
-			final GardnerIntelligences intelligences = new GardnerIntelligences();
-			final double[] total = { 0, 0, 0, 0, 0, 0, 0, 0 };
-			for (int index = 0; index < NUMBER_OF_QUESTION_IN_INTELLIGENCES_TEST; index++) {
+      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
+          "To calculate the Gardner intelligences it is necessary the " + QUESTION_FACTORS.length + " responses of the intelligences questionnaire test.");
+    } else {
 
-				final double value = questionnaireAnswers.answerValues.get(index);
-				if (value < 0d || value > 1d) {
+      final double[] total = new double[FACTOR_NAMES.length];
+      final int[] quantity = new int[FACTOR_NAMES.length];
+      for (int index = 0; index < QUESTION_FACTORS.length; index++) {
 
-					OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST,
-							"bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [0,1]");
-					return;
+        final double value = questionnaireAnswers.answerValues.get(index);
+        if (value < 0d || value > 1d) {
 
-				}
+          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [0,1]");
+          return;
 
-				switch (QUESTION_FACTORS[index]) {
-				case VERBAL_FACTOR:
-					intelligences.verbal += value;
-					total[0]++;
-					break;
-				case LOGIC_MATHEMATICS_FACTOR:
-					intelligences.logicMathematics += value;
-					total[1]++;
-					break;
-				case VISUAL_SPATIAL_FACTOR:
-					intelligences.visualSpatial += value;
-					total[2]++;
-					break;
-				case KINESTESICA_CORPORAL_FACTOR:
-					intelligences.kinestesicaCorporal += value;
-					total[3]++;
-					break;
-				case MUSICAL_RHYTHMIC_FACTOR:
-					intelligences.musicalRhythmic += value;
-					total[4]++;
-					break;
-				case INTRAPERSONAL_FACTOR:
-					intelligences.intrapersonal += value;
-					total[5]++;
-					break;
-				case INTERPERSONAL_FACTOR:
-					intelligences.interpersonal += value;
-					total[6]++;
-					break;
-				default:
-					// NATURALIST_ENVIRONMENTAL_FACTOR:
-					intelligences.naturalistEnvironmental += value;
-					total[7]++;
-				}
-			}
-			intelligences.verbal = intelligences.verbal / total[0];
-			intelligences.logicMathematics = intelligences.logicMathematics / total[1];
-			intelligences.visualSpatial = intelligences.visualSpatial / total[2];
-			intelligences.kinestesicaCorporal = intelligences.kinestesicaCorporal / total[3];
-			intelligences.musicalRhythmic = intelligences.musicalRhythmic / total[4];
-			intelligences.intrapersonal = intelligences.intrapersonal / total[5];
-			intelligences.interpersonal = intelligences.interpersonal / total[6];
-			intelligences.naturalistEnvironmental = intelligences.naturalistEnvironmental / total[7];
+        }
+        final int factor = QUESTION_FACTORS[index];
+        total[factor] += value;
+        quantity[factor]++;
+      }
+      final var intelligences = new ArrayList<Meaning>();
+      for (var i = 0; i < FACTOR_NAMES.length; i++) {
 
-			OperationReponseHandlers.responseOk(resultHandler, intelligences);
+        if (quantity[i] > 0) {
 
-		}
-	}
+          final var intelligence = new Meaning();
+          intelligence.category = MEANING_CATEGORY;
+          intelligence.name = FACTOR_NAMES[i];
+          intelligence.level = total[i] / quantity[i];
+          intelligences.add(intelligence);
+        }
+
+      }
+
+      final JsonArray array = Model.toJsonArray(intelligences);
+      OperationReponseHandlers.responseOk(resultHandler, array);
+
+    }
+  }
 
 }

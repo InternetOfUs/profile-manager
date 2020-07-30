@@ -34,11 +34,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -54,8 +56,6 @@ import io.vertx.ext.web.api.generator.WebApiServiceGen;
 /**
  * The definition of the web services to manage the user personality.
  *
- * @see Personality
- *
  * @author UDT-IA, IIIA-CSIC
  */
 @Path(Personalities.PATH)
@@ -63,68 +63,45 @@ import io.vertx.ext.web.api.generator.WebApiServiceGen;
 @WebApiServiceGen
 public interface Personalities {
 
-	/**
-	 * The path to the personalities resource.
-	 */
-	String PATH = "/personalities";
+  /**
+   * The path to the personalities resource.
+   */
+  String PATH = "/personalities";
 
-	/**
-	 * The address of this service.
-	 */
-	String ADDRESS = "wenet_profile_manager.api.personalities";
+  /**
+   * The address of this service.
+   */
+  String ADDRESS = "wenet_profile_manager.api.personalities";
 
-	/**
-	 * Called when want the personality questionnaire.
-	 *
-	 * @param context       of the request.
-	 * @param resultHandler to inform of the response.
-	 */
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(
-			summary = "Obtain the personality test",
-			description = "Return the questionnaire used to obtain the personality of a person")
-	@Parameter(
-			in = ParameterIn.HEADER,
-			name = HttpHeaders.ACCEPT_LANGUAGE,
-			description = "The preferred language for the text on the questionnaire. If it is not available the texts will be on English.",
-			example = "en",
-			schema = @Schema(type = "string", defaultValue = "en"))
-	@ApiResponse(
-			responseCode = "200",
-			description = "The questionnaire to evaluate the personality of a person",
-			content = @Content(schema = @Schema(implementation = Questionnaire.class)))
-	void retrievePersonalityQuestionnaire(@Parameter(hidden = true, required = false) OperationRequest context,
-			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  /**
+   * Called when want the personality questionnaire.
+   *
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Obtain the personality test", description = "Return the questionnaire used to obtain the personality of a person")
+  @Parameter(in = ParameterIn.HEADER, name = HttpHeaders.ACCEPT_LANGUAGE, description = "The preferred language for the text on the questionnaire. If it is not available the texts will be on English.", example = "en", schema = @Schema(type = "string", defaultValue = "en"))
+  @ApiResponse(responseCode = "200", description = "The questionnaire to evaluate the personality of a person", content = @Content(schema = @Schema(implementation = Questionnaire.class)))
+  void retrievePersonalityQuestionnaire(@Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
-	/**
-	 * Called when want to evaluate the personality of a person.
-	 *
-	 * @param body          the selected answer values to the questionnaire.
-	 *
-	 * @param context       of the request.
-	 * @param resultHandler to inform of the response.
-	 */
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Operation(
-			summary = "Calculate the personality of a person",
-			description = "Evaluate the answers to the personality test to obtain the personality of the person")
-	@RequestBody(
-			description = "The values of the answers that the person has selected on the personality questionnaire.",
-			required = true,
-			content = @Content(schema = @Schema(implementation = QuestionnaireAnswers.class)))
-	@ApiResponse(
-			responseCode = "200",
-			description = "The personality of the person",
-			content = @Content(schema = @Schema(implementation = Personality.class)))
-	@ApiResponse(
-			responseCode = "404",
-			description = "If it can not calculate the personality",
-			content = @Content(schema = @Schema(implementation = Personality.class)))
-	void calculatePersonality(@Parameter(hidden = true, required = false) JsonObject body,
-			@Parameter(hidden = true, required = false) OperationRequest context,
-			@Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  /**
+   * Called when want to evaluate the personality of a person.
+   *
+   * @param body          the selected answer values to the questionnaire.
+   *
+   * @param context       of the request.
+   * @param resultHandler to inform of the response.
+   */
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Calculate the personality of a person", description = "Evaluate the answers to the personality test to obtain the personality of the person")
+  @RequestBody(description = "The values of the answers that the person has selected on the personality questionnaire.", required = true, content = @Content(schema = @Schema(implementation = QuestionnaireAnswers.class)))
+  @ApiResponse(responseCode = "200", description = "The personality of the person", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
+  @ApiResponse(responseCode = "404", description = "If it can not calculate the personality", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void calculatePersonality(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

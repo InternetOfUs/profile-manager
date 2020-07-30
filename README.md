@@ -123,6 +123,7 @@ generate the Open API documentation, compile the component and run the test.
  - Use `./mvnw tests` to run the test.
  - Use `./mvnw site` to generate a HTML page (**target/site/index.html**) with all the reports (test, javadoc, PMD,CPD and coverage).
 
+mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
 
 ### Run and configure
 
