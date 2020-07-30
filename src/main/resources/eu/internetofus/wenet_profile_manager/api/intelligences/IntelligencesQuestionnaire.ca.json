@@ -1,1034 +1,563 @@
 {
-	"name": "Test de personalitat",
-	"description": "Qüestionari per deteminar la personalitat d'una persona. Si us plau empleni'l.",
-	"questions": [
-		{
-			"text": "No m'és difícil dir el que penso en una discusió o debat.",
-			"help": "Exemple: quan es discuteix sobre la independència de Catalunya, m'agrada expressar la meva opinió.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Prefereixo fer un mapa a explicar a algú com ha d'arribar",
-			"help": "Exemple: Si em pregunten per un camí, prefereixo dibuixar-que explicar-ho amb les meves paraules.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Si estic enfadat(da) o content(a) generalment sé exactamanet perquè",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sé tocar (o abans sabia tocar) un intrument musical",
-			"help": "Exemple: sé tocar la guitarra.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Associo música amb els meus estats d'ànim",
-			"help": "Exemple: quan escolto reguetón em sento molt alegre i escolto hip-hop quan estic enfadat.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Puc sumar o multiplicar mentalment amb molta rapidesa",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Puc ajudar un(a) amic(ga) a afrontar els seus sentiments perquè jo ho vaig poder fer abans amb sentiments semblants",
-			"help": "Exemple: Puc recomanar a un amic què fer quan es troba trist perquè hi ha vegades que jo mateix m'he sentit trist i he sabut com animar-me. Cada vegada que em sento trist, vaig a jugar amb els meus millors amics :)",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada treballar amb calculadores i ordinadors",
-			"help": "Exemple: M'agradaria aprendre programar.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Aprenc ràpidament a ballar un nou ritme",
-			"help": "Exemple: Quan escolto una cançó nova que no conec, sóc capaç de seguir el ritme i ballar.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Gaudeixo amb una bona xerrada, discurs o sermó",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sempre distingeixo el nord del sud, allà on estigui",
-			"help": "Exemple: Ara mateix sé on està el nord.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada reunir grups de persones en una festa o esdeveniment especial",
-			"help": "Exemple: M'agrada organitzar la meva festa d'aniversari.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sóc sensible a les vistes, els sons i la sensació de coses que m'envolten",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "La vida em sembla buida sense música",
-			"help": "Exemple: Escolto música al tren.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sempre entenc els gràfics que vénen en les intruccions d'equips o instruments",
-			"help": "Exemple: Sóc capaç de muntar un moble d'Ikea.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada resoldre trencaclosques i entretenir-me amb jocs electrònics",
-			"help": "Exemple: M'agrada jugar al Monopoly amb amics i família.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Em va ser fàcil aprendre a anar amb bicicleta (o amb patins)",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Em poso nerviós(osa) quan escolto una discució o afirmació que em sembla il·lògica",
-			"help": "Exemple: Em poso nerviós quan els meus pares no em deixa aixecar de la taula sense haver menjat tot encara que no tingui gana.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Soc capaç de convéncer d'altres a seguir els meus plans",
-			"help": "Exemple: quan estic amb amics, sóc capaç de convèncer per fer junts el que a mi més m'agrada.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Tinc bon sentit d'equilibri i cordinació",
-			"help": "Exemple: Es em donen bé esports com el patinatge, la natació, l'esquí.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sovint veig configuracions i relacions entre nombres amb més rapidesa i facilitat que altres",
-			"help": "Exemple: De seguida veig el següent número d'una sèrie com 3, 6, 9, ...",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada construir models ( o escultures)",
-			"help": "Exemple: M'encanta construir figures de Lego.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Tinc facilitat per trobar el significat de les paraules",
-			"help": "Exemple: Quan veig una paraula nova, sóc capaç d'endevinar el seu significat.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Puc distingir un objecte des de diferents punts de vista",
-			"help": "Exemple: Encara que estigui treballant amb el monitor davant, sóc capaç d'imaginar-me la part posterior.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Em refereixo als animals i tinc la responsabilitat de cuidar-los",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sovint faig la connexió entre una peça de música i algun esdeveniment de la meva vida",
-			"help": "Exemple: Quan sento \"A poc a poc\" de Luís Fonsi recordo la festa d'aniversari de la meva millor amiga",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada treballar amb nombres i figures",
-			"help": "Exemple: M'agrada fer operacions matemàtiques.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada seure silenciosament i reflexionar sobre els meus sentiments íntims",
-			"help": "Exemple: M'agrada reflexionar sobre les activitats que m'agraden com patinar.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Amb només mirar la forma de construccions i estructures em sento a gust",
-			"help": "Exemple: M'agrada observar la Torre Eiffel.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada taral·lejar, xiular i cantar a la dutxa o quan estic sol(a)",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "La informació sobre estudis fets i estudis socials em dóna un temps de gaudi de qualitat",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Sóc bo(na) per l'atletisme",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'agrada escriure cartes detallades als meus amics",
-			"help": "Exemple: Quan envio un WhatsApp, m'agrada explicar molts detalls.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Generalment m'adono de l'expressió que tinc a la cara",
-			"help": "Exemple: Quan sento vergonya sé que em poso molt vermell, quan estic alegre meus ulls estan oberts com plats i quan em sento trist sé que els meus parpelles baixen.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'adono de les expressions a la cara d'altres persones",
-			"help": "Exemple: M'adono si algú està enfadat o trist per l'expressió de la seva cara.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "La cura del medi ambient és una prioritat elevada",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Em mantinc \"en contacte\" amb els meus estats d'ànim. No em costa identificar-los",
-			"help": "Exemple: M'adono si estic enfadat, alegre o trist.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'adono dels estats d'ànim d'altres",
-			"help": "Exemple: M'adono quan la meva mare està enfadada.",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "M'adono força bé del que altres pensen de mi",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		},
-		{
-			"text": "Em sento a casa a l'aire lliure i en un entorn natural",
-			"answers": [
-				{
-					"text": "Totalment en desacord",
-					"value": 0.0
-				},
-				{
-					"text": "En desacord",
-					"value": 0.25
-				},
-				{
-					"text": "Ni d'acord ni en desacord",
-					"value": 0.5
-				},
-				{
-					"text": "D'acord",
-					"value": 0.75
-				},
-				{
-					"text": "Totalment d'acord",
-					"value": 1.0
-				}
-			]
-		}
-	]
+  "name" : "Test de competències",
+  "description" : "Qüestionnari per deteminar les intel·ligències d'una persona. Si us plau empleni'l.",
+  "questions" : [ {
+    "text" : "Escriure és una manera natural per a que jo m' expressi",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "En els estudis escolars en llengua materna o estudis socials foren més fàcils per a mi que les matemàtiques, la física i la química.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Recentment he escrit alguna cosa d'allò que estic especialment orgullós, o pel que he rebut reconeixement.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Les metàfores i les expressions verbals viscudes m' ajuden a aprendre eficientment.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "A l'escola era bo en matemàtiques, física o química.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Puc treballar amb i resoldre problemes complexos.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "L'aritmètica mental és fàcil per a mi.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Sóc bo en jocs i resolució de problemes, que requereixen de pensament lògic.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "A l'escola, la geometria i diversos tipus de tasques que involucren la percepció espacial van ser més fàcils per a mi que resoldre equacions.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "És fàcil per a mi conceptualitzar patrons complexos i multidimensionals.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Puc imaginar fàcilment com un paisatge mira des d'una vista d'ocell.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Quan llego, formo imatges o dissenys il·lustratius a la meva ment.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Sóc molt pràctic.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Puc fàcilment fer alguna cosa concreta amb les meves mans (per exemple, teixir i treballar en fusta).",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Sóc bo en mostrar com fer alguna cosa a la pràctica.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jo era bo a l'artesania a l'escola.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Després d'escoltar una melodia una o dues vegades sóc capaç de cantar o silbar amb prou precisió.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "En escoltar música, sóc capaç de discernir instruments o reconèixer melodies.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Puc mantenir fàcilment el ritme en tocar una melodia.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Em dono compte d'immediat si una melodia està desafinada.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Fins i tot en companyia estranya, fàcilment trobo a algú amb qui parlar.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Em aconsegueixo sola fàcilment amb diferents tipus de persones.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Faig contacte fàcilment amb altres persones.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "En les negociacions i el treball en grup, sóc capaç de recolzar el grup per trobar un consens.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Sóc capaç d'analitzar els meus propis motius i formes d'acció.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Sovint penso en els meus propis sentiments i sentiments i busco raons per a ells.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Dedico temps a reflexionar regularment sobre els temes importants de la vida.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "M' agrada llegir literatura psicològica o filosòfica per augmentar el meu autoconeixement.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Gaudiu de la bellesa i les experiències relacionades amb la natura.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Protegir la natura és important per a mi.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Presto atenció als meus hàbits de consum amb la finalitat de protegir el medi ambient.",
+    "answers" : [ {
+      "text" : "Totalment en desacord",
+      "value" : 0.0
+    }, {
+      "text" : "En desacord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'acord ni en desacord",
+      "value" : 0.5
+    }, {
+      "text" : "D'acord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalment d'acord",
+      "value" : 1.0
+    } ]
+  } ]
 }

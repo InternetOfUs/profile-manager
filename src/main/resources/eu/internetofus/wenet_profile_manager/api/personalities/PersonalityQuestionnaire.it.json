@@ -1,0 +1,259 @@
+{
+  "name" : "Test della personalità",
+  "description" : "Test per valutare la personalità di una persona. Si prega di compilarlo.",
+  "questions" : [ {
+    "text" : "I giudici devono essere",
+    "help" : "Esempio: se un giudice giudica tuo fratello, devi seguire le leggi che valgono per tutti ugualmente.",
+    "answers" : [ {
+      "text" : "Compassionevole",
+      "value" : -1.0
+    }, {
+      "text" : "Imparziale",
+      "value" : 1.0
+    }, {
+      "text" : "Dipende da ogni caso",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Preferite le cose:",
+    "help" : "Esempio: mi piace pianificare la mia giornata al giorno o preferisco improvvisare.",
+    "answers" : [ {
+      "text" : "open-ended",
+      "value" : -1.0
+    }, {
+      "text" : "Pianificato",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "answers" : [ {
+      "text" : "La tradizionale",
+      "value" : -1.0
+    }, {
+      "text" : "Il nuovo",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "answers" : [ {
+      "text" : "Essere soli",
+      "value" : -1.0
+    }, {
+      "text" : "Stare con qualcuno",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: tu credi nelle cose che dicono o preferite controllare.",
+    "answers" : [ {
+      "text" : "Tollerante",
+      "value" : -1.0
+    }, {
+      "text" : "Intollerante (2)",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si lavora meglio",
+    "answers" : [ {
+      "text" : "Senza pressione",
+      "value" : -1.0
+    }, {
+      "text" : "Sotto pressione",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: quando faccio i compiti, mi piace organizzarlo passo dopo passo, sempre nello stesso ordine o preferisco iniziare a caso.",
+    "answers" : [ {
+      "text" : "Metodico",
+      "value" : -1.0
+    }, {
+      "text" : "Improvvisatore",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: mi piace più la matematica (teorica) o l'educazione fisica (pratica).",
+    "answers" : [ {
+      "text" : "Teorico",
+      "value" : -1.0
+    }, {
+      "text" : "Pratico",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: mi piace raccontare tutto a quello che succede ai miei amici o preferisco tenerla per me.",
+    "answers" : [ {
+      "text" : "Riservato",
+      "value" : -1.0
+    }, {
+      "text" : "Sociale",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Ti vedi di più",
+    "help" : "Esempio: preferite costruire un robot (Curious) o acquistarlo già realizzato (Accommodated).",
+    "answers" : [ {
+      "text" : "Sistemato",
+      "value" : -1.0
+    }, {
+      "text" : "Curioso",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "answers" : [ {
+      "text" : "Contenuto",
+      "value" : -1.0
+    }, {
+      "text" : "Espressivo",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: dico le cose come sono (onesti) o preferisco omesso parole che possono far male.",
+    "answers" : [ {
+      "text" : "Diplomatico",
+      "value" : -1.0
+    }, {
+      "text" : "Onesto",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "help" : "Esempio: preferite fare mappe (il concreto) o risolvere problemi matematici (l'abstract).",
+    "answers" : [ {
+      "text" : "Lo specifico",
+      "value" : -1.0
+    }, {
+      "text" : "L'abstract",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "answers" : [ {
+      "text" : "Silenzioso",
+      "value" : -1.0
+    }, {
+      "text" : "Talkativo",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si impara meglio",
+    "answers" : [ {
+      "text" : "Lettura",
+      "value" : -1.0
+    }, {
+      "text" : "Ascolto",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: piace pensare al perché gli aeroplani volano (concettuali) o fare un modello di un aeroplano (pratico)",
+    "answers" : [ {
+      "text" : "Pratico",
+      "value" : -1.0
+    }, {
+      "text" : "Concettuale",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "help" : "Esempio: se il tuo amico arriva a 20 minutes minuti di ritardo, vuoi sapere perché (empatia) o ti arrabbi a prescindere dalla ragione (logica).",
+    "answers" : [ {
+      "text" : "Empatia",
+      "value" : -1.0
+    }, {
+      "text" : "Logica",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "help" : "Esempio: quando c'è una rapina preferisco indagare sui fatti o immaginare cosa sarebbe potuto accadere.",
+    "answers" : [ {
+      "text" : "Indagare",
+      "value" : -1.0
+    }, {
+      "text" : "Speculare",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Tu sei più",
+    "help" : "Esempio: quando mi preparo a andare a dormire seguo sempre lo stesso ordine (lavare i denti, mettere in pigiama etc).",
+    "answers" : [ {
+      "text" : "Sistematica",
+      "value" : -1.0
+    }, {
+      "text" : "Informale",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Si preferisce",
+    "help" : "Esempio: mi piace mangiare cose diverse (varietà) o preferisco mangiare sempre la pizza (routine).",
+    "answers" : [ {
+      "text" : "Routine",
+      "value" : -1.0
+    }, {
+      "text" : "Varietà",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferente",
+      "value" : 0.0
+    } ]
+  } ]
+}

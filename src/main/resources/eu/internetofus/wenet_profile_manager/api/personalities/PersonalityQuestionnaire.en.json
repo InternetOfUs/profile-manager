@@ -1,360 +1,259 @@
 {
-	"name": "Personality test",
-	"description": "Test to assess the personality of a person. Please fill it in.",
-	"questions": [
-		{
-			"text": "The judges must be",
-			"help": "Example: If a judge judges your brother, you must follow the laws that apply to everyone equally.",
-			"answers": [
-				{
-					"text": "Compassionate",
-					"value": -1
-				},
-				{
-					"text": "Impartial",
-					"value": 1
-				},
-				{
-					"text": "It depends on each case",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer things",
-			"help": "Example: I like to plan my day to day or I prefer to improvise.",
-			"answers": [
-				{
-					"text": "Open-ended",
-					"value": -1
-				},
-				{
-					"text": "Planned",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"answers": [
-				{
-					"text": "The traditional",
-					"value": -1
-				},
-				{
-					"text": "The new",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"answers": [
-				{
-					"text": "Being alone",
-					"value": -1
-				},
-				{
-					"text": "Be with someone",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: You believe in the things they say or you prefer to check it.",
-			"answers": [
-				{
-					"text": "Tolerant",
-					"value": -1
-				},
-				{
-					"text": "Skeptical",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You work better",
-			"answers": [
-				{
-					"text": "Without pressure",
-					"value": -1
-				},
-				{
-					"text": "With pressure",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: When I do my homework, I like to organize it step by step, always in the same order or I prefer to start at random.",
-			"answers": [
-				{
-					"text": "Methodic",
-					"value": -1
-				},
-				{
-					"text": "Improviser",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: I like mathematics more (theoretical) or physical education (practical).",
-			"answers": [
-				{
-					"text": "Theoretical",
-					"value": -1
-				},
-				{
-					"text": "Practical",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: I like to tell everything to what happens to my friends or I prefer to keep it for me.",
-			"answers": [
-				{
-					"text": "Reserved",
-					"value": -1
-				},
-				{
-					"text": "Social",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You see yourself more",
-			"help": "Example: You prefer to build a robot (Curious) or buy it already made (Accommodated).",
-			"answers": [
-				{
-					"text": "Accommodated",
-					"value": -1
-				},
-				{
-					"text": "Curious",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"answers": [
-				{
-					"text": "Content",
-					"value": -1
-				},
-				{
-					"text": "Expressive",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: I say things as they are (honest) or I prefer to omit words that may hurt.",
-			"answers": [
-				{
-					"text": "Diplomatic",
-					"value": -1
-				},
-				{
-					"text": "Honest",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"help": "Example: You prefer to make maps (the concrete) or solve mathematical problems (the abstract).",
-			"answers": [
-				{
-					"text": "The specific",
-					"value": -1
-				},
-				{
-					"text": "The abstract",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"answers": [
-				{
-					"text": "Silent",
-					"value": -1
-				},
-				{
-					"text": "Talkative",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You learn better",
-			"answers": [
-				{
-					"text": "Reading",
-					"value": -1
-				},
-				{
-					"text": "Listening",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: You like to think about why airplanes fly (conceptual) or make a model of an airplane (practical)",
-			"answers": [
-				{
-					"text": "Practical",
-					"value": -1
-				},
-				{
-					"text": "Conceptual",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"help": "Example: If your friend arrives 20 minutes late, you want to know why (empathy) or you get angry regardless of the reason (logic).",
-			"answers": [
-				{
-					"text": "Empathy",
-					"value": -1
-				},
-				{
-					"text": "Logic",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"help": "Example: When there is a robbery I prefer to investigate the facts or imagine what could have happened.",
-			"answers": [
-				{
-					"text": "Investigate",
-					"value": -1
-				},
-				{
-					"text": "Speculate",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You are more",
-			"help": "Example: When I prepare to go to sleep, I always follow the same order (wash teeth, put on pajamas etc).",
-			"answers": [
-				{
-					"text": "Systematic",
-					"value": -1
-				},
-				{
-					"text": "Informal",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		},
-		{
-			"text": "You prefer",
-			"help": "Example: I like to eat different things (variety) or I prefer to always eat pizza (routine).",
-			"answers": [
-				{
-					"text": "Routine",
-					"value": -1
-				},
-				{
-					"text": "Variety",
-					"value": 1
-				},
-				{
-					"text": "Indifferent",
-					"value": 0
-				}
-			]
-		}
-	]
+  "name" : "Personality test",
+  "description" : "Test to assess the personality of a person. Please fill it in.",
+  "questions" : [ {
+    "text" : "The judges must be",
+    "help" : "Example: If a judge judges your brother, you must follow the laws that apply to everyone equally.",
+    "answers" : [ {
+      "text" : "Compassionate",
+      "value" : -1.0
+    }, {
+      "text" : "Impartial",
+      "value" : 1.0
+    }, {
+      "text" : "It depends on each case",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer things:",
+    "help" : "Example: I like to plan my day to day or I prefer to improvise.",
+    "answers" : [ {
+      "text" : "open-ended",
+      "value" : -1.0
+    }, {
+      "text" : "Planned",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "answers" : [ {
+      "text" : "The traditional",
+      "value" : -1.0
+    }, {
+      "text" : "The new",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "answers" : [ {
+      "text" : "Being alone",
+      "value" : -1.0
+    }, {
+      "text" : "Be with someone",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: You believe in the things they say or you prefer to check it.",
+    "answers" : [ {
+      "text" : "Tolerant",
+      "value" : -1.0
+    }, {
+      "text" : "Intolerant(2)",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You work better",
+    "answers" : [ {
+      "text" : "Without pressure",
+      "value" : -1.0
+    }, {
+      "text" : "Under pressure",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: When I do my homework, I like to organize it step by step, always in the same order or I prefer to start at random.",
+    "answers" : [ {
+      "text" : "Methodic",
+      "value" : -1.0
+    }, {
+      "text" : "Improviser",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: I like mathematics more (theoretical) or physical education (practical).",
+    "answers" : [ {
+      "text" : "Theoretical",
+      "value" : -1.0
+    }, {
+      "text" : "Practical",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: I like to tell everything to what happens to my friends or I prefer to keep it for me.",
+    "answers" : [ {
+      "text" : "Reserved",
+      "value" : -1.0
+    }, {
+      "text" : "Social",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You see yourself more",
+    "help" : "Example: You prefer to build a robot (Curious) or buy it already made (Accommodated).",
+    "answers" : [ {
+      "text" : "Accommodated",
+      "value" : -1.0
+    }, {
+      "text" : "Curious",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "answers" : [ {
+      "text" : "Content",
+      "value" : -1.0
+    }, {
+      "text" : "Expressive",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: I say things as they are (honest) or I prefer to omit words that may hurt.",
+    "answers" : [ {
+      "text" : "Diplomatic",
+      "value" : -1.0
+    }, {
+      "text" : "Honest",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "help" : "Example: You prefer to make maps (the concrete) or solve mathematical problems (the abstract).",
+    "answers" : [ {
+      "text" : "The specific",
+      "value" : -1.0
+    }, {
+      "text" : "The abstract",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "answers" : [ {
+      "text" : "Silent",
+      "value" : -1.0
+    }, {
+      "text" : "Talkative",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You learn better",
+    "answers" : [ {
+      "text" : "Reading",
+      "value" : -1.0
+    }, {
+      "text" : "Listening",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: You like to think about why airplanes fly (conceptual) or make a model of an airplane (practical)",
+    "answers" : [ {
+      "text" : "Practical",
+      "value" : -1.0
+    }, {
+      "text" : "Conceptual",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "help" : "Example: If your friend arrives 20 minutes late, you want to know why (empathy) or you get angry regardless of the reason (logic).",
+    "answers" : [ {
+      "text" : "Empathy",
+      "value" : -1.0
+    }, {
+      "text" : "Logic",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "help" : "Example: When there is a robbery I prefer to investigate the facts or imagine what could have happened.",
+    "answers" : [ {
+      "text" : "Investigate",
+      "value" : -1.0
+    }, {
+      "text" : "Speculate",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You are more",
+    "help" : "Example: When I prepare to go to sleep, I always follow the same order (wash teeth, put on pajamas etc).",
+    "answers" : [ {
+      "text" : "Systematic",
+      "value" : -1.0
+    }, {
+      "text" : "Informal",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "You prefer",
+    "help" : "Example: I like to eat different things (variety) or I prefer to always eat pizza (routine).",
+    "answers" : [ {
+      "text" : "Routine",
+      "value" : -1.0
+    }, {
+      "text" : "Variety",
+      "value" : 1.0
+    }, {
+      "text" : "Indifferent",
+      "value" : 0.0
+    } ]
+  } ]
 }

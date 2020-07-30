@@ -30,9 +30,9 @@ import java.util.function.Function;
 
 import javax.ws.rs.core.Response.Status;
 
+import eu.internetofus.common.components.Model;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.common.vertx.OperationRequests;
-import eu.internetofus.common.components.Model;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -46,47 +46,45 @@ import io.vertx.ext.web.api.OperationResponse;
  */
 public interface QuestionnaireResources {
 
-	/**
-	 * Called to retrieve a questionnaire from the resources.
-	 *
-	 * @param resourceNameGenerator the function used to generate the resource from
-	 *                              the language.
-	 * @param vertx                 environment to load the questionnaire.
-	 * @param context               of the request.
-	 * @param resultHandler         to inform of the response.
-	 */
-	static void retrieveQuestionnaire(Function<String, String> resourceNameGenerator, Vertx vertx,
-			OperationRequest context, Handler<AsyncResult<OperationResponse>> resultHandler) {
+  /**
+   * Called to retrieve a questionnaire from the resources.
+   *
+   * @param resourceNameGenerator the function used to generate the resource from the language.
+   * @param vertx                 environment to load the questionnaire.
+   * @param context               of the request.
+   * @param resultHandler         to inform of the response.
+   */
+  static void retrieveQuestionnaire(final Function<String, String> resourceNameGenerator, final Vertx vertx, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-		vertx.<Questionnaire>executeBlocking(promise -> {
+    vertx.<Questionnaire>executeBlocking(promise -> {
 
-			final String lang = OperationRequests.acceptedLanguageIn(context, "en", "en", "es", "ca");
-			final String resourceName = resourceNameGenerator.apply(lang);
-			final Questionnaire questionnaire = Model.loadFromResource(resourceName, Questionnaire.class);
-			if (questionnaire != null) {
+      final String lang = OperationRequests.acceptedLanguageIn(context, "en", "ca", "da", "de", "el", "en", "es", "fr", "he", "it");
+      final String resourceName = resourceNameGenerator.apply(lang);
+      final Questionnaire questionnaire = Model.loadFromResource(resourceName, Questionnaire.class);
+      if (questionnaire != null) {
 
-				promise.complete(questionnaire);
+        promise.complete(questionnaire);
 
-			} else {
-				// In theory never happens because the resources are right
-				promise.fail("The resource '" + resourceName + "' does not contains a valid Questionnaire.");
-			}
+      } else {
+        // In theory never happens because the resources are right
+        promise.fail("The resource '" + resourceName + "' does not contains a valid Questionnaire.");
+      }
 
-		}, false, load -> {
+    }, false, load -> {
 
-			if (load.failed()) {
+      if (load.failed()) {
 
-				OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, load.cause());
+        OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, load.cause());
 
-			} else {
+      } else {
 
-				final Questionnaire questionnaire = load.result();
-				OperationReponseHandlers.responseOk(resultHandler, questionnaire);
+        final Questionnaire questionnaire = load.result();
+        OperationReponseHandlers.responseOk(resultHandler, questionnaire);
 
-			}
+      }
 
-		});
+    });
 
-	}
+  }
 
 }

@@ -1,0 +1,259 @@
+{
+  "name" : "Persönlichkeitstest",
+  "description" : "Test, um die Persönlichkeit einer Person zu beurteilen. Bitte füllen Sie es aus.",
+  "questions" : [ {
+    "text" : "Die Richter müssen",
+    "help" : "Beispiel: Wenn ein Richter Ihren Bruder beurteilt, müssen Sie die Gesetze befolgen, die für alle gleichermaßen gelten.",
+    "answers" : [ {
+      "text" : "Compassionate",
+      "value" : -1.0
+    }, {
+      "text" : "Unparteiisch",
+      "value" : 1.0
+    }, {
+      "text" : "Es hängt von jedem Fall ab",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen Dinge:",
+    "help" : "Beispiel: Ich plane, meinen Tag zu planen oder ich bevorzuge es, zu improvisieren.",
+    "answers" : [ {
+      "text" : "open-ended",
+      "value" : -1.0
+    }, {
+      "text" : "Geplant",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "answers" : [ {
+      "text" : "Der traditionelle",
+      "value" : -1.0
+    }, {
+      "text" : "Der neue",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "answers" : [ {
+      "text" : "Allein sein",
+      "value" : -1.0
+    }, {
+      "text" : "Sei mit jemandem",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Sie glauben an die Dinge, die sie sagen, oder Sie bevorzugen es, es zu überprüfen.",
+    "answers" : [ {
+      "text" : "Tolerant",
+      "value" : -1.0
+    }, {
+      "text" : "Intolerant (2)",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie arbeiten besser",
+    "answers" : [ {
+      "text" : "Ohne Druck",
+      "value" : -1.0
+    }, {
+      "text" : "Unter Druck",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Wenn ich meine Hausaufgaben mache, organisiere ich es gerne Schritt für Schritt, immer in der gleichen Reihenfolge oder ich bevorzuge es, zufällig zu starten.",
+    "answers" : [ {
+      "text" : "Methodisch",
+      "value" : -1.0
+    }, {
+      "text" : "Improvisator",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Ich mag Mathematik mehr (theoretisch) oder körperliche Ausbildung (praktisch).",
+    "answers" : [ {
+      "text" : "Theoretisch",
+      "value" : -1.0
+    }, {
+      "text" : "Praktisch",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Ich mag es, alles zu erzählen, was mit meinen Freunden passiert, oder ich bevorzuge es für mich zu halten.",
+    "answers" : [ {
+      "text" : "Reserviert",
+      "value" : -1.0
+    }, {
+      "text" : "Soziales",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sehen sich mehr",
+    "help" : "Beispiel: Sie ziehen es vor, einen Roboter (Curious) zu bauen oder ihn bereits zu kaufen (Unterkünfte).",
+    "answers" : [ {
+      "text" : "Untergebracht",
+      "value" : -1.0
+    }, {
+      "text" : "Merkwürdig",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "answers" : [ {
+      "text" : "Inhalt",
+      "value" : -1.0
+    }, {
+      "text" : "Ausdruckskraft",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Ich sage Dinge, wie sie sind (ehrlich) oder ich ziehe es vor, Wörter, die verletzt werden können weglassen.",
+    "answers" : [ {
+      "text" : "Diplomatisch",
+      "value" : -1.0
+    }, {
+      "text" : "Ehrlich",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "help" : "Beispiel: Sie ziehen es vor, Karten (den Beton) zu erstellen oder mathematische Probleme zu lösen (das Abstract).",
+    "answers" : [ {
+      "text" : "Die spezifischen",
+      "value" : -1.0
+    }, {
+      "text" : "Die Zusammenfassung",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "answers" : [ {
+      "text" : "Unbeaufsichtigt",
+      "value" : -1.0
+    }, {
+      "text" : "Talkative",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie lernen besser",
+    "answers" : [ {
+      "text" : "Lesung",
+      "value" : -1.0
+    }, {
+      "text" : "Zuhören",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Sie denken, warum Flugzeuge fliegen (konzeptionell) oder machen ein Modell eines Flugzeugs (praktisch)",
+    "answers" : [ {
+      "text" : "Praktisch",
+      "value" : -1.0
+    }, {
+      "text" : "Konzeptuell",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "help" : "Beispiel: Wenn Ihr Freund 20 Minuten zu spät kommt, wollen Sie wissen, warum (Empathie) oder Sie werden wütend, unabhängig von der Vernunft (Logik).",
+    "answers" : [ {
+      "text" : "Empathie",
+      "value" : -1.0
+    }, {
+      "text" : "Logik",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "help" : "Beispiel: Wenn es einen Raubüberfall gibt, ziehe ich es vor, die Fakten zu untersuchen oder sich vorzustellen, was passiert sein könnte.",
+    "answers" : [ {
+      "text" : "Untersuchen",
+      "value" : -1.0
+    }, {
+      "text" : "Spekulieren",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie sind mehr",
+    "help" : "Beispiel: Wenn ich mich darauf vorbereite, schlafen zu gehen, folge ich immer der gleichen Reihenfolge (Waschzähne, auf Pyjamas usw.).",
+    "answers" : [ {
+      "text" : "Systematisch",
+      "value" : -1.0
+    }, {
+      "text" : "Informell",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Sie bevorzugen",
+    "help" : "Beispiel: Ich mag es, verschiedene Dinge zu essen (Sorte) oder ich bevorzuge immer Pizza (Routine) zu essen.",
+    "answers" : [ {
+      "text" : "Routine",
+      "value" : -1.0
+    }, {
+      "text" : "Sorte",
+      "value" : 1.0
+    }, {
+      "text" : "Nicht anders",
+      "value" : 0.0
+    } ]
+  } ]
+}

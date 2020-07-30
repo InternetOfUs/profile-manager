@@ -1,0 +1,563 @@
+{
+  "name" : "Inteligence-test",
+  "description" : "Test for at vurdere en persons intelligens. Fyld den.",
+  "questions" : [ {
+    "text" : "At skrive er en naturlig måde for mig at udtrykke mig",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Skolestudier på modersmål eller samfundsfag var lettere for mig end matematik, fysik og kemi.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg har for nylig skrevet noget, som jeg er særlig stolt af, eller som jeg har modtaget anerkendelse for.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Metaforer og verbale verbale udtryk hjælper mig med at lære effektivt.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "I skolen var jeg god til matematik, fysik eller kemi.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kan arbejde med og løse komplekse problemer.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Mental arithmetic er let for mig.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg er god til spil og problemløsning, som kræver logisk tænkning.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "I skolen var geometri og forskellige former for tildelinger lettere for mig end at løse ligninger.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Det er nemt for mig at begrebere komplekse og flerdimensionelle mønstre.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kan nemt forestille mig, hvordan et landskab ser ud fra et fugleperspektiv.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Når jeg læser, jeg form illustrative billeder eller design i mit sind.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg er fingernem.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kan nemt gøre noget konkret med mine hænder (f.eks. strikning og træarbejde).",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg er god til at vise, hvordan man gør noget i praksis.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg var god til at lave håndværk i skolen.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Efter at have hørt en sang en gang eller to gange er jeg i stand til at synge eller fløjte den helt præcist.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Når jeg lytter til musik, kan jeg skelne fra instrumenter eller genkende melodier.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kan sagtens holde rytmen, når man trommer en melodi.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg ser med det samme, hvis en melodi er ude af trit.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Selv i et fremmed selskab, kan jeg let finde nogen at tale med.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kommer let alene med forskellige typer af mennesker.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg får let kontakt med andre mennesker.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "I forhandlinger og gruppearbejde er jeg i stand til at støtte gruppen for at finde en konsensus.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg er i stand til at analysere mine egne motiver og handlemåder.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg tænker ofte på mine egne følelser og følelser og opsøger grunde til dem.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg bruger tid på at reflektere over de vigtige spørgsmål i livet.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg kan godt lide at læse psykologisk eller filosofisk litteratur for at øge min selvviden.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg nyder skønhed og oplevelser i forhold til naturen.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Beskyttelse af naturen er vigtig for mig.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Jeg er opmærksom på mine forbrugsvaner med henblik på at beskytte miljøet.",
+    "answers" : [ {
+      "text" : "Totalt uenig",
+      "value" : 0.0
+    }, {
+      "text" : "Uenig",
+      "value" : 0.25
+    }, {
+      "text" : "Hverken enig eller uenig",
+      "value" : 0.5
+    }, {
+      "text" : "Enig",
+      "value" : 0.75
+    }, {
+      "text" : "Totalt enig",
+      "value" : 1.0
+    } ]
+  } ]
+}

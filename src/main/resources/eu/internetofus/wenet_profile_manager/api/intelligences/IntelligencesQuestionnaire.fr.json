@@ -1,0 +1,563 @@
+{
+  "name" : "Test d'Inteligence",
+  "description" : "Tester pour évaluer les intelligences d'une personne. Veuillez le remplir.",
+  "questions" : [ {
+    "text" : "L'écriture est une façon naturelle pour moi de m'exprimer",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "À l'école, les études en langue maternelle ou en sciences sociales m'ont été plus faciles que les mathématiques, la physique et la chimie.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "J'ai récemment écrit quelque chose dont je suis particulièrement fier, ou pour lequel j'ai été reconnu.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Les métaphores et les expressions verbales vives m'aident à apprendre efficacement.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "À l'école, j'étais bon en mathématiques, en physique ou en chimie.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je peux travailler avec et résoudre des problèmes complexes.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "L'arithmétique mentale est facile pour moi.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je suis bon pour les jeux et la résolution de problèmes, qui nécessitent une réflexion logique.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "À l'école, la géométrie et divers types d'affectations impliquant la perception spatiale sont plus faciles pour moi que la résolution d'équations.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Il est facile pour moi de conceptualiser des modèles complexes et multidimensionnels.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je peux facilement imaginer comment un paysage ressemble à une vue d'oiseau.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Quand j'ai lu, je forme des images ou des dessins illustratifs dans mon esprit.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je suis pratique.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je peux facilement faire quelque chose de concret avec mes mains (p. Ex. Le tricot et le travail du bois).",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je suis en mesure de montrer comment faire quelque chose dans la pratique.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "J'étais douées pour l'artisanat à l'école.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Après avoir entendu un air une ou deux fois, je suis capable de chanter ou de siffler avec assez de précision.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "En écoutant de la musique, je suis capable de discerner des instruments ou de reconnaître des mélodies.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je peux facilement garder le rythme en drumant une mélodie.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je remarque immédiatement si une mélodie n'est plus à la hauteur.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Même dans une entreprise étrange, je trouve facilement quelqu'un à qui parler.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je me forme facilement avec différents types de personnes.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je communique facilement avec d'autres personnes.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Dans les négociations et le travail en groupe, je suis en mesure de soutenir le groupe pour trouver un consensus.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je suis capable d'analyser mes propres motifs et mes façons d'agir.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je pense souvent à mes sentiments et à mes sentiments et je cherche des raisons pour eux.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je passe du temps à réfléchir régulièrement aux questions importantes de la vie.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "J'aime lire la littérature psychologique ou philosophique pour augmenter mes connaissances.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "J'aime la beauté et les expériences liées à la nature.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Protéger la nature est important pour moi.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  }, {
+    "text" : "Je porte attention à mes habitudes de consommation afin de protéger l'environnement.",
+    "answers" : [ {
+      "text" : "Entièrement en désaccord",
+      "value" : 0.0
+    }, {
+      "text" : "Désaccord",
+      "value" : 0.25
+    }, {
+      "text" : "Ni d'accord ni en désaccord",
+      "value" : 0.5
+    }, {
+      "text" : "D'accord",
+      "value" : 0.75
+    }, {
+      "text" : "Totalement en accord",
+      "value" : 1.0
+    } ]
+  } ]
+}

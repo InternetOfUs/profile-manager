@@ -1,0 +1,259 @@
+{
+  "name" : "Test de la personnalité",
+  "description" : "Tester pour évaluer la personnalité d'une personne. Veuillez le remplir.",
+  "questions" : [ {
+    "text" : "Les juges doivent être",
+    "help" : "Exemple: Si un juge juge votre frère, vous devez suivre les lois qui s'appliquent à tous.",
+    "answers" : [ {
+      "text" : "Raisons",
+      "value" : -1.0
+    }, {
+      "text" : "Impartiaux",
+      "value" : 1.0
+    }, {
+      "text" : "Cela dépend de chaque cas",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez les choses:",
+    "help" : "Exemple: J'aime planifier mon jour ou je préfère improviser.",
+    "answers" : [ {
+      "text" : "Ouvert",
+      "value" : -1.0
+    }, {
+      "text" : "Planifié",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "answers" : [ {
+      "text" : "Le traditionnel",
+      "value" : -1.0
+    }, {
+      "text" : "Le nouveau",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "answers" : [ {
+      "text" : "Être seul",
+      "value" : -1.0
+    }, {
+      "text" : "Soyez avec quelqu'un",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: Vous croyez aux choses qu'ils disent ou que vous préférez vérifier.",
+    "answers" : [ {
+      "text" : "Tolérant",
+      "value" : -1.0
+    }, {
+      "text" : "Intolérance (2)",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous travaillez mieux",
+    "answers" : [ {
+      "text" : "Sans pression",
+      "value" : -1.0
+    }, {
+      "text" : "Sous pression",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: Quand je fais mes devoirs, j'aime l'organiser étape par étape, toujours dans le même ordre ou je préfère commencer au hasard.",
+    "answers" : [ {
+      "text" : "Méthodique",
+      "value" : -1.0
+    }, {
+      "text" : "Improviseur",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: J'aime les mathématiques plus (théorique) ou l'éducation physique (pratique).",
+    "answers" : [ {
+      "text" : "Théorique",
+      "value" : -1.0
+    }, {
+      "text" : "Pratique",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: J'aime tout dire à ce qui arrive à mes amis ou je préfère garder ça pour moi.",
+    "answers" : [ {
+      "text" : "Réservé",
+      "value" : -1.0
+    }, {
+      "text" : "Social",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous vous voyez plus",
+    "help" : "Exemple: Vous préférez construire un robot (Curious) ou l'acheter déjà (hébergement).",
+    "answers" : [ {
+      "text" : "Hébergement",
+      "value" : -1.0
+    }, {
+      "text" : "Curieux",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "answers" : [ {
+      "text" : "Contenu",
+      "value" : -1.0
+    }, {
+      "text" : "Expressif",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: je dis des choses telles qu'elles sont (honnêtes) ou je préfère omit les mots qui peuvent être blessés.",
+    "answers" : [ {
+      "text" : "Diplomaux",
+      "value" : -1.0
+    }, {
+      "text" : "Honest",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "help" : "Exemple: Vous préférez faire des cartes (le béton) ou résoudre des problèmes mathématiques (le résumé).",
+    "answers" : [ {
+      "text" : "Le spécifique",
+      "value" : -1.0
+    }, {
+      "text" : "Le résumé",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "answers" : [ {
+      "text" : "Silencieux",
+      "value" : -1.0
+    }, {
+      "text" : "Talkatif",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous apprenez mieux",
+    "answers" : [ {
+      "text" : "Lecture",
+      "value" : -1.0
+    }, {
+      "text" : "Ecoute",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: Vous voulez savoir pourquoi les avions volent (conceptuel) ou font un modèle d'avion (pratique)",
+    "answers" : [ {
+      "text" : "Pratique",
+      "value" : -1.0
+    }, {
+      "text" : "Conceptuel",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "help" : "Exemple: Si votre ami arrive 20 minutes en retard, vous voulez savoir pourquoi (empathie) ou vous êtes en colère, quelle que soit la raison (logique).",
+    "answers" : [ {
+      "text" : "Empathie",
+      "value" : -1.0
+    }, {
+      "text" : "Logique",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "help" : "Exemple: Quand il y a un cambriolage, je préfère enquêter sur les faits ou imaginer ce qui aurait pu arriver.",
+    "answers" : [ {
+      "text" : "Enquêter sur",
+      "value" : -1.0
+    }, {
+      "text" : "Speculer",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous êtes plus",
+    "help" : "Exemple: Quand je me prépare à aller dormir, je suis toujours dans le même ordre (laver les dents, mettre en pyjama, etc.).",
+    "answers" : [ {
+      "text" : "Systématique",
+      "value" : -1.0
+    }, {
+      "text" : "Informel",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  }, {
+    "text" : "Vous préférez",
+    "help" : "Exemple: J'aime manger des choses différentes (variété) ou je préfère toujours manger de la pizza (routine).",
+    "answers" : [ {
+      "text" : "Routine",
+      "value" : -1.0
+    }, {
+      "text" : "Variété",
+      "value" : 1.0
+    }, {
+      "text" : "Indifférent",
+      "value" : 0.0
+    } ]
+  } ]
+}
