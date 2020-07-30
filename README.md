@@ -25,6 +25,20 @@ he trust. Also you must define the aggregation function, that can be:
 
 ## Setup and configuration
 
+First of all, you must to install the next software.
+
+ - [docker](https://docs.docker.com/install/)
+ - [docker compose](https://docs.docker.com/compose/install/)
+
+### Requirements
+
+The profile manager component requires:
+
+ - [MongoDB](https://docs.mongodb.com/manual/installation/)
+ - [WeNet - Task manager](https://bitbucket.org/wenet/profile-manager/)
+ - [WeNet - Interaction protocol engine](https://bitbucket.org/wenet/wenet-interaction-protocol-engine/)
+ - [WeNet - Service API](https://bitbucket.org/wenet/wenet-service-api/)
+
 ### Installation
 
 The profile manager component required [Java version 11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) or higher.
@@ -37,7 +51,7 @@ The profile manager component requires:
 
  - [MongoDB](https://docs.mongodb.com/manual/installation/)
  - [WeNet - Profile manager](https://bitbucket.org/wenet/profile-manager/)
- - [WeNet - Interaction protocol engine](https://bitbucket.org/wenet/wenet-interaction-protocol-engine/)
+ - [WeNet - Social context builder](https://bitbucket.org/wenet/wenet-social-context-builder/)
  - [WeNet - Service API](https://bitbucket.org/wenet/wenet-service-api/)
 
 
@@ -49,39 +63,15 @@ To use this feature you must to install the next software.
  - [docker compose](https://docs.docker.com/compose/install/)
 
 
-#### Create docker image
+### Create docker image
 
 If you want to create an image execute the next command.
 
 ```
-docker build -f src/main/docker/Dockerfile -t wenet/profile-manager:latest .
+./buildDockerImage.sh
 ```
 
-You can use the next arguments:
-
- - **DEFAULT_API_HOST** to define the default host where API will be bind. By default is **0.0.0.0**.
- - **DEFAULT_API_PORT** to define the default port where API will be bind. By default is **8080**.
- - **DEFAULT_DB_HOST** to define the default mongo database server host name. By default is **localhost**.
- - **DEFAULT_DB_PORT** to define the default mongo database server port. By default is **27017**.
- - **DEFAULT_DB_NAME** to define the default mongo database name. By default is **wenetProfileManagerDB**.
- - **DEFAULT_DB_USER_NAME** to define the default mongo database user name. By default is **wenetProfileManager**.
- - **DEFAULT_DB_USER_PASSWORD** to define the default mongo database user password. By default is **password**.
- - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
- - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
- - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
-
-This arguments are used to create a configurations files at **/usr/wenet/profile-manager/etc**.
-So you can mount a volume to this if you want to modify any configuration property at runtime.
-
-#### Run docker image
-
-To run a the created docker image, run the next command:
-
-```
-docker run -t -i -p 8080:8080 --name profile_manager wenet/profile-manager
-```
-
-You can modify use the next environment properties to modify some parameters of the server:
+This create the generic docker image, but you can create a different wit the **docker build** command and using the next arguments:
 
  - **API_HOST** to define the host where the API has to bind. By default is **0.0.0.0**.
  - **API_PORT** to define the port where the API has to bind. By default is **8080**.
@@ -97,31 +87,55 @@ You can modify use the next environment properties to modify some parameters of 
 
 Also you can define your own configuration that modify this properties and mount to  **/usr/wenet/profile-manager/etc**.
 
-If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`).  To modify the component to links or the port to deploy use the next variables:
 
- - **INTERACTION_PROTOCOL_ENGINE_API_PORT** to define the port to listen for the API calls. By default is **8083**.
+### Run, configure and link with a MongoDB
+
+If you want to start also a database and link both you can use the docker compose (`docker-compose -f src/main/docker/docker-compose.yml up -d`). To modify the component to links or the port to deploy use the next variables:
+
+ - **PROFILE_MANAGER_API_PORT** to define the port to listen for the API calls. By default is **8083**.
  - **MONGO_ROOT_USER** to define the root user for the MongoDB. By default is **root**.
  - **MONGO_ROOT_PASSWORD** to define the password of the root user for the MongoDB. By default is **password**.
- - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_TASK_MANAGER_API** to define the path to the profile manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
  - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
  - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+
+
+### Show running logs
 
 When the container is ready you can access the logs of the component, following the next steps:
 
  - Discover the identifier of the container of the component (`docker container ls`).
  - Open a shell to the container of the component (`docker exec -it c82f8f4a136c /bin/bash`).
- - The logs are on the directory **/usr/wenet/profile-manager/var/log**.
+ - The logs are on the directory **/usr/wenet/interaction-protocol-engine/var/log**.
 
 
 ## Usage
 
+First of all, you must to install the next software.
+
+ - [docker](https://docs.docker.com/install/)
+ - [docker compose](https://docs.docker.com/compose/install/)
+
+### Development environment
+
+To start the development environment run the script `./startDevelopmentEnvironment.sh`.
+This script will finish with a bash shell of the created a docker image where has been installed
+all the necessary components for the development. Also start the next services:
+
+ - [Mongo express](http://localhost:8081)
+ - [Swagger editor](http://localhost:8080)
+ 
+To finish the development environment run the script `./stopDevelopmentEnvironment.sh`.
+
+
 The project use the [Apache maven](https://maven.apache.org/) tool to solve the dependencies,
 generate the Open API documentation, compile the component and run the test.
 
- - Use `./mvnw dependency:list` to show the component dependencies.
- - Use `./mvnw compile` to compile and generate the Open API documentation (**target/classes/wenet-profile_manager-openapi.yml**).
- - Use `./mvnw tests` to run the test.
- - Use `./mvnw site` to generate a HTML page (**target/site/index.html**) with all the reports (test, javadoc, PMD,CPD and coverage).
+ - Use `mvn dependency:list` to show the component dependencies.
+ - Use `mvn compile` to compile and generate the Open API documentation (**target/classes/wenet-profile_manager-openapi.yml**).
+ - Use `mvn test` to run the test.
+ - Use `mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:5005 -Xnoagent -Djava.compiler=NONE"` to run the test on debug mode.
+ - Use `mvn site` to generate a HTML page (**target/site/index.html**) with all the reports (test, javadoc, PMD,CPD and coverage).
 
 mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
 
