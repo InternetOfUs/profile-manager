@@ -53,7 +53,6 @@ import eu.internetofus.common.components.profile_manager.RelevantLocation;
 import eu.internetofus.common.components.profile_manager.RoutineTest;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
-import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.components.profile_manager.UserName;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -205,8 +204,6 @@ public class ProfilesIT {
         profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
         profile.plannedActivities.get(1).id = stored.plannedActivities.get(1).id;
         profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
-        profile.socialPractices.get(0).id = stored.socialPractices.get(0).id;
-        profile.socialPractices.get(0).norms.get(0).id = stored.socialPractices.get(0).norms.get(0).id;
         assertThat(stored).isEqualTo(profile);
         ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
@@ -285,8 +282,6 @@ public class ProfilesIT {
       profile.norms.get(0).id = stored.norms.get(0).id;
       profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
       profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
-      profile.socialPractices.get(0).id = stored.socialPractices.get(0).id;
-      profile.socialPractices.get(0).norms.get(0).id = stored.socialPractices.get(0).norms.get(0).id;
       assertThat(stored).isEqualTo(profile);
       ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
@@ -432,8 +427,6 @@ public class ProfilesIT {
           newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
           newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
           newProfile.relationships = updated.relationships;
-          newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-          newProfile.socialPractices.get(0).norms.get(0).id = updated.socialPractices.get(0).norms.get(0).id;
           assertThat(updated).isEqualTo(newProfile);
 
           testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
@@ -621,8 +614,6 @@ public class ProfilesIT {
         newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
         newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
         newProfile.relationships = merged.relationships;
-        newProfile.socialPractices.get(0).id = merged.socialPractices.get(0).id;
-        newProfile.socialPractices.get(0).norms.get(0).id = merged.socialPractices.get(0).norms.get(0).id;
         newProfile.personalBehaviors = storedProfile.personalBehaviors;
         assertThat(merged).isEqualTo(newProfile);
 
@@ -971,7 +962,6 @@ public class ProfilesIT {
 
   }
 
-
   /**
    * Verify that can update the norms of an user.
    *
@@ -1250,97 +1240,6 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that can update the social practices of an user.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldUpdateProfileSocialPractice(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    new WeNetUserProfileTest().createModelExample(23, vertx, testContext, testContext.succeeding(created -> {
-
-      assertIsValid(created, vertx, testContext, () -> {
-
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
-
-        repository.storeProfile(created, testContext.succeeding(storedProfile -> {
-
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
-          newProfile.socialPractices = new ArrayList<>();
-          newProfile.socialPractices.add(new SocialPractice());
-          newProfile.socialPractices.add(new SocialPractice());
-          newProfile.socialPractices.get(1).id = storedProfile.socialPractices.get(0).id;
-          newProfile.socialPractices.get(1).label = "Label";
-          final Checkpoint checkpoint = testContext.checkpoint(4);
-          testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
-
-            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
-            assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
-            expected.profiles = new ArrayList<>();
-            expected.profiles.add(new HistoricWeNetUserProfile());
-            expected.profiles.get(0).from = storedProfile._creationTs;
-            expected.profiles.get(0).to = updated._lastUpdateTs;
-            expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(), WeNetUserProfile.class);
-            expected.total++;
-
-            storedProfile._lastUpdateTs = updated._lastUpdateTs;
-            storedProfile.socialPractices.add(0, new SocialPractice());
-            storedProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-            storedProfile.socialPractices.get(1).label = "Label";
-            assertThat(updated).isEqualTo(storedProfile);
-            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
-
-              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
-              assertThat(page).isEqualTo(expected);
-              newProfile.socialPractices = new ArrayList<>();
-              newProfile.socialPractices.add(new SocialPractice());
-              newProfile.socialPractices.get(0).id = updated.socialPractices.get(0).id;
-              newProfile.socialPractices.get(0).label = "Label2";
-              testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
-
-                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
-                assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-                expected.profiles.add(new HistoricWeNetUserProfile());
-                expected.profiles.get(1).from = updated._lastUpdateTs;
-                expected.profiles.get(1).to = updated2._lastUpdateTs;
-                expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(), WeNetUserProfile.class);
-                expected.total++;
-
-                storedProfile._lastUpdateTs = updated2._lastUpdateTs;
-                storedProfile.socialPractices = new ArrayList<>();
-                storedProfile.socialPractices.remove(1);
-                storedProfile.socialPractices.get(0).label = "Label2";
-                assertThat(updated2).isEqualTo(storedProfile);
-                testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
-
-                  assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
-                  assertThat(page2).isEqualTo(expected);
-
-                }).send(testContext, checkpoint);
-
-              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-
-            }).send(testContext, checkpoint);
-
-          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-        }));
-      });
-    }));
-
-  }
-
-  /**
    * Verify that can update the personal behaviors of an user.
    *
    * @param vertx       event bus to use.
@@ -1531,7 +1430,6 @@ public class ProfilesIT {
       assertThat(stored.plannedActivities).isNull();
       assertThat(stored.relevantLocations).isNull();
       assertThat(stored.relationships).isNull();
-      assertThat(stored.socialPractices).isNull();
       assertThat(stored.personalBehaviors).isNull();
       assertThat(stored.materials).isNull();
       assertThat(stored.competences).isNull();

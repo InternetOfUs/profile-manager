@@ -50,7 +50,6 @@ import eu.internetofus.common.components.profile_manager.PlannedActivity;
 import eu.internetofus.common.components.profile_manager.RelevantLocation;
 import eu.internetofus.common.components.profile_manager.Routine;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
-import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
@@ -1102,69 +1101,6 @@ public class ProfilesResource implements Profiles {
   public void deleteRelationship(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "relationship", profile -> profile.relationships, this.checkIndexOnModels(index), resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.addModelToProfile(SocialPractice.class, body, "social_practice", userId, profile -> profile.socialPractices, (profile, socialPractices) -> profile.socialPractices = socialPractices,
-        (socialPractice1, socialPractice2) -> socialPractice1.id.equals(socialPractice2.id), resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveSocialPractices(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.retrieveModelsFromProfile(userId, profile -> profile.socialPractices, resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.socialPractices, socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice", resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.updateModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice",
-        resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.mergeModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), "social_practice",
-        resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    this.deleteModelFromProfile(userId, "social_practice", profile -> profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), resultHandler);
 
   }
 
