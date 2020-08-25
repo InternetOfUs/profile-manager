@@ -282,7 +282,7 @@ public class ProfilesResource implements Profiles {
 
         } else {
 
-          target.merge(source, "bad_new_profile", this.vertx).onComplete(merge -> {
+          target.merge(source, "bad_profile", this.vertx).onComplete(merge -> {
 
             if (merge.failed()) {
 

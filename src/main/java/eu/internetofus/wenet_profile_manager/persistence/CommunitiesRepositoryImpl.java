@@ -31,34 +31,28 @@ import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
- * Implementation of the {@link ProfilesRepository}.
+ * Implementation of the {@link CommunitiesRepository}.
  *
- * @see ProfilesRepository
+ * @see CommunitiesRepository
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesRepositoryImpl extends Repository implements ProfilesRepository {
+public class CommunitiesRepositoryImpl extends Repository implements CommunitiesRepository {
 
   /**
-   * The name of the collection that contains the profiles.
+   * The name of the collection that contains the communities.
    */
-  public static final String PROFILES_COLLECTION = "profiles";
-
-  /**
-   * The name of the collection that contains the historic profiles.
-   */
-  public static final String HISTORIC_PROFILES_COLLECTION = "historicProfiles";
+  public static final String COMMUNITIES_COLLECTION = "communities";
 
   /**
    * Create a new repository.
    *
    * @param pool to create the connections.
    */
-  public ProfilesRepositoryImpl(final MongoClient pool) {
+  public CommunitiesRepositoryImpl(final MongoClient pool) {
 
     super(pool);
 
@@ -68,10 +62,10 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void searchProfileObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void searchCommunityObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final JsonObject query = new JsonObject().put("_id", id);
-    this.findOneDocument(PROFILES_COLLECTION, query, null, found -> {
+    this.findOneDocument(COMMUNITIES_COLLECTION, query, null, found -> {
       final String _id = (String) found.remove("_id");
       return found.put("id", _id);
     }, searchHandler);
@@ -82,17 +76,17 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
+  public void storeCommunity(final JsonObject community, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-    final String id = (String) profile.remove("id");
+    final String id = (String) community.remove("id");
     if (id != null) {
 
-      profile.put("_id", id);
+      community.put("_id", id);
     }
     final long now = TimeManager.now();
-    profile.put("_creationTs", now);
-    profile.put("_lastUpdateTs", now);
-    this.storeOneDocument(PROFILES_COLLECTION, profile, stored -> {
+    community.put("_creationTs", now);
+    community.put("_lastUpdateTs", now);
+    this.storeOneDocument(COMMUNITIES_COLLECTION, community, stored -> {
 
       final String _id = (String) stored.remove("_id");
       return stored.put("id", _id);
@@ -105,13 +99,13 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void updateProfile(final JsonObject profile, final Handler<AsyncResult<Void>> updateHandler) {
+  public void updateCommunity(final JsonObject community, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final Object id = profile.remove("id");
+    final Object id = community.remove("id");
     final JsonObject query = new JsonObject().put("_id", id);
     final long now = TimeManager.now();
-    profile.put("_lastUpdateTs", now);
-    this.updateOneDocument(PROFILES_COLLECTION, query, profile, updateHandler);
+    community.put("_lastUpdateTs", now);
+    this.updateOneDocument(COMMUNITIES_COLLECTION, query, community, updateHandler);
 
   }
 
@@ -119,38 +113,10 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfile(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
+  public void deleteCommunity(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
     final JsonObject query = new JsonObject().put("_id", id);
-    this.deleteOneDocument(PROFILES_COLLECTION, query, deleteHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
-
-    this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, stored -> {
-      stored.remove("_id");
-      return stored;
-    }, storeHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void searchHistoricProfilePageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
-
-    final FindOptions options = new FindOptions();
-    options.setSkip(offset);
-    options.setLimit(limit);
-    options.getFields().put("_id", 0);
-    options.setSort(sort);
-    this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", null, searchHandler);
+    this.deleteOneDocument(COMMUNITIES_COLLECTION, query, deleteHandler);
 
   }
 

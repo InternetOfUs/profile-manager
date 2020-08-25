@@ -28,6 +28,8 @@ package eu.internetofus.wenet_profile_manager.api;
 
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.vertx.AbstractAPIVerticle;
+import eu.internetofus.wenet_profile_manager.api.communities.Communities;
+import eu.internetofus.wenet_profile_manager.api.communities.CommunitiesResource;
 import eu.internetofus.wenet_profile_manager.api.help.Help;
 import eu.internetofus.wenet_profile_manager.api.help.HelpResource;
 import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
@@ -50,56 +52,60 @@ import io.vertx.serviceproxy.ServiceBinder;
  */
 public class APIVerticle extends AbstractAPIVerticle {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected String getOpenAPIResourcePath() {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String getOpenAPIResourcePath() {
 
-		return "wenet-profile_manager-openapi.yaml";
-	}
+    return "wenet-profile_manager-openapi.yaml";
+  }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void mountServiceInterfaces(OpenAPI3RouterFactory routerFactory) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void mountServiceInterfaces(final OpenAPI3RouterFactory routerFactory) {
 
-		routerFactory.mountServiceInterface(Help.class, Help.ADDRESS);
-		new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
+    routerFactory.mountServiceInterface(Help.class, Help.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
 
-		routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
-		new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
-				new ProfilesResource(this.vertx));
+    routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
+        new ProfilesResource(this.vertx));
 
-		routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
-		new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
-				new PersonalitiesResource(this.vertx));
+    routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
+        new PersonalitiesResource(this.vertx));
 
-		routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
-		new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
-				new IntelligencesResource(this.vertx));
+    routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
+        new IntelligencesResource(this.vertx));
 
-		routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
-		new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
+    routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
 
-	}
+    routerFactory.mountServiceInterface(Communities.class, Communities.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Communities.ADDRESS).register(Communities.class,
+        new CommunitiesResource(this.vertx));
 
-	/**
-	 * Register the services provided by the API.
-	 *
-	 * {@inheritDoc}
-	 *
-	 * @see WeNetProfileManager
-	 */
-	@Override
-	protected void startedServerAt(String host, int port) {
+  }
 
-		final JsonObject conf = new JsonObject();
-		conf.put("profileManager", "http://" + host + ":" + port);
-		final WebClient client = WebClient.create(this.vertx);
-		WeNetProfileManager.register(this.vertx, client, conf);
+  /**
+   * Register the services provided by the API.
+   *
+   * {@inheritDoc}
+   *
+   * @see WeNetProfileManager
+   */
+  @Override
+  protected void startedServerAt(final String host, final int port) {
 
-	}
+    final JsonObject conf = new JsonObject();
+    conf.put("profileManager", "http://" + host + ":" + port);
+    final WebClient client = WebClient.create(this.vertx);
+    WeNetProfileManager.register(this.vertx, client, conf);
+
+  }
 
 }

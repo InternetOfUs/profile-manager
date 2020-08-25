@@ -31,6 +31,7 @@ import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.queryParam;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -436,7 +437,7 @@ public class ProfilesIT {
 
             assertThat(page.profiles).hasSize(1);
             assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-            assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+            assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,offset(1l));
             assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
           }).send(testContext, checkpoint);

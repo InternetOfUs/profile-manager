@@ -43,7 +43,7 @@ public class PersistenceVerticle extends AbstractPersistenceVerticle {
 
     ProfilesRepository.register(this.vertx, this.pool);
     TrustsRepository.register(this.vertx, this.config(), this.pool);
-
+    CommunitiesRepository.register(this.vertx, this.pool);
   }
 
 }
