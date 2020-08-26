@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import javax.ws.rs.core.Response.Status;
@@ -91,7 +91,7 @@ public class ProfilesResourceTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> storeHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).storeProfile(any(), storeHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).storeProfile(any(), storeHandler.capture());
     storeHandler.getValue().handle(Future.failedFuture("Store profile error"));
 
   }
@@ -114,11 +114,11 @@ public class ProfilesResourceTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).searchProfile(any(), searchHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).searchProfile(any(), searchHandler.capture());
     searchHandler.getValue().handle(Future.succeededFuture(new WeNetUserProfile()));
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
     updateHandler.getValue().handle(Future.failedFuture("Update profile error"));
 
   }
@@ -141,15 +141,15 @@ public class ProfilesResourceTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).searchProfile(any(), searchHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).searchProfile(any(), searchHandler.capture());
     searchHandler.getValue().handle(Future.succeededFuture(new WeNetUserProfile()));
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<Void>>> updateHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).updateProfile(any(WeNetUserProfile.class), updateHandler.capture());
     updateHandler.getValue().handle(Future.succeededFuture());
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<HistoricWeNetUserProfile>>> storeHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).storeHistoricProfile(any(), storeHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).storeHistoricProfile(any(), storeHandler.capture());
     storeHandler.getValue().handle(Future.failedFuture("Store historic error"));
 
   }
@@ -173,7 +173,7 @@ public class ProfilesResourceTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<HistoricWeNetUserProfilesPage>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, times(1)).searchHistoricProfilePage(any(), any(), eq(0), eq(10), searchHandler.capture());
+    verify(resource.repository, timeout(30000).times(1)).searchHistoricProfilePage(any(), any(), eq(0), eq(10), searchHandler.capture());
     searchHandler.getValue().handle(Future.failedFuture("Search historic profile error"));
 
   }

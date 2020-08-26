@@ -125,8 +125,7 @@ public class CommunitiesResourceTest {
    */
   public static CommunitiesResource createCommunitiesResource(final Vertx vertx) {
 
-    final CommunitiesResource resource = new CommunitiesResource();
-    resource.vertx = vertx;
+    final CommunitiesResource resource = new CommunitiesResource(vertx);
     resource.repository = mock(CommunitiesRepository.class);
     return resource;
 

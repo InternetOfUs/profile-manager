@@ -437,7 +437,7 @@ public class ProfilesIT {
 
             assertThat(page.profiles).hasSize(1);
             assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-            assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,offset(1l));
+            assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
             assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
           }).send(testContext, checkpoint);
@@ -625,7 +625,7 @@ public class ProfilesIT {
 
           assertThat(page.profiles).hasSize(1);
           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-          assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+          assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset((Long)1L));
           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
         }).send(testContext, checkpoint);
@@ -840,7 +840,7 @@ public class ProfilesIT {
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-              assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+              assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.name.middle = old_middle;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
@@ -895,7 +895,7 @@ public class ProfilesIT {
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-              assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+              assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.dateOfBirth.day = 24;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
@@ -949,7 +949,7 @@ public class ProfilesIT {
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-              assertThat(page.profiles.get(0).to).isEqualTo(storedProfile._lastUpdateTs);
+              assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
               storedProfile._lastUpdateTs = old_lastUpdateTs;
               storedProfile.gender = Gender.F;
               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);

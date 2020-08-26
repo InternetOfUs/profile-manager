@@ -374,4 +374,39 @@ public class TrustsRepositoryIT {
 
   }
 
+  /**
+   * Should not store {@code null} event.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#storeTrustEvent(JsonObject, Handler)
+   */
+  @Test
+  public void shouldNotStoreATrustNullJsonObject(final Vertx vertx, final VertxTestContext testContext) {
+
+    final JsonObject event = null;
+    TrustsRepository.createProxy(vertx).storeTrustEvent(event, testContext.failing(failed -> {
+      testContext.completeNow();
+    }));
+
+  }
+
+  /**
+   * Should not calculate trust by {@code null} aggregator.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#calculateTrustBy(TrustAggregator, JsonObject, Handler)
+   */
+  @Test
+  public void shouldNotCalculateTrustWithNullAggregator(final Vertx vertx, final VertxTestContext testContext) {
+
+    TrustsRepository.createProxy(vertx).calculateTrustBy(null, null, testContext.failing(failed -> {
+      testContext.completeNow();
+    }));
+
+  }
+
 }

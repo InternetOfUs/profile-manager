@@ -60,13 +60,6 @@ public class CommunitiesResource implements Communities {
   protected CommunitiesRepository repository;
 
   /**
-   * Create an empty resource. This is only used for unit tests.
-   */
-  protected CommunitiesResource() {
-
-  }
-
-  /**
    * Create a new instance to provide the services of the {@link Communities}.
    *
    * @param vertx with the event bus to use.
