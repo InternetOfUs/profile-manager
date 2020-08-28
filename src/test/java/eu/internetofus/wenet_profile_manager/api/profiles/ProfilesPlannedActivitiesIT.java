@@ -60,7 +60,7 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
   @Override
   protected Future<PlannedActivity> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final PlannedActivity plannedActivity = new PlannedActivity();
+    final var plannedActivity = new PlannedActivity();
     plannedActivity.description = ValidationsTest.STRING_1024;
     return Future.succeededFuture(plannedActivity);
 
@@ -82,7 +82,7 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final PlannedActivity source,final PlannedActivity target) {
+  protected void updateIdsTo(final PlannedActivity source, final PlannedActivity target) {
 
     target.id = source.id;
 
@@ -92,7 +92,7 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<PlannedActivity> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<PlannedActivity> initModelsIn(final WeNetUserProfile profile) {
 
     profile.plannedActivities = new ArrayList<>();
     return profile.plannedActivities;

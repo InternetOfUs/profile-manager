@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api;
 import java.util.List;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -38,15 +39,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(name = "QuestionnaireAnswers", description = "Contains the selected answers of a questionnaire")
-public class QuestionnaireAnswers extends Model {
+public class QuestionnaireAnswers extends ReflectionModel implements Model {
 
-	/**
-	 * The values of the answers for each question on the questionnaire.
-	 */
-	@ArraySchema(
-			arraySchema = @Schema(
-					type = "number",
-					description = "The selected values for the questions on the questionnaire. The answer values are on the same order of the question that refers to the questionnaire.",
-					example = "[1,-1,0,1,1,-1,1,0,0,0,1,-1,-1,-1,1]"))
-	public List<Double> answerValues;
+  /**
+   * The values of the answers for each question on the questionnaire.
+   */
+  @ArraySchema(arraySchema = @Schema(type = "number", description = "The selected values for the questions on the questionnaire. The answer values are on the same order of the question that refers to the questionnaire.", example = "[1,-1,0,1,1,-1,1,0,0,0,1,-1,-1,-1,1]"))
+  public List<Double> answerValues;
 }

@@ -92,8 +92,8 @@ public interface CommunitiesRepository {
 
       } else {
 
-        final JsonObject value = search.result();
-        final CommunityProfile community = Model.fromJsonObject(value, CommunityProfile.class);
+        final var value = search.result();
+        final var community = Model.fromJsonObject(value, CommunityProfile.class);
         if (community == null) {
 
           searchHandler.handle(Future.failedFuture("The stored community is not valid."));
@@ -117,13 +117,13 @@ public interface CommunitiesRepository {
   /**
    * Store a community.
    *
-   * @param community      to store.
+   * @param community    to store.
    * @param storeHandler handler to manage the store.
    */
   @GenIgnore
   default void storeCommunity(final CommunityProfile community, final Handler<AsyncResult<CommunityProfile>> storeHandler) {
 
-    final JsonObject object = community.toJsonObject();
+    final var object = community.toJsonObject();
     if (object == null) {
 
       storeHandler.handle(Future.failedFuture("The community can not converted to JSON."));
@@ -137,8 +137,8 @@ public interface CommunitiesRepository {
 
         } else {
 
-          final JsonObject value = stored.result();
-          final CommunityProfile storedCommunity = Model.fromJsonObject(value, CommunityProfile.class);
+          final var value = stored.result();
+          final var storedCommunity = Model.fromJsonObject(value, CommunityProfile.class);
           if (storedCommunity == null) {
 
             storeHandler.handle(Future.failedFuture("The stored community is not valid."));
@@ -156,7 +156,7 @@ public interface CommunitiesRepository {
   /**
    * Store a community.
    *
-   * @param community      to store.
+   * @param community    to store.
    * @param storeHandler handler to manage the store.
    */
   void storeCommunity(JsonObject community, Handler<AsyncResult<JsonObject>> storeHandler);
@@ -164,13 +164,13 @@ public interface CommunitiesRepository {
   /**
    * Update a community.
    *
-   * @param community       to update.
+   * @param community     to update.
    * @param updateHandler handler to manage the update.
    */
   @GenIgnore
   default void updateCommunity(final CommunityProfile community, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final JsonObject object = community.toJsonObjectWithEmptyValues();
+    final var object = community.toJsonObjectWithEmptyValues();
     if (object == null) {
 
       updateHandler.handle(Future.failedFuture("The community can not converted to JSON."));
@@ -185,7 +185,7 @@ public interface CommunitiesRepository {
   /**
    * Update a community.
    *
-   * @param community       to update.
+   * @param community     to update.
    * @param updateHandler handler to manage the update result.
    */
   void updateCommunity(JsonObject community, Handler<AsyncResult<Void>> updateHandler);
@@ -197,7 +197,5 @@ public interface CommunitiesRepository {
    * @param deleteHandler handler to manage the delete result.
    */
   void deleteCommunity(String id, Handler<AsyncResult<Void>> deleteHandler);
-
-
 
 }

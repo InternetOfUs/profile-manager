@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import java.util.List;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -38,26 +39,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(name = "HistoricWeNetUserProfilesPage", description = "Contains a set of profiles found")
-public class HistoricWeNetUserProfilesPage extends Model {
+public class HistoricWeNetUserProfilesPage extends ReflectionModel implements Model {
 
-	/**
-	 * The index of the first profile returned.
-	 */
-	@Schema(description = "The index of the first profile returned.", example = "0")
-	public int offset;
+  /**
+   * The index of the first profile returned.
+   */
+  @Schema(description = "The index of the first profile returned.", example = "0")
+  public int offset;
 
-	/**
-	 * The number total of profiles that satisfies the search.
-	 */
-	@Schema(description = "The number total of profiles that satisfies the search.", example = "100")
-	public long total;
+  /**
+   * The number total of profiles that satisfies the search.
+   */
+  @Schema(description = "The number total of profiles that satisfies the search.", example = "100")
+  public long total;
 
-	/**
-	 * The found profiles.
-	 */
-	@ArraySchema(
-			schema = @Schema(implementation = HistoricWeNetUserProfile.class),
-			arraySchema = @Schema(description = "The set of profiles found"))
-	public List<HistoricWeNetUserProfile> profiles;
+  /**
+   * The found profiles.
+   */
+  @ArraySchema(schema = @Schema(implementation = HistoricWeNetUserProfile.class), arraySchema = @Schema(description = "The set of profiles found"))
+  public List<HistoricWeNetUserProfile> profiles;
 
 }

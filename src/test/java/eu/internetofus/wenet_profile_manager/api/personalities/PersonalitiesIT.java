@@ -83,7 +83,7 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.GET, Personalities.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es")).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final Questionnaire questionnaire = assertThatBodyIs(Questionnaire.class, res);
+      final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
       assertThat(questionnaire.questions).hasSize(20);
 
     }).send(testContext);
@@ -104,7 +104,7 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -123,12 +123,12 @@ public class PersonalitiesIT {
   @Test
   public void shouldNotCalculatePersonalityBecauseNotEmptyAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -147,15 +147,15 @@ public class PersonalitiesIT {
   @Test
   public void shouldNotCalculatePersonalityBecauseNotEnoughAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 19; i++) {
+    for (var i = 0; i < 19; i++) {
 
       answers.answerValues.add(0d);
       testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isEqualTo("bad_number_of_answers");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -176,9 +176,9 @@ public class PersonalitiesIT {
   @Test
   public void shouldNotCalculatePersonalityBecauseTooManyAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 21; i++) {
+    for (var i = 0; i < 21; i++) {
 
       answers.answerValues.add(0d);
 
@@ -187,7 +187,7 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -206,9 +206,9 @@ public class PersonalitiesIT {
   @Test
   public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooLow(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 20; i++) {
+    for (var i = 0; i < 20; i++) {
 
       answers.answerValues.add(0d);
 
@@ -219,7 +219,7 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_answer_value_at_7");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -238,9 +238,9 @@ public class PersonalitiesIT {
   @Test
   public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooHigh(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 20; i++) {
+    for (var i = 0; i < 20; i++) {
 
       answers.answerValues.add(0d);
 
@@ -251,7 +251,7 @@ public class PersonalitiesIT {
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_answer_value_at_17");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -270,9 +270,9 @@ public class PersonalitiesIT {
   @Test
   public void shouldCalculateENTJPersonality(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 20; i++) {
+    for (var i = 0; i < 20; i++) {
 
       answers.answerValues.add(1d);
 
@@ -310,9 +310,9 @@ public class PersonalitiesIT {
   @Test
   public void shouldCalculateISFPPersonality(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < 20; i++) {
+    for (var i = 0; i < 20; i++) {
 
       answers.answerValues.add(-1d);
 
@@ -350,7 +350,7 @@ public class PersonalitiesIT {
   @Test
   public void shouldCalculatePersonality(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
     Collections.addAll(answers.answerValues, 1d, -1d, 1d, 1d, 0d, 0d, 1d, 1d, -1d, -1d, -1d, 0d, -1d, -1d, 0d, 1d, 1d, -1d, 1d, 1d);
 

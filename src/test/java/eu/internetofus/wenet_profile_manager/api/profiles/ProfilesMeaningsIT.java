@@ -60,7 +60,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
   @Override
   protected Future<Meaning> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Meaning model = new MeaningTest().createModelExample(1);
+    final var model = new MeaningTest().createModelExample(1);
     model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
@@ -72,7 +72,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
   protected Future<Meaning> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
     final Promise<Meaning> promise = Promise.promise();
-    final Meaning model = new MeaningTest().createModelExample(index);
+    final var model = new MeaningTest().createModelExample(index);
     promise.complete(model);
     return promise.future();
 
@@ -82,7 +82,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
    * {@inheritDoc}
    */
   @Override
-  protected List<Meaning> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Meaning> initModelsIn(final WeNetUserProfile profile) {
 
     profile.meanings = new ArrayList<>();
     return profile.meanings;

@@ -57,7 +57,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
@@ -106,14 +105,14 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @BeforeEach
   public void registerServices(final Vertx vertx) {
 
-    final WebClient client = WebClient.create(vertx);
-    final JsonObject profileConf = profileManagerMocker.getComponentConfiguration();
+    final var client = WebClient.create(vertx);
+    final var profileConf = profileManagerMocker.getComponentConfiguration();
     WeNetProfileManager.register(vertx, client, profileConf);
 
-    final JsonObject taskConf = taskManagerMocker.getComponentConfiguration();
+    final var taskConf = taskManagerMocker.getComponentConfiguration();
     WeNetTaskManager.register(vertx, client, taskConf);
 
-    final JsonObject conf = serviceMocker.getComponentConfiguration();
+    final var conf = serviceMocker.getComponentConfiguration();
     WeNetService.register(vertx, client, conf);
     WeNetServiceSimulator.register(vertx, client, conf);
 
@@ -125,7 +124,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Override
   public UserPerformanceRatingEvent createModelExample(final int index) {
 
-    final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+    final var model = new UserPerformanceRatingEvent();
     model.sourceId = "SourceId_" + index;
     model.targetId = "TargetId_" + index;
     model.communityId = "CommunityId_" + index;
@@ -148,15 +147,15 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     StoreServices.storeTaskExample(index, vertx, testContext, testContext.succeeding(task -> {
 
-      final WeNetUserProfile profile = new WeNetUserProfile();
+      final var profile = new WeNetUserProfile();
       profile.relationships = new ArrayList<>();
       profile.relationships.add(new SocialNetworkRelationship());
       profile.relationships.get(0).userId = task.requesterId;
-      final SocialNetworkRelationshipType relationship = SocialNetworkRelationshipType.values()[index % SocialNetworkRelationshipType.values().length];
+      final var relationship = SocialNetworkRelationshipType.values()[index % SocialNetworkRelationshipType.values().length];
       profile.relationships.get(0).type = relationship;
       StoreServices.storeProfile(profile, vertx, testContext, testContext.succeeding(stored -> {
 
-        final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+        final var model = new UserPerformanceRatingEvent();
         model.sourceId = stored.id;
         model.targetId = task.requesterId;
         model.relationship = relationship;
@@ -198,7 +197,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldBasicExampleBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    final UserPerformanceRatingEvent event = this.createModelExample(1);
+    final var event = this.createModelExample(1);
     assertIsNotValid(event, "sourceId", vertx, testContext);
 
   }
@@ -216,7 +215,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = "   " + created.sourceId + "   ";
       model.targetId = "   " + created.targetId + "   ";
       model.rating = created.rating;
@@ -264,7 +263,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
@@ -292,7 +291,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
@@ -320,7 +319,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
@@ -348,7 +347,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
@@ -376,7 +375,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
@@ -443,7 +442,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = sourceId;
       model.targetId = stored.id;
       model.rating = Math.random();
@@ -468,7 +467,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
 
-      final UserPerformanceRatingEvent model = new UserPerformanceRatingEvent();
+      final var model = new UserPerformanceRatingEvent();
       model.sourceId = stored.id;
       model.targetId = targetId;
       model.rating = Math.random();

@@ -95,8 +95,8 @@ public interface ProfilesRepository {
 
       } else {
 
-        final JsonObject value = search.result();
-        final WeNetUserProfile profile = Model.fromJsonObject(value, WeNetUserProfile.class);
+        final var value = search.result();
+        final var profile = Model.fromJsonObject(value, WeNetUserProfile.class);
         if (profile == null) {
 
           searchHandler.handle(Future.failedFuture("The stored profile is not valid."));
@@ -126,7 +126,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default void storeProfile(final WeNetUserProfile profile, final Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
 
-    final JsonObject object = profile.toJsonObject();
+    final var object = profile.toJsonObject();
     if (object == null) {
 
       storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
@@ -140,8 +140,8 @@ public interface ProfilesRepository {
 
         } else {
 
-          final JsonObject value = stored.result();
-          final WeNetUserProfile storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
+          final var value = stored.result();
+          final var storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
           if (storedProfile == null) {
 
             storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
@@ -173,7 +173,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default void updateProfile(final WeNetUserProfile profile, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final JsonObject object = profile.toJsonObjectWithEmptyValues();
+    final var object = profile.toJsonObjectWithEmptyValues();
     if (object == null) {
 
       updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
@@ -210,7 +210,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default void storeHistoricProfile(final HistoricWeNetUserProfile profile, final Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
 
-    final JsonObject object = profile.toJsonObject();
+    final var object = profile.toJsonObject();
     if (object == null) {
 
       storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
@@ -224,9 +224,9 @@ public interface ProfilesRepository {
 
         } else {
 
-          final JsonObject value = stored.result();
+          final var value = stored.result();
           value.remove("_id");
-          final HistoricWeNetUserProfile storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
+          final var storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
           if (storedProfile == null) {
 
             storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
@@ -270,8 +270,8 @@ public interface ProfilesRepository {
 
       } else {
 
-        final JsonObject value = search.result();
-        final HistoricWeNetUserProfilesPage page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
+        final var value = search.result();
+        final var page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
         if (page == null) {
 
           searchHandler.handle(Future.failedFuture("The stored page is not valid."));

@@ -234,8 +234,8 @@ public class ProfilesRepositoryTest {
         searchHandler.handle(Future.succeededFuture(new JsonObject().put("key", "value")));
       }
     };
-    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery("any identifier", 0l, 100l);
-    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+    final var query = ProfilesRepository.createProfileHistoricPageQuery("any identifier", 0l, 100l);
+    final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
     repository.searchHistoricProfilePage(query, sort, 0, 100, testContext.failing(fail -> {
       testContext.completeNow();
     }));

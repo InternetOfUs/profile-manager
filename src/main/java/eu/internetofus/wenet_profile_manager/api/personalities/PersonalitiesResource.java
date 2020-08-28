@@ -38,7 +38,6 @@ import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -81,7 +80,6 @@ public class PersonalitiesResource implements Personalities {
   public static final int[] QUESTION_FACTORS = { JUDGMENT_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, JUDGMENT_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, JUDGMENT_FACTOR,
       EXTROVERT_FACTOR, JUDGMENT_FACTOR, PERCEPTION_FACTOR, EXTROVERT_FACTOR, EXTROVERT_FACTOR, PERCEPTION_FACTOR, JUDGMENT_FACTOR, PERCEPTION_FACTOR, ATTITUDE_FACTOR, ATTITUDE_FACTOR };
 
-
   /**
    * The name of the category to store the meaning that refers to the personality.
    */
@@ -118,16 +116,16 @@ public class PersonalitiesResource implements Personalities {
   @Override
   public void calculatePersonality(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
+    final var questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
     if (questionnaireAnswers.answerValues == null || questionnaireAnswers.answerValues.size() != QUESTION_FACTORS.length) {
 
       OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
           "To calculate the personality it is necessary the " + QUESTION_FACTORS.length + " responses of the personality questionnaire test.");
     } else {
 
-      final double[] total = new double[FACTOR_NAMES.length];
-      final int[] quantity = new int[FACTOR_NAMES.length];
-      for (int index = 0; index < QUESTION_FACTORS.length; index++) {
+      final var total = new double[FACTOR_NAMES.length];
+      final var quantity = new int[FACTOR_NAMES.length];
+      for (var index = 0; index < QUESTION_FACTORS.length; index++) {
 
         final double value = questionnaireAnswers.answerValues.get(index);
         if (value < -1d || value > 1d) {
@@ -136,12 +134,12 @@ public class PersonalitiesResource implements Personalities {
           return;
 
         }
-        final int factor = QUESTION_FACTORS[index];
+        final var factor = QUESTION_FACTORS[index];
         total[factor] += value;
         quantity[factor]++;
       }
       final var personality = new ArrayList<Meaning>();
-      final StringBuilder mbti = new StringBuilder();
+      final var mbti = new StringBuilder();
       for (var i = 0; i < FACTOR_NAMES.length; i++) {
 
         if (quantity[i] > 0) {
@@ -173,8 +171,8 @@ public class PersonalitiesResource implements Personalities {
         personality.add(meaning);
 
       }
-      final JsonArray array = Model.toJsonArray(personality);
-      OperationReponseHandlers.responseOk(resultHandler,  array);
+      final var array = Model.toJsonArray(personality);
+      OperationReponseHandlers.responseOk(resultHandler, array);
 
     }
 

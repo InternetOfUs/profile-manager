@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api;
 import java.util.List;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -39,28 +40,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class Questionnaire extends Model {
+public class Questionnaire extends ReflectionModel implements Model {
 
-	/**
-	 * The name of the questionnaire.
-	 */
-	@Schema(description = "A name that identifies the questionnaire for a human", example = "Personality test")
-	public String name;
+  /**
+   * The name of the questionnaire.
+   */
+  @Schema(description = "A name that identifies the questionnaire for a human", example = "Personality test")
+  public String name;
 
-	/**
-	 * The description of the questionnaire.
-	 */
-	@Schema(
-			description = "Explains what attribute of a person it evaluates",
-			example = "With this questionnaire is possible to obtain the personality of a person.")
-	public String description;
+  /**
+   * The description of the questionnaire.
+   */
+  @Schema(description = "Explains what attribute of a person it evaluates", example = "With this questionnaire is possible to obtain the personality of a person.")
+  public String description;
 
-	/**
-	 * The questions that form the questionnaire.
-	 */
-	@ArraySchema(
-			schema = @Schema(implementation = Question.class),
-			arraySchema = @Schema(description = "The set of questions used to evaluate the person."))
-	public List<Question> questions;
+  /**
+   * The questions that form the questionnaire.
+   */
+  @ArraySchema(schema = @Schema(implementation = Question.class), arraySchema = @Schema(description = "The set of questions used to evaluate the person."))
+  public List<Question> questions;
 
 }

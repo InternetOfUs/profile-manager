@@ -59,7 +59,7 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifie
   @Override
   protected Future<Norm> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Norm norm = new Norm();
+    final var norm = new Norm();
     norm.attribute = ValidationsTest.STRING_256;
     return Future.succeededFuture(norm);
 
@@ -71,7 +71,7 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifie
   @Override
   protected Future<Norm> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
-    final Norm norm = new NormTest().createModelExample(index);
+    final var norm = new NormTest().createModelExample(index);
     return Future.succeededFuture(norm);
   }
 
@@ -79,18 +79,17 @@ public class ProfilesNormsIT extends AbstractProfileFieldManipulationByIdentifie
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final Norm source,final Norm target) {
+  protected void updateIdsTo(final Norm source, final Norm target) {
 
     target.id = source.id;
 
   }
 
-
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<Norm> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Norm> initModelsIn(final WeNetUserProfile profile) {
 
     profile.norms = new ArrayList<>();
     return profile.norms;

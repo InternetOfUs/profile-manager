@@ -59,7 +59,7 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldManipulatio
   @Override
   protected Future<Routine> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Routine model = new RoutineTest().createModelExample(1);
+    final var model = new RoutineTest().createModelExample(1);
     return Future.succeededFuture(model);
   }
 
@@ -79,7 +79,7 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<Routine> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Routine> initModelsIn(final WeNetUserProfile profile) {
 
     profile.personalBehaviors = new ArrayList<>();
     return profile.personalBehaviors;

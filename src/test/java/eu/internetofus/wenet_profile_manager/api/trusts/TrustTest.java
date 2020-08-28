@@ -37,16 +37,16 @@ import eu.internetofus.common.components.ModelTestCase;
  */
 public class TrustTest extends ModelTestCase<Trust> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Trust createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Trust createModelExample(final int index) {
 
-		final Trust model = new Trust();
-		model.value = 1.0 / Math.max(1, index + 2);
-		model.calculatedTime = index;
-		return model;
-	}
+    final var model = new Trust();
+    model.value = 1.0 / Math.max(1, index + 2);
+    model.calculatedTime = index;
+    return model;
+  }
 
 }

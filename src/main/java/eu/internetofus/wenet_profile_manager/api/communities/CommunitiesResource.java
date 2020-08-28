@@ -33,6 +33,7 @@ import org.tinylog.Logger;
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepository;
 import io.vertx.core.AsyncResult;
@@ -77,43 +78,7 @@ public class CommunitiesResource implements Communities {
   @Override
   public void createCommunity(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final CommunityProfile community = Model.fromJsonObject(body, CommunityProfile.class);
-    if (community == null) {
-
-      Logger.debug("The {} is not a valid CommunityProfile.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_community_profile", "The community profile is not right.");
-
-    } else {
-
-      community.validate("bad_community_profile", this.vertx).onComplete(validation -> {
-
-        if (validation.failed()) {
-
-          final Throwable cause = validation.cause();
-          Logger.debug(cause, "The {} is not valid.", community);
-          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-        } else {
-
-          this.repository.storeCommunity(community, stored -> {
-
-            if (stored.failed()) {
-
-              final Throwable cause = validation.cause();
-              Logger.debug(cause, "Cannot store {}.", community);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              final CommunityProfile storedCommunity = stored.result();
-              OperationReponseHandlers.responseOk(resultHandler, storedCommunity);
-
-            }
-          });
-        }
-
-      });
-    }
+    ModelResources.createModel(this.vertx, CommunityProfile.class, body, "community", this.repository::storeCommunity, context, resultHandler);
 
   }
 
@@ -123,20 +88,7 @@ public class CommunitiesResource implements Communities {
   @Override
   public void retrieveCommunity(final String id, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.repository.searchCommunityObject(id, search -> {
-
-      final JsonObject profile = search.result();
-      if (profile == null) {
-
-        Logger.debug(search.cause(), "Not found community associated to the identifier {}", id);
-        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_community", "Does not exist a community associated for the identifier '" + id + "'.");
-
-      } else {
-
-        OperationReponseHandlers.responseOk(resultHandler, profile);
-
-      }
-    });
+    ModelResources.retrieveModel(this.repository::searchCommunity, id, "community", context, resultHandler);
 
   }
 
@@ -146,7 +98,7 @@ public class CommunitiesResource implements Communities {
   @Override
   public void updateCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final CommunityProfile source = Model.fromJsonObject(body, CommunityProfile.class);
+    final var source = Model.fromJsonObject(body, CommunityProfile.class);
     if (source == null) {
 
       Logger.debug("The {} is not a valid CommunityProfile to update.", body);
@@ -156,7 +108,7 @@ public class CommunitiesResource implements Communities {
 
       this.repository.searchCommunity(id, search -> {
 
-        final CommunityProfile target = search.result();
+        final var target = search.result();
         if (target == null) {
 
           Logger.debug(search.cause(), "Not found community {} to update", id);
@@ -169,7 +121,7 @@ public class CommunitiesResource implements Communities {
 
             if (validate.failed()) {
 
-              final Throwable cause = validate.cause();
+              final var cause = validate.cause();
               Logger.debug(cause, "Cannot update {} with {}.", target, source);
               OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
@@ -189,7 +141,7 @@ public class CommunitiesResource implements Communities {
 
                   if (update.failed()) {
 
-                    final Throwable cause = update.cause();
+                    final var cause = update.cause();
                     Logger.debug(cause, "Cannot update {}.", target);
                     OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
@@ -216,63 +168,8 @@ public class CommunitiesResource implements Communities {
   @Override
   public void mergeCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final CommunityProfile source = Model.fromJsonObject(body, CommunityProfile.class);
-    if (source == null) {
+    ModelResources.mergeModel(this.vertx, id, "community", CommunityProfile.class, this.repository::searchCommunity, body, this.repository::updateCommunity, context, resultHandler);
 
-      Logger.debug("The {} is not a valid CommunityProfile to merge.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_community_to_merge", "The community to merge is not right.");
-
-    } else {
-
-      this.repository.searchCommunity(id, search -> {
-
-        final CommunityProfile target = search.result();
-        if (target == null) {
-
-          Logger.debug(search.cause(), "Not found community {} to merge", id);
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_community_to_merge", "You can not merge the community associated to the identifier '" + id + "', because it does not exist.");
-
-        } else {
-
-          target.merge(source, "bad_community", this.vertx).onComplete(merge -> {
-
-            if (merge.failed()) {
-
-              final Throwable cause = merge.cause();
-              Logger.debug(cause, "Cannot merge {} with {}.", target, source);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              final CommunityProfile merged = merge.result();
-              if (merged.equals(target)) {
-
-                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "community_to_merge_equal_to_original",
-                    "You can not merge the community of the '" + id + "', because the new values is equals to the current one.");
-
-              } else {
-
-                this.repository.updateCommunity(merged, update -> {
-
-                  if (update.failed()) {
-
-                    final Throwable cause = update.cause();
-                    Logger.debug(cause, "Cannot merge {}.", merged);
-                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-                  } else {
-
-                    target._lastUpdateTs = TimeManager.now();
-                    OperationReponseHandlers.responseOk(resultHandler, merged);
-
-                  }
-                });
-              }
-            }
-          });
-        }
-      });
-    }
   }
 
   /**
@@ -281,20 +178,7 @@ public class CommunitiesResource implements Communities {
   @Override
   public void deleteCommunity(final String id, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.repository.deleteCommunity(id, delete -> {
-
-      if (delete.failed()) {
-
-        final Throwable cause = delete.cause();
-        Logger.debug(cause, "Cannot delete the community {}.", id);
-        OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
-
-      } else {
-
-        OperationReponseHandlers.responseOk(resultHandler);
-      }
-
-    });
+    ModelResources.deleteModel(this.repository::deleteCommunity, id, "community", context, resultHandler);
 
   }
 

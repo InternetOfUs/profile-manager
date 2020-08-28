@@ -59,7 +59,7 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
   @Override
   protected Future<RelevantLocation> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final RelevantLocation relevantLocation = new RelevantLocation();
+    final var relevantLocation = new RelevantLocation();
     relevantLocation.label = ValidationsTest.STRING_1024;
     return Future.succeededFuture(relevantLocation);
 
@@ -71,7 +71,7 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
   @Override
   protected Future<RelevantLocation> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
-    final RelevantLocation model = new RelevantLocationTest().createModelExample(index);
+    final var model = new RelevantLocationTest().createModelExample(index);
     return Future.succeededFuture(model);
 
   }
@@ -80,7 +80,7 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final RelevantLocation source,final RelevantLocation target) {
+  protected void updateIdsTo(final RelevantLocation source, final RelevantLocation target) {
 
     target.id = source.id;
 
@@ -90,7 +90,7 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<RelevantLocation> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<RelevantLocation> initModelsIn(final WeNetUserProfile profile) {
 
     profile.relevantLocations = new ArrayList<>();
     return profile.relevantLocations;

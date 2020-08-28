@@ -39,20 +39,20 @@ import eu.internetofus.common.components.ModelTestCase;
  */
 public class QuestionTest extends ModelTestCase<Question> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Question createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Question createModelExample(final int index) {
 
-		final Question model = new Question();
-		model.text = "Test " + index;
-		model.help = "Help " + index;
-		model.answers = new ArrayList<Answer>();
-		model.answers.add(new AnswerTest().createModelExample(index - 1));
-		model.answers.add(new AnswerTest().createModelExample(index));
-		model.answers.add(new AnswerTest().createModelExample(index + 1));
-		return model;
-	}
+    final var model = new Question();
+    model.text = "Test " + index;
+    model.help = "Help " + index;
+    model.answers = new ArrayList<Answer>();
+    model.answers.add(new AnswerTest().createModelExample(index - 1));
+    model.answers.add(new AnswerTest().createModelExample(index));
+    model.answers.add(new AnswerTest().createModelExample(index + 1));
+    return model;
+  }
 
 }

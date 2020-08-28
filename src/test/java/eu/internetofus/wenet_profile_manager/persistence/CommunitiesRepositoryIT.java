@@ -97,7 +97,7 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldFoundCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new CommunityProfile(), testContext.succeeding(storedCommunity -> {
 
       repository.searchCommunity(storedCommunity.id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
@@ -120,7 +120,7 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldFoundCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> {
 
       repository.searchCommunityObject(storedCommunity.getString("id"), testContext.succeeding(foundCommunity -> testContext.verify(() -> {
@@ -172,10 +172,10 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldStoreCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunityProfile community = new CommunityProfile();
+    final var community = new CommunityProfile();
     community._creationTs = 0;
     community._lastUpdateTs = 1;
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity).isNotNull();
@@ -198,12 +198,12 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldStoreCommunityWithAnId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String id = UUID.randomUUID().toString();
-    final CommunityProfile community = new CommunityProfile();
+    final var id = UUID.randomUUID().toString();
+    final var community = new CommunityProfile();
     community.id = id;
     community._creationTs = 0;
     community._lastUpdateTs = 1;
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity.id).isEqualTo(id);
@@ -225,10 +225,10 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldNotStoreTwoCommunityWithTheSameId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String id = UUID.randomUUID().toString();
-    final CommunityProfile community = new CommunityProfile();
+    final var id = UUID.randomUUID().toString();
+    final var community = new CommunityProfile();
     community.id = id;
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       repository.storeCommunity(community, testContext.failing(error -> testContext.completeNow()));
@@ -248,11 +248,11 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldStoreCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     CommunitiesRepository.createProxy(vertx).storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity).isNotNull();
-      final String id = storedCommunity.getString("id");
+      final var id = storedCommunity.getString("id");
       assertThat(id).isNotEmpty();
       assertThat(storedCommunity.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
       assertThat(storedCommunity.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
@@ -272,7 +272,7 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldNotUpdateUndefinedCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunityProfile community = new CommunityProfile();
+    final var community = new CommunityProfile();
     community.id = "undefined community identifier";
     CommunitiesRepository.createProxy(vertx).updateCommunity(community, testContext.failing(failed -> {
       testContext.completeNow();
@@ -291,7 +291,7 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldNotUpdateUndefinedCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final JsonObject community = new JsonObject().put("id", "undefined community identifier");
+    final var community = new JsonObject().put("id", "undefined community identifier");
     CommunitiesRepository.createProxy(vertx).updateCommunity(community, testContext.failing(failed -> {
       testContext.completeNow();
     }));
@@ -338,13 +338,13 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldUpdateCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunityProfile community = new CommunityProfile();
+    final var community = new CommunityProfile();
     community.name = "NEW NAME";
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(community, testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final long now = TimeManager.now();
-      final CommunityProfile update = new CommunityProfileTest().createModelExample(23);
+      final var now = TimeManager.now();
+      final var update = new CommunityProfileTest().createModelExample(23);
       update.id = stored.id;
       update._creationTs = stored._creationTs;
       update._lastUpdateTs = 1;
@@ -377,11 +377,11 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldUpdateCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new JsonObject().put("nationality", "Italian"), testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final String id = stored.getString("id");
-      final JsonObject update = new JsonObject().put("id", id).put("occupation", "Unemployed");
+      final var id = stored.getString("id");
+      final var update = new JsonObject().put("id", id).put("occupation", "Unemployed");
       repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
         repository.searchCommunityObject(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
@@ -424,10 +424,10 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldDeleteCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    final CommunitiesRepository repository = CommunitiesRepository.createProxy(vertx);
+    final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new JsonObject(), testContext.succeeding(stored -> {
 
-      final String id = stored.getString("id");
+      final var id = stored.getString("id");
       repository.deleteCommunity(id, testContext.succeeding(success -> {
 
         repository.searchCommunityObject(id, testContext.failing(search -> {

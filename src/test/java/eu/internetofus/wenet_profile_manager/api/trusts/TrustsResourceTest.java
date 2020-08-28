@@ -52,7 +52,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
@@ -102,14 +101,14 @@ public class TrustsResourceTest {
   @BeforeEach
   public void registerServices(final Vertx vertx) {
 
-    final WebClient client = WebClient.create(vertx);
-    final JsonObject profileConf = profileManagerMocker.getComponentConfiguration();
+    final var client = WebClient.create(vertx);
+    final var profileConf = profileManagerMocker.getComponentConfiguration();
     WeNetProfileManager.register(vertx, client, profileConf);
 
-    final JsonObject taskConf = taskManagerMocker.getComponentConfiguration();
+    final var taskConf = taskManagerMocker.getComponentConfiguration();
     WeNetTaskManager.register(vertx, client, taskConf);
 
-    final JsonObject conf = serviceMocker.getComponentConfiguration();
+    final var conf = serviceMocker.getComponentConfiguration();
     WeNetService.register(vertx, client, conf);
     WeNetServiceSimulator.register(vertx, client, conf);
 
@@ -123,7 +122,7 @@ public class TrustsResourceTest {
    */
   public static TrustsResource createTrustsResource(final Vertx vertx) {
 
-    final TrustsResource resource = new TrustsResource(vertx);
+    final var resource = new TrustsResource(vertx);
     resource.repository = mock(TrustsRepository.class);
     return resource;
 
@@ -138,10 +137,10 @@ public class TrustsResourceTest {
   @Test
   public void shouldFailAddTrustEventBecasueRepositoryFailsToStore(final Vertx vertx, final VertxTestContext testContext) {
 
-    final TrustsResource resource = createTrustsResource(vertx);
+    final var resource = createTrustsResource(vertx);
     new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(event -> {
 
-      final OperationRequest context = mock(OperationRequest.class);
+      final var context = mock(OperationRequest.class);
       resource.addTrustEvent(event.toJsonObject(), context, testContext.succeeding(create -> testContext.verify(() -> {
 
         assertThat(create.getStatusCode()).isEqualTo(Status.INTERNAL_SERVER_ERROR.getStatusCode());

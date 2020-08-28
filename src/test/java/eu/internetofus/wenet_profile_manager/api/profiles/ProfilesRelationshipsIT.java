@@ -59,7 +59,7 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByI
   @Override
   protected Future<SocialNetworkRelationship> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final SocialNetworkRelationship model = new SocialNetworkRelantionshipTest().createModelExample(1);
+    final var model = new SocialNetworkRelantionshipTest().createModelExample(1);
     return Future.succeededFuture(model);
   }
 
@@ -79,7 +79,7 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByI
    * {@inheritDoc}
    */
   @Override
-  protected List<SocialNetworkRelationship> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<SocialNetworkRelationship> initModelsIn(final WeNetUserProfile profile) {
 
     profile.relationships = new ArrayList<>();
     return profile.relationships;

@@ -84,7 +84,7 @@ public class IntelligencesIT {
     testRequest(client, HttpMethod.GET, Intelligences.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es")).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final Questionnaire questionnaire = assertThatBodyIs(Questionnaire.class, res);
+      final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
       assertThat(questionnaire.questions).hasSize(IntelligencesResource.QUESTION_FACTORS.length);
 
     }).send(testContext);
@@ -105,7 +105,7 @@ public class IntelligencesIT {
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -124,12 +124,12 @@ public class IntelligencesIT {
   @Test
   public void shouldNotcalculateGardnerIntelligencesBecauseNotEmptyAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -148,15 +148,15 @@ public class IntelligencesIT {
   @Test
   public void shouldNotcalculateGardnerIntelligencesBecauseNotEnoughAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < IntelligencesResource.QUESTION_FACTORS.length - 1; i++) {
+    for (var i = 0; i < IntelligencesResource.QUESTION_FACTORS.length - 1; i++) {
 
       answers.answerValues.add(0d);
       testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isEqualTo("bad_number_of_answers");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -177,9 +177,9 @@ public class IntelligencesIT {
   @Test
   public void shouldNotcalculateGardnerIntelligencesBecauseTooManyAnswers(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < IntelligencesResource.QUESTION_FACTORS.length + 1; i++) {
+    for (var i = 0; i < IntelligencesResource.QUESTION_FACTORS.length + 1; i++) {
 
       answers.answerValues.add(0d);
 
@@ -188,7 +188,7 @@ public class IntelligencesIT {
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_number_of_answers");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -207,9 +207,9 @@ public class IntelligencesIT {
   @Test
   public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooLow(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < IntelligencesResource.QUESTION_FACTORS.length; i++) {
+    for (var i = 0; i < IntelligencesResource.QUESTION_FACTORS.length; i++) {
 
       answers.answerValues.add(0d);
 
@@ -220,7 +220,7 @@ public class IntelligencesIT {
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_answer_value_at_7");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -239,9 +239,9 @@ public class IntelligencesIT {
   @Test
   public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooHigh(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    for (int i = 0; i < IntelligencesResource.QUESTION_FACTORS.length; i++) {
+    for (var i = 0; i < IntelligencesResource.QUESTION_FACTORS.length; i++) {
 
       answers.answerValues.add(0d);
 
@@ -252,7 +252,7 @@ public class IntelligencesIT {
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isEqualTo("bad_answer_value_at_17");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -271,7 +271,7 @@ public class IntelligencesIT {
   @Test
   public void shouldcalculateGardnerIntelligences(final WebClient client, final VertxTestContext testContext) {
 
-    final QuestionnaireAnswers answers = new QuestionnaireAnswers();
+    final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
     Collections.addAll(answers.answerValues, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d, 1d, 0.5d, 1d, 1d, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d);
 

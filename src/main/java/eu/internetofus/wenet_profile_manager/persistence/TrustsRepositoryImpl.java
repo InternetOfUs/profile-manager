@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import java.util.List;
-
 import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
@@ -88,7 +86,7 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   @Override
   public void storeTrustEvent(final JsonObject event, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     event.put("reportTime", now);
     this.pool.save(TRUSTS_COLLECTION, event, store -> {
 
@@ -144,7 +142,7 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
    */
   protected JsonObject createMongoAggregationWith(final String aggregator, final JsonObject query) {
 
-    final JsonArray pipeline = new JsonArray();
+    final var pipeline = new JsonArray();
     pipeline.add(new JsonObject().put("$match", query));
     pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$" + aggregator, "$rating"))));
     return new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
@@ -170,10 +168,10 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
         final JsonObject result = aggregation.result();
         try {
 
-          final JsonObject cursor = result.getJsonObject("cursor");
-          final JsonArray firstBatch = cursor.getJsonArray("firstBatch");
-          final JsonObject batch = firstBatch.getJsonObject(0);
-          final Double trust = batch.getDouble("trust");
+          final var cursor = result.getJsonObject("cursor");
+          final var firstBatch = cursor.getJsonArray("firstBatch");
+          final var batch = firstBatch.getJsonObject(0);
+          final var trust = batch.getDouble("trust");
           trustHandler.handle(Future.succeededFuture(trust));
 
         } catch (final Throwable error) {
@@ -185,7 +183,6 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
     });
 
   }
-
 
   /**
    * Calculate the median trust.
@@ -209,8 +206,8 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
           trustHandler.handle(Future.failedFuture("No events match the query."));
 
         } else {
-          final FindOptions options = new FindOptions();
-          final int skip = (int) Math.round(total / 2.0 - 1);
+          final var options = new FindOptions();
+          final var skip = (int) Math.round(total / 2.0 - 1);
           options.setSkip(skip);
           options.setLimit(1);
           options.setSort(new JsonObject().put("rating", 1));
@@ -222,7 +219,7 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
 
             } else {
 
-              final List<JsonObject> events = find.result();
+              final var events = find.result();
               final double trust = events.get(0).getDouble("rating");
               trustHandler.handle(Future.succeededFuture(trust));
             }
@@ -242,12 +239,12 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
    */
   protected void calculateRecencyBasedTrust(final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
 
-    final JsonArray pipeline = new JsonArray();
+    final var pipeline = new JsonArray();
     pipeline.add(new JsonObject().put("$match", query));
     pipeline.add(new JsonObject().put("$sort", new JsonObject().put("reportTime", -1)));
     pipeline.add(new JsonObject().put("$limit", this.n));
     pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$avg", "$rating"))));
-    final JsonObject command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
+    final var command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
     this.processAggregation(command, trustHandler);
   }
 

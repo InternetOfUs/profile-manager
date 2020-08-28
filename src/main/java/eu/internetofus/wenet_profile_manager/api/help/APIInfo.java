@@ -26,6 +26,7 @@
 package eu.internetofus.wenet_profile_manager.api.help;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -34,7 +35,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(name = "Info", description = "Provide the version information of the API")
-public class APIInfo extends Model {
+public class APIInfo extends ReflectionModel implements Model {
 
   /**
    * The current version of the API.

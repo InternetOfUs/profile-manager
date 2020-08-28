@@ -37,16 +37,16 @@ import eu.internetofus.common.components.ModelTestCase;
  */
 public class AnswerTest extends ModelTestCase<Answer> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Answer createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Answer createModelExample(final int index) {
 
-		final Answer model = new Answer();
-		model.text = "Test " + index;
-		model.value = index;
-		return model;
-	}
+    final var model = new Answer();
+    model.text = "Test " + index;
+    model.value = index;
+    return model;
+  }
 
 }

@@ -77,7 +77,7 @@ public class TrustsIT {
     testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -96,11 +96,11 @@ public class TrustsIT {
   @Test
   public void shouldNotAddBadEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final UserPerformanceRatingEvent event = new UserPerformanceRatingEventTest().createModelExample(1);
+    final var event = new UserPerformanceRatingEventTest().createModelExample(1);
     testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty().endsWith(".sourceId");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -122,11 +122,11 @@ public class TrustsIT {
 
     new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(event -> {
 
-      final long time = TimeManager.now();
+      final var time = TimeManager.now();
       testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
-        final UserPerformanceRatingEvent stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
+        final var stored = assertThatBodyIs(UserPerformanceRatingEvent.class, res);
         assertThat(stored).isNotNull();
         assertThat(stored.reportTime).isGreaterThanOrEqualTo(time);
         event.reportTime = stored.reportTime;
@@ -156,7 +156,7 @@ public class TrustsIT {
     testRequest(client, HttpMethod.GET, Trusts.PATH + "/1/with/2").with(queryParam("aggregator", aggregator.name()), queryParam("appId", "/1(?:{/")).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -178,11 +178,11 @@ public class TrustsIT {
   @EnumSource(TrustAggregator.class)
   public void shouldNotCalculateTrustWithNoMatchingEvents(final TrustAggregator aggregator, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final String id = UUID.randomUUID().toString();
+    final var id = UUID.randomUUID().toString();
     testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + id + "/with/" + id).with(queryParam("aggregator", aggregator.name())).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -205,8 +205,8 @@ public class TrustsIT {
   @CsvSource(value = { "MAXIMUM,1.0", "MINIMUM,0.0", "AVERAGE,0.5", "MEDIAN,0.5", "RECENCY_BASED,0.5" })
   public void shouldCalculateTrust(final String aggregatorName, final String value, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final TrustAggregator aggregator = TrustAggregator.valueOf(aggregatorName);
-    final double expectedTrust = Double.parseDouble(value);
+    final var aggregator = TrustAggregator.valueOf(aggregatorName);
+    final var expectedTrust = Double.parseDouble(value);
     TrustsRepositoryIT.storeMultipleTamesAnUserPerformanceRatingEvent(5, vertx, testContext, (index, event) -> {
       if (index % 2 == 0) {
 
@@ -218,12 +218,12 @@ public class TrustsIT {
       }
     }).onComplete(testContext.succeeding(events -> {
 
-      final long now = TimeManager.now();
-      final UserPerformanceRatingEvent event0 = events.get(0);
+      final var now = TimeManager.now();
+      final var event0 = events.get(0);
       testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + event0.sourceId + "/with/" + event0.targetId).with(queryParam("aggregator", aggregator.name())).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final Trust trust = assertThatBodyIs(Trust.class, res);
+        final var trust = assertThatBodyIs(Trust.class, res);
         assertThat(trust.value).isNotNull();
         assertThat(trust.value.doubleValue()).isEqualTo(expectedTrust, offset(0.0000000001d));
         assertThat(trust.calculatedTime).isGreaterThanOrEqualTo(now);

@@ -39,18 +39,18 @@ import eu.internetofus.common.components.ModelTestCase;
  */
 public class HistoricWeNetUserProfilesPageTest extends ModelTestCase<HistoricWeNetUserProfilesPage> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public HistoricWeNetUserProfilesPage createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public HistoricWeNetUserProfilesPage createModelExample(final int index) {
 
-		final HistoricWeNetUserProfilesPage model = new HistoricWeNetUserProfilesPage();
-		model.offset = index;
-		model.total = 100 + index;
-		model.profiles = new ArrayList<>();
-		model.profiles.add(new HistoricWeNetUserProfileTest().createModelExample(index));
-		return model;
-	}
+    final var model = new HistoricWeNetUserProfilesPage();
+    model.offset = index;
+    model.total = 100 + index;
+    model.profiles = new ArrayList<>();
+    model.profiles.add(new HistoricWeNetUserProfileTest().createModelExample(index));
+    return model;
+  }
 
 }

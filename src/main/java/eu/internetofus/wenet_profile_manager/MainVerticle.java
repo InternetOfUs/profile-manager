@@ -33,21 +33,20 @@ import eu.internetofus.wenet_profile_manager.services.ServicesVerticle;
 import io.vertx.core.AbstractVerticle;
 
 /**
- * The Main verticle that deploy the necessary verticles for the WeNet profile
- * manager.
+ * The Main verticle that deploy the necessary verticles for the WeNet profile manager.
  *
  * @author UDT-IA, IIIA-CSIC
  */
 public class MainVerticle extends AbstractMainVerticle {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected Class<? extends AbstractVerticle>[] getVerticleClassesToDeploy() {
+  /**
+   * {@inheritDoc}
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  protected Class<? extends AbstractVerticle>[] getVerticleClassesToDeploy() {
 
-		return new Class[] { ServicesVerticle.class, PersistenceVerticle.class, APIVerticle.class };
-	}
+    return new Class[] { ServicesVerticle.class, PersistenceVerticle.class, APIVerticle.class };
+  }
 
 }

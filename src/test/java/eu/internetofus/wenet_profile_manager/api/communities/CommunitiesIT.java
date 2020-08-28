@@ -74,7 +74,7 @@ public class CommunitiesIT {
     testRequest(client, HttpMethod.GET, Communities.PATH + "/undefined-community-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -122,8 +122,8 @@ public class CommunitiesIT {
     testRequest(client, HttpMethod.POST, Communities.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty().isEqualTo("bad_community_profile");
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty().isEqualTo("bad_community");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
     }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
@@ -147,8 +147,8 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.POST, Communities.PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty().isEqualTo("bad_community_profile.id");
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty().isEqualTo("bad_community.id");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
       }).sendJson(community.toJsonObject(), testContext);
@@ -173,7 +173,7 @@ public class CommunitiesIT {
       community.id = null;
       testRequest(client, HttpMethod.POST, Communities.PATH).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
         final var stored = assertThatBodyIs(CommunityProfile.class, res);
         assertThat(stored).isNotNull().isNotEqualTo(community);
         community.id = stored.id;
@@ -216,7 +216,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PUT, Communities.PATH + "/undefined-community-identifier").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -243,7 +243,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PUT, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -266,13 +266,13 @@ public class CommunitiesIT {
 
     StoreServices.storeCommunityExample(1, vertx, testContext, testContext.succeeding(community -> {
 
-      final CommunityProfile newCommunity = new CommunityProfile();
+      final var newCommunity = new CommunityProfile();
       newCommunity.appId = community.appId;
       newCommunity.name = ValidationsTest.STRING_256;
       testRequest(client, HttpMethod.PUT, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().contains("name");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -298,7 +298,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PUT, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isEqualTo("community_to_update_equal_to_original");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -326,7 +326,7 @@ public class CommunitiesIT {
         testRequest(client, HttpMethod.PUT, Communities.PATH + "/" + storedCommunity.id).expect(res -> testContext.verify(() -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final CommunityProfile updated = assertThatBodyIs(CommunityProfile.class, res);
+          final var updated = assertThatBodyIs(CommunityProfile.class, res);
           assertThat(updated).isNotEqualTo(storedCommunity).isNotEqualTo(newCommunity);
           newCommunity.id = storedCommunity.id;
           newCommunity._creationTs = storedCommunity._creationTs;
@@ -364,7 +364,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PATCH, Communities.PATH + "/undefined-community-identifier").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -390,7 +390,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PATCH, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -416,7 +416,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PATCH, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -443,7 +443,7 @@ public class CommunitiesIT {
       testRequest(client, HttpMethod.PATCH, Communities.PATH + "/" + community.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().endsWith(".name");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -471,7 +471,7 @@ public class CommunitiesIT {
         testRequest(client, HttpMethod.PATCH, Communities.PATH + "/" + target.id).expect(res -> testContext.verify(() -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final CommunityProfile merged = assertThatBodyIs(CommunityProfile.class, res);
+          final var merged = assertThatBodyIs(CommunityProfile.class, res);
           assertThat(merged).isNotEqualTo(target).isNotEqualTo(source);
           source.id = target.id;
           source._creationTs = target._creationTs;
@@ -502,7 +502,7 @@ public class CommunitiesIT {
     testRequest(client, HttpMethod.DELETE, Communities.PATH + "/undefined-community-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 

@@ -38,17 +38,17 @@ import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
  */
 public class HistoricWeNetUserProfileTest extends ModelTestCase<HistoricWeNetUserProfile> {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public HistoricWeNetUserProfile createModelExample(int index) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public HistoricWeNetUserProfile createModelExample(final int index) {
 
-		final HistoricWeNetUserProfile model = new HistoricWeNetUserProfile();
-		model.from = index;
-		model.to = 10 + index;
-		model.profile = new WeNetUserProfileTest().createBasicExample(index);
-		return model;
-	}
+    final var model = new HistoricWeNetUserProfile();
+    model.from = index;
+    model.to = 10 + index;
+    model.profile = new WeNetUserProfileTest().createBasicExample(index);
+    return model;
+  }
 
 }

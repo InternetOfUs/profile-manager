@@ -52,6 +52,7 @@ import eu.internetofus.common.components.profile_manager.Routine;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
+import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
@@ -104,20 +105,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void retrieveProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.repository.searchProfileObject(userId, search -> {
+    ModelResources.retrieveModel(this.repository::searchProfile, userId, "profile", context, resultHandler);
 
-      final JsonObject profile = search.result();
-      if (profile == null) {
-
-        Logger.debug(search.cause(), "Not found profile for the user {}", userId);
-        OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile", "Does not exist a profile associated for the user '" + userId + "'.");
-
-      } else {
-
-        OperationReponseHandlers.responseOk(resultHandler, profile);
-
-      }
-    });
   }
 
   /**
@@ -126,55 +115,23 @@ public class ProfilesResource implements Profiles {
   @Override
   public void createProfile(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final WeNetUserProfile profile = Model.fromJsonObject(body, WeNetUserProfile.class);
-    if (profile == null) {
+    ModelResources.createModel(this.vertx, WeNetUserProfile.class, body, "profile", this.repository::storeProfile, context, resultHandler, storedModel -> {
 
-      Logger.debug("The {} is not a valid WeNetUserProfile.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile", "The profile is not right.");
+      OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedModel);
 
-    } else {
+      // Update the social context of the created user
+      WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(storedModel.id, retrieve -> {
 
-      profile.validate("bad_profile", this.vertx).onComplete(validation -> {
+        if (retrieve.failed()) {
 
-        if (validation.failed()) {
-
-          final Throwable cause = validation.cause();
-          Logger.debug(cause, "The {} is not valid.", profile);
-          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+          Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", storedModel);
 
         } else {
 
-          this.repository.storeProfile(profile, stored -> {
-
-            if (stored.failed()) {
-
-              final Throwable cause = validation.cause();
-              Logger.debug(cause, "Cannot store {}.", profile);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              final WeNetUserProfile storedProfile = stored.result();
-              OperationReponseHandlers.responseOk(resultHandler, storedProfile);
-
-              // Update the social context of the created user
-              WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(storedProfile.id, retrieve -> {
-
-                if (retrieve.failed()) {
-
-                  Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", storedProfile);
-
-                } else {
-
-                  Logger.trace("Obtained for the user {} the next social relations {}.", () -> storedProfile.id, () -> retrieve.result());
-                }
-              });
-            }
-          });
+          Logger.trace("Obtained for the user {} the next social relations {}.", () -> storedModel.id, () -> retrieve.result());
         }
-
       });
-    }
+    });
 
   }
 
@@ -184,7 +141,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
+    final var source = Model.fromJsonObject(body, WeNetUserProfile.class);
     if (source == null) {
 
       Logger.debug("The {} is not a valid WeNetUserProfile to update.", body);
@@ -194,7 +151,7 @@ public class ProfilesResource implements Profiles {
 
       this.repository.searchProfile(userId, search -> {
 
-        final WeNetUserProfile target = search.result();
+        final var target = search.result();
         if (target == null) {
 
           Logger.debug(search.cause(), "Not found profile {} to update", userId);
@@ -207,7 +164,7 @@ public class ProfilesResource implements Profiles {
 
             if (validate.failed()) {
 
-              final Throwable cause = validate.cause();
+              final var cause = validate.cause();
               Logger.debug(cause, "Cannot update {} with {}.", target, source);
               OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
@@ -227,13 +184,13 @@ public class ProfilesResource implements Profiles {
 
                   if (update.failed()) {
 
-                    final Throwable cause = update.cause();
+                    final var cause = update.cause();
                     Logger.debug(cause, "Cannot update {}.", target);
                     OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
                   } else {
 
-                    final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+                    final var historic = new HistoricWeNetUserProfile();
                     historic.from = target._lastUpdateTs;
                     historic.to = TimeManager.now();
                     historic.profile = target;
@@ -264,72 +221,23 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final WeNetUserProfile source = Model.fromJsonObject(body, WeNetUserProfile.class);
-    if (source == null) {
+    ModelResources.mergeModel(this.vertx, userId, "profile", WeNetUserProfile.class, this.repository::searchProfile, body, this.repository::updateProfile, context, resultHandler, (source, target, merged) -> {
 
-      Logger.debug("The {} is not a valid WeNetUserProfile to merge.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_merge", "The profile to merge is not right.");
+      final var historic = new HistoricWeNetUserProfile();
+      historic.from = target._lastUpdateTs;
+      historic.to = TimeManager.now();
+      historic.profile = target;
+      this.repository.storeHistoricProfile(historic, store -> {
 
-    } else {
+        if (store.failed()) {
 
-      this.repository.searchProfile(userId, search -> {
-
-        final WeNetUserProfile target = search.result();
-        if (target == null) {
-
-          Logger.debug(search.cause(), "Not found profile {} to update", userId);
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile_to_merge", "You can not merge the profile of the user '" + userId + "', because it does not exist.");
-
-        } else {
-
-          target.merge(source, "bad_profile", this.vertx).onComplete(merge -> {
-
-            if (merge.failed()) {
-
-              final Throwable cause = merge.cause();
-              Logger.debug(cause, "Cannot merge {} with {}.", target, source);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              final WeNetUserProfile merged = merge.result();
-              if (merged.equals(target)) {
-
-                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "profile_to_merge_equal_to_original",
-                    "You can not merge the profile of the user '" + userId + "', because the new values is equals to the current one.");
-
-              } else {
-                this.repository.updateProfile(merged, update -> {
-
-                  if (update.failed()) {
-
-                    final Throwable cause = update.cause();
-                    Logger.debug(cause, "Cannot merge {}.", target);
-                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-                  } else {
-
-                    final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
-                    historic.from = target._lastUpdateTs;
-                    historic.to = TimeManager.now();
-                    historic.profile = target;
-                    this.repository.storeHistoricProfile(historic, store -> {
-
-                      if (store.failed()) {
-
-                        Logger.debug(store.cause(), "Cannot store the merged profile as historic.");
-                      }
-                      OperationReponseHandlers.responseOk(resultHandler, merged);
-
-                    });
-                  }
-                });
-              }
-            }
-          });
+          Logger.debug(store.cause(), "Cannot store the merged profile as historic.");
         }
+        OperationReponseHandlers.responseOk(resultHandler, merged);
+
       });
-    }
+
+    });
 
   }
 
@@ -339,20 +247,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void deleteProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.repository.deleteProfile(userId, delete -> {
-
-      if (delete.failed()) {
-
-        final Throwable cause = delete.cause();
-        Logger.debug(cause, "Cannot delete the profile of the user {}.", userId);
-        OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
-
-      } else {
-
-        OperationReponseHandlers.responseOk(resultHandler);
-      }
-
-    });
+    ModelResources.deleteModel(this.repository::deleteProfile, userId, "profile", context, resultHandler);
 
   }
 
@@ -363,19 +258,19 @@ public class ProfilesResource implements Profiles {
   public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order, final int offset, final int limit, final OperationRequest context,
       final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
-    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort(order);
+    final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
+    final var sort = ProfilesRepository.createProfileHistoricPageSort(order);
     this.repository.searchHistoricProfilePage(query, sort, offset, limit, search -> {
 
       if (search.failed()) {
 
-        final Throwable cause = search.cause();
+        final var cause = search.cause();
         Logger.debug(cause, "Cannot found historic profile for the user {}.", userId);
         OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
       } else {
 
-        final HistoricWeNetUserProfilesPage page = search.result();
+        final var page = search.result();
         if (page.total == 0l) {
 
           OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found", "Not found any historic profile that match to the specific parameters.");
@@ -394,7 +289,7 @@ public class ProfilesResource implements Profiles {
    *
    * @param type          of model to validate.
    * @param value         of the model to verify.
-   * @param modelName     name of teh type.
+   * @param modelName     name of the type.
    * @param resultHandler handler for the http response.
    * @param success       component to call if the model is valid.
    *
@@ -402,7 +297,7 @@ public class ProfilesResource implements Profiles {
    */
   protected <T extends Model & Validable> void validate(final Class<T> type, final JsonObject value, final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler, final Consumer<T> success) {
 
-    final T model = Model.fromJsonObject(value, type);
+    final var model = Model.fromJsonObject(value, type);
     if (model == null) {
 
       Logger.debug("The JSON {} does not represents a {}.", value, modelName);
@@ -410,12 +305,12 @@ public class ProfilesResource implements Profiles {
 
     } else {
 
-      final String codePrefix = "bad_" + modelName;
+      final var codePrefix = "bad_" + modelName;
       model.validate(codePrefix, this.vertx).onComplete(valid -> {
 
         if (valid.failed()) {
 
-          final Throwable cause = valid.cause();
+          final var cause = valid.cause();
           Logger.debug(cause, "The {} is not a valid {}.", model, modelName);
           OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
@@ -439,7 +334,7 @@ public class ProfilesResource implements Profiles {
 
     this.repository.searchProfile(userId, search -> {
 
-      final WeNetUserProfile target = search.result();
+      final var target = search.result();
       if (target == null) {
 
         OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "profile_not_defined", "Does not exist a profile associated to the user identifier.");
@@ -466,13 +361,13 @@ public class ProfilesResource implements Profiles {
 
       if (update.failed()) {
 
-        final Throwable cause = update.cause();
+        final var cause = update.cause();
         Logger.debug(cause, "Cannot update profile {}.", profile);
         OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
       } else {
 
-        final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+        final var historic = new HistoricWeNetUserProfile();
         historic.from = original._lastUpdateTs;
         historic.to = TimeManager.now();
         historic.profile = original;
@@ -510,8 +405,8 @@ public class ProfilesResource implements Profiles {
 
       this.searchProfile(userId, resultHandler, profile -> {
 
-        final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-        List<T> models = getModels.apply(newProfile);
+        final var newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+        var models = getModels.apply(newProfile);
         if (models == null) {
 
           models = new ArrayList<>();
@@ -571,7 +466,7 @@ public class ProfilesResource implements Profiles {
 
     this.searchProfile(userId, resultHandler, profile -> {
 
-      final List<T> models = modelsIn.apply(profile);
+      final var models = modelsIn.apply(profile);
       JsonArray array = null;
       if (models != null) {
 
@@ -613,7 +508,7 @@ public class ProfilesResource implements Profiles {
 
     return profile -> {
 
-      final List<T> models = modelsIn.apply(profile);
+      final var models = modelsIn.apply(profile);
       if (models != null) {
 
         for (final T model : models) {
@@ -647,7 +542,7 @@ public class ProfilesResource implements Profiles {
 
     this.searchProfile(userId, resultHandler, profile -> {
 
-      final T model = seachModel.apply(profile);
+      final var model = seachModel.apply(profile);
       if (model == null) {
 
         OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, modelName + "_not_defined", "Does not exist in the profile a " + modelName + " with the identifier.");
@@ -688,10 +583,10 @@ public class ProfilesResource implements Profiles {
 
       if (models != null) {
 
-        final int max = models.size();
-        for (int i = 0; i < max; i++) {
+        final var max = models.size();
+        for (var i = 0; i < max; i++) {
 
-          final T model = models.get(i);
+          final var model = models.get(i);
           if (checkId.test(model)) {
 
             return i;
@@ -726,14 +621,14 @@ public class ProfilesResource implements Profiles {
 
       this.searchProfile(userId, resultHandler, profile -> {
 
-        final List<T> models = modelsIn.apply(profile);
+        final var models = modelsIn.apply(profile);
         if (models != null) {
 
           final int index = modelIndex.apply(models);
           if (index > -1) {
 
-            final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-            final List<T> newProfileModels = modelsIn.apply(newProfile);
+            final var newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+            final var newProfileModels = modelsIn.apply(newProfile);
             newProfileModels.remove(index);
             newProfileModels.add(index, model);
             this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, model));
@@ -775,7 +670,7 @@ public class ProfilesResource implements Profiles {
   protected <T extends Model & Mergeable<T>> void mergeModelFromProfile(final String userId, final JsonObject value, final Class<T> type, final Function<WeNetUserProfile, List<T>> modelsIn, final Function<List<T>, Integer> modelIndex,
       final String modelName, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final T source = Model.fromJsonObject(value, type);
+    final var source = Model.fromJsonObject(value, type);
     if (source == null) {
 
       Logger.debug("The JSON {} does not represents a {}.", value, modelName);
@@ -785,25 +680,25 @@ public class ProfilesResource implements Profiles {
 
       this.searchProfile(userId, resultHandler, profile -> {
 
-        final List<T> models = modelsIn.apply(profile);
+        final var models = modelsIn.apply(profile);
         if (models != null) {
 
           final int index = modelIndex.apply(models);
           if (index > -1) {
 
-            final T target = models.get(index);
+            final var target = models.get(index);
             target.merge(source, "bad_" + modelName, this.vertx).onComplete(merge -> {
               if (merge.failed()) {
 
-                final Throwable cause = merge.cause();
+                final var cause = merge.cause();
                 Logger.debug(cause, "The {} can not be merged with {}.", source, target);
                 OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
               } else {
 
-                final T merged = merge.result();
-                final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-                final List<T> newProfileModels = modelsIn.apply(newProfile);
+                final var merged = merge.result();
+                final var newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+                final var newProfileModels = modelsIn.apply(newProfile);
                 newProfileModels.remove(index);
                 newProfileModels.add(index, merged);
                 this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler, merged));
@@ -845,14 +740,14 @@ public class ProfilesResource implements Profiles {
 
     this.searchProfile(userId, resultHandler, profile -> {
 
-      final List<T> models = modelsIn.apply(profile);
+      final var models = modelsIn.apply(profile);
       if (models != null) {
 
         final int index = modelIndex.apply(models);
         if (index > -1) {
 
-          final WeNetUserProfile newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
-          final List<T> newProfileModels = modelsIn.apply(newProfile);
+          final var newProfile = Model.fromJsonObject(profile.toJsonObject(), WeNetUserProfile.class);
+          final var newProfileModels = modelsIn.apply(newProfile);
           newProfileModels.remove(index);
           this.updateProfile(profile, newProfile, resultHandler, () -> OperationReponseHandlers.responseOk(resultHandler));
           return;
@@ -1036,7 +931,7 @@ public class ProfilesResource implements Profiles {
 
     return profile -> {
 
-      final List<T> models = modelsIn.apply(profile);
+      final var models = modelsIn.apply(profile);
       if (models != null && index > -1 && index < models.size()) {
 
         return models.get(index);
@@ -1170,8 +1065,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addMaterial(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.addModelToProfile(Material.class, body, "material", userId, profile -> profile.materials, (profile, materials) -> profile.materials = materials,
-        (material1, material2) -> material1.equals(material2), resultHandler);
+    this.addModelToProfile(Material.class, body, "material", userId, profile -> profile.materials, (profile, materials) -> profile.materials = materials, (material1, material2) -> material1.equals(material2), resultHandler);
 
   }
 
@@ -1230,8 +1124,8 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addCompetence(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.addModelToProfile(Competence.class, body, "competence", userId, profile -> profile.competences, (profile, competences) -> profile.competences = competences,
-        (competence1, competence2) -> competence1.equals(competence2), resultHandler);
+    this.addModelToProfile(Competence.class, body, "competence", userId, profile -> profile.competences, (profile, competences) -> profile.competences = competences, (competence1, competence2) -> competence1.equals(competence2),
+        resultHandler);
 
   }
 
@@ -1290,8 +1184,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void addMeaning(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    this.addModelToProfile(Meaning.class, body, "meaning", userId, profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings,
-        (meaning1, meaning2) -> meaning1.equals(meaning2), resultHandler);
+    this.addModelToProfile(Meaning.class, body, "meaning", userId, profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings, (meaning1, meaning2) -> meaning1.equals(meaning2), resultHandler);
 
   }
 

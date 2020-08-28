@@ -67,32 +67,9 @@ public class ProfilesResourceTest {
    */
   public static ProfilesResource createProfilesResource() {
 
-    final ProfilesResource resource = new ProfilesResource();
+    final var resource = new ProfilesResource();
     resource.repository = mock(ProfilesRepository.class);
     return resource;
-
-  }
-
-  /**
-   * Check fail create profile because repository can not store it.
-   *
-   * @param testContext test context.
-   */
-  @Test
-  public void shouldFailCreateProfileBecasueRepositoryFailsToStore(final VertxTestContext testContext) {
-
-    final ProfilesResource resource = createProfilesResource();
-    final OperationRequest context = mock(OperationRequest.class);
-    resource.createProfile(new JsonObject(), context, testContext.succeeding(create -> {
-
-      assertThat(create.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      testContext.completeNow();
-    }));
-
-    @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<WeNetUserProfile>>> storeHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(resource.repository, timeout(30000).times(1)).storeProfile(any(), storeHandler.capture());
-    storeHandler.getValue().handle(Future.failedFuture("Store profile error"));
 
   }
 
@@ -104,8 +81,8 @@ public class ProfilesResourceTest {
   @Test
   public void shouldFailUpdateProfileBecasueRepositoryFailsToUpdate(final VertxTestContext testContext) {
 
-    final ProfilesResource resource = createProfilesResource();
-    final OperationRequest context = mock(OperationRequest.class);
+    final var resource = createProfilesResource();
+    final var context = mock(OperationRequest.class);
     resource.updateProfile("userId", new JsonObject().put("name", new JsonObject().put("first", "John")), context, testContext.succeeding(update -> {
 
       assertThat(update.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
@@ -131,8 +108,8 @@ public class ProfilesResourceTest {
   @Test
   public void shouldUpdateProfileButFailStoreHistoric(final VertxTestContext testContext) {
 
-    final ProfilesResource resource = createProfilesResource();
-    final OperationRequest context = mock(OperationRequest.class);
+    final var resource = createProfilesResource();
+    final var context = mock(OperationRequest.class);
     resource.updateProfile("userId", new JsonObject().put("name", new JsonObject().put("first", "John")), context, testContext.succeeding(update -> {
 
       assertThat(update.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
@@ -162,8 +139,8 @@ public class ProfilesResourceTest {
   @Test
   public void shouldFailRetrieveProfileHistoricPageBecasueRepositoryFailsToStore(final VertxTestContext testContext) {
 
-    final ProfilesResource resource = createProfilesResource();
-    final OperationRequest context = mock(OperationRequest.class);
+    final var resource = createProfilesResource();
+    final var context = mock(OperationRequest.class);
     doReturn(new JsonObject()).when(context).getParams();
     resource.retrieveProfileHistoricPage("userId", 0L, Long.MAX_VALUE, "-", 0, 10, context, testContext.succeeding(create -> {
 

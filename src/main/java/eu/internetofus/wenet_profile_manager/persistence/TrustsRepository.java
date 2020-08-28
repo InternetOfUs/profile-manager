@@ -87,7 +87,7 @@ public interface TrustsRepository {
   @GenIgnore
   default void storeTrustEvent(final UserPerformanceRatingEvent event, final Handler<AsyncResult<UserPerformanceRatingEvent>> storeHandler) {
 
-    final JsonObject object = event.toJsonObject();
+    final var object = event.toJsonObject();
     if (object == null) {
 
       storeHandler.handle(Future.failedFuture("The event can not converted to JSON."));
@@ -101,8 +101,8 @@ public interface TrustsRepository {
 
         } else {
 
-          final JsonObject value = stored.result();
-          final UserPerformanceRatingEvent storedEvent = Model.fromJsonObject(value, UserPerformanceRatingEvent.class);
+          final var value = stored.result();
+          final var storedEvent = Model.fromJsonObject(value, UserPerformanceRatingEvent.class);
           if (storedEvent == null) {
 
             storeHandler.handle(Future.failedFuture("The stored event is not valid."));

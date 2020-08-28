@@ -30,7 +30,6 @@ import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
@@ -50,7 +49,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
-import io.vertx.junit5.Checkpoint;
 import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxTestContext;
 
@@ -88,7 +86,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
     testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/1").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -113,7 +111,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/10000000").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -140,7 +138,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -167,9 +165,9 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final T retrievedmodel = assertThatBodyIs(this.modelClass(), res);
-        final List<T> models = this.modelsIn(profile);
-        final T model = models.get(0);
+        final var retrievedmodel = assertThatBodyIs(this.modelClass(), res);
+        final var models = this.modelsIn(profile);
+        final var model = models.get(0);
         assertThat(retrievedmodel).isEqualTo(model);
 
       }).send(testContext);
@@ -193,7 +191,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -220,7 +218,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -249,7 +247,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -277,7 +275,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/100000").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -305,31 +303,31 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
 
       this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(target -> {
 
-        final Checkpoint checkpoint = testContext.checkpoint(2);
+        final var checkpoint = testContext.checkpoint(2);
         testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final T updatedModel = assertThatBodyIs(this.modelClass(), res);
+          final var updatedModel = assertThatBodyIs(this.modelClass(), res);
           assertThat(updatedModel).isEqualTo(target);
           ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(updatedProfile -> {
 
-            final List<T> updatedModels = this.modelsIn(updatedProfile);
-            final List<T> models = this.modelsIn(profile);
-            final T source = models.get(0);
+            final var updatedModels = this.modelsIn(updatedProfile);
+            final var models = this.modelsIn(profile);
+            final var source = models.get(0);
             assertThat(updatedModels).contains(updatedModel).doesNotContain(source);
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isNotNull();
-              final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+              final var historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
               assertThat(historicProfile).isEqualTo(profile);
 
-            }).send(testContext,checkpoint);
+            }).send(testContext, checkpoint);
 
           }));
 
-        }).sendJson(target.toJsonObject(), testContext,checkpoint);
+        }).sendJson(target.toJsonObject(), testContext, checkpoint);
 
       }));
 
@@ -354,7 +352,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -382,7 +380,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/100000").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -412,7 +410,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/badIndex").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -442,7 +440,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -469,7 +467,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -496,7 +494,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
         testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-          final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
           assertThat(error.code).isNotEmpty();
           assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -524,31 +522,31 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
 
       this.createValidModel(2, vertx, testContext).onComplete(testContext.succeeding(target -> {
 
-        final Checkpoint checkpoint = testContext.checkpoint(2);
+        final var checkpoint = testContext.checkpoint(2);
         testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final T mergedModel = assertThatBodyIs(this.modelClass(), res);
+          final var mergedModel = assertThatBodyIs(this.modelClass(), res);
           assertThat(mergedModel).isEqualTo(target);
           ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(mergedProfile -> {
 
-            final List<T> mergedModels = this.modelsIn(mergedProfile);
-            final List<T> models = this.modelsIn(profile);
-            final T source = models.get(0);
+            final var mergedModels = this.modelsIn(mergedProfile);
+            final var models = this.modelsIn(profile);
+            final var source = models.get(0);
             assertThat(mergedModels).contains(mergedModel).doesNotContain(source);
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isNotNull();
-              final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+              final var historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
               assertThat(historicProfile).isEqualTo(profile);
 
-            }).send(testContext,checkpoint);
+            }).send(testContext, checkpoint);
 
           }));
 
-        }).sendJson(target.toJsonObject(), testContext,checkpoint);
+        }).sendJson(target.toJsonObject(), testContext, checkpoint);
 
       }));
 
@@ -571,7 +569,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
     testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/undefinedProfileIdentifier" + this.fieldPath() + "/0").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -595,7 +593,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/100000").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -621,7 +619,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
       testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -645,29 +643,29 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
-      final Checkpoint checkpoint = testContext.checkpoint(2);
+      final var checkpoint = testContext.checkpoint(2);
       testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NO_CONTENT.getStatusCode());
         ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(deletedProfile -> {
 
-          final List<T> deletedModels = this.modelsIn(deletedProfile);
-          final List<T> models = this.modelsIn(profile);
-          final T source = models.get(0);
+          final var deletedModels = this.modelsIn(deletedProfile);
+          final var models = this.modelsIn(profile);
+          final var source = models.get(0);
           assertThat(deletedModels).doesNotContain(source);
           testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
             assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+            final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
             assertThat(page).isNotNull();
-            final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+            final var historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
             assertThat(historicProfile).isEqualTo(profile);
 
-          }).send(testContext,checkpoint);
+          }).send(testContext, checkpoint);
 
         }));
 
-      }).send(testContext,checkpoint);
+      }).send(testContext, checkpoint);
 
     }));
 
@@ -687,14 +685,13 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
   public void shouldDeleteAllModels(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     Future<WeNetUserProfile> future = Future.succeededFuture(new WeNetUserProfile());
+    for (var i = 0; i < 10; i++) {
 
-    for (int i = 0; i < 10; i++) {
-
-      final int index = i + 1;
+      final var index = i + 1;
       future = future.compose(profile -> this.createValidModel(index, vertx, testContext).map(model -> {
-        List<T> models = this.modelsIn(profile);
+        var models = this.modelsIn(profile);
         if (models == null) {
-          models = this.initiModelsIn(profile);
+          models = this.initModelsIn(profile);
         }
         models.add(model);
         return profile;
@@ -709,27 +706,27 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
 
     });
 
-    for (int i = 0; i < 10; i++) {
+    for (var i = 0; i < 10; i++) {
 
       future = future.compose(profile -> {
 
         final Promise<WeNetUserProfile> promise = Promise.promise();
         client.delete(Profiles.PATH + "/" + profile.id + this.fieldPath() + "/0").send(testContext.succeeding(res -> testContext.verify(() -> {
 
-          final int code = res.statusCode();
+          final var code = res.statusCode();
           assertThat(code).isEqualTo(Status.NO_CONTENT.getStatusCode());
           ProfilesRepository.createProxy(vertx).searchProfile(profile.id, testContext.succeeding(deletedProfile -> testContext.verify(() -> {
 
-            final List<T> deletedModels = this.modelsIn(deletedProfile);
-            final List<T> models = this.modelsIn(profile);
-            final T source = models.get(0);
+            final var deletedModels = this.modelsIn(deletedProfile);
+            final var models = this.modelsIn(profile);
+            final var source = models.get(0);
             assertThat(deletedModels).doesNotContain(source);
             client.get(Profiles.PATH + "/" + profile.id + Profiles.HISTORIC_PATH).send(testContext.succeeding(resPage -> testContext.verify(() -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isNotNull();
-              final WeNetUserProfile historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
+              final var historicProfile = page.profiles.get(page.profiles.size() - 1).profile;
               assertThat(historicProfile).isEqualTo(profile);
               promise.complete(deletedProfile);
 
@@ -746,7 +743,7 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
     }
 
     testContext.assertComplete(future).onComplete(testContext.succeeding(profile -> testContext.verify(() -> {
-      final List<T> models = this.modelsIn(profile);
+      final var models = this.modelsIn(profile);
       assertThat(models).isNullOrEmpty();
       testContext.completeNow();
 

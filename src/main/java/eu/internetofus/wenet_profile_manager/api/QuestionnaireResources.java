@@ -58,9 +58,9 @@ public interface QuestionnaireResources {
 
     vertx.<Questionnaire>executeBlocking(promise -> {
 
-      final String lang = OperationRequests.acceptedLanguageIn(context, "en", "ca", "da", "de", "el", "en", "es", "fr", "he", "it");
-      final String resourceName = resourceNameGenerator.apply(lang);
-      final Questionnaire questionnaire = Model.loadFromResource(resourceName, Questionnaire.class);
+      final var lang = OperationRequests.acceptedLanguageIn(context, "en", "ca", "da", "de", "el", "en", "es", "fr", "he", "it");
+      final var resourceName = resourceNameGenerator.apply(lang);
+      final var questionnaire = Model.loadFromResource(resourceName, Questionnaire.class);
       if (questionnaire != null) {
 
         promise.complete(questionnaire);

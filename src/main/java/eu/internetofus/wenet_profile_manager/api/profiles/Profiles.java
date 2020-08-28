@@ -137,7 +137,6 @@ public interface Profiles {
    */
   String MEANINGS_PATH = "/meanings";
 
-
   /**
    * Called when want to create an user profile.
    *
@@ -151,7 +150,7 @@ public interface Profiles {
   @Operation(summary = "Create a profile", description = "Create a new WeNet user profile")
   @RequestBody(description = "The new profile to create", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
-  @ApiResponse(responseCode = "200", description = "The created profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @ApiResponse(responseCode = "201", description = "The created profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void createProfile(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
@@ -867,7 +866,6 @@ public interface Profiles {
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
-
   /**
    * Called when want to add a material into a profile.
    *
@@ -1109,7 +1107,6 @@ public interface Profiles {
   void deleteCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
-
 
   /**
    * Called when want to add a meaning into a profile.

@@ -71,23 +71,19 @@ public class APIVerticle extends AbstractAPIVerticle {
     new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
 
     routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
-        new ProfilesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class, new ProfilesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
-        new PersonalitiesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class, new PersonalitiesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
-        new IntelligencesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class, new IntelligencesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
 
     routerFactory.mountServiceInterface(Communities.class, Communities.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Communities.ADDRESS).register(Communities.class,
-        new CommunitiesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Communities.ADDRESS).register(Communities.class, new CommunitiesResource(this.vertx));
 
   }
 
@@ -101,9 +97,9 @@ public class APIVerticle extends AbstractAPIVerticle {
   @Override
   protected void startedServerAt(final String host, final int port) {
 
-    final JsonObject conf = new JsonObject();
+    final var conf = new JsonObject();
     conf.put("profileManager", "http://" + host + ":" + port);
-    final WebClient client = WebClient.create(this.vertx);
+    final var client = WebClient.create(this.vertx);
     WeNetProfileManager.register(this.vertx, client, conf);
 
   }

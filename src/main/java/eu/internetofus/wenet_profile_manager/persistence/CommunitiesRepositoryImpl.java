@@ -64,9 +64,9 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   @Override
   public void searchCommunityObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-    final JsonObject query = new JsonObject().put("_id", id);
+    final var query = new JsonObject().put("_id", id);
     this.findOneDocument(COMMUNITIES_COLLECTION, query, null, found -> {
-      final String _id = (String) found.remove("_id");
+      final var _id = (String) found.remove("_id");
       return found.put("id", _id);
     }, searchHandler);
 
@@ -78,17 +78,17 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   @Override
   public void storeCommunity(final JsonObject community, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-    final String id = (String) community.remove("id");
+    final var id = (String) community.remove("id");
     if (id != null) {
 
       community.put("_id", id);
     }
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     community.put("_creationTs", now);
     community.put("_lastUpdateTs", now);
     this.storeOneDocument(COMMUNITIES_COLLECTION, community, stored -> {
 
-      final String _id = (String) stored.remove("_id");
+      final var _id = (String) stored.remove("_id");
       return stored.put("id", _id);
 
     }, storeHandler);
@@ -101,9 +101,9 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   @Override
   public void updateCommunity(final JsonObject community, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final Object id = community.remove("id");
-    final JsonObject query = new JsonObject().put("_id", id);
-    final long now = TimeManager.now();
+    final var id = community.remove("id");
+    final var query = new JsonObject().put("_id", id);
+    final var now = TimeManager.now();
     community.put("_lastUpdateTs", now);
     this.updateOneDocument(COMMUNITIES_COLLECTION, query, community, updateHandler);
 
@@ -115,7 +115,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   @Override
   public void deleteCommunity(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
-    final JsonObject query = new JsonObject().put("_id", id);
+    final var query = new JsonObject().put("_id", id);
     this.deleteOneDocument(COMMUNITIES_COLLECTION, query, deleteHandler);
 
   }

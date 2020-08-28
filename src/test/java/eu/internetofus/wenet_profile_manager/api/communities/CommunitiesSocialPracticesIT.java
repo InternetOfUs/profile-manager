@@ -34,89 +34,90 @@ import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class CommunitiesSocialPracticesIT {//extends AbstractCommunityFieldManipulationByIdentifierIT<SocialPractice> {
+public class CommunitiesSocialPracticesIT {// extends AbstractCommunityFieldManipulationByIdentifierIT<SocialPractice> {
 
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected String fieldPath() {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected String fieldPath() {
   //
-  //    return Communities.SOCIAL_PRACTICES_PATH;
-  //  }
+  // return Communities.SOCIAL_PRACTICES_PATH;
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected Future<SocialPractice> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Future<SocialPractice> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
   //
-  //    final SocialPractice socialPractice = new SocialPractice();
-  //    socialPractice.label = ValidationsTest.STRING_1024;
-  //    return Future.succeededFuture(socialPractice);
+  // final SocialPractice socialPractice = new SocialPractice();
+  // socialPractice.label = ValidationsTest.STRING_1024;
+  // return Future.succeededFuture(socialPractice);
   //
-  //  }
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected Future<SocialPractice> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Future<SocialPractice> createValidModel(final int index, final Vertx vertx, final VertxTestContext
+  // testContext) {
   //
-  //    final SocialPractice model = new SocialPracticeTest().createModelExample(index);
-  //    return Future.succeededFuture(model);
+  // final SocialPractice model = new SocialPracticeTest().createModelExample(index);
+  // return Future.succeededFuture(model);
   //
-  //  }
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected void updateIdsTo(final SocialPractice source, final SocialPractice target) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected void updateIdsTo(final SocialPractice source, final SocialPractice target) {
   //
-  //    target.id = source.id;
-  //    for (int i = 0; i < target.norms.size(); i++) {
+  // target.id = source.id;
+  // for (int i = 0; i < target.norms.size(); i++) {
   //
-  //      target.norms.get(i).id = source.norms.get(i).id;
-  //    }
+  // target.norms.get(i).id = source.norms.get(i).id;
+  // }
   //
-  //  }
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected List<SocialPractice> initiModelsIn(final WeNetUserProfile profile) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected List<SocialPractice> initModelsIn(final WeNetUserProfile profile) {
   //
-  //    profile.socialPractices = new ArrayList<>();
-  //    return profile.socialPractices;
-  //  }
+  // profile.socialPractices = new ArrayList<>();
+  // return profile.socialPractices;
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected List<SocialPractice> modelsIn(final WeNetUserProfile profile) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected List<SocialPractice> modelsIn(final WeNetUserProfile profile) {
   //
-  //    return profile.socialPractices;
-  //  }
+  // return profile.socialPractices;
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected Class<SocialPractice> modelClass() {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Class<SocialPractice> modelClass() {
   //
-  //    return SocialPractice.class;
-  //  }
+  // return SocialPractice.class;
+  // }
   //
-  //  /**
-  //   * {@inheritDoc}
-  //   */
-  //  @Override
-  //  protected String idOf(final SocialPractice model) {
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected String idOf(final SocialPractice model) {
   //
-  //    return model.id;
-  //  }
+  // return model.id;
+  // }
 
 }

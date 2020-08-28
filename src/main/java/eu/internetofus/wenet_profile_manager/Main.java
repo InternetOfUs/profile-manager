@@ -47,7 +47,7 @@ public class Main extends AbstractMain {
    */
   public static void main(final String... args) {
 
-    final Main main = new Main();
+    final var main = new Main();
     main.startWith(args).onComplete(result -> {
 
       if (!result.succeeded()) {

@@ -60,7 +60,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
   @Override
   protected Future<Material> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Material model = new MaterialTest().createModelExample(1);
+    final var model = new MaterialTest().createModelExample(1);
     model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
@@ -72,7 +72,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
   protected Future<Material> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
     final Promise<Material> promise = Promise.promise();
-    final Material model = new MaterialTest().createModelExample(index);
+    final var model = new MaterialTest().createModelExample(index);
     promise.complete(model);
     return promise.future();
 
@@ -82,7 +82,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
    * {@inheritDoc}
    */
   @Override
-  protected List<Material> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Material> initModelsIn(final WeNetUserProfile profile) {
 
     profile.materials = new ArrayList<>();
     return profile.materials;

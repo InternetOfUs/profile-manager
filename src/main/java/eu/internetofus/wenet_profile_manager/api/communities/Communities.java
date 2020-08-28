@@ -73,12 +73,10 @@ public interface Communities {
    */
   String ADDRESS = "wenet_profile_manager.api.communities";
 
-
   /**
    * The path to the social practices of a profile.
    */
   String SOCIAL_PRACTICES_PATH = "/socialPractices";
-
 
   /**
    * Called when want to create a community.
@@ -169,126 +167,174 @@ public interface Communities {
   void deleteCommunity(@PathParam("id") @Parameter(description = "The identifier of the community to delete") String id, @Parameter(hidden = true, required = false) OperationRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
-
-  //  /**
-  //   * Called when want to add a social practice into a profile.
-  //   *
-  //   * @param userId        identifier of the user for the profile to add the social practice.
-  //   * @param body          social practice to add to the profile.
-  //   * @param context       of the request.
-  //   * @param resultHandler to inform of the response.
-  //   */
-  //  @POST
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
-  //  @Consumes(MediaType.APPLICATION_JSON)
-  //  @Produces(MediaType.APPLICATION_JSON)
-  //  @Operation(summary = "Add a social practice into a profile", description = "Insert a new social practice into a profile")
-  //  @RequestBody(description = "The new social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "201", description = "The added social practice into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "400", description = "Bad social practice to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void addSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the social practice", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to add a social practice into a profile.
+  // *
+  // * @param userId identifier of the user for the profile to add the social practice.
+  // * @param body social practice to add to the profile.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @POST
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
+  // @Consumes(MediaType.APPLICATION_JSON)
+  // @Produces(MediaType.APPLICATION_JSON)
+  // @Operation(summary = "Add a social practice into a profile", description = "Insert a new social practice into a
+  // profile")
+  // @RequestBody(description = "The new social practice", required = true, content = @Content(schema = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "201", description = "The added social practice into the profile", content =
+  // @Content(schema = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "400", description = "Bad social practice to add", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void addSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to
+  // add the social practice", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false)
+  // OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>>
+  // resultHandler);
   //
-  //  /**
-  //   * Called when want to get all the social practice from a profile.
-  //   *
-  //   * @param userId        identifier of the user for the profile to get all social practices.
-  //   * @param context       of the request.
-  //   * @param resultHandler to inform of the response.
-  //   */
-  //  @GET
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
-  //  @Produces(MediaType.APPLICATION_JSON)
-  //  @Operation(summary = "Return the social practices from a profile", description = "Allow to get all the social practices defined into a profile")
-  //  @ApiResponse(responseCode = "200", description = "The social practices defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
-  //  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void retrieveSocialPractices(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to get all the social practice from a profile.
+  // *
+  // * @param userId identifier of the user for the profile to get all social practices.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @GET
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH)
+  // @Produces(MediaType.APPLICATION_JSON)
+  // @Operation(summary = "Return the social practices from a profile", description = "Allow to get all the social
+  // practices defined into a profile")
+  // @ApiResponse(responseCode = "200", description = "The social practices defined into the profile", content =
+  // @Content(array = @ArraySchema(schema = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
+  // @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void retrieveSocialPractices(@PathParam("userId") @Parameter(description = "The identifier of the user for the
+  // profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false)
+  // Handler<AsyncResult<OperationResponse>> resultHandler);
   //
-  //  /**
-  //   * Called when want to get a social practice from a profile.
-  //   *
-  //   * @param userId           identifier of the user for the profile where the social practice is defined.
-  //   * @param socialPracticeId identifier of the social practice to get.
-  //   * @param context          of the request.
-  //   * @param resultHandler    to inform of the response.
-  //   */
-  //  @GET
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
-  //  @Produces(MediaType.APPLICATION_JSON)
-  //  @Operation(summary = "Return a social practice from a profile", description = "Allow to get a social practice defined into a profile")
-  //  @ApiResponse(responseCode = "200", description = "The social practice defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void retrieveSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
-  //      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to get a social practice from a profile.
+  // *
+  // * @param userId identifier of the user for the profile where the social practice is defined.
+  // * @param socialPracticeId identifier of the social practice to get.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @GET
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
+  // @Produces(MediaType.APPLICATION_JSON)
+  // @Operation(summary = "Return a social practice from a profile", description = "Allow to get a social practice defined
+  // into a profile")
+  // @ApiResponse(responseCode = "200", description = "The social practice defined into the profile", content =
+  // @Content(schema = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void retrieveSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile
+  // where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example =
+  // "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+  // @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false)
+  // Handler<AsyncResult<OperationResponse>> resultHandler);
   //
-  //  /**
-  //   * Called when want to update a social practice from a profile.
-  //   *
-  //   * @param userId           identifier of the user for the profile where the social practice is defined.
-  //   * @param socialPracticeId identifier of the social practice to update.
-  //   * @param body             the new values for the social practice.
-  //   * @param context          of the request.
-  //   * @param resultHandler    to inform of the response.
-  //   */
-  //  @PUT
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
-  //  @Consumes(MediaType.APPLICATION_JSON)
-  //  @Produces(MediaType.APPLICATION_JSON)
-  //  @Operation(summary = "Update a social practice from a profile", description = "Allow to modify a social practice defined into a profile")
-  //  @RequestBody(description = "The new values to update the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "200", description = "The updated social practice", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "400", description = "Bad social practice to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void updateSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
-  //      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to update a social practice from a profile.
+  // *
+  // * @param userId identifier of the user for the profile where the social practice is defined.
+  // * @param socialPracticeId identifier of the social practice to update.
+  // * @param body the new values for the social practice.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @PUT
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
+  // @Consumes(MediaType.APPLICATION_JSON)
+  // @Produces(MediaType.APPLICATION_JSON)
+  // @Operation(summary = "Update a social practice from a profile", description = "Allow to modify a social practice
+  // defined into a profile")
+  // @RequestBody(description = "The new values to update the social practice", required = true, content = @Content(schema
+  // = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "200", description = "The updated social practice", content = @Content(schema =
+  // @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "400", description = "Bad social practice to update", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void updateSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile
+  // where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to update", example =
+  // "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+  // @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false)
+  // OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>>
+  // resultHandler);
   //
-  //  /**
-  //   * Called when want to partially modify a social practice from a profile.
-  //   *
-  //   * @param userId           identifier of the user for the profile where the social practice is defined.
-  //   * @param socialPracticeId identifier of the social practice to merge.
-  //   * @param body             the new values for the social practice.
-  //   * @param context          of the request.
-  //   * @param resultHandler    to inform of the response.
-  //   */
-  //  @PATCH
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
-  //  @Consumes(MediaType.APPLICATION_JSON)
-  //  @Produces(MediaType.APPLICATION_JSON)
-  //  @Operation(summary = "Change a social practice from a profile", description = "Allow to modify parts of a social practice defined into a profile")
-  //  @RequestBody(description = "The new values to merge the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "200", description = "The current values of the social practice after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  //  @ApiResponse(responseCode = "400", description = "Bad social practice to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void mergeSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
-  //      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to partially modify a social practice from a profile.
+  // *
+  // * @param userId identifier of the user for the profile where the social practice is defined.
+  // * @param socialPracticeId identifier of the social practice to merge.
+  // * @param body the new values for the social practice.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @PATCH
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
+  // @Consumes(MediaType.APPLICATION_JSON)
+  // @Produces(MediaType.APPLICATION_JSON)
+  // @Operation(summary = "Change a social practice from a profile", description = "Allow to modify parts of a social
+  // practice defined into a profile")
+  // @RequestBody(description = "The new values to merge the social practice", required = true, content = @Content(schema
+  // = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "200", description = "The current values of the social practice after it has been
+  // merged", content = @Content(schema = @Schema(ref =
+  // "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  // @ApiResponse(responseCode = "400", description = "Bad social practice to merge", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void mergeSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile
+  // where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to merge", example =
+  // "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+  // @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false)
+  // OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>>
+  // resultHandler);
   //
-  //  /**
-  //   * Called when want to delete a social practice from a profile.
-  //   *
-  //   * @param userId           identifier of the user for the profile where the social practice is defined.
-  //   * @param socialPracticeId identifier of the social practice to delete.
-  //   * @param context          of the request.
-  //   * @param resultHandler    to inform of the response.
-  //   */
-  //  @DELETE
-  //  @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
-  //  @Operation(summary = "Delete a social practice from a profile", description = "Allow to delete a defined social practice from a profile")
-  //  @ApiResponse(responseCode = "204", description = "The social practice defined into the profile")
-  //  @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  //  @Tag(name = "Social practices")
-  //  void deleteSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-  //      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
-  //      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  // /**
+  // * Called when want to delete a social practice from a profile.
+  // *
+  // * @param userId identifier of the user for the profile where the social practice is defined.
+  // * @param socialPracticeId identifier of the social practice to delete.
+  // * @param context of the request.
+  // * @param resultHandler to inform of the response.
+  // */
+  // @DELETE
+  // @Path("/{userId}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
+  // @Operation(summary = "Delete a social practice from a profile", description = "Allow to delete a defined social
+  // practice from a profile")
+  // @ApiResponse(responseCode = "204", description = "The social practice defined into the profile")
+  // @ApiResponse(responseCode = "404", description = "Not found profile or social practice", content = @Content(schema =
+  // @Schema(implementation = ErrorMessage.class)))
+  // @Tag(name = "Social practices")
+  // void deleteSocialPractice(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile
+  // where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  // @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to delete", example =
+  // "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+  // @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false)
+  // Handler<AsyncResult<OperationResponse>> resultHandler);
   //
 }

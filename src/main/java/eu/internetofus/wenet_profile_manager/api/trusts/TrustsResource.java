@@ -79,7 +79,7 @@ public class TrustsResource implements Trusts {
   @Override
   public void addTrustEvent(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final UserPerformanceRatingEvent event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
+    final var event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
     if (event == null) {
 
       Logger.debug("The {} is not a valid TrustEvent.", body);
@@ -91,7 +91,7 @@ public class TrustsResource implements Trusts {
 
         if (validation.failed()) {
 
-          final Throwable cause = validation.cause();
+          final var cause = validation.cause();
           Logger.debug(cause, "The {} is not valid.", event);
           OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
@@ -101,13 +101,13 @@ public class TrustsResource implements Trusts {
 
             if (store.failed()) {
 
-              final Throwable cause = store.cause();
+              final var cause = store.cause();
               Logger.debug(cause, "Cannot store {}.", event);
               OperationReponseHandlers.responseFailedWith(resultHandler, Status.INTERNAL_SERVER_ERROR, cause);
 
             } else {
 
-              final UserPerformanceRatingEvent storedEvent = store.result();
+              final var storedEvent = store.result();
               OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedEvent);
             }
           });
@@ -125,19 +125,19 @@ public class TrustsResource implements Trusts {
   public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,
       final TrustAggregator aggregator, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final JsonObject query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
-        .withEqOrRegex("taskId", taskId).withRange("reportTime", reportFrom, reportTo).build();
+    final var query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId).withEqOrRegex("taskId", taskId)
+        .withRange("reportTime", reportFrom, reportTo).build();
     this.repository.calculateTrustBy(aggregator, query, calculation -> {
 
       if (calculation.failed()) {
 
-        final Throwable cause = calculation.cause();
+        final var cause = calculation.cause();
         Logger.debug(cause, "Cannot calculate the trust {} for {}.", aggregator, query);
         OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
       } else {
 
-        final Trust trust = new Trust();
+        final var trust = new Trust();
         trust.value = calculation.result();
         trust.calculatedTime = TimeManager.now();
         OperationReponseHandlers.responseOk(resultHandler, trust);

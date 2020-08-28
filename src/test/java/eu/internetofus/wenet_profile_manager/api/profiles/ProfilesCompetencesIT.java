@@ -60,7 +60,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByInd
   @Override
   protected Future<Competence> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
 
-    final Competence model = new CompetenceTest().createModelExample(1);
+    final var model = new CompetenceTest().createModelExample(1);
     model.name = ValidationsTest.STRING_256;
     return Future.succeededFuture(model);
   }
@@ -72,7 +72,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByInd
   protected Future<Competence> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
     final Promise<Competence> promise = Promise.promise();
-    final Competence model = new CompetenceTest().createModelExample(index);
+    final var model = new CompetenceTest().createModelExample(index);
     promise.complete(model);
     return promise.future();
 
@@ -82,7 +82,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldManipulationByInd
    * {@inheritDoc}
    */
   @Override
-  protected List<Competence> initiModelsIn(final WeNetUserProfile profile) {
+  protected List<Competence> initModelsIn(final WeNetUserProfile profile) {
 
     profile.competences = new ArrayList<>();
     return profile.competences;

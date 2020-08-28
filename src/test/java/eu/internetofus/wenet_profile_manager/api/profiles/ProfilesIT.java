@@ -66,7 +66,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
-import io.vertx.junit5.Checkpoint;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -93,7 +92,7 @@ public class ProfilesIT {
     testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -117,7 +116,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile found = assertThatBodyIs(WeNetUserProfile.class, res);
+        final var found = assertThatBodyIs(WeNetUserProfile.class, res);
         assertThat(found).isEqualTo(profile);
 
       })).send(testContext);
@@ -141,7 +140,7 @@ public class ProfilesIT {
     testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty().isEqualTo("bad_profile");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -163,12 +162,12 @@ public class ProfilesIT {
 
     WeNetProfileManager.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
 
-      final WeNetUserProfile profile = new WeNetUserProfile();
+      final var profile = new WeNetUserProfile();
       profile.id = created.getString("id");
       testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().isEqualTo("bad_profile.id");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -193,8 +192,8 @@ public class ProfilesIT {
     new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(profile -> {
       testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile stored = assertThatBodyIs(WeNetUserProfile.class, res);
+        assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+        final var stored = assertThatBodyIs(WeNetUserProfile.class, res);
         assertThat(stored).isNotNull().isNotEqualTo(profile);
         profile.id = stored.id;
         assertThat(stored).isNotEqualTo(profile);
@@ -232,13 +231,13 @@ public class ProfilesIT {
   @Test
   public void shouldStoreEmptyProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var profile = new WeNetUserProfile();
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
     testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final WeNetUserProfile stored = assertThatBodyIs(WeNetUserProfile.class, res);
+      assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+      final var stored = assertThatBodyIs(WeNetUserProfile.class, res);
       assertThat(stored).isNotNull().isNotEqualTo(profile);
       profile.id = stored.id;
       assertThat(stored).isNotNull().isNotEqualTo(profile);
@@ -269,11 +268,11 @@ public class ProfilesIT {
   @Test
   public void shouldStoreSimpleProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfileTest().createModelExample(1);
+    final var profile = new WeNetUserProfileTest().createModelExample(1);
     testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final WeNetUserProfile stored = assertThatBodyIs(WeNetUserProfile.class, res);
+      assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+      final var stored = assertThatBodyIs(WeNetUserProfile.class, res);
       assertThat(stored).isNotNull().isNotEqualTo(profile);
       profile.id = stored.id;
       assertThat(stored).isNotNull().isNotEqualTo(profile);
@@ -307,11 +306,11 @@ public class ProfilesIT {
   @Test
   public void shouldNotUpdateProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfileTest().createBasicExample(1);
+    final var profile = new WeNetUserProfileTest().createBasicExample(1);
     testRequest(client, HttpMethod.PUT, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -336,7 +335,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -359,12 +358,12 @@ public class ProfilesIT {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
-      final WeNetUserProfile newProfile = new WeNetUserProfile();
+      final var newProfile = new WeNetUserProfile();
       newProfile.nationality = ValidationsTest.STRING_256;
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().contains("nationality");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -390,7 +389,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isEqualTo("profile_to_update_equal_to_original");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -414,11 +413,11 @@ public class ProfilesIT {
 
       new WeNetUserProfileTest().createModelExample(2, vertx, testContext, testContext.succeeding(newProfile -> {
 
-        final Checkpoint checkpoint = testContext.checkpoint(2);
+        final var checkpoint = testContext.checkpoint(2);
         testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
           assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+          final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
           assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
           newProfile.id = storedProfile.id;
           newProfile._creationTs = storedProfile._creationTs;
@@ -433,7 +432,7 @@ public class ProfilesIT {
           testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
             assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+            final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
             assertThat(page.profiles).hasSize(1);
             assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -462,11 +461,11 @@ public class ProfilesIT {
   @Test
   public void shouldNotMergeProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfileTest().createBasicExample(1);
+    final var profile = new WeNetUserProfileTest().createBasicExample(1);
     testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -491,7 +490,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -517,7 +516,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -544,7 +543,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty().endsWith(".nationality");
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -567,12 +566,12 @@ public class ProfilesIT {
 
     StoreServices.storeProfile(new WeNetUserProfileTest().createBasicExample(1), vertx, testContext, testContext.succeeding(storedProfile -> {
 
-      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createBasicExample(2);
+      final var newProfile = new WeNetUserProfileTest().createBasicExample(2);
       newProfile.id = UUID.randomUUID().toString();
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
         assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
         newProfile.id = storedProfile.id;
         newProfile._creationTs = storedProfile._creationTs;
@@ -600,13 +599,13 @@ public class ProfilesIT {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
-      final WeNetUserProfile newProfile = new WeNetUserProfileTest().createModelExample(2);
+      final var newProfile = new WeNetUserProfileTest().createModelExample(2);
       newProfile.id = UUID.randomUUID().toString();
-      final Checkpoint checkpoint = testContext.checkpoint(2);
+      final var checkpoint = testContext.checkpoint(2);
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final WeNetUserProfile merged = assertThatBodyIs(WeNetUserProfile.class, res);
+        final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
         assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
         newProfile.id = storedProfile.id;
         newProfile._creationTs = storedProfile._creationTs;
@@ -621,11 +620,11 @@ public class ProfilesIT {
         testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
           assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-          final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+          final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
           assertThat(page.profiles).hasSize(1);
           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-          assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset((Long)1L));
+          assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset((Long) 1L));
           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
         }).send(testContext, checkpoint);
@@ -649,7 +648,7 @@ public class ProfilesIT {
     testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -696,7 +695,7 @@ public class ProfilesIT {
     testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier" + Profiles.HISTORIC_PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
       assertThat(error.code).isNotEmpty();
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -720,7 +719,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-        final ErrorMessage error = assertThatBodyIs(ErrorMessage.class, res);
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
         assertThat(error.code).isNotEmpty();
         assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
@@ -742,8 +741,8 @@ public class ProfilesIT {
   @Test
   public void shouldFoundHistoricProfilePage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
@@ -751,7 +750,7 @@ public class ProfilesIT {
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).with(queryParam("limit", "100")).expect(res -> {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final HistoricWeNetUserProfilesPage found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
+        final var found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
         assertThat(found).isEqualTo(created);
 
       }).send(testContext);
@@ -772,27 +771,27 @@ public class ProfilesIT {
   @Test
   public void shouldFoundHistoricProfilePageForARange(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "-"), queryParam("offset", "5"), queryParam("limit", "3"))
-      .expect(res -> {
+          .expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final HistoricWeNetUserProfilesPage found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
-        final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
-        expected.offset = 5;
-        expected.total = 10;
-        expected.profiles = new ArrayList<>();
-        expected.profiles.add(created.profiles.get(9));
-        expected.profiles.add(created.profiles.get(8));
-        expected.profiles.add(created.profiles.get(7));
-        assertThat(found).isEqualTo(expected);
+            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
+            final var expected = new HistoricWeNetUserProfilesPage();
+            expected.offset = 5;
+            expected.total = 10;
+            expected.profiles = new ArrayList<>();
+            expected.profiles.add(created.profiles.get(9));
+            expected.profiles.add(created.profiles.get(8));
+            expected.profiles.add(created.profiles.get(7));
+            assertThat(found).isEqualTo(expected);
 
-      }).send(testContext);
+          }).send(testContext);
     }));
 
   }
@@ -813,30 +812,30 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.name = new UserName();
-          final String newMiddleName = "NEW middle name";
+          final var newMiddleName = "NEW middle name";
           newProfile.name.middle = newMiddleName;
-          final Checkpoint checkpoint = testContext.checkpoint(2);
+          final var checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-            final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+            final var old_lastUpdateTs = storedProfile._lastUpdateTs;
             storedProfile._lastUpdateTs = updated._lastUpdateTs;
-            final String old_middle = storedProfile.name.middle;
+            final var old_middle = storedProfile.name.middle;
             storedProfile.name.middle = newMiddleName;
             assertThat(updated).isEqualTo(storedProfile);
 
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -870,20 +869,20 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.dateOfBirth = new AliveBirthDate();
           newProfile.dateOfBirth.day = 1;
-          final Checkpoint checkpoint = testContext.checkpoint(2);
+          final var checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-            final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+            final var old_lastUpdateTs = storedProfile._lastUpdateTs;
             storedProfile._lastUpdateTs = updated._lastUpdateTs;
             storedProfile.dateOfBirth.day = 1;
             assertThat(updated).isEqualTo(storedProfile);
@@ -891,7 +890,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -925,19 +924,19 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.gender = Gender.M;
-          final Checkpoint checkpoint = testContext.checkpoint(2);
+          final var checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-            final long old_lastUpdateTs = storedProfile._lastUpdateTs;
+            final var old_lastUpdateTs = storedProfile._lastUpdateTs;
             storedProfile._lastUpdateTs = updated._lastUpdateTs;
             storedProfile.gender = Gender.M;
             assertThat(updated).isEqualTo(storedProfile);
@@ -945,7 +944,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page.profiles).hasSize(1);
               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
@@ -979,24 +978,24 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.norms = new ArrayList<>();
           newProfile.norms.add(new Norm());
           newProfile.norms.add(new Norm());
           newProfile.norms.get(1).id = storedProfile.norms.get(0).id;
           newProfile.norms.get(1).attribute = "Attribute";
-          final Checkpoint checkpoint = testContext.checkpoint(4);
+          final var checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+            final var expected = new HistoricWeNetUserProfilesPage();
             expected.profiles = new ArrayList<>();
             expected.profiles.add(new HistoricWeNetUserProfile());
             expected.profiles.get(0).from = storedProfile._creationTs;
@@ -1012,7 +1011,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.norms = new ArrayList<>();
               newProfile.norms.add(new Norm());
@@ -1021,7 +1020,7 @@ public class ProfilesIT {
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
 
                 assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+                final var updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
                 assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
                 expected.profiles.add(new HistoricWeNetUserProfile());
@@ -1038,7 +1037,7 @@ public class ProfilesIT {
                 testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
                   assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
+                  final var page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
 
                 }).send(testContext, checkpoint);
@@ -1070,24 +1069,24 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.plannedActivities = new ArrayList<>();
           newProfile.plannedActivities.add(new PlannedActivity());
           newProfile.plannedActivities.add(new PlannedActivity());
           newProfile.plannedActivities.get(1).id = storedProfile.plannedActivities.get(0).id;
           newProfile.plannedActivities.get(1).description = "Description";
-          final Checkpoint checkpoint = testContext.checkpoint(4);
+          final var checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+            final var expected = new HistoricWeNetUserProfilesPage();
             expected.profiles = new ArrayList<>();
             expected.profiles.add(new HistoricWeNetUserProfile());
             expected.profiles.get(0).from = storedProfile._creationTs;
@@ -1104,7 +1103,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.plannedActivities = new ArrayList<>();
               newProfile.plannedActivities.add(new PlannedActivity());
@@ -1113,7 +1112,7 @@ public class ProfilesIT {
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
 
                 assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+                final var updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
                 assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
                 expected.profiles.add(new HistoricWeNetUserProfile());
@@ -1130,7 +1129,7 @@ public class ProfilesIT {
                 testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
                   assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
+                  final var page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
 
                 }).send(testContext, checkpoint);
@@ -1162,11 +1161,11 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.relevantLocations = new ArrayList<>();
           newProfile.relevantLocations.add(new RelevantLocation());
           newProfile.relevantLocations.add(new RelevantLocation());
@@ -1174,14 +1173,14 @@ public class ProfilesIT {
           newProfile.relevantLocations.get(1).label = "Label";
           newProfile.relevantLocations.get(1).latitude = -24;
           newProfile.relevantLocations.get(1).longitude = 24;
-          final Checkpoint checkpoint = testContext.checkpoint(4);
+          final var checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+            final var expected = new HistoricWeNetUserProfilesPage();
             expected.profiles = new ArrayList<>();
             expected.profiles.add(new HistoricWeNetUserProfile());
             expected.profiles.get(0).from = storedProfile._creationTs;
@@ -1197,7 +1196,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
               assertThat(page).isEqualTo(expected);
               newProfile.relevantLocations = new ArrayList<>();
@@ -1207,7 +1206,7 @@ public class ProfilesIT {
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
 
                 assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+                final var updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
                 assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
                 expected.profiles.add(new HistoricWeNetUserProfile());
@@ -1224,7 +1223,7 @@ public class ProfilesIT {
                 testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
                   assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
+                  final var page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
 
                 }).send(testContext, checkpoint);
@@ -1256,24 +1255,24 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.personalBehaviors = new ArrayList<>();
           newProfile.personalBehaviors.add(new RoutineTest().createModelExample(1));
           newProfile.personalBehaviors.add(new RoutineTest().createModelExample(2));
           newProfile.personalBehaviors.get(0).user_id = storedProfile.id;
           newProfile.personalBehaviors.get(1).user_id = storedProfile.id;
-          final Checkpoint checkpoint = testContext.checkpoint(2);
+          final var checkpoint = testContext.checkpoint(2);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+            final var expected = new HistoricWeNetUserProfilesPage();
             expected.profiles = new ArrayList<>();
             expected.profiles.add(new HistoricWeNetUserProfile());
             expected.profiles.get(0).from = storedProfile._creationTs;
@@ -1291,7 +1290,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
 
             }).send(testContext, checkpoint);
@@ -1319,11 +1318,11 @@ public class ProfilesIT {
 
       assertIsValid(created, vertx, testContext, () -> {
 
-        final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+        final var repository = ProfilesRepository.createProxy(vertx);
 
         repository.storeProfile(created, testContext.succeeding(storedProfile -> {
 
-          final WeNetUserProfile newProfile = new WeNetUserProfile();
+          final var newProfile = new WeNetUserProfile();
           newProfile.relationships = new ArrayList<>();
           newProfile.relationships.add(new SocialNetworkRelationship());
           newProfile.relationships.get(0).userId = storedProfile.relationships.get(0).userId;
@@ -1331,14 +1330,14 @@ public class ProfilesIT {
           newProfile.relationships.add(new SocialNetworkRelationship());
           newProfile.relationships.get(1).userId = storedProfile.relationships.get(0).userId;
           newProfile.relationships.get(1).type = SocialNetworkRelationshipType.acquaintance;
-          final Checkpoint checkpoint = testContext.checkpoint(4);
+          final var checkpoint = testContext.checkpoint(4);
           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final WeNetUserProfile updated = assertThatBodyIs(WeNetUserProfile.class, res);
+            final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
             assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
-            final HistoricWeNetUserProfilesPage expected = new HistoricWeNetUserProfilesPage();
+            final var expected = new HistoricWeNetUserProfilesPage();
             expected.profiles = new ArrayList<>();
             expected.profiles.add(new HistoricWeNetUserProfile());
             expected.profiles.get(0).from = storedProfile._creationTs;
@@ -1354,7 +1353,7 @@ public class ProfilesIT {
             testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
               assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final HistoricWeNetUserProfilesPage page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
               assertThat(page).isEqualTo(expected);
               newProfile.relationships = new ArrayList<>();
               newProfile.relationships.add(new SocialNetworkRelationship());
@@ -1363,7 +1362,7 @@ public class ProfilesIT {
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id).expect(res2 -> testContext.verify(() -> {
 
                 assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                final WeNetUserProfile updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
+                final var updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
                 assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
 
                 expected.profiles.add(new HistoricWeNetUserProfile());
@@ -1379,7 +1378,7 @@ public class ProfilesIT {
                 testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage2 -> {
 
                   assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final HistoricWeNetUserProfilesPage page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
+                  final var page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage2);
                   assertThat(page2).isEqualTo(expected);
 
                 }).send(testContext, checkpoint);
@@ -1408,12 +1407,12 @@ public class ProfilesIT {
   @Test
   public void shouldStoreProfileWithOnlyAnId(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    final long now = TimeManager.now();
-    final String id = UUID.randomUUID().toString();
+    final var now = TimeManager.now();
+    final var id = UUID.randomUUID().toString();
     testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final WeNetUserProfile stored = assertThatBodyIs(WeNetUserProfile.class, res);
+      assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+      final var stored = assertThatBodyIs(WeNetUserProfile.class, res);
       assertThat(stored).isNotNull();
       assertThat(stored.id).isEqualTo(id);
       assertThat(stored._creationTs).isGreaterThanOrEqualTo(now);

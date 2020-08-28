@@ -70,9 +70,9 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void searchProfileObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-    final JsonObject query = new JsonObject().put("_id", id);
+    final var query = new JsonObject().put("_id", id);
     this.findOneDocument(PROFILES_COLLECTION, query, null, found -> {
-      final String _id = (String) found.remove("_id");
+      final var _id = (String) found.remove("_id");
       return found.put("id", _id);
     }, searchHandler);
 
@@ -84,17 +84,17 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-    final String id = (String) profile.remove("id");
+    final var id = (String) profile.remove("id");
     if (id != null) {
 
       profile.put("_id", id);
     }
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     profile.put("_creationTs", now);
     profile.put("_lastUpdateTs", now);
     this.storeOneDocument(PROFILES_COLLECTION, profile, stored -> {
 
-      final String _id = (String) stored.remove("_id");
+      final var _id = (String) stored.remove("_id");
       return stored.put("id", _id);
 
     }, storeHandler);
@@ -107,9 +107,9 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void updateProfile(final JsonObject profile, final Handler<AsyncResult<Void>> updateHandler) {
 
-    final Object id = profile.remove("id");
-    final JsonObject query = new JsonObject().put("_id", id);
-    final long now = TimeManager.now();
+    final var id = profile.remove("id");
+    final var query = new JsonObject().put("_id", id);
+    final var now = TimeManager.now();
     profile.put("_lastUpdateTs", now);
     this.updateOneDocument(PROFILES_COLLECTION, query, profile, updateHandler);
 
@@ -121,7 +121,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void deleteProfile(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
-    final JsonObject query = new JsonObject().put("_id", id);
+    final var query = new JsonObject().put("_id", id);
     this.deleteOneDocument(PROFILES_COLLECTION, query, deleteHandler);
 
   }
@@ -145,7 +145,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void searchHistoricProfilePageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-    final FindOptions options = new FindOptions();
+    final var options = new FindOptions();
     options.setSkip(offset);
     options.setLimit(limit);
     options.getFields().put("_id", 0);

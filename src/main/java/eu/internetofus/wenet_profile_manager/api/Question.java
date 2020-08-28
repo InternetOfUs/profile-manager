@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.api;
 import java.util.List;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -40,28 +41,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class Question extends Model {
+public class Question extends ReflectionModel implements Model {
 
-	/**
-	 * The text of the question.
-	 */
-	@Schema(description = "The text of the question", example = "The judges must be")
-	public String text;
+  /**
+   * The text of the question.
+   */
+  @Schema(description = "The text of the question", example = "The judges must be")
+  public String text;
 
-	/**
-	 * The text that helps to the users to answer the question.
-	 */
-	@Schema(
-			description = "A message to help to answer the question",
-			example = "Example: If a judge judges your brother, you must follow the laws that apply to everyone equally.")
-	public String help;
+  /**
+   * The text that helps to the users to answer the question.
+   */
+  @Schema(description = "A message to help to answer the question", example = "Example: If a judge judges your brother, you must follow the laws that apply to everyone equally.")
+  public String help;
 
-	/**
-	 * The possible answers for the question.
-	 */
-	@ArraySchema(
-			schema = @Schema(implementation = Answer.class),
-			arraySchema = @Schema(description = "The possible answers for the question"))
-	public List<Answer> answers;
+  /**
+   * The possible answers for the question.
+   */
+  @ArraySchema(schema = @Schema(implementation = Answer.class), arraySchema = @Schema(description = "The possible answers for the question"))
+  public List<Answer> answers;
 
 }

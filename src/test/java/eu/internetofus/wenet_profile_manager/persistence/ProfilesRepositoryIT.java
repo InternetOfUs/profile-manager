@@ -106,7 +106,7 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(new WeNetUserProfile(), testContext.succeeding(storedProfile -> {
 
       repository.searchProfile(storedProfile.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -129,7 +129,7 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> {
 
       repository.searchProfileObject(storedProfile.getString("id"), testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -181,10 +181,10 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldStoreProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var profile = new WeNetUserProfile();
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile).isNotNull();
@@ -207,12 +207,12 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldStoreProfileWithAnId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String id = UUID.randomUUID().toString();
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var id = UUID.randomUUID().toString();
+    final var profile = new WeNetUserProfile();
     profile.id = id;
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile.id).isEqualTo(id);
@@ -234,10 +234,10 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldNotStoreTwoProfileWithTheSameId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String id = UUID.randomUUID().toString();
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var id = UUID.randomUUID().toString();
+    final var profile = new WeNetUserProfile();
     profile.id = id;
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       repository.storeProfile(profile, testContext.failing(error -> testContext.completeNow()));
@@ -257,11 +257,11 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldStoreProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final long now = TimeManager.now();
+    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile).isNotNull();
-      final String id = storedProfile.getString("id");
+      final var id = storedProfile.getString("id");
       assertThat(id).isNotEmpty();
       assertThat(storedProfile.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
       assertThat(storedProfile.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
@@ -281,7 +281,7 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldNotUpdateUndefinedProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var profile = new WeNetUserProfile();
     profile.id = "undefined user identifier";
     ProfilesRepository.createProxy(vertx).updateProfile(profile, testContext.failing(failed -> {
       testContext.completeNow();
@@ -300,7 +300,7 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldNotUpdateUndefinedProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final JsonObject profile = new JsonObject().put("id", "undefined user identifier");
+    final var profile = new JsonObject().put("id", "undefined user identifier");
     ProfilesRepository.createProxy(vertx).updateProfile(profile, testContext.failing(failed -> {
       testContext.completeNow();
     }));
@@ -347,13 +347,13 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldUpdateProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final WeNetUserProfile profile = new WeNetUserProfile();
+    final var profile = new WeNetUserProfile();
     profile.occupation = "Doctor";
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(profile, testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final long now = TimeManager.now();
-      final WeNetUserProfile update = new WeNetUserProfileTest().createModelExample(23);
+      final var now = TimeManager.now();
+      final var update = new WeNetUserProfileTest().createModelExample(23);
       update.id = stored.id;
       update._creationTs = stored._creationTs;
       update._lastUpdateTs = 1;
@@ -386,11 +386,11 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldUpdateProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(new JsonObject().put("nationality", "Italian"), testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final String id = stored.getString("id");
-      final JsonObject update = new JsonObject().put("id", id).put("occupation", "Unemployed");
+      final var id = stored.getString("id");
+      final var update = new JsonObject().put("id", id).put("occupation", "Unemployed");
       repository.updateProfile(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
         repository.searchProfileObject(id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
@@ -433,10 +433,10 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldDeleteProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(new JsonObject(), testContext.succeeding(stored -> {
 
-      final String id = stored.getString("id");
+      final var id = stored.getString("id");
       repository.deleteProfile(id, testContext.succeeding(success -> {
 
         repository.searchProfileObject(id, testContext.failing(search -> {
@@ -490,7 +490,7 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldStoreHistoricProfile(final Vertx vertx, final VertxTestContext testContext) {
 
-    final HistoricWeNetUserProfile profile = new HistoricWeNetUserProfile();
+    final var profile = new HistoricWeNetUserProfile();
     ProfilesRepository.createProxy(vertx).storeHistoricProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile).isNotNull();
@@ -529,8 +529,8 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldNotFoundAnyHistoricProfileFromAnUdefinedId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery("undefined user identifier", 0l, Long.MAX_VALUE);
-    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("-");
+    final var query = ProfilesRepository.createProfileHistoricPageQuery("undefined user identifier", 0l, Long.MAX_VALUE);
+    final var sort = ProfilesRepository.createProfileHistoricPageSort("-");
     ProfilesRepository.createProxy(vertx).searchHistoricProfilePage(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
       assertThat(found.offset).isEqualTo(0);
       assertThat(found.total).isEqualTo(0);
@@ -551,8 +551,8 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldNotFoundAnyHistoricProfileObjectFromAnUdefinedId(final Vertx vertx, final VertxTestContext testContext) {
 
-    final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery("undefined user identifier", 0l, Long.MAX_VALUE);
-    final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+    final var query = ProfilesRepository.createProfileHistoricPageQuery("undefined user identifier", 0l, Long.MAX_VALUE);
+    final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
     ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
       assertThat(found.getLong("offset")).isEqualTo(0);
       assertThat(found.getLong("total")).isEqualTo(0);
@@ -573,20 +573,20 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePage(final Vertx vertx, final VertxTestContext testContext) {
 
-    final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfile();
+    final var historic = new HistoricWeNetUserProfile();
     historic.from = 10000;
     historic.to = 1000000;
     historic.profile = new WeNetUserProfileTest().createBasicExample(1);
-    final String id = UUID.randomUUID().toString();
+    final var id = UUID.randomUUID().toString();
     historic.profile.id = id;
-    final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+    final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeHistoricProfile(historic, testContext.succeeding(storedProfile -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(id, 0l, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("-");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(id, 0l, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("-");
       repository.searchHistoricProfilePage(query, sort, 0, 100, testContext.succeeding(foundProfile -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+        final var page = new HistoricWeNetUserProfilesPage();
         page.total = 1;
         page.offset = 0;
         page.profiles = new ArrayList<>();
@@ -610,14 +610,14 @@ public class ProfilesRepositoryIT {
    */
   public static void createProfilePage(final Vertx vertx, final String userId, final HistoricWeNetUserProfilesPage page, final VertxTestContext testContext, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> creationHandler) {
 
-    final int numProfiles = page.profiles.size();
+    final var numProfiles = page.profiles.size();
     if (page.total == numProfiles) {
 
       creationHandler.handle(Future.succeededFuture(page));
 
     } else {
 
-      final HistoricWeNetUserProfile historic = new HistoricWeNetUserProfileTest().createModelExample(page.profiles.size());
+      final var historic = new HistoricWeNetUserProfileTest().createModelExample(page.profiles.size());
       historic.from = numProfiles * 10000;
       historic.to = (1 + numProfiles) * 10000;
       historic.profile.id = userId;
@@ -643,17 +643,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0l, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0l, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         assertThat(foundModel).isEqualTo(created);
         testContext.completeNow();
       })));
@@ -673,17 +673,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectWithFrom(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 70000L, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 70000L, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         created.total = 13;
         created.profiles = created.profiles.subList(7, 20);
         assertThat(foundModel).isEqualTo(created);
@@ -705,17 +705,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectWithTo(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, 70000L);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, 70000L);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         created.total = 7;
         created.profiles = created.profiles.subList(0, 7);
         assertThat(foundModel).isEqualTo(created);
@@ -737,17 +737,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectOnDescendingOrder(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("-");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("-");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         Collections.reverse(created.profiles);
         assertThat(foundModel).isEqualTo(created);
         testContext.completeNow();
@@ -768,17 +768,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectWithOffset(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 5, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         created.profiles = created.profiles.subList(5, 20);
         created.offset = 5;
         assertThat(foundModel).isEqualTo(created);
@@ -800,17 +800,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectWithOffsetBiggerThanTotal(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 21, 100, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         created.profiles = null;
         created.offset = 21;
         assertThat(foundModel).isEqualTo(created);
@@ -832,17 +832,17 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldFoundHistoricProfilePageObjectWithLimit(final Vertx vertx, final VertxTestContext testContext) {
 
-    final String userId = UUID.randomUUID().toString();
-    final HistoricWeNetUserProfilesPage page = new HistoricWeNetUserProfilesPage();
+    final var userId = UUID.randomUUID().toString();
+    final var page = new HistoricWeNetUserProfilesPage();
     page.total = 20;
     page.profiles = new ArrayList<>();
     createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
-      final JsonObject query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
-      final JsonObject sort = ProfilesRepository.createProfileHistoricPageSort("+");
+      final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, 0L, Long.MAX_VALUE);
+      final var sort = ProfilesRepository.createProfileHistoricPageSort("+");
       ProfilesRepository.createProxy(vertx).searchHistoricProfilePageObject(query, sort, 0, 10, testContext.succeeding(found -> testContext.verify(() -> {
 
-        final HistoricWeNetUserProfilesPage foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
+        final var foundModel = Model.fromJsonObject(found, HistoricWeNetUserProfilesPage.class);
         created.profiles = created.profiles.subList(0, 10);
         assertThat(foundModel).isEqualTo(created);
         testContext.completeNow();
@@ -864,9 +864,9 @@ public class ProfilesRepositoryIT {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
 
-      final WeNetUserProfile emptyProfile = new WeNetUserProfile();
+      final var emptyProfile = new WeNetUserProfile();
       emptyProfile.id = profile.id;
-      final ProfilesRepository repository = ProfilesRepository.createProxy(vertx);
+      final var repository = ProfilesRepository.createProxy(vertx);
       repository.updateProfile(emptyProfile, testContext.succeeding(stored -> {
 
         repository.searchProfile(profile.id, testContext.succeeding(found -> testContext.verify(() -> {

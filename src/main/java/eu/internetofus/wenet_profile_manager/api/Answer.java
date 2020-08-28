@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -36,17 +37,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class Answer extends Model {
+public class Answer extends ReflectionModel implements Model {
 
-	/**
-	 * The text of the answer.
-	 */
-	@Schema(description = "The text of the answer", example = "Compassionate")
-	public String text;
+  /**
+   * The text of the answer.
+   */
+  @Schema(description = "The text of the answer", example = "Compassionate")
+  public String text;
 
-	/**
-	 * The value associated to the answer.
-	 */
-	@Schema(description = "The value associated with the answer", example = "-1")
-	public double value;
+  /**
+   * The value associated to the answer.
+   */
+  @Schema(description = "The value associated with the answer", example = "-1")
+  public double value;
 }

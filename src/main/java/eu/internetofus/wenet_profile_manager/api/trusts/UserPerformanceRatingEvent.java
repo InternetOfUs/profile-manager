@@ -27,15 +27,14 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ReflectionModel;
 import eu.internetofus.common.components.Validable;
 import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.Validations;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.service.WeNetService;
-import eu.internetofus.common.components.task_manager.Task;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
@@ -48,7 +47,7 @@ import io.vertx.core.Vertx;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(description = "The event is used to rate the performance of an user over a task that it has done in WeNet.")
-public class UserPerformanceRatingEvent extends Model implements Validable {
+public class UserPerformanceRatingEvent extends ReflectionModel implements Model, Validable {
 
   /**
    * The identifier of the user that provide the performance.
@@ -112,7 +111,7 @@ public class UserPerformanceRatingEvent extends Model implements Validable {
   public Future<Void> validate(final String codePrefix, final Vertx vertx) {
 
     final Promise<Void> promise = Promise.promise();
-    Future<Void> future = promise.future();
+    var future = promise.future();
     if (this.rating == null) {
 
       promise.fail(new ValidationErrorException(codePrefix + ".rating", "You must define the rating value."));
@@ -148,8 +147,8 @@ public class UserPerformanceRatingEvent extends Model implements Validable {
 
               } else {
 
-                final WeNetUserProfile profile = search.result();
-                boolean validRelationship = true;
+                final var profile = search.result();
+                var validRelationship = true;
                 if (this.relationship != null) {
 
                   validRelationship = false;
@@ -273,7 +272,7 @@ public class UserPerformanceRatingEvent extends Model implements Validable {
 
                 } else {
 
-                  final Task task = retrieve.result();
+                  final var task = retrieve.result();
                   if (this.appId != null && !this.appId.equals(task.appId)) {
 
                     verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));

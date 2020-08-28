@@ -49,44 +49,42 @@ import io.vertx.junit5.VertxTestContext;
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class QuestionnaireResourcesTest {
 
-	/**
-	 * Check fail retrieve questionnaire because it can not get it.
-	 *
-	 * @param vertx       environment to execute the actions.
-	 * @param testContext test context.
-	 */
-	@Test
-	public void shouldReplyWithErrorBecauseCannotObtainQuestionnaire(Vertx vertx, VertxTestContext testContext) {
+  /**
+   * Check fail retrieve questionnaire because it can not get it.
+   *
+   * @param vertx       environment to execute the actions.
+   * @param testContext test context.
+   */
+  @Test
+  public void shouldReplyWithErrorBecauseCannotObtainQuestionnaire(final Vertx vertx, final VertxTestContext testContext) {
 
-		final OperationRequest request = new OperationRequest();
-		QuestionnaireResources.retrieveQuestionnaire(lang -> lang, vertx, request, testContext.succeeding(retrieve -> {
+    final var request = new OperationRequest();
+    QuestionnaireResources.retrieveQuestionnaire(lang -> lang, vertx, request, testContext.succeeding(retrieve -> {
 
-			assertThat(retrieve.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-			testContext.completeNow();
-		}));
+      assertThat(retrieve.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
-	/**
-	 * Check fail retrieve questionnaire because it can not get it.
-	 *
-	 * @param vertx       environment to execute the actions.
-	 * @param testContext test context.
-	 */
-	@Test
-	public void shouldReplyQuestionnaire(Vertx vertx, VertxTestContext testContext) {
+  /**
+   * Check fail retrieve questionnaire because it can not get it.
+   *
+   * @param vertx       environment to execute the actions.
+   * @param testContext test context.
+   */
+  @Test
+  public void shouldReplyQuestionnaire(final Vertx vertx, final VertxTestContext testContext) {
 
-		final OperationRequest request = new OperationRequest();
-		QuestionnaireResources.retrieveQuestionnaire(
-				lang -> "eu/internetofus/wenet_profile_manager/api/Questionnaire.100.json", vertx, request,
-				testContext.succeeding(retrieve -> {
+    final var request = new OperationRequest();
+    QuestionnaireResources.retrieveQuestionnaire(lang -> "eu/internetofus/wenet_profile_manager/api/Questionnaire.100.json", vertx, request, testContext.succeeding(retrieve -> {
 
-					assertThat(retrieve.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
-					final Questionnaire questionnaire = Model.fromBuffer(retrieve.getPayload(), Questionnaire.class);
-					assertThat(questionnaire).isEqualTo(new QuestionnaireTest().createModelExample(100));
-					testContext.completeNow();
-				}));
+      assertThat(retrieve.getStatusCode()).isEqualTo(Status.OK.getStatusCode());
+      final var questionnaire = Model.fromBuffer(retrieve.getPayload(), Questionnaire.class);
+      assertThat(questionnaire).isEqualTo(new QuestionnaireTest().createModelExample(100));
+      testContext.completeNow();
+    }));
 
-	}
+  }
 
 }

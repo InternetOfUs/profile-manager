@@ -38,7 +38,6 @@ import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.OperationRequest;
 import io.vertx.ext.web.api.OperationResponse;
@@ -138,16 +137,16 @@ public class IntelligencesResource implements Intelligences {
   @Override
   public void calculateGardnerIntelligences(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final QuestionnaireAnswers questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
+    final var questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
     if (questionnaireAnswers.answerValues == null || questionnaireAnswers.answerValues.size() != QUESTION_FACTORS.length) {
 
       OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
           "To calculate the Gardner intelligences it is necessary the " + QUESTION_FACTORS.length + " responses of the intelligences questionnaire test.");
     } else {
 
-      final double[] total = new double[FACTOR_NAMES.length];
-      final int[] quantity = new int[FACTOR_NAMES.length];
-      for (int index = 0; index < QUESTION_FACTORS.length; index++) {
+      final var total = new double[FACTOR_NAMES.length];
+      final var quantity = new int[FACTOR_NAMES.length];
+      for (var index = 0; index < QUESTION_FACTORS.length; index++) {
 
         final double value = questionnaireAnswers.answerValues.get(index);
         if (value < 0d || value > 1d) {
@@ -156,7 +155,7 @@ public class IntelligencesResource implements Intelligences {
           return;
 
         }
-        final int factor = QUESTION_FACTORS[index];
+        final var factor = QUESTION_FACTORS[index];
         total[factor] += value;
         quantity[factor]++;
       }
@@ -174,7 +173,7 @@ public class IntelligencesResource implements Intelligences {
 
       }
 
-      final JsonArray array = Model.toJsonArray(intelligences);
+      final var array = Model.toJsonArray(intelligences);
       OperationReponseHandlers.responseOk(resultHandler, array);
 
     }
