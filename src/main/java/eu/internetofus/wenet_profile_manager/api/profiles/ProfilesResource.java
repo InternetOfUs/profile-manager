@@ -115,7 +115,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void createProfile(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.createModel(this.vertx, WeNetUserProfile.class, body, "profile", this.repository::storeProfile, context, resultHandler, storedModel -> {
+    ModelResources.createModelChain(this.vertx, WeNetUserProfile.class, body, "profile", this.repository::storeProfile, context, resultHandler, storedModel -> {
 
       OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedModel);
 
@@ -141,77 +141,24 @@ public class ProfilesResource implements Profiles {
   @Override
   public void updateProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final var source = Model.fromJsonObject(body, WeNetUserProfile.class);
-    if (source == null) {
+    ModelResources.updateModelChain(this.vertx, userId, "profile", WeNetUserProfile.class, body, this.repository::searchProfile, this.repository::updateProfile, context, resultHandler, (target, updated) -> {
 
-      Logger.debug("The {} is not a valid WeNetUserProfile to update.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_profile_to_update", "The profile to update is not right.");
+      final var historic = new HistoricWeNetUserProfile();
+      historic.from = target._lastUpdateTs;
+      historic.to = TimeManager.now();
+      historic.profile = target;
+      this.repository.storeHistoricProfile(historic, store -> {
 
-    } else {
+        if (store.failed()) {
 
-      this.repository.searchProfile(userId, search -> {
-
-        final var target = search.result();
-        if (target == null) {
-
-          Logger.debug(search.cause(), "Not found profile {} to update", userId);
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_profile_to_update", "You can not update the profile of the user '" + userId + "', because it does not exist.");
-
-        } else {
-
-          source.id = null;
-          source.validate("bad_new_profile", this.vertx).onComplete(validate -> {
-
-            if (validate.failed()) {
-
-              final var cause = validate.cause();
-              Logger.debug(cause, "Cannot update {} with {}.", target, source);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              source.id = target.id;
-              source._creationTs = target._creationTs;
-              source._lastUpdateTs = target._lastUpdateTs;
-              if (source.equals(target)) {
-
-                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "profile_to_update_equal_to_original",
-                    "You can not update the profile of the user '" + userId + "', because the new values is equals to the current one.");
-
-              } else {
-
-                this.repository.updateProfile(source, update -> {
-
-                  if (update.failed()) {
-
-                    final var cause = update.cause();
-                    Logger.debug(cause, "Cannot update {}.", target);
-                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-                  } else {
-
-                    final var historic = new HistoricWeNetUserProfile();
-                    historic.from = target._lastUpdateTs;
-                    historic.to = TimeManager.now();
-                    historic.profile = target;
-                    this.repository.storeHistoricProfile(historic, store -> {
-
-                      if (store.failed()) {
-
-                        Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
-                      }
-                      source._lastUpdateTs = historic.to;
-                      OperationReponseHandlers.responseOk(resultHandler, source);
-
-                    });
-                  }
-                });
-              }
-            }
-          });
+          Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
         }
+        updated._lastUpdateTs = historic.to;
+        OperationReponseHandlers.responseOk(resultHandler, updated);
+
       });
-    }
+
+    });
 
   }
 
@@ -221,7 +168,7 @@ public class ProfilesResource implements Profiles {
   @Override
   public void mergeProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.mergeModel(this.vertx, userId, "profile", WeNetUserProfile.class, this.repository::searchProfile, body, this.repository::updateProfile, context, resultHandler, (source, target, merged) -> {
+    ModelResources.mergeModelChain(this.vertx, userId, "profile", WeNetUserProfile.class, this.repository::searchProfile, body, this.repository::updateProfile, context, resultHandler, (source, target, merged) -> {
 
       final var historic = new HistoricWeNetUserProfile();
       historic.from = target._lastUpdateTs;

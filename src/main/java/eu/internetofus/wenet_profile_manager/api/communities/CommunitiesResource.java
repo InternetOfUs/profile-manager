@@ -26,12 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.tinylog.Logger;
-
 import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
@@ -98,68 +93,12 @@ public class CommunitiesResource implements Communities {
   @Override
   public void updateCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final var source = Model.fromJsonObject(body, CommunityProfile.class);
-    if (source == null) {
+    ModelResources.updateModelChain(this.vertx, id, "community", CommunityProfile.class, body, this.repository::searchCommunity, this.repository::updateCommunity, context, resultHandler, (targetModel, updatedModel) -> {
 
-      Logger.debug("The {} is not a valid CommunityProfile to update.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_community_to_update", "The community to update is not right.");
+      updatedModel._lastUpdateTs = TimeManager.now();
+      OperationReponseHandlers.responseOk(resultHandler, updatedModel);
 
-    } else {
-
-      this.repository.searchCommunity(id, search -> {
-
-        final var target = search.result();
-        if (target == null) {
-
-          Logger.debug(search.cause(), "Not found community {} to update", id);
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "not_found_community_to_update", "You can not update the community associated to the identifier '" + id + "', because it does not exist.");
-
-        } else {
-
-          source.id = null;
-          source.validate("bad_new_community", this.vertx).onComplete(validate -> {
-
-            if (validate.failed()) {
-
-              final var cause = validate.cause();
-              Logger.debug(cause, "Cannot update {} with {}.", target, source);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-            } else {
-
-              source.id = target.id;
-              source._creationTs = target._creationTs;
-              source._lastUpdateTs = target._lastUpdateTs;
-              if (source.equals(target)) {
-
-                OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "community_to_update_equal_to_original",
-                    "You can not update the community of the '" + id + "', because the new values is equals to the current one.");
-
-              } else {
-
-                this.repository.updateCommunity(source, update -> {
-
-                  if (update.failed()) {
-
-                    final var cause = update.cause();
-                    Logger.debug(cause, "Cannot update {}.", target);
-                    OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
-
-                  } else {
-
-                    source._creationTs = target._lastUpdateTs;
-                    source._lastUpdateTs = TimeManager.now();
-                    OperationReponseHandlers.responseOk(resultHandler, source);
-
-                  }
-                });
-              }
-            }
-          });
-        }
-      });
-    }
-
+    });
   }
 
   /**
@@ -168,7 +107,12 @@ public class CommunitiesResource implements Communities {
   @Override
   public void mergeCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.mergeModel(this.vertx, id, "community", CommunityProfile.class, this.repository::searchCommunity, body, this.repository::updateCommunity, context, resultHandler);
+    ModelResources.mergeModelChain(this.vertx, id, "community", CommunityProfile.class, this.repository::searchCommunity, body, this.repository::updateCommunity, context, resultHandler, (sourceModel, targetModel, mergedModel) -> {
+
+      mergedModel._lastUpdateTs = TimeManager.now();
+      OperationReponseHandlers.responseOk(resultHandler, mergedModel);
+
+    });
 
   }
 
