@@ -28,7 +28,9 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelResources;
+import eu.internetofus.common.vertx.OperationContext;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepository;
 import io.vertx.core.AsyncResult;
@@ -68,12 +70,16 @@ public class CommunitiesResource implements Communities {
   }
 
   /**
-   * {@inheritDoc}
+   * Create the community context.
+   *
+   * @return the context of the {@link CommunityProfile}.
    */
-  @Override
-  public void createCommunity(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  protected ModelContext<CommunityProfile, String> createCommunityContext() {
 
-    ModelResources.createModel(this.vertx, CommunityProfile.class, body, "community", this.repository::storeCommunity, context, resultHandler);
+    final var context = new ModelContext<CommunityProfile, String>();
+    context.name = "community";
+    context.type = CommunityProfile.class;
+    return context;
 
   }
 
@@ -81,9 +87,11 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCommunity(final String id, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void createCommunity(final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.retrieveModel(this.repository::searchCommunity, id, "community", context, resultHandler);
+    final var model = this.createCommunityContext();
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.createModel(this.vertx, body, model, this.repository::storeCommunity, context);
 
   }
 
@@ -91,12 +99,28 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void updateCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunity(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.updateModelChain(this.vertx, id, "community", CommunityProfile.class, body, this.repository::searchCommunity, this.repository::updateCommunity, context, resultHandler, (targetModel, updatedModel) -> {
+    final var model = this.createCommunityContext();
+    model.id = id;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.retrieveModel(model, this.repository::searchCommunity, context);
 
-      updatedModel._lastUpdateTs = TimeManager.now();
-      OperationReponseHandlers.responseOk(resultHandler, updatedModel);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateCommunity(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var model = this.createCommunityContext();
+    model.id = id;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchCommunity, this.repository::updateCommunity, context, () -> {
+
+      model.value._lastUpdateTs = TimeManager.now();
+      OperationReponseHandlers.responseOk(resultHandler, model.value);
 
     });
   }
@@ -105,12 +129,15 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void mergeCommunity(final String id, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeCommunity(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.mergeModelChain(this.vertx, id, "community", CommunityProfile.class, this.repository::searchCommunity, body, this.repository::updateCommunity, context, resultHandler, (sourceModel, targetModel, mergedModel) -> {
+    final var model = this.createCommunityContext();
+    model.id = id;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchCommunity, this.repository::updateCommunity, context, () -> {
 
-      mergedModel._lastUpdateTs = TimeManager.now();
-      OperationReponseHandlers.responseOk(resultHandler, mergedModel);
+      model.value._lastUpdateTs = TimeManager.now();
+      OperationReponseHandlers.responseOk(resultHandler, model.value);
 
     });
 
@@ -120,9 +147,13 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void deleteCommunity(final String id, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteCommunity(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.deleteModel(this.repository::deleteCommunity, id, "community", context, resultHandler);
+    final var model = this.createCommunityContext();
+    model.id = id;
+    final var context = new OperationContext(request, resultHandler);
+
+    ModelResources.deleteModel(model, this.repository::deleteCommunity, context);
 
   }
 
@@ -130,7 +161,7 @@ public class CommunitiesResource implements Communities {
   // * {@inheritDoc}
   // */
   // @Override
-  // public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest context, final
+  // public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest request, final
   // Handler<AsyncResult<OperationResponse>> resultHandler) {
   //
   // this.addModelToProfile(SocialPractice.class, body, "social_practice", userId, profile -> profile.socialPractices,
@@ -143,7 +174,7 @@ public class CommunitiesResource implements Communities {
   // * {@inheritDoc}
   // */
   // @Override
-  // public void retrieveSocialPractices(final String userId, final OperationRequest context, final
+  // public void retrieveSocialPractices(final String userId, final OperationRequest request, final
   // Handler<AsyncResult<OperationResponse>> resultHandler) {
   //
   // this.retrieveModelsFromProfile(userId, profile -> profile.socialPractices, resultHandler);
@@ -167,7 +198,7 @@ public class CommunitiesResource implements Communities {
   // */
   // @Override
   // public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final
-  // OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  // OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
   //
   // this.updateModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile ->
   // profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)),
@@ -181,7 +212,7 @@ public class CommunitiesResource implements Communities {
   // */
   // @Override
   // public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final
-  // OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  // OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
   //
   // this.mergeModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile ->
   // profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)),
@@ -194,7 +225,7 @@ public class CommunitiesResource implements Communities {
   // * {@inheritDoc}
   // */
   // @Override
-  // public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest context,
+  // public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest request,
   // final Handler<AsyncResult<OperationResponse>> resultHandler) {
   //
   // this.deleteModelFromProfile(userId, "social_practice", profile -> profile.socialPractices,

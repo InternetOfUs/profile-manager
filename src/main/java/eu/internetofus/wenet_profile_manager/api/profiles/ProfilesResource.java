@@ -52,7 +52,9 @@ import eu.internetofus.common.components.profile_manager.Routine;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
+import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelResources;
+import eu.internetofus.common.vertx.OperationContext;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
@@ -100,12 +102,16 @@ public class ProfilesResource implements Profiles {
   }
 
   /**
-   * {@inheritDoc}
+   * Create the profile context.
+   *
+   * @return the context of the {@link WeNetUserProfile}.
    */
-  @Override
-  public void retrieveProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  protected ModelContext<WeNetUserProfile, String> createProfileContext() {
 
-    ModelResources.retrieveModel(this.repository::searchProfile, userId, "profile", context, resultHandler);
+    final var context = new ModelContext<WeNetUserProfile, String>();
+    context.name = "profile";
+    context.type = WeNetUserProfile.class;
+    return context;
 
   }
 
@@ -113,22 +119,37 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void createProfile(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfile(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.createModelChain(this.vertx, WeNetUserProfile.class, body, "profile", this.repository::storeProfile, context, resultHandler, storedModel -> {
+    final var model = this.createProfileContext();
+    model.id = userId;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.retrieveModel(model, this.repository::searchProfile, context);
 
-      OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedModel);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void createProfile(final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var model = this.createProfileContext();
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.createModelChain(this.vertx, body, model, this.repository::storeProfile, context, () -> {
+
+      OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
 
       // Update the social context of the created user
-      WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(storedModel.id, retrieve -> {
+      WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(model.value.id, retrieve -> {
 
         if (retrieve.failed()) {
 
-          Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", storedModel);
+          Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", () -> model.value.id);
 
         } else {
 
-          Logger.trace("Obtained for the user {} the next social relations {}.", () -> storedModel.id, () -> retrieve.result());
+          Logger.trace("Obtained for the user {} the next social relations {}.", () -> model.value.id, () -> retrieve.result());
         }
       });
     });
@@ -139,22 +160,25 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfile(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.updateModelChain(this.vertx, userId, "profile", WeNetUserProfile.class, body, this.repository::searchProfile, this.repository::updateProfile, context, resultHandler, (target, updated) -> {
+    final var model = this.createProfileContext();
+    model.id = userId;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchProfile, this.repository::updateProfile, context, () -> {
 
       final var historic = new HistoricWeNetUserProfile();
-      historic.from = target._lastUpdateTs;
+      historic.from = model.target._lastUpdateTs;
       historic.to = TimeManager.now();
-      historic.profile = target;
+      historic.profile = model.target;
       this.repository.storeHistoricProfile(historic, store -> {
 
         if (store.failed()) {
 
           Logger.debug(store.cause(), "Cannot store the updated profile as historic.");
         }
-        updated._lastUpdateTs = historic.to;
-        OperationReponseHandlers.responseOk(resultHandler, updated);
+        model.value._lastUpdateTs = historic.to;
+        OperationReponseHandlers.responseOk(resultHandler, model.value);
 
       });
 
@@ -166,25 +190,41 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfile(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfile(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    ModelResources.mergeModelChain(this.vertx, userId, "profile", WeNetUserProfile.class, this.repository::searchProfile, body, this.repository::updateProfile, context, resultHandler, (source, target, merged) -> {
+    final var model = this.createProfileContext();
+    model.id = userId;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchProfile, this.repository::updateProfile, context, () -> {
 
       final var historic = new HistoricWeNetUserProfile();
-      historic.from = target._lastUpdateTs;
+      historic.from = model.target._lastUpdateTs;
       historic.to = TimeManager.now();
-      historic.profile = target;
+      historic.profile = model.target;
       this.repository.storeHistoricProfile(historic, store -> {
 
         if (store.failed()) {
 
           Logger.debug(store.cause(), "Cannot store the merged profile as historic.");
         }
-        OperationReponseHandlers.responseOk(resultHandler, merged);
+        model.value._lastUpdateTs = historic.to;
+        OperationReponseHandlers.responseOk(resultHandler, model.value);
 
       });
 
     });
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteProfile(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var model = this.createProfileContext();
+    model.id = userId;
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.deleteModel(model, this.repository::deleteProfile, context);
 
   }
 
@@ -192,17 +232,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfile(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-
-    ModelResources.deleteModel(this.repository::deleteProfile, userId, "profile", context, resultHandler);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order, final int offset, final int limit, final OperationRequest context,
+  public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order, final int offset, final int limit, final OperationRequest request,
       final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
@@ -384,7 +414,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addNorm(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addNorm(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(Norm.class, body, "norm", userId, profile -> profile.norms, (profile, norms) -> profile.norms = norms, (norm1, norm2) -> norm1.id.equals(norm2.id), resultHandler);
 
@@ -394,7 +424,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorms(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveNorms(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.norms, resultHandler);
 
@@ -435,7 +465,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.norms, norm -> norm.id.equals(normId)), "norm", resultHandler);
 
@@ -507,7 +537,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body.put("id", normId), Norm.class, profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), "norm", resultHandler);
 
@@ -595,7 +625,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body.put("id", normId), Norm.class, profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), "norm", resultHandler);
 
@@ -665,7 +695,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteNorm(final String userId, final String normId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "norm", profile -> profile.norms, this.searchModelIndexById(norm -> norm.id.equals(normId)), resultHandler);
 
@@ -711,7 +741,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addPlannedActivity(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addPlannedActivity(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(PlannedActivity.class, body, "planned_activity", userId, profile -> profile.plannedActivities, (profile, plannedActivities) -> profile.plannedActivities = plannedActivities,
         (plannedActivity1, plannedActivity2) -> plannedActivity1.id.equals(plannedActivity2.id), resultHandler);
@@ -722,7 +752,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePlannedActivities(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrievePlannedActivities(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.plannedActivities, resultHandler);
 
@@ -732,7 +762,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.plannedActivities, plannedActivity -> plannedActivity.id.equals(plannedActivityId)), "planned_activity", resultHandler);
 
@@ -742,7 +772,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body.put("id", plannedActivityId), PlannedActivity.class, profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)),
         "planned_activity", resultHandler);
@@ -753,7 +783,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body.put("id", plannedActivityId), PlannedActivity.class, profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)),
         "planned_activity", resultHandler);
@@ -764,7 +794,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "planned_activity", profile -> profile.plannedActivities, this.searchModelIndexById(plannedActivity -> plannedActivity.id.equals(plannedActivityId)), resultHandler);
 
@@ -774,7 +804,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addRelevantLocation(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addRelevantLocation(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(RelevantLocation.class, body, "relevant_location", userId, profile -> profile.relevantLocations, (profile, relevantLocations) -> profile.relevantLocations = relevantLocations,
         (relevantLocation1, relevantLocation2) -> relevantLocation1.id.equals(relevantLocation2.id), resultHandler);
@@ -785,7 +815,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelevantLocations(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveRelevantLocations(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.relevantLocations, resultHandler);
 
@@ -795,7 +825,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.relevantLocations, relevantLocation -> relevantLocation.id.equals(relevantLocationId)), "relevant_location", resultHandler);
 
@@ -805,7 +835,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body.put("id", relevantLocationId), RelevantLocation.class, profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)),
         "relevant_location", resultHandler);
@@ -816,7 +846,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body.put("id", relevantLocationId), RelevantLocation.class, profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)),
         "relevant_location", resultHandler);
@@ -827,7 +857,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "relevant_location", profile -> profile.relevantLocations, this.searchModelIndexById(relevantLocation -> relevantLocation.id.equals(relevantLocationId)), resultHandler);
 
@@ -837,7 +867,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addRelationship(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addRelationship(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(SocialNetworkRelationship.class, body, "relationship", userId, profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships,
         (relationship1, relationship2) -> relationship1.equals(relationship2), resultHandler);
@@ -848,7 +878,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelationships(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveRelationships(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.relationships, resultHandler);
 
@@ -858,7 +888,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelationship(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.relationships), "relationship", resultHandler);
 
@@ -920,7 +950,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateRelationship(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body, SocialNetworkRelationship.class, profile -> profile.relationships, this.checkIndexOnModels(index), "relationship", resultHandler);
 
@@ -930,7 +960,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeRelationship(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body, SocialNetworkRelationship.class, profile -> profile.relationships, this.checkIndexOnModels(index), "relationship", resultHandler);
 
@@ -940,7 +970,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteRelationship(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "relationship", profile -> profile.relationships, this.checkIndexOnModels(index), resultHandler);
 
@@ -950,7 +980,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addPersonalBehavior(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addPersonalBehavior(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(Routine.class, body, "personal_behaviour", userId, profile -> profile.personalBehaviors, (profile, personalBehaviors) -> profile.personalBehaviors = personalBehaviors,
         (personalBehavior1, personalBehavior2) -> personalBehavior1.equals(personalBehavior2), resultHandler);
@@ -961,7 +991,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePersonalBehaviors(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrievePersonalBehaviors(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.personalBehaviors, resultHandler);
 
@@ -971,7 +1001,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrievePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.personalBehaviors), "personal_behaviour", resultHandler);
 
@@ -981,7 +1011,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updatePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updatePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body, Routine.class, profile -> profile.personalBehaviors, this.checkIndexOnModels(index), "personal_behaviour", resultHandler);
 
@@ -991,7 +1021,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body, Routine.class, profile -> profile.personalBehaviors, this.checkIndexOnModels(index), "personal_behaviour", resultHandler);
 
@@ -1001,7 +1031,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deletePersonalBehavior(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deletePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "personal_behaviour", profile -> profile.personalBehaviors, this.checkIndexOnModels(index), resultHandler);
   }
@@ -1010,7 +1040,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addMaterial(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addMaterial(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(Material.class, body, "material", userId, profile -> profile.materials, (profile, materials) -> profile.materials = materials, (material1, material2) -> material1.equals(material2), resultHandler);
 
@@ -1020,7 +1050,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMaterials(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveMaterials(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.materials, resultHandler);
 
@@ -1030,7 +1060,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMaterial(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.materials), "material", resultHandler);
 
@@ -1040,7 +1070,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateMaterial(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body, Material.class, profile -> profile.materials, this.checkIndexOnModels(index), "material", resultHandler);
 
@@ -1050,7 +1080,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeMaterial(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body, Material.class, profile -> profile.materials, this.checkIndexOnModels(index), "material", resultHandler);
 
@@ -1060,7 +1090,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteMaterial(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "material", profile -> profile.materials, this.checkIndexOnModels(index), resultHandler);
   }
@@ -1069,7 +1099,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addCompetence(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addCompetence(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(Competence.class, body, "competence", userId, profile -> profile.competences, (profile, competences) -> profile.competences = competences, (competence1, competence2) -> competence1.equals(competence2),
         resultHandler);
@@ -1080,7 +1110,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCompetences(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCompetences(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.competences, resultHandler);
 
@@ -1090,7 +1120,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCompetence(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.competences), "competence", resultHandler);
 
@@ -1100,7 +1130,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateCompetence(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body, Competence.class, profile -> profile.competences, this.checkIndexOnModels(index), "competence", resultHandler);
 
@@ -1110,7 +1140,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeCompetence(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body, Competence.class, profile -> profile.competences, this.checkIndexOnModels(index), "competence", resultHandler);
 
@@ -1120,7 +1150,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteCompetence(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "competence", profile -> profile.competences, this.checkIndexOnModels(index), resultHandler);
   }
@@ -1129,7 +1159,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addMeaning(final String userId, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addMeaning(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.addModelToProfile(Meaning.class, body, "meaning", userId, profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings, (meaning1, meaning2) -> meaning1.equals(meaning2), resultHandler);
 
@@ -1139,7 +1169,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMeanings(final String userId, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveMeanings(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelsFromProfile(userId, profile -> profile.meanings, resultHandler);
 
@@ -1149,7 +1179,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMeaning(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.retrieveModelFromProfile(userId, this.seachByIndex(index, profile -> profile.meanings), "meaning", resultHandler);
 
@@ -1159,7 +1189,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateMeaning(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.updateModelFromProfile(userId, body, Meaning.class, profile -> profile.meanings, this.checkIndexOnModels(index), "meaning", resultHandler);
 
@@ -1169,7 +1199,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeMeaning(final String userId, final int index, final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.mergeModelFromProfile(userId, body, Meaning.class, profile -> profile.meanings, this.checkIndexOnModels(index), "meaning", resultHandler);
 
@@ -1179,7 +1209,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteMeaning(final String userId, final int index, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     this.deleteModelFromProfile(userId, "meaning", profile -> profile.meanings, this.checkIndexOnModels(index), resultHandler);
   }

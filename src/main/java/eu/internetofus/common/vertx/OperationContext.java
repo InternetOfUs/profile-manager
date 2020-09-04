@@ -26,78 +26,52 @@
 
 package eu.internetofus.common.vertx;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-import eu.internetofus.common.components.DummyComplexModel;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.ext.web.api.OperationRequest;
+import io.vertx.ext.web.api.OperationResponse;
 
 /**
- * Used to manage a set of {@link DummyComplexModel}.
- *
- * @see DummyComplexModel
+ * The context of the HTTP context.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class DummyComplexModelRepository {
+public class OperationContext {
 
   /**
-   * The stored models.
+   * The information of the request operation.
    */
-  protected List<DummyComplexModel> models;
+  @NotNull
+  public OperationRequest request;
 
   /**
-   * Create a new repository.
+   * The handler to inform of the response.
    */
-  public DummyComplexModelRepository() {
-
-    this.models = new ArrayList<>();
-  }
+  @NotNull
+  public Handler<AsyncResult<OperationResponse>> resultHandler;
 
   /**
-   * Retrieve the model defined with the specified id.
+   * Create a new context.
    *
-   * @param id      of the model to obtain.
-   * @param handler to inform of the found model.
+   * @param request       information of the request operation.
+   * @param resultHandler handler to inform of the response.
    */
-  public void retrieve(final String id, final Handler<AsyncResult<DummyComplexModel>> handler) {
+  public OperationContext(@NotNull final OperationRequest request, @NotNull final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    for (final var model : this.models) {
-
-      if (model.id.equals(id)) {
-
-        handler.handle(Future.succeededFuture(model));
-        return;
-      }
-    }
-
-    handler.handle(Future.failedFuture("Not found"));
+    this.request = request;
+    this.resultHandler = resultHandler;
 
   }
 
   /**
-   * Update the model defined with the specified id.
-   *
-   * @param source  model to update.
-   * @param handler to inform of the update process.
+   * {@inheritDoc}
    */
-  public void update(final DummyComplexModel source, final Handler<AsyncResult<Void>> handler) {
+  @Override
+  public String toString() {
 
-    for (var i = 0; i < this.models.size(); i++) {
-
-      if (source.id.equals(this.models.get(i).id)) {
-
-        this.models.remove(i);
-        this.models.add(i, source);
-        handler.handle(Future.succeededFuture());
-        return;
-      }
-    }
-
-    handler.handle(Future.failedFuture("Not found"));
+    return this.request.toJson().encodePrettily();
 
   }
-
 }
