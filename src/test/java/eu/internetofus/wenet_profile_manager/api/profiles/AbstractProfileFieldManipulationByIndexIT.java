@@ -30,8 +30,6 @@ import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
@@ -49,7 +47,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
-import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -681,7 +678,6 @@ public abstract class AbstractProfileFieldManipulationByIndexIT<T extends Model 
    * @see Profiles#addRelevantLocation(String, JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
-  @Timeout(value = 5, timeUnit = TimeUnit.MINUTES)
   public void shouldDeleteAllModels(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     Future<WeNetUserProfile> future = Future.succeededFuture(new WeNetUserProfile());

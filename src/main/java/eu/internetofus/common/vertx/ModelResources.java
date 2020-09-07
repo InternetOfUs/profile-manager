@@ -26,9 +26,11 @@
 
 package eu.internetofus.common.vertx;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import javax.validation.constraints.NotNull;
@@ -587,7 +589,7 @@ public interface ModelResources {
    * @param <E>              type of the field.
    * @param <IE>             type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model & Mergeable<E>, IE> void mergeModelFieldElement(@NotNull final Vertx vertx, final JsonObject valueToMerge, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Mergeable<E>, IE> void mergeModelFieldElement(@NotNull final Vertx vertx, final JsonObject valueToMerge, @NotNull final ModelFieldContext<T, IT, E, IE> element,
       @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement,
       final BiConsumer<T, Handler<AsyncResult<Void>>> storerMergeModel, final OperationContext context) {
 
@@ -613,45 +615,39 @@ public interface ModelResources {
    * @param <E>               type of the field.
    * @param <IE>              type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model & Mergeable<E>, IE> void mergeModelFieldElementChain(@NotNull final Vertx vertx, final JsonObject valueToMerge, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Mergeable<E>, IE> void mergeModelFieldElementChain(@NotNull final Vertx vertx, final JsonObject valueToMerge, @NotNull final ModelFieldContext<T, IT, E, IE> element,
       @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement,
       final BiConsumer<T, Handler<AsyncResult<Void>>> storerMergedModel, final OperationContext context, @NotNull final Runnable success) {
 
-    changeModelFieldElementChain(valueToMerge, element, searcher, getField, searchElement, context, () -> {
-
-      merge(vertx, element, context, () -> updateModelChain(element.model, storerMergedModel, context, success));
-
-    });
+    changeModelFieldElementBeforeChain(valueToMerge, element, searcher, getField, searchElement, context,
+        () -> merge(vertx, element, context, () -> changeModelFieldElementAfterChain(vertx, element, getField, storerMergedModel, context, success)));
 
   }
 
   /**
    * Update an element of a field defined into a model.
    *
-   * @param vertx             event bus to use.
-   * @param valueToUpdate     to update the model field element.
-   * @param element           to update.
-   * @param searcher          the function used to obtain a model from an identifier.
-   * @param getField          return the field value associated to a model.
-   * @param searchElement     return the index of the element that has the specified identifier.
-   * @param storerUpdateModel the function to update the model.
-   * @param context           of the request.
-   * @param success           to inform to the upgrade value
+   * @param vertx              event bus to use.
+   * @param valueToUpdate      to update the model field element.
+   * @param element            to update.
+   * @param searcher           the function used to obtain a model from an identifier.
+   * @param getField           return the field value associated to a model.
+   * @param searchElement      return the index of the element that has the specified identifier.
+   * @param storerUpdatedModel the function to update the model.
+   * @param context            of the request.
+   * @param success            to inform to the upgrade value
    *
-   * @param <T>               type of model that contains the fields.
-   * @param <IT>              type of the model identifier.
-   * @param <E>               type of the field.
-   * @param <IE>              type of the field identifier.
+   * @param <T>                type of model that contains the fields.
+   * @param <IT>               type of the model identifier.
+   * @param <E>                type of the field.
+   * @param <IE>               type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model & Updateable<E>, IE> void updateModelFieldElementChain(@NotNull final Vertx vertx, final JsonObject valueToUpdate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Updateable<E>, IE> void updateModelFieldElementChain(@NotNull final Vertx vertx, final JsonObject valueToUpdate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
       @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement,
-      final BiConsumer<T, Handler<AsyncResult<Void>>> storerUpdateModel, final OperationContext context, @NotNull final Runnable success) {
+      @NotNull final BiConsumer<T, Handler<AsyncResult<Void>>> storerUpdatedModel, final OperationContext context, @NotNull final Runnable success) {
 
-    changeModelFieldElementChain(valueToUpdate, element, searcher, getField, searchElement, context, () -> {
-
-      update(vertx, element, context, () -> updateModelChain(element.model, storerUpdateModel, context, success));
-
-    });
+    changeModelFieldElementBeforeChain(valueToUpdate, element, searcher, getField, searchElement, context,
+        () -> update(vertx, element, context, () -> changeModelFieldElementAfterChain(vertx, element, getField, storerUpdatedModel, context, success)));
 
   }
 
@@ -672,7 +668,7 @@ public interface ModelResources {
    * @param <E>               type of the field.
    * @param <IE>              type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model & Updateable<E>, IE> void updateModelFieldElement(@NotNull final Vertx vertx, final JsonObject valueToUpdate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Updateable<E>, IE> void updateModelFieldElement(@NotNull final Vertx vertx, final JsonObject valueToUpdate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
       @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement,
       final BiConsumer<T, Handler<AsyncResult<Void>>> storerUpdateModel, final OperationContext context) {
 
@@ -696,14 +692,37 @@ public interface ModelResources {
    * @param <E>           type of the field.
    * @param <IE>          type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model, IE> void changeModelFieldElementChain(final JsonObject value, @NotNull final ModelFieldContext<T, IT, E, IE> element, @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher,
-      @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement, final OperationContext context, @NotNull final Runnable success) {
+  static public <T extends Model & Updateable<T>, IT, E extends Model, IE> void changeModelFieldElementBeforeChain(final JsonObject value, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+      @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement, final OperationContext context,
+      @NotNull final Runnable success) {
 
-    toModel(value, element, context, () -> {
+    toModel(value, element, context, () -> retrieveModelFieldElementChain(element, searcher, getField, searchElement, context, success));
 
-      retrieveModelFieldElementChain(element, searcher, getField, searchElement, context, success);
+  }
 
-    });
+  /**
+   * Change an element of a field defined into a model.
+   *
+   * @param vertx              event bus to use.
+   * @param element            to merge.
+   * @param getField           return the field value associated to a model.
+   * @param context            of the request.
+   * @param storerChangedModel function to store the changed model.
+   * @param success            to inform to the upgrade value
+   *
+   * @param <T>                type of model that contains the fields.
+   * @param <IT>               type of the model identifier.
+   * @param <E>                type of the field.
+   * @param <IE>               type of the field identifier.
+   */
+  static public <T extends Model & Updateable<T>, IT, E extends Model, IE> void changeModelFieldElementAfterChain(final Vertx vertx, @NotNull final ModelFieldContext<T, IT, E, IE> element, @NotNull final Function<T, List<E>> getField,
+      final BiConsumer<T, Handler<AsyncResult<Void>>> storerChangedModel, @NotNull final OperationContext context, @NotNull final Runnable success) {
+
+    element.model.source = Model.fromBuffer(element.model.target.toBuffer(), element.model.type);
+    final var sourceField = getField.apply(element.model.source);
+    sourceField.remove(element.index);
+    sourceField.add(element.index, element.value);
+    update(vertx, element.model, context, () -> updateModelChain(element.model, storerChangedModel, context, success));
 
   }
 
@@ -723,9 +742,9 @@ public interface ModelResources {
    * @param <E>                type of the field.
    * @param <IE>               type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model, IE> void deleteModelFieldElementChain( @NotNull final ModelFieldContext<T, IT, E, IE> element,
-      @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement,
-      final BiConsumer<T, Handler<AsyncResult<Void>>> storerDeletedModel, final OperationContext context, @NotNull final Runnable success) {
+  static public <T extends Model, IT, E extends Model, IE> void deleteModelFieldElementChain(@NotNull final ModelFieldContext<T, IT, E, IE> element, @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher,
+      @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement, final BiConsumer<T, Handler<AsyncResult<Void>>> storerDeletedModel, final OperationContext context,
+      @NotNull final Runnable success) {
 
     retrieveModelFieldElementChain(element, searcher, getField, searchElement, context, () -> {
 
@@ -751,10 +770,134 @@ public interface ModelResources {
    * @param <E>               type of the field.
    * @param <IE>              type of the field identifier.
    */
-  static public <T extends Model, IT, E extends Model, IE> void deleteModelFieldElement( @NotNull final ModelFieldContext<T, IT, E, IE> element, @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher,
+  static public <T extends Model, IT, E extends Model, IE> void deleteModelFieldElement(@NotNull final ModelFieldContext<T, IT, E, IE> element, @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher,
       @NotNull final Function<T, List<E>> getField, @NotNull final BiFunction<List<E>, IE, Integer> searchElement, final BiConsumer<T, Handler<AsyncResult<Void>>> storerDeleteModel, final OperationContext context) {
 
-    deleteModelFieldElementChain( element, searcher, getField, searchElement, storerDeleteModel, context, () -> OperationReponseHandlers.responseOk(context.resultHandler));
+    deleteModelFieldElementChain(element, searcher, getField, searchElement, storerDeleteModel, context, () -> OperationReponseHandlers.responseOk(context.resultHandler));
+
+  }
+
+  /**
+   * Create an element of a field defined into a model.
+   *
+   * @param vertx             event bus to use.
+   * @param valueToCreate     to create the model field element.
+   * @param element           to create.
+   * @param searcher          the function used to obtain a model from an identifier.
+   * @param getField          return the field value associated to a model.
+   * @param setField          change the value for the field.
+   * @param storerCreateModel the function to create the model.
+   * @param context           of the request.
+   *
+   * @param <T>               type of model that contains the fields.
+   * @param <IT>              type of the model identifier.
+   * @param <E>               type of the field.
+   * @param <IE>              type of the field identifier.
+   */
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Validable, IE> void createModelFieldElement(@NotNull final Vertx vertx, final JsonObject valueToCreate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+      @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiConsumer<T, List<E>> setField, final BiConsumer<T, Handler<AsyncResult<Void>>> storerCreateModel,
+      final OperationContext context) {
+
+    createModelFieldElementChain(vertx, valueToCreate, element, searcher, getField, setField, storerCreateModel, context, () -> OperationReponseHandlers.responseOk(context.resultHandler, element.value));
+
+  }
+
+  /**
+   * Create an element of a field defined into a model.
+   *
+   * @param vertx              event bus to use.
+   * @param valueToCreate      to create the model field element.
+   * @param element            to create.
+   * @param searcher           the function used to obtain a model from an identifier.
+   * @param getField           return the field value associated to a model.
+   * @param setField           change the value for the field.
+   * @param storerCreatedModel the function to store the updated model.
+   * @param context            of the request.
+   * @param success            to inform to the upgrade value
+   *
+   * @param <T>                type of model that contains the fields.
+   * @param <IT>               type of the model identifier.
+   * @param <E>                type of the field.
+   * @param <IE>               type of the field identifier.
+   */
+  @SuppressWarnings("unchecked")
+  static public <T extends Model & Updateable<T>, IT, E extends Model & Validable, IE> void createModelFieldElementChain(@NotNull final Vertx vertx, final JsonObject valueToCreate, @NotNull final ModelFieldContext<T, IT, E, IE> element,
+      @NotNull final BiConsumer<IT, Handler<AsyncResult<T>>> searcher, @NotNull final Function<T, List<E>> getField, @NotNull final BiConsumer<T, List<E>> setField, final BiConsumer<T, Handler<AsyncResult<Void>>> storerCreatedModel,
+      final OperationContext context, @NotNull final Runnable success) {
+
+    toModel(valueToCreate, element, context, () -> {
+
+      retrieveModelChain(element.model, searcher, context, () -> {
+
+        element.model.source = (T) Model.fromJsonObject(element.model.target.toJsonObject(), element.model.target.getClass());
+        element.field = getField.apply(element.model.source);
+        if (element.field == null) {
+
+          element.field = new ArrayList<E>();
+          setField.accept(element.model.source, element.field);
+        }
+
+        element.index = element.field.size();
+        element.field.add(element.source);
+        update(vertx, element.model, context, () -> {
+
+          element.value = getField.apply(element.model.value).get(element.index);
+          updateModelChain(element.model, storerCreatedModel, context, success);
+
+        });
+
+      });
+    });
+
+  }
+
+  /**
+   * Return the function that can be used to search a value by its identifier.
+   *
+   * @param idComparator predicate to check if the specified model has the specified id.
+   *
+   * @return the index of the element on the list or {@code -1} if not found.
+   */
+  static public <E, I> BiFunction<List<E>, I, Integer> searchElementById(final BiPredicate<E, I> idComparator) {
+
+    return (models, id) -> {
+
+      if (models != null) {
+
+        final var max = models.size();
+        for (var i = 0; i < max; i++) {
+
+          final var model = models.get(i);
+          if (idComparator.test(model, id)) {
+
+            return i;
+          }
+        }
+      }
+
+      return -1;
+    };
+
+  }
+
+  /**
+   * Return the function that can be used to search a value by its index.
+   *
+   * @return the index of the element on the list or {@code -1} if not found.
+   */
+  static public <E> BiFunction<List<E>, Integer, Integer> searchElementByIndex() {
+
+    return (models, id) -> {
+
+      if (models != null && id != null && id > -1 && id < models.size()) {
+
+        return id;
+
+      } else {
+        // Out of range.
+        return -1;
+      }
+    };
 
   }
 
