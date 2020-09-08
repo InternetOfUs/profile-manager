@@ -198,7 +198,10 @@ public class ProfilesResource implements Profiles {
 
           Logger.debug(store.cause(), "Cannot store the profile {} as historic.", historic);
         }
-        model.value._lastUpdateTs = historic.to;
+        if (model.value != null) {
+
+          model.value._lastUpdateTs = historic.to;
+        }
         success.run();
       });
 
@@ -214,7 +217,8 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     final var context = new OperationContext(request, resultHandler);
-    ModelResources.deleteModelChain(model, this.repository::deleteProfile, context, this.addProfileToHistoricChain(model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.retrieveModelChain(model, this.repository::searchProfile, context,
+        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context, this.addProfileToHistoricChain(model, () -> OperationReponseHandlers.responseOk(resultHandler))));
 
   }
 
