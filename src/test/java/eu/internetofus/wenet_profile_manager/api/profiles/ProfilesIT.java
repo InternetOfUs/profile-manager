@@ -55,12 +55,13 @@ import eu.internetofus.common.components.profile_manager.RoutineTest;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.UserName;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -76,145 +77,95 @@ import io.vertx.junit5.VertxTestContext;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public class ProfilesIT {
+public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, String> {
 
   /**
-   * Verify that return error when search an undefined profile.
-   *
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   * @{inheritDoc}
    */
-  @Test
-  public void shouldNotFoundProfileWithAnUndefinedProfileId(final WebClient client, final VertxTestContext testContext) {
+  @Override
+  protected String modelPath() {
 
-    testRequest(client, HttpMethod.GET, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
-
-      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-    }).send(testContext);
-  }
-
-  /**
-   * Verify that return a defined profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldFoundProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + profile.id).expect(res -> testContext.verify(() -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var found = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(found).isEqualTo(profile);
-
-      })).send(testContext);
-
-    }));
+    return Profiles.PATH;
 
   }
 
   /**
-   * Verify that can not store a bad profile.
-   *
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#createProfile(io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
+   * @{inheritDoc}
    */
-  @Test
-  public void shouldNotStoreANonProfileObject(final WebClient client, final VertxTestContext testContext) {
+  @Override
+  protected WeNetUserProfile createInvalidModel() {
 
-    testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
+    final WeNetUserProfile model = new WeNetUserProfile();
+    model.nationality = ValidationsTest.STRING_256;
+    return model;
 
-      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty().isEqualTo("bad_profile");
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-    }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
   }
 
   /**
-   * Verify that can not store a bad profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#createProfile(io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
+   * @{inheritDoc}
    */
-  @Test
-  public void shouldNotStoreProfileWithExistingId(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  @Override
+  protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> createHandler) {
 
-    WeNetProfileManager.createProxy(vertx).createProfile(new JsonObject(), testContext.succeeding(created -> {
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, createHandler);
 
-      final var profile = new WeNetUserProfile();
-      profile.id = created.getString("id");
-      testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty().isEqualTo("bad_profile.id");
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(profile.toJsonObject(), testContext);
-
-    }));
   }
 
   /**
-   * Verify that store a profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#createProfile(io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
+   * @{inheritDoc}
    */
-  @Test
-  public void shouldStoreProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  @Override
+  protected void assertThatCreatedEquals(final WeNetUserProfile source, final WeNetUserProfile target) {
 
-    new WeNetUserProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(profile -> {
-      testRequest(client, HttpMethod.POST, Profiles.PATH).expect(res -> {
+    source.id = target.id;
+    source._creationTs = target._creationTs;
+    source._lastUpdateTs = target._lastUpdateTs;
+    if (source.norms != null && target.norms != null && source.norms.size() == target.norms.size()) {
 
-        assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
-        final var stored = assertThatBodyIs(WeNetUserProfile.class, res);
-        assertThat(stored).isNotNull().isNotEqualTo(profile);
-        profile.id = stored.id;
-        assertThat(stored).isNotEqualTo(profile);
-        profile._creationTs = stored._creationTs;
-        profile._lastUpdateTs = stored._lastUpdateTs;
-        assertThat(stored).isNotEqualTo(profile);
-        profile.norms.get(0).id = stored.norms.get(0).id;
-        profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
-        profile.plannedActivities.get(1).id = stored.plannedActivities.get(1).id;
-        profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
-        assertThat(stored).isEqualTo(profile);
-        ProfilesRepository.createProxy(vertx).searchProfile(stored.id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
+      final var max = source.norms.size();
+      for (var i = 0; i < max; i++) {
 
-          assertThat(foundProfile).isEqualTo(stored);
-          testContext.completeNow();
+        source.norms.get(i).id = target.norms.get(i).id;
+      }
 
-        })));
+    }
+    if (source.plannedActivities != null && target.plannedActivities != null && source.plannedActivities.size() == target.plannedActivities.size()) {
 
-      }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
+      final var max = source.plannedActivities.size();
+      for (var i = 0; i < max; i++) {
 
-    }));
+        source.plannedActivities.get(i).id = target.plannedActivities.get(i).id;
+      }
+
+    }
+    if (source.relevantLocations != null && target.relevantLocations != null && source.relevantLocations.size() == target.relevantLocations.size()) {
+
+      final var max = source.relevantLocations.size();
+      for (var i = 0; i < max; i++) {
+
+        source.relevantLocations.get(i).id = target.relevantLocations.get(i).id;
+      }
+
+    }
+    assertThat(source).isEqualTo(target);
+  }
+
+  /**
+   * @{inheritDoc}
+   */
+  @Override
+  protected String idOf(final WeNetUserProfile model) {
+
+    return model.id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void storeModel(final WeNetUserProfile source, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+
+    StoreServices.storeProfile(source, vertx, testContext, succeeding);
 
   }
 
@@ -295,109 +246,6 @@ public class ProfilesIT {
   }
 
   /**
-   * Verify that return error when try to update an undefined profile.
-   *
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotUpdateProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
-
-    final var profile = new WeNetUserProfileTest().createBasicExample(1);
-    testRequest(client, HttpMethod.PUT, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
-
-      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-    }).sendJson(profile.toJsonObject(), testContext);
-  }
-
-  /**
-   * Verify that return error when try to update with a model that is not a profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotUpdateProfileWithANotProfileObject(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty();
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
-    }));
-  }
-
-  /**
-   * Verify that return error when try to update with a profile that is not valid.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotUpdateProfileWithABadProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      final var newProfile = new WeNetUserProfile();
-      newProfile.nationality = ValidationsTest.STRING_256;
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty().contains("nationality");
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(newProfile.toJsonObject(), testContext);
-    }));
-  }
-
-  /**
-   * Verify that return error when try to update with a profile that has the same vlaues that the original.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#updateProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotUpdateProfileWithSameProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isEqualTo("profile_to_update_equal_to_original");
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(profile.toJsonObject(), testContext);
-    }));
-  }
-
-  /**
    * Verify that can update a profile with another.
    *
    * @param vertx       event bus to use.
@@ -407,7 +255,7 @@ public class ProfilesIT {
    * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
    */
   @Test
-  public void shouldUpdateProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldUpdateProfileAddingHistory(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
@@ -445,109 +293,6 @@ public class ProfilesIT {
 
       }));
 
-    }));
-
-  }
-
-  /**
-   * Verify that return error when try to merge an undefined profile.
-   *
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotMergeProfileThatIsNotDefined(final WebClient client, final VertxTestContext testContext) {
-
-    final var profile = new WeNetUserProfileTest().createBasicExample(1);
-    testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
-
-      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-    }).sendJson(profile.toJsonObject(), testContext);
-  }
-
-  /**
-   * Verify that return error when try to merge with a model that is not a profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotMergeProfileWithANotProfileObject(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty();
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(new JsonObject().put("udefinedKey", "value"), testContext);
-    }));
-  }
-
-  /**
-   * Verify that not merge a profile if any change is done.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotMergeProfileBecauseNotChangesHasDone(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty();
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(new JsonObject(), testContext);
-    }));
-
-  }
-
-  /**
-   * Verify that not merge a profile because the source is not valid.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#mergeProfile(String, io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotMergeProfileBecauseBadSource(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(profile -> {
-
-      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + profile.id).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty().endsWith(".nationality");
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-      }).sendJson(new JsonObject().put("nationality", ValidationsTest.STRING_256), testContext);
     }));
 
   }
@@ -595,7 +340,7 @@ public class ProfilesIT {
    * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
    */
   @Test
-  public void shouldMergeProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldMergeProfileAddingHistoric(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     StoreServices.storeProfileExample(1, vertx, testContext, testContext.succeeding(storedProfile -> {
 
@@ -630,51 +375,6 @@ public class ProfilesIT {
         }).send(testContext, checkpoint);
 
       })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-    }));
-
-  }
-
-  /**
-   * Verify that return error when delete an undefined profile.
-   *
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldNotDeleteProfileWithAnUndefinedProfileId(final WebClient client, final VertxTestContext testContext) {
-
-    testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/undefined-profile-identifier").expect(res -> {
-
-      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
-
-    }).send(testContext);
-  }
-
-  /**
-   * Verify that can delete a profile.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldDeleteProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(storedProfile -> {
-
-      testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + storedProfile.id).expect(res -> testContext.verify(() -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.NO_CONTENT.getStatusCode());
-
-      })).send(testContext);
-
     }));
 
   }
@@ -778,20 +478,20 @@ public class ProfilesIT {
     ProfilesRepositoryIT.createProfilePage(vertx, userId, page, testContext, testContext.succeeding(created -> {
 
       testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + userId + Profiles.HISTORIC_PATH).with(queryParam("from", "50000"), queryParam("to", "150000"), queryParam("order", "-"), queryParam("offset", "5"), queryParam("limit", "3"))
-          .expect(res -> {
+      .expect(res -> {
 
-            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final var found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
-            final var expected = new HistoricWeNetUserProfilesPage();
-            expected.offset = 5;
-            expected.total = 10;
-            expected.profiles = new ArrayList<>();
-            expected.profiles.add(created.profiles.get(9));
-            expected.profiles.add(created.profiles.get(8));
-            expected.profiles.add(created.profiles.get(7));
-            assertThat(found).isEqualTo(expected);
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var found = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, res);
+        final var expected = new HistoricWeNetUserProfilesPage();
+        expected.offset = 5;
+        expected.total = 10;
+        expected.profiles = new ArrayList<>();
+        expected.profiles.add(created.profiles.get(9));
+        expected.profiles.add(created.profiles.get(8));
+        expected.profiles.add(created.profiles.get(7));
+        assertThat(found).isEqualTo(expected);
 
-          }).send(testContext);
+      }).send(testContext);
     }));
 
   }
