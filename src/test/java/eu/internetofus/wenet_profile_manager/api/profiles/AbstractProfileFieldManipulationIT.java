@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,7 +54,7 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Generic integration test to test the manipulation of a filed in a profile.
+ * Generic integration test to check the manipulation of a filed in a profile.
  *
  * @param <T> type of model of the field to test.
  *
@@ -237,10 +237,10 @@ public abstract class AbstractProfileFieldManipulationIT<T extends Model & Valid
   /**
    * Check if the added model is equals to the original.
    *
-   * @param addedModel the model that has added.
-   * @param model      the model that is try to add.
+   * @param source model that is try to add.
+   * @param target the added model.
    */
-  protected abstract void assertEqualsAdded(T addedModel, T model);
+  protected abstract void assertEqualsAdded(T source, T target);
 
   /**
    * Initialize the models on a profile.

@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,8 +27,11 @@
 package eu.internetofus.wenet_profile_manager.api.communities;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.vertx.ModelContext;
+import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.OperationContext;
 import eu.internetofus.common.vertx.OperationReponseHandlers;
@@ -157,80 +160,65 @@ public class CommunitiesResource implements Communities {
 
   }
 
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void addSocialPractice(final String userId, final JsonObject body, final OperationRequest request, final
-  // Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.addModelToProfile(SocialPractice.class, body, "social_practice", userId, profile -> profile.socialPractices,
-  // (profile, socialPractices) -> profile.socialPractices = socialPractices,
-  // (socialPractice1, socialPractice2) -> socialPractice1.id.equals(socialPractice2.id), resultHandler);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void retrieveSocialPractices(final String userId, final OperationRequest request, final
-  // Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.retrieveModelsFromProfile(userId, profile -> profile.socialPractices, resultHandler);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void retrieveSocialPractice(final String userId, final String socialPracticeId, final OperationRequest
-  // context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.retrieveModelFromProfile(userId, this.searchModelById(profile -> profile.socialPractices, socialPractice ->
-  // socialPractice.id.equals(socialPracticeId)), "social_practice", resultHandler);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void updateSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final
-  // OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.updateModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile ->
-  // profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)),
-  // "social_practice",
-  // resultHandler);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void mergeSocialPractice(final String userId, final String socialPracticeId, final JsonObject body, final
-  // OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.mergeModelFromProfile(userId, body.put("id", socialPracticeId), SocialPractice.class, profile ->
-  // profile.socialPractices, this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)),
-  // "social_practice",
-  // resultHandler);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // public void deleteSocialPractice(final String userId, final String socialPracticeId, final OperationRequest request,
-  // final Handler<AsyncResult<OperationResponse>> resultHandler) {
-  //
-  // this.deleteModelFromProfile(userId, "social_practice", profile -> profile.socialPractices,
-  // this.searchModelIndexById(socialPractice -> socialPractice.id.equals(socialPracticeId)), resultHandler);
-  //
-  // }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addSocialPractice(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
+    element.model.id = id;
+    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices, (community, socialPractices) -> community.socialPractices = socialPractices,
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * Add into a {@link ModelFieldContext} the necessaries values.
+   *
+   * @param element to fill in.
+   * @param name    for the element.
+   * @param type    for the element.
+   *
+   * @param <T>     class for the element.
+   * @param <I>     class for the element identifier.
+   *
+   * @return the filled element.
+   */
+  protected <T extends Model, I> ModelFieldContext<CommunityProfile, String, T, I> fillElementContext(final ModelFieldContext<CommunityProfile, String, T, I> element, final String name, final Class<T> type) {
+
+    element.model = this.createCommunityContext();
+    element.name = name;
+    element.type = type;
+    return element;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveSocialPractices(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var model = this.createCommunityContext();
+    model.id = id;
+    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.socialPractices, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveSocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
+    element.model.id = id;
+    element.id = socialPracticeId;
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)), context);
+
+  }
 
 }

@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,98 +26,115 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
+import java.util.List;
+
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.ValidationsTest;
+import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
 import eu.internetofus.common.components.profile_manager.SocialPractice;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * Check the manipulation of the {@link SocialPractice}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the {@link SocialPractice}s in a {@link CommunityProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class CommunitiesSocialPracticesIT {// extends AbstractCommunityFieldManipulationByIdentifierIT<SocialPractice> {
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResourcesIT< SocialPractice, String> {
 
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected String fieldPath() {
-  //
-  // return Communities.SOCIAL_PRACTICES_PATH;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Future<SocialPractice> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
-  //
-  // final SocialPractice socialPractice = new SocialPractice();
-  // socialPractice.label = ValidationsTest.STRING_1024;
-  // return Future.succeededFuture(socialPractice);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Future<SocialPractice> createValidModel(final int index, final Vertx vertx, final VertxTestContext
-  // testContext) {
-  //
-  // final SocialPractice model = new SocialPracticeTest().createModelExample(index);
-  // return Future.succeededFuture(model);
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected void updateIdsTo(final SocialPractice source, final SocialPractice target) {
-  //
-  // target.id = source.id;
-  // for (int i = 0; i < target.norms.size(); i++) {
-  //
-  // target.norms.get(i).id = source.norms.get(i).id;
-  // }
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected List<SocialPractice> initModelsIn(final WeNetUserProfile profile) {
-  //
-  // profile.socialPractices = new ArrayList<>();
-  // return profile.socialPractices;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected List<SocialPractice> modelsIn(final WeNetUserProfile profile) {
-  //
-  // return profile.socialPractices;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Class<SocialPractice> modelClass() {
-  //
-  // return SocialPractice.class;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected String idOf(final SocialPractice model) {
-  //
-  // return model.id;
-  // }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String fieldPath() {
+
+    return Communities.SOCIAL_PRACTICES_PATH;
+  }
+
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<SocialPractice>> createHandler) {
+
+    final var element = new SocialPracticeTest().createModelExample(index);
+    createHandler.handle(Future.succeededFuture(element));
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected SocialPractice createInvalidModelFieldElement() {
+
+    final var element = new SocialPracticeTest().createModelExample(2);
+    element.label = ValidationsTest.STRING_256;
+    return element;
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected List<SocialPractice> fieldOf(final CommunityProfile model) {
+
+    return model.socialPractices;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+
+    new CommunityProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(community -> {
+      community.id = null;
+      community.socialPractices = null;
+      StoreServices.storeCommunity(community, vertx, testContext, succeeding);
+    }));
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void assertEqualsAdded(final SocialPractice source, final SocialPractice target) {
+
+    source.id = target.id;
+    if (source.norms != null && target.norms != null && source.norms.size() == target.norms.size()) {
+
+      final var max = source.norms.size();
+      for (var i = 0; i < max; i++) {
+
+        source.norms.get(i).id = target.norms.get(i).id;
+      }
+
+    }
+
+  }
+
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String idOfElementIn(final CommunityProfile model, final SocialPractice element) {
+
+    return element.id;
+  }
 
 }

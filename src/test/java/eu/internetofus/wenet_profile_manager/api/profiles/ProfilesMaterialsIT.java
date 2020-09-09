@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,15 +26,22 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Material;
 import eu.internetofus.common.components.profile_manager.MaterialTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
@@ -43,7 +50,8 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndexIT<Material> {
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
+public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Material, Integer> {
 
   /**
    * {@inheritDoc}
@@ -58,23 +66,11 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
    * {@inheritDoc}
    */
   @Override
-  protected Future<Material> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Material>> createHandler) {
 
-    final var model = new MaterialTest().createModelExample(1);
-    model.name = ValidationsTest.STRING_256;
-    return Future.succeededFuture(model);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<Material> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<Material> promise = Promise.promise();
     final var model = new MaterialTest().createModelExample(index);
-    promise.complete(model);
-    return promise.future();
+    model.name = ValidationsTest.STRING_256;
+    createHandler.handle(Future.succeededFuture(model));
 
   }
 
@@ -82,28 +78,124 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldManipulationByIndex
    * {@inheritDoc}
    */
   @Override
-  protected List<Material> initModelsIn(final WeNetUserProfile profile) {
+  protected Material createInvalidModelFieldElement() {
 
-    profile.materials = new ArrayList<>();
-    return profile.materials;
+    final var element = new MaterialTest().createModelExample(0);
+    element.name = ValidationsTest.STRING_256;
+    return element;
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<Material> modelsIn(final WeNetUserProfile profile) {
+  protected List<Material> fieldOf(final WeNetUserProfile model) {
 
-    return profile.materials;
+    return model.materials;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<Material> modelClass() {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return Material.class;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.materials = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void assertEqualsAdded(final Material source, final Material target) {
+
+    assertThat(source).isEqualTo(target);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Integer idOfElementIn(final WeNetUserProfile model, final Material element) {
+
+    if (model.materials == null) {
+
+      return -1;
+
+    } else {
+
+      return model.materials.indexOf(element);
+
+    }
+
+  }
+
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected String fieldPath() {
+  //
+  // return Profiles.MATERIALS_PATH;
+  // }
+  //
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Future<Material> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  //
+  // final var model = new MaterialTest().createModelExample(1);
+  // model.name = ValidationsTest.STRING_256;
+  // return Future.succeededFuture(model);
+  // }
+  //
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Future<Material> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
+  //
+  // final Promise<Material> promise = Promise.promise();
+  // final var model = new MaterialTest().createModelExample(index);
+  // promise.complete(model);
+  // return promise.future();
+  //
+  // }
+  //
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected List<Material> initModelsIn(final WeNetUserProfile profile) {
+  //
+  // profile.materials = new ArrayList<>();
+  // return profile.materials;
+  // }
+  //
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected List<Material> modelsIn(final WeNetUserProfile profile) {
+  //
+  // return profile.materials;
+  // }
+  //
+  // /**
+  // * {@inheritDoc}
+  // */
+  // @Override
+  // protected Class<Material> modelClass() {
+  //
+  // return Material.class;
+  // }
 
 }

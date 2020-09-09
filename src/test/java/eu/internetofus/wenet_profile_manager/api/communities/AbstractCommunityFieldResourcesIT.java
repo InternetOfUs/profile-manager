@@ -24,66 +24,57 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.common.vertx;
+package eu.internetofus.wenet_profile_manager.api.communities;
 
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
+import eu.internetofus.common.vertx.AbstractModelFieldResourcesIT;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * Contains the information of a model that is used on a operation.
+ * Check the manipulation of a field in a {@link CommunityProfile}.
  *
- * @param <T> type of model.
- * @param <I> type for the model identifier.
+ * @param <T> type of the elements in the field.
+ * @param <I> type of identifier of the element.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ModelContext<T extends Model, I> {
-
-  /**
-   * The name of the model.
-   */
-  public String name;
-
-  /**
-   * The type of the model.
-   */
-  public Class<T> type;
-
-  /**
-   * The identifier of the model.
-   */
-  public I id;
-
-  /**
-   * The value of the context.
-   */
-  public T value;
-
-  /**
-   * The new value for the model.
-   */
-  public T source;
-
-  /**
-   * The stored value of the model.
-   */
-  public T target;
+public abstract class AbstractCommunityFieldResourcesIT<T extends Model, I> extends AbstractModelFieldResourcesIT<CommunityProfile, String, T, I> {
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public String toString() {
+  protected String modelPath() {
 
-    final StringBuilder builder = new StringBuilder();
+    return Communities.PATH;
+  }
 
-    builder.append(this.name);
-    if (this.id != null) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String idOfModel(final CommunityProfile model) {
 
-      builder.append('(');
-      builder.append(this.id);
-      builder.append(')');
-    }
-    return builder.toString();
+    return model.id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+
+    new CommunityProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(community -> {
+      community.id = null;
+      StoreServices.storeCommunity(community, vertx, testContext, succeeding);
+    }));
+
   }
 
 }

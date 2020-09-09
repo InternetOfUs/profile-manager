@@ -26,31 +26,55 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
-
-import eu.internetofus.common.components.ModelTestCase;
+import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.vertx.AbstractModelFieldResourcesIT;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
 
 /**
- * Test the {@link HistoricWeNetUserProfilesPage}.
+ * Check the manipulation of a field in a {@link WeNetUserProfile}.
  *
- * @see HistoricWeNetUserProfilesPage
+ * @param <T> type of the elements in the field.
+ * @param <I> type of identifier of the element.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class HistoricWeNetUserProfilesPageTest extends ModelTestCase<HistoricWeNetUserProfilesPage> {
+public abstract class AbstractProfileFieldResourcesIT<T extends Model, I> extends AbstractModelFieldResourcesIT<WeNetUserProfile, String, T, I> {
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public HistoricWeNetUserProfilesPage createModelExample(final int index) {
+  protected String modelPath() {
 
-    final var model = new HistoricWeNetUserProfilesPage();
-    model.offset = index;
-    model.total = 100 + index;
-    model.profiles = new ArrayList<>();
-    model.profiles.add(new HistoricWeNetUserProfileTest().createModelExample(index));
-    return model;
+    return Profiles.PATH;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String idOfModel(final WeNetUserProfile model) {
+
+    return model.id;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
   }
 
 }
