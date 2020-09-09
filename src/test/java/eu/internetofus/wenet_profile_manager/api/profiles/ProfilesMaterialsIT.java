@@ -69,7 +69,6 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Materia
   protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Material>> createHandler) {
 
     final var model = new MaterialTest().createModelExample(index);
-    model.name = ValidationsTest.STRING_256;
     createHandler.handle(Future.succeededFuture(model));
 
   }

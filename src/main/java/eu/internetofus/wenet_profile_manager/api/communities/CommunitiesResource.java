@@ -221,4 +221,19 @@ public class CommunitiesResource implements Communities {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteSocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
+    element.model.id = id;
+    element.id = socialPracticeId;
+    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
 }

@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -224,6 +224,27 @@ public interface Communities {
   void retrieveSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to remove a social practice from a community.
+   *
+   * @param id               identifier of the community where the social practice is defined.
+   * @param socialPracticeId identifier of the social practice to remove.
+   * @param request          of the operation.
+   * @param resultHandler    to inform of the response.
+   */
+  @DELETE
+  @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Remove a social practice from a community", description = "Allow to remove a social practice defined into a community")
+  @ApiResponse(responseCode = "204", description = "The social practice has removed successfully from the community")
+  @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Social practices")
+  void deleteSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+      @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to remove", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+
   //
   // /**
   // * Called when want to update a social practice from a profile.
