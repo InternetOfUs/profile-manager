@@ -236,4 +236,34 @@ public class CommunitiesResource implements Communities {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateSocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
+    element.model.id = id;
+    element.id = socialPracticeId;
+    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeSocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
+    element.model.id = id;
+    element.id = socialPracticeId;
+    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
 }
