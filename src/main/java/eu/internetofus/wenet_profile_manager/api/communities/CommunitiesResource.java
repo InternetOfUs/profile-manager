@@ -28,7 +28,9 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.profile_manager.CommunityMember;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
@@ -246,8 +248,8 @@ public class CommunitiesResource implements Communities {
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
-        this.repository::updateCommunity, context);
+    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices,
+        ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)), this.repository::updateCommunity, context);
 
   }
 
@@ -261,7 +263,177 @@ public class CommunitiesResource implements Communities {
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices, ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
+    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.socialPractices,
+        ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)), this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addNorm(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
+    element.model.id = id;
+    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.norms, (community, norms) -> community.norms = norms, this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveNorms(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var model = this.createCommunityContext();
+    model.id = id;
+    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.norms, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
+    element.model.id = id;
+    element.id = normId;
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.norms, ModelResources.searchElementById((norm, searchId) -> norm.id.equals(searchId)), context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
+    element.model.id = id;
+    element.id = normId;
+    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.norms, ModelResources.searchElementById((norm, searchId) -> norm.id.equals(searchId)), this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
+    element.model.id = id;
+    element.id = normId;
+    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.norms, ModelResources.searchElementById((norm, searchId) -> norm.id.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
+    element.model.id = id;
+    element.id = normId;
+    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.norms, ModelResources.searchElementById((norm, searchId) -> norm.id.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addCommunityMember(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
+    element.model.id = id;
+    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, (community, communityMembers) -> community.members = communityMembers, this.repository::updateCommunity,
+        context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCommunityMembers(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var model = this.createCommunityContext();
+    model.id = id;
+    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.members, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCommunityMember(final String id, final String communityMemberId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
+    element.model.id = id;
+    element.id = communityMemberId;
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)), context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteCommunityMember(final String id, final String communityMemberId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
+    element.model.id = id;
+    element.id = communityMemberId;
+    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void updateCommunityMember(final String id, final String communityMemberId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
+    element.model.id = id;
+    element.id = communityMemberId;
+    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
+        this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void mergeCommunityMember(final String id, final String communityMemberId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
+    element.model.id = id;
+    element.id = communityMemberId;
+    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
 
   }

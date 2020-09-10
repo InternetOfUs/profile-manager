@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -141,7 +141,7 @@ public interface Profiles {
    * Called when want to create an user profile.
    *
    * @param body          the new profile to create.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -153,14 +153,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "201", description = "The created profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void createProfile(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
+  void createProfile(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a profile.
    *
    * @param userId        identifier of the user to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -170,7 +170,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The profile associated to the identifier", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void retrieveProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) OperationRequest context,
+  void retrieveProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -178,7 +178,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user to modify.
    * @param body          the new profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -193,14 +193,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void updateProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to modify partially a profile.
    *
    * @param userId        identifier of the user to modify.
    * @param body          the new profile attributes.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -215,13 +215,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void mergeProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a profile.
    *
    * @param userId        identifier of the user to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -230,7 +230,7 @@ public interface Profiles {
   @Operation(summary = "Delete a profile", description = "Allow to delete a profile with an specific identifier")
   @ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void deleteProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId, @Parameter(hidden = true, required = false) OperationRequest context,
+  void deleteProfile(@PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -242,7 +242,7 @@ public interface Profiles {
    * @param order         of the profiles to return.
    * @param offset        index of the first task to return.
    * @param limit         number maximum of tasks to return.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -259,14 +259,14 @@ public interface Profiles {
           "-", "+" }, defaultValue = "+", example = "-")) String order,
       @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first task type to return.", example = "4", required = false) int offset,
       @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of task types to return", example = "100", required = false) int limit,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to add a norm into a profile.
    *
    * @param userId        identifier of the user for the profile to add the norm.
    * @param body          norm to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -280,13 +280,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void addNorm(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the norm", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the norm from a profile.
    *
    * @param userId        identifier of the user for the profile to get all norms.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -297,14 +297,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveNorms(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a norm from a profile.
    *
    * @param userId        identifier of the user for the profile where the norm is defined.
    * @param normId        identifier of the norm to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -315,7 +315,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -324,7 +324,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the norm is defined.
    * @param normId        identifier of the norm to update.
    * @param body          the new values for the norm.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -339,7 +339,7 @@ public interface Profiles {
   @Tag(name = "Norms")
   void updateNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a norm from a profile.
@@ -347,7 +347,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the norm is defined.
    * @param normId        identifier of the norm to merge.
    * @param body          the new values for the norm.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -362,14 +362,14 @@ public interface Profiles {
   @Tag(name = "Norms")
   void mergeNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a norm from a profile.
    *
    * @param userId        identifier of the user for the profile where the norm is defined.
    * @param normId        identifier of the norm to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -379,7 +379,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void deleteNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("normId") @Parameter(description = "The identifier of the norm to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("normId") @Parameter(description = "The identifier of the norm to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -387,7 +387,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user for the profile to add the plannedActivity.
    * @param body          planned activity to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -401,13 +401,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void addPlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the planned activity", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the planned activity from a profile.
    *
    * @param userId        identifier of the user for the profile to get all plannedactivities.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -418,14 +418,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void retrievePlannedActivities(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a planned activity from a profile.
    *
    * @param userId            identifier of the user for the profile where the planned activity is defined.
    * @param plannedActivityId identifier of the planned activity to get.
-   * @param context           of the request.
+   * @param request           of the operation.
    * @param resultHandler     to inform of the response.
    */
   @GET
@@ -437,7 +437,7 @@ public interface Profiles {
   @Tag(name = "Planned activities")
   void retrievePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to update a planned activity from a profile.
@@ -445,7 +445,7 @@ public interface Profiles {
    * @param userId            identifier of the user for the profile where the planned activity is defined.
    * @param plannedActivityId identifier of the planned activity to update.
    * @param body              the new values for the planned activity.
-   * @param context           of the request.
+   * @param request           of the operation.
    * @param resultHandler     to inform of the response.
    */
   @PUT
@@ -460,7 +460,7 @@ public interface Profiles {
   @Tag(name = "Planned activities")
   void updatePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a planned activity from a profile.
@@ -468,7 +468,7 @@ public interface Profiles {
    * @param userId            identifier of the user for the profile where the planned activity is defined.
    * @param plannedActivityId identifier of the planned activity to merge.
    * @param body              the new values for the planned activity.
-   * @param context           of the request.
+   * @param request           of the operation.
    * @param resultHandler     to inform of the response.
    */
   @PATCH
@@ -483,14 +483,14 @@ public interface Profiles {
   @Tag(name = "Planned activities")
   void mergePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a planned activity from a profile.
    *
    * @param userId            identifier of the user for the profile where the planned activity is defined.
    * @param plannedActivityId identifier of the planned activity to delete.
-   * @param context           of the request.
+   * @param request           of the operation.
    * @param resultHandler     to inform of the response.
    */
   @DELETE
@@ -501,14 +501,14 @@ public interface Profiles {
   @Tag(name = "Planned activities")
   void deletePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to add a relevant location into a profile.
    *
    * @param userId        identifier of the user for the profile to add the relevantLocation.
    * @param body          relevant location to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -522,13 +522,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void addRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relevant location", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the relevant location from a profile.
    *
    * @param userId        identifier of the user for the profile to get all relevantlocations.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -539,14 +539,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void retrieveRelevantLocations(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a relevant location from a profile.
    *
    * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to get.
-   * @param context            of the request.
+   * @param request            of the operation.
    * @param resultHandler      to inform of the response.
    */
   @GET
@@ -558,7 +558,7 @@ public interface Profiles {
   @Tag(name = "Relevant locations")
   void retrieveRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to update a relevant location from a profile.
@@ -566,7 +566,7 @@ public interface Profiles {
    * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to update.
    * @param body               the new values for the relevant location.
-   * @param context            of the request.
+   * @param request            of the operation.
    * @param resultHandler      to inform of the response.
    */
   @PUT
@@ -581,7 +581,7 @@ public interface Profiles {
   @Tag(name = "Relevant locations")
   void updateRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a relevant location from a profile.
@@ -589,7 +589,7 @@ public interface Profiles {
    * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to merge.
    * @param body               the new values for the relevant location.
-   * @param context            of the request.
+   * @param request            of the operation.
    * @param resultHandler      to inform of the response.
    */
   @PATCH
@@ -604,14 +604,14 @@ public interface Profiles {
   @Tag(name = "Relevant locations")
   void mergeRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a relevant location from a profile.
    *
    * @param userId             identifier of the user for the profile where the relevant location is defined.
    * @param relevantLocationId identifier of the relevant location to delete.
-   * @param context            of the request.
+   * @param request            of the operation.
    * @param resultHandler      to inform of the response.
    */
   @DELETE
@@ -622,14 +622,14 @@ public interface Profiles {
   @Tag(name = "Relevant locations")
   void deleteRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to add a relationship into a profile.
    *
    * @param userId        identifier of the user for the profile to add the relationship.
    * @param body          relationship to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -643,13 +643,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void addRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the relationship from a profile.
    *
    * @param userId        identifier of the user for the profile to get all relationships.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -660,14 +660,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void retrieveRelationships(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
    * @param index         of the relationship to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -678,7 +678,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void retrieveRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the relationship to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the relationship to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -687,7 +687,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the relationship is defined.
    * @param index         of the relationship to update.
    * @param body          the new values for the relationship.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -702,7 +702,7 @@ public interface Profiles {
   @Tag(name = "Relationships")
   void updateRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a relationship from a profile.
@@ -710,7 +710,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the relationship is defined.
    * @param index         of the relationship to merge.
    * @param body          the new values for the relationship.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -725,14 +725,14 @@ public interface Profiles {
   @Tag(name = "Relationships")
   void mergeRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The identifier of the relationship to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a relationship from a profile.
    *
    * @param userId        identifier of the user for the profile where the relationship is defined.
    * @param index         of the relationship to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -742,7 +742,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void deleteRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -750,7 +750,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user for the profile to add the personalBehavior.
    * @param body          personal behavior to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -764,13 +764,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void addPersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the personal behavior", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the personal behavior from a profile.
    *
    * @param userId        identifier of the user for the profile to get all personalbehaviors.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -781,14 +781,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void retrievePersonalBehaviors(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a personal behavior from a profile.
    *
    * @param userId        identifier of the user for the profile where the personal behavior is defined.
    * @param index         of the personal behavior to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -799,7 +799,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void retrievePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the personal behavior to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the personal behavior to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -808,7 +808,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the personal behavior is defined.
    * @param index         of the personal behavior to update.
    * @param body          the new values for the personal behavior.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -823,7 +823,7 @@ public interface Profiles {
   @Tag(name = "Personal behaviors")
   void updatePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a personal behavior from a profile.
@@ -831,7 +831,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the personal behavior is defined.
    * @param index         of the personal behavior to merge.
    * @param body          the new values for the personal behavior.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -846,14 +846,14 @@ public interface Profiles {
   @Tag(name = "Personal behaviors")
   void mergePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a personal behavior from a profile.
    *
    * @param userId        identifier of the user for the profile where the personal behavior is defined.
    * @param index         of the personal behavior to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -863,7 +863,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void deletePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -871,7 +871,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user for the profile to add the material.
    * @param body          material to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -885,13 +885,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void addMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the material", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the material from a profile.
    *
    * @param userId        identifier of the user for the profile to get all materials.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -902,14 +902,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void retrieveMaterials(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a material from a profile.
    *
    * @param userId        identifier of the user for the profile where the material is defined.
    * @param index         of the material to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -920,7 +920,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void retrieveMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the material to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the material to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -929,7 +929,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the material is defined.
    * @param index         of the material to update.
    * @param body          the new values for the material.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -944,7 +944,7 @@ public interface Profiles {
   @Tag(name = "Materials")
   void updateMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a material from a profile.
@@ -952,7 +952,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the material is defined.
    * @param index         of the material to merge.
    * @param body          the new values for the material.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -967,14 +967,14 @@ public interface Profiles {
   @Tag(name = "Materials")
   void mergeMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a material from a profile.
    *
    * @param userId        identifier of the user for the profile where the material is defined.
    * @param index         of the material to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -984,7 +984,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void deleteMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the material on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the material on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -992,7 +992,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user for the profile to add the competence.
    * @param body          competence to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -1006,13 +1006,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void addCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the competence", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the competence from a profile.
    *
    * @param userId        identifier of the user for the profile to get all competences.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -1023,14 +1023,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void retrieveCompetences(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a competence from a profile.
    *
    * @param userId        identifier of the user for the profile where the competence is defined.
    * @param index         of the competence to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -1041,7 +1041,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void retrieveCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the competence to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the competence to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1050,7 +1050,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the competence is defined.
    * @param index         of the competence to update.
    * @param body          the new values for the competence.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -1065,7 +1065,7 @@ public interface Profiles {
   @Tag(name = "Competences")
   void updateCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a competence from a profile.
@@ -1073,7 +1073,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the competence is defined.
    * @param index         of the competence to merge.
    * @param body          the new values for the competence.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -1088,14 +1088,14 @@ public interface Profiles {
   @Tag(name = "Competences")
   void mergeCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a competence from a profile.
    *
    * @param userId        identifier of the user for the profile where the competence is defined.
    * @param index         of the competence to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -1105,7 +1105,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void deleteCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the competence on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the competence on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1113,7 +1113,7 @@ public interface Profiles {
    *
    * @param userId        identifier of the user for the profile to add the meaning.
    * @param body          meaning to add to the profile.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @POST
@@ -1127,13 +1127,13 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void addMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the meaning", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the meaning from a profile.
    *
    * @param userId        identifier of the user for the profile to get all meanings.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -1144,14 +1144,14 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void retrieveMeanings(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get a meaning from a profile.
    *
    * @param userId        identifier of the user for the profile where the meaning is defined.
    * @param index         of the meaning to get.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @GET
@@ -1162,7 +1162,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void retrieveMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the meaning to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the meaning to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1171,7 +1171,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the meaning is defined.
    * @param index         of the meaning to update.
    * @param body          the new values for the meaning.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PUT
@@ -1186,7 +1186,7 @@ public interface Profiles {
   @Tag(name = "Meanings")
   void updateMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to partially modify a meaning from a profile.
@@ -1194,7 +1194,7 @@ public interface Profiles {
    * @param userId        identifier of the user for the profile where the meaning is defined.
    * @param index         of the meaning to merge.
    * @param body          the new values for the meaning.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @PATCH
@@ -1209,14 +1209,14 @@ public interface Profiles {
   @Tag(name = "Meanings")
   void mergeMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to delete a meaning from a profile.
    *
    * @param userId        identifier of the user for the profile where the meaning is defined.
    * @param index         of the meaning to delete.
-   * @param context       of the request.
+   * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
   @DELETE
@@ -1226,7 +1226,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void deleteMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the meaning on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest context,
+      @PathParam("index") @Parameter(description = "The index of the meaning on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }
