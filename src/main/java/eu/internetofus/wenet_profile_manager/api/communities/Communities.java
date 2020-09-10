@@ -190,13 +190,13 @@ public interface Communities {
   @Path("/{id}" + SOCIAL_PRACTICES_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Add a social practice into a community", description = "Insert a new social practice into a community")
+  @Operation(description = "Insert a new social practice into a community")
   @RequestBody(description = "The new social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "201", description = "The added social practice into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "Bad social practice to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void addSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community to add the social practice", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void addCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community to add the social practice", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -209,11 +209,11 @@ public interface Communities {
   @GET
   @Path("/{id}" + SOCIAL_PRACTICES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return the social practices from a community", description = "Allow to get all the social practices defined into a community")
+  @Operation(description = "Allow to get all the social practices defined into a community")
   @ApiResponse(responseCode = "200", description = "The social practices defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void retrieveSocialPractices(@PathParam("id") @Parameter(description = "The identifier of community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void retrieveCommunitySocialPractices(@PathParam("id") @Parameter(description = "The identifier of community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -227,11 +227,11 @@ public interface Communities {
   @GET
   @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return a social practice from a community", description = "Allow to get a social practice defined into a community")
+  @Operation(description = "Allow to get a social practice defined into a community")
   @ApiResponse(responseCode = "200", description = "The social practice defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void retrieveSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void retrieveCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -246,11 +246,11 @@ public interface Communities {
   @DELETE
   @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Remove a social practice from a community", description = "Allow to remove a social practice defined into a community")
+  @Operation(description = "Allow to remove a social practice defined into a community")
   @ApiResponse(responseCode = "204", description = "The social practice has removed successfully from the community")
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void deleteSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void deleteCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to remove", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -267,13 +267,13 @@ public interface Communities {
   @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Update a social practice from a community", description = "Allow to update a social practice defined into a community")
+  @Operation(description = "Allow to update a social practice defined into a community")
   @RequestBody(description = "The update values for the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "200", description = "The social practice that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "The social practice to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void updateSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void updateCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -290,21 +290,21 @@ public interface Communities {
   @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Merge a social practice from a community", description = "Allow to merge a social practice defined into a community")
+  @Operation(description = "Allow to merge a social practice defined into a community")
   @RequestBody(description = "The merge values for the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "200", description = "The social practice that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "The social practice to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
-  void mergeSocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void mergeCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("socialPracticeId") @Parameter(description = "The identifier of the social practice to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String socialPracticeId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to add a norm into a community.
    *
-   * @param id            identifier of the user for the profile to add the norm.
-   * @param body          norm to add to the profile.
+   * @param id            identifier of the community to add the norm.
+   * @param body          norm to add to the community.
    * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
@@ -312,13 +312,13 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Add a norm into a community", description = "Insert a new norm into a community")
+  @Operation(description = "Insert a new norm into a community")
   @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "201", description = "The added norm into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void addNorm(@PathParam("id") @Parameter(description = "The identifier of the community to add the norm", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) JsonObject body,
+  void addCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community to add the norm", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -331,11 +331,11 @@ public interface Communities {
   @GET
   @Path("/{id}" + NORMS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return the norms from a community", description = "Allow to get all the norms defined into a community")
+  @Operation(description = "Allow to get all the norms defined into a community")
   @ApiResponse(responseCode = "200", description = "The norms defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void retrieveNorms(@PathParam("id") @Parameter(description = "The identifier of community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void retrieveCommunityNorms(@PathParam("id") @Parameter(description = "The identifier of community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -349,11 +349,11 @@ public interface Communities {
   @GET
   @Path("/{id}" + NORMS_PATH + "/{normId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return a norm from a community", description = "Allow to get a norm defined into a community")
+  @Operation(description = "Allow to get a norm defined into a community")
   @ApiResponse(responseCode = "200", description = "The norm defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void retrieveNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void retrieveCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -368,11 +368,11 @@ public interface Communities {
   @DELETE
   @Path("/{id}" + NORMS_PATH + "/{normId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Remove a norm from a community", description = "Allow to remove a norm defined into a community")
+  @Operation(description = "Allow to remove a norm defined into a community")
   @ApiResponse(responseCode = "204", description = "The norm has removed successfully from the community")
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void deleteNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void deleteCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to remove", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -389,13 +389,13 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH + "/{normId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Update a norm from a community", description = "Allow to update a norm defined into a community")
+  @Operation(description = "Allow to update a norm defined into a community")
   @RequestBody(description = "The update values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "200", description = "The norm that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "The norm to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void updateNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void updateCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -418,7 +418,7 @@ public interface Communities {
   @ApiResponse(responseCode = "400", description = "The norm to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void mergeNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
+  void mergeCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -463,52 +463,52 @@ public interface Communities {
   /**
    * Called when want to get a community member from a community.
    *
-   * @param id                identifier of the community where the community member is defined.
-   * @param communityMemberId identifier of the community member to get.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param id            identifier of the community where the community member is defined.
+   * @param userId        identifier of the community member to get.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
    */
   @GET
-  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{communityMemberId}")
+  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a community member from a community", description = "Allow to get a community member defined into a community")
   @ApiResponse(responseCode = "200", description = "The community member defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void retrieveCommunityMember(@PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
-      @PathParam("communityMemberId") @Parameter(description = "The identifier of the community member to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String communityMemberId,
-      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("userId") @Parameter(description = "The identifier of the community member to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) OperationRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to remove a community member from a community.
    *
-   * @param id                identifier of the community where the community member is defined.
-   * @param communityMemberId identifier of the community member to remove.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param id            identifier of the community where the community member is defined.
+   * @param userId        identifier of the community member to remove.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
    */
   @DELETE
-  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{communityMemberId}")
+  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Remove a community member from a community", description = "Allow to remove a community member defined into a community")
   @ApiResponse(responseCode = "204", description = "The community member has removed successfully from the community")
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void deleteCommunityMember(@PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
-      @PathParam("communityMemberId") @Parameter(description = "The identifier of the community member to remove", example = "15837028-645a-4a55-9aaf-ceb846439eba") String communityMemberId,
-      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("userId") @Parameter(description = "The identifier of the community member to remove", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) OperationRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to update a community member from a community.
    *
-   * @param id                identifier of the community where the community member is defined.
-   * @param communityMemberId identifier of the community member to update.
-   * @param body              element with the values to update.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param id            identifier of the community where the community member is defined.
+   * @param userId        identifier of the community member to update.
+   * @param body          element with the values to update.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
    */
   @PUT
-  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{communityMemberId}")
+  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a community member from a community", description = "Allow to update a community member defined into a community")
@@ -518,20 +518,20 @@ public interface Communities {
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void updateCommunityMember(@PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
-      @PathParam("communityMemberId") @Parameter(description = "The identifier of the community member to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String communityMemberId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("userId") @Parameter(description = "The identifier of the community member to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to merge a community member from a community.
    *
-   * @param id                identifier of the community where the community member is defined.
-   * @param communityMemberId identifier of the community member to merge.
-   * @param body              element with the values to merge.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param id            identifier of the community where the community member is defined.
+   * @param userId        identifier of the community member to merge.
+   * @param body          element with the values to merge.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
    */
   @PATCH
-  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{communityMemberId}")
+  @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Merge a community member from a community", description = "Allow to merge a community member defined into a community")
@@ -541,7 +541,7 @@ public interface Communities {
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void mergeCommunityMember(@PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
-      @PathParam("communityMemberId") @Parameter(description = "The identifier of the community member to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String communityMemberId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @PathParam("userId") @Parameter(description = "The identifier of the community member to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

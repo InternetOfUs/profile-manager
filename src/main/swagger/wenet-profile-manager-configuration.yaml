@@ -17,15 +17,13 @@ openAPI:
     - name: Trusts
       description: The functionality provided allows to manage the trust over other users.
     - name: Norms
-      description: The functionality provided allows to manage the norms defined into a user profile.
+      description: The functionality provided allows to manage the norms defined into a user/community profile.
     - name: Planned activities
       description: The functionality provided allows to manage the planned activities defined into a user profile.
     - name: Relevant locations
       description: The functionality provided allows to manage the relevant locations defined into a user profile.
     - name: Relationships
       description: The functionality provided allows to manage the relationships defined into a user profile.
-    - name: Social practices
-      description: The functionality provided allows to manage the social practices defined into a user profile.
     - name: Personal behaviors
       description: The functionality provided allows to manage the personal behaviors defined into a user profile.
     - name: Materials
@@ -34,6 +32,10 @@ openAPI:
       description: The functionality provided allows to manage the competences defined into a user profile.
     - name: Meanings
       description: The functionality provided allows to manage the meanings defined into a user profile.
+    - name: Community members
+      description: The functionality provided allows to manage the members of a community.
+    - name: Social practices
+      description: The functionality provided allows to manage the social practices defined into a community profile.
     - name: Other
       description: Other services provided by the API.
   info:

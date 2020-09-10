@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,23 +26,26 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelantionshipTest;
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Check the manipulation of the {@link SocialNetworkRelationship}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the personal behaviors ({@link SocialNetworkRelationship}) in a {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByIndexIT<SocialNetworkRelationship> {
+public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<SocialNetworkRelationship, Integer> {
 
   /**
    * {@inheritDoc}
@@ -57,21 +60,9 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByI
    * {@inheritDoc}
    */
   @Override
-  protected Future<SocialNetworkRelationship> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<SocialNetworkRelationship>> createHandler) {
 
-    final var model = new SocialNetworkRelantionshipTest().createModelExample(1);
-    return Future.succeededFuture(model);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<SocialNetworkRelationship> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<SocialNetworkRelationship> promise = Promise.promise();
-    new SocialNetworkRelantionshipTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> promise.complete(model)));
-    return promise.future();
+    new SocialNetworkRelationshipTest().createModelExample(index, vertx, testContext, createHandler);
 
   }
 
@@ -79,28 +70,62 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldManipulationByI
    * {@inheritDoc}
    */
   @Override
-  protected List<SocialNetworkRelationship> initModelsIn(final WeNetUserProfile profile) {
+  protected SocialNetworkRelationship createInvalidModelFieldElement() {
 
-    profile.relationships = new ArrayList<>();
-    return profile.relationships;
+    final var element = new SocialNetworkRelationshipTest().createModelExample(0);
+    return element;
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<SocialNetworkRelationship> modelsIn(final WeNetUserProfile profile) {
+  protected List<SocialNetworkRelationship> fieldOf(final WeNetUserProfile model) {
 
-    return profile.relationships;
+    return model.relationships;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<SocialNetworkRelationship> modelClass() {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return SocialNetworkRelationship.class;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.relationships = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void assertEqualsAdded(final SocialNetworkRelationship source, final SocialNetworkRelationship target) {
+
+    assertThat(source).isEqualTo(target);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Integer idOfElementIn(final WeNetUserProfile model, final SocialNetworkRelationship element) {
+
+    if (model.relationships == null) {
+
+      return -1;
+
+    } else {
+
+      return model.relationships.indexOf(element);
+
+    }
+
   }
 
 }

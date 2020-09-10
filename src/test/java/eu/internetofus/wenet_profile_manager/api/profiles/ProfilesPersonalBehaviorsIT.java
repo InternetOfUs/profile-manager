@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,17 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.Routine;
 import eu.internetofus.common.components.profile_manager.RoutineTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
@@ -42,7 +45,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldManipulationByIndexIT<Routine> {
+public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldResourcesIT<Routine, Integer> {
 
   /**
    * {@inheritDoc}
@@ -57,21 +60,9 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected Future<Routine> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Routine>> createHandler) {
 
-    final var model = new RoutineTest().createModelExample(1);
-    return Future.succeededFuture(model);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<Routine> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<Routine> promise = Promise.promise();
-    new RoutineTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> promise.complete(model)));
-    return promise.future();
+    new RoutineTest().createModelExample(index, vertx, testContext, createHandler);
 
   }
 
@@ -79,28 +70,62 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<Routine> initModelsIn(final WeNetUserProfile profile) {
+  protected Routine createInvalidModelFieldElement() {
 
-    profile.personalBehaviors = new ArrayList<>();
-    return profile.personalBehaviors;
+    final var element = new RoutineTest().createModelExample(0);
+    return element;
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<Routine> modelsIn(final WeNetUserProfile profile) {
+  protected List<Routine> fieldOf(final WeNetUserProfile model) {
 
-    return profile.personalBehaviors;
+    return model.personalBehaviors;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<Routine> modelClass() {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return Routine.class;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.personalBehaviors = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void assertEqualsAdded(final Routine source, final Routine target) {
+
+    assertThat(source).isEqualTo(target);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Integer idOfElementIn(final WeNetUserProfile model, final Routine element) {
+
+    if (model.personalBehaviors == null) {
+
+      return -1;
+
+    } else {
+
+      return model.personalBehaviors.indexOf(element);
+
+    }
+
   }
 
 }

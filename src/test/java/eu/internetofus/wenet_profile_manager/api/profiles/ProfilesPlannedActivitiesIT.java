@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,15 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.PlannedActivity;
 import eu.internetofus.common.components.profile_manager.PlannedActivityTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
@@ -43,7 +47,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulationByIdentifierIT<PlannedActivity> {
+public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldResourcesIT<PlannedActivity, String> {
 
   /**
    * {@inheritDoc}
@@ -58,23 +62,13 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected Future<PlannedActivity> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<PlannedActivity>> createHandler) {
 
-    final var plannedActivity = new PlannedActivity();
-    plannedActivity.description = ValidationsTest.STRING_1024;
-    return Future.succeededFuture(plannedActivity);
+    new PlannedActivityTest().createModelExample(index, vertx, testContext, testContext.succeeding(element->{
 
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<PlannedActivity> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<PlannedActivity> promise = Promise.promise();
-    new PlannedActivityTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> promise.complete(model)));
-    return promise.future();
+      element.id = null;
+      createHandler.handle(Future.succeededFuture(element));
+    }));
 
   }
 
@@ -82,9 +76,11 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final PlannedActivity source, final PlannedActivity target) {
+  protected PlannedActivity createInvalidModelFieldElement() {
 
-    target.id = source.id;
+    final var element = new PlannedActivityTest().createModelExample(0);
+    element.description = ValidationsTest.STRING_1024;
+    return element;
 
   }
 
@@ -92,37 +88,44 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<PlannedActivity> initModelsIn(final WeNetUserProfile profile) {
+  protected List<PlannedActivity> fieldOf(final WeNetUserProfile model) {
 
-    profile.plannedActivities = new ArrayList<>();
-    return profile.plannedActivities;
+    return model.plannedActivities;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<PlannedActivity> modelsIn(final WeNetUserProfile profile) {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return profile.plannedActivities;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.plannedActivities = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<PlannedActivity> modelClass() {
+  protected void assertEqualsAdded(final PlannedActivity source, final PlannedActivity target) {
 
-    return PlannedActivity.class;
+    source.id = target.id;
+    assertThat(source).isEqualTo(target);
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected String idOf(final PlannedActivity model) {
+  protected String idOfElementIn(final WeNetUserProfile model, final PlannedActivity element) {
 
-    return model.id;
+    return element.id;
+
   }
 
 }

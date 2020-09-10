@@ -166,7 +166,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void addSocialPractice(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addCommunitySocialPractice(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
@@ -200,7 +200,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveSocialPractices(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunitySocialPractices(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createCommunityContext();
@@ -213,7 +213,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveSocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunitySocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
@@ -227,7 +227,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void deleteSocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteCommunitySocialPractice(final String id, final String socialPracticeId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
@@ -242,7 +242,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void updateSocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateCommunitySocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
@@ -257,7 +257,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void mergeSocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeCommunitySocialPractice(final String id, final String socialPracticeId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices", SocialPractice.class);
@@ -272,7 +272,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void addNorm(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addCommunityNorm(final String id, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
@@ -285,7 +285,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorms(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunityNorms(final String id, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createCommunityContext();
@@ -298,7 +298,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunityNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
@@ -312,7 +312,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void deleteNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteCommunityNorm(final String id, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
@@ -326,7 +326,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void updateNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateCommunityNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
@@ -341,7 +341,7 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void mergeNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeCommunityNorm(final String id, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, Norm, String>(), "norms", Norm.class);
@@ -383,12 +383,12 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCommunityMember(final String id, final String communityMemberId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveCommunityMember(final String id, final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
-    element.id = communityMemberId;
+    element.id = userId;
     ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)), context);
 
   }
@@ -397,12 +397,12 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void deleteCommunityMember(final String id, final String communityMemberId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteCommunityMember(final String id, final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
-    element.id = communityMemberId;
+    element.id = userId;
     ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
 
@@ -412,12 +412,12 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void updateCommunityMember(final String id, final String communityMemberId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateCommunityMember(final String id, final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
-    element.id = communityMemberId;
+    element.id = userId;
     ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
 
@@ -427,12 +427,12 @@ public class CommunitiesResource implements Communities {
    * {@inheritDoc}
    */
   @Override
-  public void mergeCommunityMember(final String id, final String communityMemberId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeCommunityMember(final String id, final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
-    element.id = communityMemberId;
+    element.id = userId;
     ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
 

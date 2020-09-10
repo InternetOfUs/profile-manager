@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.RelevantLocation;
 import eu.internetofus.common.components.profile_manager.RelevantLocationTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
@@ -42,7 +47,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulationByIdentifierIT<RelevantLocation> {
+public class ProfilesRelevantLocationsIT extends AbstractProfileFieldResourcesIT<RelevantLocation, String> {
 
   /**
    * {@inheritDoc}
@@ -57,22 +62,11 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected Future<RelevantLocation> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<RelevantLocation>> createHandler) {
 
-    final var relevantLocation = new RelevantLocation();
-    relevantLocation.label = ValidationsTest.STRING_1024;
-    return Future.succeededFuture(relevantLocation);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<RelevantLocation> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final var model = new RelevantLocationTest().createModelExample(index);
-    return Future.succeededFuture(model);
+    final var element = new RelevantLocationTest().createModelExample(index);
+    element.id = null;
+    createHandler.handle(Future.succeededFuture(element));
 
   }
 
@@ -80,9 +74,11 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected void updateIdsTo(final RelevantLocation source, final RelevantLocation target) {
+  protected RelevantLocation createInvalidModelFieldElement() {
 
-    target.id = source.id;
+    final var element = new RelevantLocationTest().createModelExample(0);
+    element.label = ValidationsTest.STRING_256;
+    return element;
 
   }
 
@@ -90,37 +86,44 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldManipulatio
    * {@inheritDoc}
    */
   @Override
-  protected List<RelevantLocation> initModelsIn(final WeNetUserProfile profile) {
+  protected List<RelevantLocation> fieldOf(final WeNetUserProfile model) {
 
-    profile.relevantLocations = new ArrayList<>();
-    return profile.relevantLocations;
+    return model.relevantLocations;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<RelevantLocation> modelsIn(final WeNetUserProfile profile) {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return profile.relevantLocations;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.relevantLocations = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<RelevantLocation> modelClass() {
+  protected void assertEqualsAdded(final RelevantLocation source, final RelevantLocation target) {
 
-    return RelevantLocation.class;
+    source.id = target.id;
+    assertThat(source).isEqualTo(target);
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected String idOf(final RelevantLocation model) {
+  protected String idOfElementIn(final WeNetUserProfile model, final RelevantLocation element) {
 
-    return model.id;
+    return element.id;
+
   }
 
 }

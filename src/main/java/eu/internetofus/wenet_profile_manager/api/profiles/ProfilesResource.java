@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -74,13 +74,6 @@ public class ProfilesResource implements Profiles {
    * The repository to manage the profiles.
    */
   protected ProfilesRepository repository;
-
-  /**
-   * Create an empty resource. This is only used for unit tests.
-   */
-  protected ProfilesResource() {
-
-  }
 
   /**
    * Create a new instance to provide the services of the {@link Profiles}.
@@ -259,7 +252,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addNorm(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileNorm(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
@@ -293,7 +286,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorms(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileNorms(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -306,7 +299,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
@@ -330,7 +323,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
@@ -346,7 +339,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
@@ -362,7 +355,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
@@ -377,7 +370,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addPlannedActivity(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfilePlannedActivity(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
@@ -391,7 +384,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePlannedActivities(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePlannedActivities(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -404,7 +397,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
@@ -428,7 +421,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updatePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
@@ -444,7 +437,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
@@ -460,7 +453,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deletePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfilePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
@@ -475,7 +468,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addRelevantLocation(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileRelevantLocation(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevant_location", RelevantLocation.class);
@@ -489,7 +482,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelevantLocations(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelevantLocations(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -502,7 +495,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
@@ -526,7 +519,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
@@ -542,7 +535,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
@@ -558,7 +551,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
@@ -574,7 +567,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addRelationship(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileRelationship(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship", SocialNetworkRelationship.class);
@@ -588,7 +581,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelationships(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelationships(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -601,7 +594,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
@@ -615,7 +608,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
@@ -630,7 +623,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
@@ -645,7 +638,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
@@ -660,7 +653,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addPersonalBehavior(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfilePersonalBehavior(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
@@ -674,7 +667,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePersonalBehaviors(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePersonalBehaviors(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -687,7 +680,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrievePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
@@ -701,7 +694,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updatePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfilePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
@@ -716,7 +709,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfilePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
@@ -731,7 +724,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deletePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfilePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
@@ -747,7 +740,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addMaterial(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileMaterial(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
@@ -761,7 +754,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMaterials(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMaterials(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -774,7 +767,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
@@ -788,7 +781,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
@@ -803,7 +796,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
@@ -818,7 +811,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
@@ -833,7 +826,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addCompetence(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileCompetence(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
@@ -847,7 +840,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCompetences(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileCompetences(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -860,7 +853,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
@@ -874,7 +867,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
@@ -889,7 +882,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
@@ -904,7 +897,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
@@ -919,7 +912,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addMeaning(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileMeaning(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
@@ -933,7 +926,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMeanings(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMeanings(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var model = this.createProfileContext();
@@ -946,7 +939,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
@@ -960,7 +953,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
@@ -975,7 +968,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
@@ -990,7 +983,7 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
     final var context = new OperationContext(request, resultHandler);
     final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);

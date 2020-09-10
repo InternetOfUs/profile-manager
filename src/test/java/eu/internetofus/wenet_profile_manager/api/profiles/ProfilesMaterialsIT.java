@@ -30,15 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Material;
 import eu.internetofus.common.components.profile_manager.MaterialTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
-import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -50,7 +47,6 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Material, Integer> {
 
   /**
@@ -135,66 +131,5 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Materia
     }
 
   }
-
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected String fieldPath() {
-  //
-  // return Profiles.MATERIALS_PATH;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Future<Material> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
-  //
-  // final var model = new MaterialTest().createModelExample(1);
-  // model.name = ValidationsTest.STRING_256;
-  // return Future.succeededFuture(model);
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Future<Material> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-  //
-  // final Promise<Material> promise = Promise.promise();
-  // final var model = new MaterialTest().createModelExample(index);
-  // promise.complete(model);
-  // return promise.future();
-  //
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected List<Material> initModelsIn(final WeNetUserProfile profile) {
-  //
-  // profile.materials = new ArrayList<>();
-  // return profile.materials;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected List<Material> modelsIn(final WeNetUserProfile profile) {
-  //
-  // return profile.materials;
-  // }
-  //
-  // /**
-  // * {@inheritDoc}
-  // */
-  // @Override
-  // protected Class<Material> modelClass() {
-  //
-  // return Material.class;
-  // }
 
 }

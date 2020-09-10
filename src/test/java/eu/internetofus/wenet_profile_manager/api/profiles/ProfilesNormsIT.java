@@ -96,10 +96,10 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
   @Override
   protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(community -> {
-      community.id = null;
-      community.norms = null;
-      StoreServices.storeProfile(community, vertx, testContext, succeeding);
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.norms = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
     }));
 
   }

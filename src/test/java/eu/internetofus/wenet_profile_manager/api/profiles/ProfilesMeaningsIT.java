@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,15 +26,19 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.ArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Meaning;
 import eu.internetofus.common.components.profile_manager.MeaningTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 
@@ -43,7 +47,7 @@ import io.vertx.junit5.VertxTestContext;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexIT<Meaning> {
+public class ProfilesMeaningsIT extends AbstractProfileFieldResourcesIT<Meaning, Integer> {
 
   /**
    * {@inheritDoc}
@@ -58,23 +62,10 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
    * {@inheritDoc}
    */
   @Override
-  protected Future<Meaning> createInvalidModel(final Vertx vertx, final VertxTestContext testContext) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Meaning>> createHandler) {
 
-    final var model = new MeaningTest().createModelExample(1);
-    model.name = ValidationsTest.STRING_256;
-    return Future.succeededFuture(model);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  protected Future<Meaning> createValidModel(final int index, final Vertx vertx, final VertxTestContext testContext) {
-
-    final Promise<Meaning> promise = Promise.promise();
     final var model = new MeaningTest().createModelExample(index);
-    promise.complete(model);
-    return promise.future();
+    createHandler.handle(Future.succeededFuture(model));
 
   }
 
@@ -82,28 +73,63 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldManipulationByIndexI
    * {@inheritDoc}
    */
   @Override
-  protected List<Meaning> initModelsIn(final WeNetUserProfile profile) {
+  protected Meaning createInvalidModelFieldElement() {
 
-    profile.meanings = new ArrayList<>();
-    return profile.meanings;
+    final var element = new MeaningTest().createModelExample(0);
+    element.name = ValidationsTest.STRING_256;
+    return element;
+
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected List<Meaning> modelsIn(final WeNetUserProfile profile) {
+  protected List<Meaning> fieldOf(final WeNetUserProfile model) {
 
-    return profile.meanings;
+    return model.meanings;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  protected Class<Meaning> modelClass() {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    return Meaning.class;
+    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
+      profile.id = null;
+      profile.meanings = null;
+      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
+    }));
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected void assertEqualsAdded(final Meaning source, final Meaning target) {
+
+    assertThat(source).isEqualTo(target);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Integer idOfElementIn(final WeNetUserProfile model, final Meaning element) {
+
+    if (model.meanings == null) {
+
+      return -1;
+
+    } else {
+
+      return model.meanings.indexOf(element);
+
+    }
+
   }
 
 }

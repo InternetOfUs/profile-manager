@@ -265,7 +265,7 @@ public interface Profiles {
    * Called when want to add a norm into a profile.
    *
    * @param userId        identifier of the user for the profile to add the norm.
-   * @param body          norm to add to the profile.
+   * @param body          norm to add to the user profile.
    * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
@@ -273,14 +273,14 @@ public interface Profiles {
   @Path("/{userId}" + NORMS_PATH)
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Add a norm into a profile", description = "Insert a new norm into a profile")
+  @Operation(summary = "Add a norm into an user profile", description = "Insert a new norm into an user profile")
   @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "201", description = "The added norm into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "201", description = "The added norm into the user profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found user profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void addNorm(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the norm", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void addProfileNorm(@PathParam("userId") @Parameter(description = "The identifier of the user profile to add the norm", example = "ceb846439eba-645a-4a55-9aaf-15837028") String userId, @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to get all the norm from a profile.
@@ -296,7 +296,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The norms defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void retrieveNorms(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileNorms(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -314,7 +314,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The norm defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void retrieveNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -337,7 +337,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad norm to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void updateNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -360,7 +360,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad norm to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void mergeNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -378,7 +378,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The norm defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
-  void deleteNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileNorm(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("normId") @Parameter(description = "The identifier of the norm to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String normId, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -400,7 +400,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad planned activity to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void addPlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the planned activity", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfilePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the planned activity", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -417,7 +417,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The planned activities defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void retrievePlannedActivities(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfilePlannedActivities(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -435,7 +435,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The planned activity defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void retrievePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfilePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -458,7 +458,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad planned activity to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void updatePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfilePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -481,7 +481,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad planned activity to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void mergePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfilePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -499,7 +499,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The planned activity defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
-  void deletePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfilePlannedActivity(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -521,7 +521,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relevant location to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void addRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relevant location", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfileRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relevant location", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -538,7 +538,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The relevant locations defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void retrieveRelevantLocations(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileRelevantLocations(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -556,7 +556,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The relevant location defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void retrieveRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -579,7 +579,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relevant location to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void updateRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -602,7 +602,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relevant location to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void mergeRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -620,7 +620,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The relevant location defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
-  void deleteRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileRelevantLocation(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -642,7 +642,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relationship to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void addRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfileRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -659,7 +659,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void retrieveRelationships(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileRelationships(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -677,7 +677,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The relationship defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void retrieveRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -700,7 +700,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void updateRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -723,7 +723,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad relationship to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void mergeRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The identifier of the relationship to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -741,7 +741,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The relationship defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
-  void deleteRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileRelationship(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -763,7 +763,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void addPersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the personal behavior", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfilePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the personal behavior", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -780,7 +780,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The personal behaviors defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void retrievePersonalBehaviors(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfilePersonalBehaviors(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -798,7 +798,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The personal behavior defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void retrievePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfilePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -821,7 +821,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void updatePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfilePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -844,7 +844,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void mergePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfilePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -862,7 +862,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The personal behavior defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
-  void deletePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfilePersonalBehavior(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -884,7 +884,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad material to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void addMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the material", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfileMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the material", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -901,7 +901,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The materials defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Material"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void retrieveMaterials(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileMaterials(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -919,7 +919,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The material defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void retrieveMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -942,7 +942,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad material to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void updateMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -965,7 +965,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad material to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void mergeMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -983,7 +983,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The material defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
-  void deleteMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileMaterial(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1005,7 +1005,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad competence to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void addCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the competence", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfileCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the competence", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1022,7 +1022,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The competences defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Competence"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void retrieveCompetences(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileCompetences(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1040,7 +1040,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The competence defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void retrieveCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1063,7 +1063,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad competence to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void updateCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1086,7 +1086,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad competence to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void mergeCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1104,7 +1104,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The competence defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
-  void deleteCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileCompetence(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1126,7 +1126,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad meaning to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void addMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the meaning", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void addProfileMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the meaning", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1143,7 +1143,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The meanings defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void retrieveMeanings(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileMeanings(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
@@ -1161,7 +1161,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "200", description = "The meaning defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void retrieveMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void retrieveProfileMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning to get", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1184,7 +1184,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad meaning to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void updateMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void updateProfileMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning to update", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1207,7 +1207,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad meaning to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void mergeMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void mergeProfileMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to merge", example = "1") int index, @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
@@ -1225,7 +1225,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The meaning defined into the profile")
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
-  void deleteMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
+  void deleteProfileMeaning(@PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to delete", example = "1") int index, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
