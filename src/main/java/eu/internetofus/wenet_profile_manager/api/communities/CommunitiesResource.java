@@ -26,6 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
+import java.util.List;
+
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.CommunityMember;
@@ -418,8 +420,8 @@ public class CommunitiesResource implements Communities {
     final var element = this.fillElementContext(new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
     element.id = userId;
-    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
-        this.repository::updateCommunity, context);
+    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members,
+        ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)), this.repository::updateCommunity, context);
 
   }
 
@@ -435,6 +437,24 @@ public class CommunitiesResource implements Communities {
     element.id = userId;
     ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity, community -> community.members, ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCommunityProfilesPage(final String appId, final String name, final String description, final List<String> keywords, final List<String> members, final List<String> order, final int offset, final int limit,
+      final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> {
+
+      page.query = CommunitiesRepository.createCommunityProfilesPageQuery(appId, name, description, keywords, members);
+      page.sort = CommunitiesRepository.createCommunityProfilesPageSort(order);
+      this.repository.retrieveCommunityProfilesPageObject(page, search -> promise.handle(search));
+
+    }, context);
 
   }
 

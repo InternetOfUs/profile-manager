@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,8 +26,15 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import java.util.List;
+
 import eu.internetofus.common.components.Model;
+import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.vertx.ModelsPageContext;
+import eu.internetofus.common.vertx.QueryBuilder;
+import eu.internetofus.common.vertx.Repository;
+import eu.internetofus.wenet_profile_manager.api.communities.CommunityProfilesPage;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
@@ -197,5 +204,122 @@ public interface CommunitiesRepository {
    * @param deleteHandler handler to manage the delete result.
    */
   void deleteCommunity(String id, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Create a query to obtain the communities that has the specified parameters.
+   *
+   * @param appId       application identifier to match for the communities to return.
+   * @param name        to match for the communities to return.
+   * @param description to match for the communities to return.
+   * @param keywords    to match for the communities to return.
+   * @param members     to match for the communities to return.
+   *
+   * @return the query that will return the required communities.
+   */
+  static JsonObject createCommunityProfilesPageQuery(final String appId, final String name, final String description, final List<String> keywords, final List<String> members) {
+
+    return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("name", name).withEqOrRegex("description", description).withEqOrRegex("keywords", keywords).withElementEqOrRegex("members","userId", members).build();
+
+  }
+
+  /**
+   * Create the components used to sort the communities to return.
+   *
+   * @param order to use.
+   *
+   * @return the component that has to be used to sort the communities.
+   *
+   * @throws ValidationErrorException if the sort parameter is not valid.
+   */
+  static JsonObject createCommunityProfilesPageSort(final List<String> order) throws ValidationErrorException {
+
+    final var sort = Repository.queryParamToSort(order, "bad_order", (value) -> {
+
+      switch (value) {
+      case "appId":
+      case "name":
+      case "description":
+      case "keywords":
+        return value;
+      case "members":
+        return "members.userId";
+      default:
+        return null;
+      }
+
+    });
+    return sort;
+  }
+
+  /**
+   * Retrieve the communities defined on the context.
+   *
+   * @param context that describe witch page want to obtain.
+   * @param handler for the obtained page.
+   */
+  @GenIgnore
+  default void retrieveCommunityProfilesPageObject(final ModelsPageContext context, final Handler<AsyncResult<JsonObject>> handler) {
+
+    this.retrieveCommunityProfilesPageObject(context.query, context.sort, context.offset, context.limit, handler);
+  }
+
+  /**
+   * Retrieve the communities defined on the context.
+   *
+   * @param context       that describe witch page want to obtain.
+   * @param searchHandler for the obtained page.
+   */
+  @GenIgnore
+  default void retrieveCommunityProfilesPage(final ModelsPageContext context, final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
+
+    this.retrieveCommunityProfilesPage(context.query, context.sort, context.offset, context.limit, searchHandler);
+
+  }
+
+  /**
+   * Retrieve the communities defined on the context.
+   *
+   * @param query         to obtain the required communities.
+   * @param sort          describe how has to be ordered the obtained communities.
+   * @param offset        the index of the first community to return.
+   * @param limit         the number maximum of communities to return.
+   * @param searchHandler for the obtained page.
+   */
+  @GenIgnore
+  default void retrieveCommunityProfilesPage(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
+
+    this.retrieveCommunityProfilesPageObject(query, sort, offset, limit, search -> {
+
+      if (search.failed()) {
+
+        searchHandler.handle(Future.failedFuture(search.cause()));
+
+      } else {
+
+        final var value = search.result();
+        final var page = Model.fromJsonObject(value, CommunityProfilesPage.class);
+        if (page == null) {
+
+          searchHandler.handle(Future.failedFuture("The stored communities page is not valid."));
+
+        } else {
+
+          searchHandler.handle(Future.succeededFuture(page));
+        }
+      }
+    });
+
+  }
+
+  /**
+   * Retrieve a page with some communities.
+   *
+   * @param query   to obtain the required communities.
+   * @param sort    describe how has to be ordered the obtained communities.
+   * @param offset  the index of the first community to return.
+   * @param limit   the number maximum of communities to return.
+   * @param handler to inform of the found communities.
+   */
+  void retrieveCommunityProfilesPageObject(JsonObject query, JsonObject sort, int offset, int limit, Handler<AsyncResult<JsonObject>> handler);
 
 }

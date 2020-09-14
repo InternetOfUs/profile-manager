@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,6 +28,7 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.components.StoreServices;
@@ -39,6 +40,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -131,6 +133,36 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
   protected String idOf(final CommunityProfile model) {
 
     return model.id;
+  }
+
+
+  /**
+   * Should not retrieve a page because the order is not right.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shoudFailRetrieveCommunityProfilesPageWithBadOrderParameter(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+  }
+
+  /**
+   * Should retrieve the expected communities.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shoudRetrieveCommunityProfilesPage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    new CommunityProfileTest().createModelExample(1, vertx, testContext, testContext.succeeding(community1->{
+
+
+    }));
+
   }
 
 }

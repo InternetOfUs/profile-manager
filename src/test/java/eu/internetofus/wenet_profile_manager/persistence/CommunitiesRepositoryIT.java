@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,15 +28,23 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.components.profile_manager.CommunityMemberTest;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
+import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -439,6 +447,273 @@ public class CommunitiesRepositoryIT {
       }));
 
     }));
+
+  }
+
+  /**
+   * Create some {@link CommunityProfileTest#createModelExample(int, Vertx, VertxTestContext, Handler)}.
+   *
+   * @param vertx           event bus to use.
+   * @param testContext     context that executes the test.
+   * @param change          function to modify the pattern before to store it.
+   * @param max             number maximum of communities to create.
+   * @param communities     list to add the created communities.
+   * @param creationHandler that manage the creation.
+   */
+  public void storeSomeCommunityProfiles(final Vertx vertx, final VertxTestContext testContext, final Consumer<CommunityProfile> change, final int max, final List<CommunityProfile> communities,
+      final Handler<AsyncResult<Void>> creationHandler) {
+
+    if (communities.size() == max) {
+
+      creationHandler.handle(Future.succeededFuture());
+
+    } else {
+
+      final var community = new CommunityProfileTest().createModelExample(communities.size());
+      community.id = null;
+      change.accept(community);
+      CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(stored -> {
+
+        communities.add(stored);
+        this.storeSomeCommunityProfiles(vertx, testContext, change, max, communities, creationHandler);
+      }));
+    }
+
+  }
+
+  /**
+   * Check that retrieve the expected tasks by goal application identifier.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldRetrieveCommunityProfilesByAppId(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var appId = UUID.randomUUID().toString();
+    final ModelsPageContext context = new ModelsPageContext();
+    context.query = CommunitiesRepository.createCommunityProfilesPageQuery(appId, null, null, null, null);
+    context.limit = 10;
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search -> testContext.verify(() -> {
+
+      assertThat(search).isNotNull();
+      assertThat(search.total).isEqualTo(0);
+      assertThat(search.offset).isEqualTo(0);
+      final List<CommunityProfile> communities = new ArrayList<>();
+      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.appId = appId, 10, communities, testContext.succeeding(empty -> {
+
+        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
+
+          assertThat(search2).isNotNull();
+          assertThat(search2.total).isEqualTo(10);
+          assertThat(search2.offset).isEqualTo(0);
+          assertThat(search2.communities).isEqualTo(communities);
+
+          context.offset = 2;
+          context.limit = 3;
+          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search3 -> testContext.verify(() -> {
+
+            assertThat(search3).isNotNull();
+            assertThat(search3.total).isEqualTo(10);
+            assertThat(search3.offset).isEqualTo(2);
+            assertThat(search3.communities).isEqualTo(communities.subList(2, 5));
+            testContext.completeNow();
+
+          })));
+
+        })));
+      }));
+    })));
+
+  }
+
+  /**
+   * Check that retrieve the expected tasks by goal name.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldRetrieveCommunityProfilesByName(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var name = UUID.randomUUID().toString();
+    final ModelsPageContext context = new ModelsPageContext();
+    context.query = CommunitiesRepository.createCommunityProfilesPageQuery(null, "/.*" + name + ".*/", null, null, null);
+    context.limit = 10;
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search -> testContext.verify(() -> {
+
+      assertThat(search).isNotNull();
+      assertThat(search.total).isEqualTo(0);
+      assertThat(search.offset).isEqualTo(0);
+      final List<CommunityProfile> communities = new ArrayList<>();
+      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(), 10, communities, testContext.succeeding(empty -> {
+
+        context.sort = new JsonObject().put("name", -1);
+        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
+
+          assertThat(search2).isNotNull();
+          assertThat(search2.total).isEqualTo(10);
+          assertThat(search2.offset).isEqualTo(0);
+          Collections.reverse(communities);
+          assertThat(search2.communities).isEqualTo(communities);
+          context.sort = new JsonObject().put("name", 1);
+
+          context.offset = 2;
+          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search3 -> testContext.verify(() -> {
+
+            Collections.reverse(communities);
+            assertThat(search3).isNotNull();
+            assertThat(search3.total).isEqualTo(10);
+            assertThat(search3.offset).isEqualTo(2);
+            assertThat(search3.communities).isEqualTo(communities.subList(2, 10));
+            testContext.completeNow();
+
+          })));
+
+        })));
+      }));
+    })));
+
+  }
+
+  /**
+   * Check that retrieve the expected tasks by goal description.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldRetrieveCommunityProfilesByDescription(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var description = UUID.randomUUID().toString();
+    final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, description, null, null);
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+
+      assertThat(search).isNotNull();
+      assertThat(search.total).isEqualTo(0);
+      assertThat(search.offset).isEqualTo(0);
+      final List<CommunityProfile> communities = new ArrayList<>();
+      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
+
+        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+
+          assertThat(search2).isNotNull();
+          assertThat(search2.total).isEqualTo(10);
+          assertThat(search2.offset).isEqualTo(0);
+          assertThat(search2.communities).isEqualTo(communities);
+          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+
+            assertThat(search3).isNotNull();
+            assertThat(search3.total).isEqualTo(10);
+            assertThat(search3.offset).isEqualTo(2);
+            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+            testContext.completeNow();
+
+          })));
+
+        })));
+      }));
+    })));
+
+  }
+
+  /**
+   * Check that retrieve the expected tasks by goal keywords.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldRetrieveCommunityProfilesByKeywords(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var keywords = new ArrayList<String>();
+    final var keyword = UUID.randomUUID().toString();
+    keywords.add(keyword);
+    final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, keywords, null);
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+
+      assertThat(search).isNotNull();
+      assertThat(search.total).isEqualTo(0);
+      assertThat(search.offset).isEqualTo(0);
+      final List<CommunityProfile> communities = new ArrayList<>();
+      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.keywords.add(keyword), 10, communities, testContext.succeeding(empty -> {
+
+        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+
+          assertThat(search2).isNotNull();
+          assertThat(search2.total).isEqualTo(10);
+          assertThat(search2.offset).isEqualTo(0);
+          assertThat(search2.communities).isEqualTo(communities);
+          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+
+            assertThat(search3).isNotNull();
+            assertThat(search3.total).isEqualTo(10);
+            assertThat(search3.offset).isEqualTo(2);
+            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+            testContext.completeNow();
+
+          })));
+
+        })));
+      }));
+    })));
+
+  }
+
+  /**
+   * Check that retrieve the expected tasks by goal members.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   */
+  @Test
+  public void shouldRetrieveCommunityProfilesByMembers(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var members = new ArrayList<String>();
+    final var member = new CommunityMemberTest().createModelExample(1);
+    member.userId = UUID.randomUUID().toString();
+    members.add(member.userId);
+    final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, null, members);
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+
+      assertThat(search).isNotNull();
+      assertThat(search.total).isEqualTo(0);
+      assertThat(search.offset).isEqualTo(0);
+      final List<CommunityProfile> communities = new ArrayList<>();
+      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), 10, communities, testContext.succeeding(empty -> {
+
+        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+
+          assertThat(search2).isNotNull();
+          assertThat(search2.total).isEqualTo(10);
+          assertThat(search2.offset).isEqualTo(0);
+          assertThat(search2.communities).isEqualTo(communities);
+
+          members.add("/User_.*/");
+          final var query2 = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, null, members);
+          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query2, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+
+            assertThat(search3).isNotNull();
+            assertThat(search3.total).isEqualTo(10);
+            assertThat(search3.offset).isEqualTo(2);
+            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+            testContext.completeNow();
+
+          })));
+
+        })));
+      }));
+    })));
 
   }
 

@@ -26,8 +26,11 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
@@ -35,12 +38,14 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -121,6 +126,36 @@ public interface Communities {
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void retrieveCommunity(@PathParam("id") @Parameter(description = "The identifier of the community to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+
+  /**
+   * Called when want to get some communities.
+   *
+   * @param appId         application identifier to match for the communities to return.
+   * @param name          to match for the communities to return.
+   * @param description   to match for the communities to return.
+   * @param keywords      to match for the communities to return.
+   * @param members       to match for the communities to return.
+   * @param order         in with the communities has to be sort.
+   * @param offset        index of the first community to return.
+   * @param limit         number maximum of communities to return.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Return some communities", description = "Allow to search for some communities")
+  @ApiResponse(responseCode = "200", description = "The page with the communities that satisfy the search parameters", content = @Content(schema = @Schema(implementation = CommunityProfilesPage.class)))
+  @ApiResponse(responseCode = "400", description = "If any search parameter is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void retrieveCommunityProfilesPage(
+      @QueryParam(value = "appId") @Parameter(description = "An application identifier to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the communities to return, if you write between '/'. For example to get the communitites for the aplications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.", example = "1", required = false) String appId,
+      @QueryParam(value = "name") @Parameter(description = "A name to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the name of the communities to return if you write between '/'. For example to get the communities with a name with the word 'eat' you must pass as 'name' '/.*eat.*/'", example = "/.*eat.*/", required = false) String name,
+      @QueryParam(value = "description") @Parameter(description = "A description to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the description of the communities to return if you write between '/'. For example to get the communities with a description with the word 'eat' you must pass as 'description' '/.*eat.*/'", example = "/.*eat.*/", required = false) String description,
+      @QueryParam(value = "keywords") @Parameter(description = "A set of keywords to be defined on the communities to be returned. For each keyword is separated by a ',' and each field keyword can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "key1,/.*eat.*/,key3", required = false, explode = Explode.FALSE) List<String> keywords,
+      @QueryParam(value = "members") @Parameter(description = "A set of user identifiers to be a member of the communities to be returned. For each member is separated by a ',' and each field user identifier can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "1,/.*2.*/,3", required = false, explode = Explode.FALSE) List<String> members,
+      @QueryParam(value = "order") @Parameter(description = "The order in witch the communities has to be returned. For each filed it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.", example = "name,-description,+members", required = false, explode = Explode.FALSE) List<String> order,
+      @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first community to return.", example = "4", required = false) int offset,
+      @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of communities to return", example = "100", required = false) int limit,
+      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
   /**
    * Called when want to modify a community.

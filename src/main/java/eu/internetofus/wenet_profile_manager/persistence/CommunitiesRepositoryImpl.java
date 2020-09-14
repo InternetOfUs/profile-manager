@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,10 +27,12 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
@@ -117,6 +119,31 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
 
     final var query = new JsonObject().put("_id", id);
     this.deleteOneDocument(COMMUNITIES_COLLECTION, query, deleteHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCommunityProfilesPageObject(final ModelsPageContext context, final Handler<AsyncResult<JsonObject>> handler) {
+
+    final var options = context.toFindOptions();
+    this.searchPageObject(COMMUNITIES_COLLECTION, context.query, options, "communities", community -> community.put("id", community.remove("_id")), handler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveCommunityProfilesPageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> handler) {
+
+    final var options = new FindOptions();
+    options.setSort(sort);
+    options.setSkip(offset);
+    options.setLimit(limit);
+    this.searchPageObject(COMMUNITIES_COLLECTION, query, options, "communities", community -> community.put("id", community.remove("_id")), handler);
 
   }
 
