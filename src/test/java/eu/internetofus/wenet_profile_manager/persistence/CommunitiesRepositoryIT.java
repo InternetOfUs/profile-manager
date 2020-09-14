@@ -460,7 +460,7 @@ public class CommunitiesRepositoryIT {
    * @param communities     list to add the created communities.
    * @param creationHandler that manage the creation.
    */
-  public void storeSomeCommunityProfiles(final Vertx vertx, final VertxTestContext testContext, final Consumer<CommunityProfile> change, final int max, final List<CommunityProfile> communities,
+  public static void storeSomeCommunityProfiles(final Vertx vertx, final VertxTestContext testContext, final Consumer<CommunityProfile> change, final int max, final List<CommunityProfile> communities,
       final Handler<AsyncResult<Void>> creationHandler) {
 
     if (communities.size() == max) {
@@ -475,7 +475,7 @@ public class CommunitiesRepositoryIT {
       CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(stored -> {
 
         communities.add(stored);
-        this.storeSomeCommunityProfiles(vertx, testContext, change, max, communities, creationHandler);
+        storeSomeCommunityProfiles(vertx, testContext, change, max, communities, creationHandler);
       }));
     }
 
@@ -502,7 +502,7 @@ public class CommunitiesRepositoryIT {
       assertThat(search.total).isEqualTo(0);
       assertThat(search.offset).isEqualTo(0);
       final List<CommunityProfile> communities = new ArrayList<>();
-      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.appId = appId, 10, communities, testContext.succeeding(empty -> {
+      storeSomeCommunityProfiles(vertx, testContext, community -> community.appId = appId, 10, communities, testContext.succeeding(empty -> {
 
         CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
 
@@ -550,7 +550,7 @@ public class CommunitiesRepositoryIT {
       assertThat(search.total).isEqualTo(0);
       assertThat(search.offset).isEqualTo(0);
       final List<CommunityProfile> communities = new ArrayList<>();
-      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(), 10, communities, testContext.succeeding(empty -> {
+      storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(), 10, communities, testContext.succeeding(empty -> {
 
         context.sort = new JsonObject().put("name", -1);
         CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
@@ -599,7 +599,7 @@ public class CommunitiesRepositoryIT {
       assertThat(search.total).isEqualTo(0);
       assertThat(search.offset).isEqualTo(0);
       final List<CommunityProfile> communities = new ArrayList<>();
-      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
+      storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
 
         CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
 
@@ -644,7 +644,7 @@ public class CommunitiesRepositoryIT {
       assertThat(search.total).isEqualTo(0);
       assertThat(search.offset).isEqualTo(0);
       final List<CommunityProfile> communities = new ArrayList<>();
-      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.keywords.add(keyword), 10, communities, testContext.succeeding(empty -> {
+      storeSomeCommunityProfiles(vertx, testContext, community -> community.keywords.add(keyword), 10, communities, testContext.succeeding(empty -> {
 
         CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
 
@@ -690,7 +690,7 @@ public class CommunitiesRepositoryIT {
       assertThat(search.total).isEqualTo(0);
       assertThat(search.offset).isEqualTo(0);
       final List<CommunityProfile> communities = new ArrayList<>();
-      this.storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), 10, communities, testContext.succeeding(empty -> {
+      storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), 10, communities, testContext.succeeding(empty -> {
 
         CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
 
