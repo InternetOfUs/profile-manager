@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager;
 
-import org.testcontainers.Testcontainers;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-
 import eu.internetofus.common.Containers;
-import eu.internetofus.common.components.service.WeNetServiceMocker;
 import eu.internetofus.common.components.service.WeNetServiceSimulator;
-import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderMocker;
 import eu.internetofus.common.vertx.AbstractMain;
 import eu.internetofus.common.vertx.AbstractWeNetComponentIntegrationExtension;
 import eu.internetofus.common.vertx.WeNetModuleContext;
@@ -51,6 +45,7 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
    * {@inheritDoc}
    */
   @Override
+
   protected void afterStarted(final WeNetModuleContext context) {
 
     final var vertx = context.vertx;
@@ -66,29 +61,11 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
   @Override
   protected String[] createMainStartArguments() {
 
-    final var network = Network.newNetwork();
+    final var containers = Containers.status().startBasic().startTaskManagerContainer().startInteractionProtocolEngineContainer();
 
-    final var serviceApi = WeNetServiceMocker.start().getApiUrl();
-    final var socialContextBuilderApi = WeNetSocialContextBuilderMocker.start().getApiUrl();
-
-    final var profileManagerApiPort = Containers.nextFreePort();
-    final var profileManagerApi = Containers.exposedApiFor(profileManagerApiPort);
-
-    final var taskManagerApiPort = Containers.nextFreePort();
-    var taskManagerApi = Containers.exposedApiFor(taskManagerApiPort);
-
-    final var interactionProtocolEngineApiPort = Containers.nextFreePort();
-    final var interactionProtocolEngineApi = Containers.exposedApiFor(interactionProtocolEngineApiPort);
-
-    Testcontainers.exposeHostPorts(profileManagerApiPort, taskManagerApiPort, interactionProtocolEngineApiPort);
-
-    taskManagerApi = Containers.createAndStartContainersForTaskManager(taskManagerApiPort, profileManagerApi, interactionProtocolEngineApi, serviceApi, network);
-
-    final GenericContainer<?> persistenceContainer = Containers.createMongoContainerFor(Containers.WENET_PROFILE_MANAGER_DB_NAME, network);
-    persistenceContainer.start();
-
-    return new String[] { "-papi.port=" + profileManagerApiPort, "-ppersistence.host=host.docker.internal", "-ppersistence.port=" + persistenceContainer.getMappedPort(Containers.EXPORT_MONGODB_PORT),
-        "-pwenetComponents.taskManager=\"" + taskManagerApi + "\"", "-pwenetComponents.service=\"" + serviceApi + "\"", "-pwenetComponents.socialContextBuilder=\"" + socialContextBuilderApi + "\"" };
+    return new String[] { "-papi.port=" + containers.profileManagerApiPort, "-ppersistence.db_name=" + Containers.MONGODB_NAME, "-ppersistence.host=" + containers.getMongoDBHost(), "-ppersistence.port=" + containers.getMongoDBPort(),
+        "-ppersistence.username=" + Containers.MONGODB_USER, "-ppersistence.password=" + Containers.MONGODB_PASSWORD, "-pwenetComponents.taskManager=\"" + containers.getTaskManagerApi() + "\"",
+        "-pwenetComponents.service=\"" + containers.service.getApiUrl() + "\"", "-pwenetComponents.socialContextBuilder=\"" + containers.socialContextBuilder.getApiUrl() + "\"" };
 
   }
 
