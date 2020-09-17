@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -70,12 +70,13 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   /**
    * Create a new repository.
    *
-   * @param conf configuration to use.
-   * @param pool to create the connections.
+   * @param conf    configuration to use.
+   * @param pool    to create the connections.
+   * @param version of the schemas.
    */
-  public TrustsRepositoryImpl(final JsonObject conf, final MongoClient pool) {
+  public TrustsRepositoryImpl(final JsonObject conf, final MongoClient pool, final String version) {
 
-    super(pool);
+    super(pool, version);
     this.n = conf.getJsonObject("TrustAggregator", new JsonObject()).getJsonObject("RECENCY_BASED", new JsonObject()).getInteger("n", DEFAULT_N);
 
   }
@@ -246,6 +247,17 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
     pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$avg", "$rating"))));
     final var command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
     this.processAggregation(command, trustHandler);
+  }
+
+  /**
+   * Migrate the collections to the current version.
+   *
+   * @return the future that will inform if the migration is a success or not.
+   */
+  public Future<Void> migrateDocumentsToCurrentVersions() {
+
+    // No changes => only update schema information
+    return this.updateSchemaVersionOnCollection(TRUSTS_COLLECTION);
   }
 
 }

@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,26 +24,37 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.common.vertx;
 
-import eu.internetofus.common.vertx.AbstractPersistenceVerticle;
-import io.vertx.core.Future;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 
 /**
- * The verticle that provide the persistence services.
+ * Test the {@link WeNetModuleContext},
+ *
+ * @see WeNetModuleContext
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticle extends AbstractPersistenceVerticle {
+public class WeNetModuleContextTest {
 
   /**
-   * {@inheritDoc}
+   * Should the constructor store the values.
    */
-  @Override
-  protected Future<Void> registerRepositoriesFor(final String schemaVersion) {
+  @Test
+  public void shouldConstructorStoreValues() {
 
-    return ProfilesRepository.register(this.vertx, this.pool, schemaVersion).compose(map -> TrustsRepository.register(this.vertx, this.config(), this.pool, schemaVersion))
-        .compose(map->CommunitiesRepository.register(this.vertx, this.pool, schemaVersion));
+
+    final Vertx vertx = Vertx.vertx();
+    final JsonObject configuration = new JsonObject();
+    final var context = new WeNetModuleContext(vertx, configuration);
+    assertThat(context.vertx).isSameAs(vertx);
+    assertThat(context.configuration).isSameAs(configuration);
+
   }
 
 }

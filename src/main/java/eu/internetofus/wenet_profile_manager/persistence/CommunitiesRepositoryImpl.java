@@ -29,6 +29,7 @@ package eu.internetofus.wenet_profile_manager.persistence;
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
@@ -51,11 +52,12 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   /**
    * Create a new repository.
    *
-   * @param pool to create the connections.
+   * @param pool    to create the connections.
+   * @param version of the schemas.
    */
-  public CommunitiesRepositoryImpl(final MongoClient pool) {
+  public CommunitiesRepositoryImpl(final MongoClient pool, final String version) {
 
-    super(pool);
+    super(pool, version);
 
   }
 
@@ -133,6 +135,17 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
     options.setLimit(limit);
     this.searchPageObject(COMMUNITIES_COLLECTION, query, options, "communities", community -> community.put("id", community.remove("_id")), handler);
 
+  }
+
+  /**
+   * Migrate the collections to the current version.
+   *
+   * @return the future that will inform if the migration is a success or not.
+   */
+  public Future<Void> migrateDocumentsToCurrentVersions() {
+
+    // First time => no migration necessary
+    return Future.succeededFuture();
   }
 
 }

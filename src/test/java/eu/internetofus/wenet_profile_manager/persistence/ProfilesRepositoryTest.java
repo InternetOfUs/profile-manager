@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,7 +60,7 @@ public class ProfilesRepositoryTest {
   @Test
   public void shouldNotFoundProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void searchProfileObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
@@ -86,7 +86,7 @@ public class ProfilesRepositoryTest {
   @Test
   public void shouldNotStoreProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
@@ -112,7 +112,7 @@ public class ProfilesRepositoryTest {
   public void shouldNotStoreProfileBecauseStoreFailed(final VertxTestContext testContext) {
 
     final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void storeProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
@@ -140,7 +140,7 @@ public class ProfilesRepositoryTest {
   public void shouldNotUpdateProfileBecauseUpdateFailed(final VertxTestContext testContext) {
 
     final Throwable cause = new IllegalArgumentException("Cause that can not be updated");
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void updateProfile(final JsonObject profile, final Handler<AsyncResult<Void>> updateHandler) {
@@ -167,7 +167,7 @@ public class ProfilesRepositoryTest {
   @Test
   public void shouldNotStoreHistoricProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
@@ -193,7 +193,7 @@ public class ProfilesRepositoryTest {
   public void shouldNotStoreHistoricProfileBecauseStoreFailed(final VertxTestContext testContext) {
 
     final Throwable cause = new IllegalArgumentException("Cause that can not be stored");
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       @Override
       public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
@@ -223,7 +223,7 @@ public class ProfilesRepositoryTest {
   @Test
   public void shouldNotFoundHistoricProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {
 
-    final ProfilesRepository repository = new ProfilesRepositoryImpl(null) {
+    final ProfilesRepository repository = new ProfilesRepositoryImpl(null,null) {
 
       /**
        * {@inheritDoc}

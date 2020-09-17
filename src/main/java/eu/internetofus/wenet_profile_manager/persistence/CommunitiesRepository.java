@@ -73,12 +73,17 @@ public interface CommunitiesRepository {
   /**
    * Register this service.
    *
-   * @param vertx that contains the event bus to use.
-   * @param pool  to create the database connections.
+   * @param vertx   that contains the event bus to use.
+   * @param pool    to create the database connections.
+   * @param version of the schemas.
+   *
+   * @return the future that inform when the repository will be registered or not.
    */
-  static void register(final Vertx vertx, final MongoClient pool) {
+  static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version) {
 
-    new ServiceBinder(vertx).setAddress(CommunitiesRepository.ADDRESS).register(CommunitiesRepository.class, new CommunitiesRepositoryImpl(pool));
+    final var repository = new CommunitiesRepositoryImpl(pool, version);
+    new ServiceBinder(vertx).setAddress(CommunitiesRepository.ADDRESS).register(CommunitiesRepository.class, repository);
+    return repository.migrateDocumentsToCurrentVersions();
 
   }
 
@@ -218,7 +223,7 @@ public interface CommunitiesRepository {
    */
   static JsonObject createCommunityProfilesPageQuery(final String appId, final String name, final String description, final List<String> keywords, final List<String> members) {
 
-    return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("name", name).withEqOrRegex("description", description).withEqOrRegex("keywords", keywords).withElementEqOrRegex("members","userId", members).build();
+    return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("name", name).withEqOrRegex("description", description).withEqOrRegex("keywords", keywords).withElementEqOrRegex("members", "userId", members).build();
 
   }
 

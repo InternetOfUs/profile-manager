@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,8 +27,11 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.vertx.Repository;
+import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
@@ -56,11 +59,12 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   /**
    * Create a new repository.
    *
-   * @param pool to create the connections.
+   * @param pool    to create the connections.
+   * @param version of the schemas.
    */
-  public ProfilesRepositoryImpl(final MongoClient pool) {
+  public ProfilesRepositoryImpl(final MongoClient pool, final String version) {
 
-    super(pool);
+    super(pool, version);
 
   }
 
@@ -151,6 +155,17 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
     options.getFields().put("_id", 0);
     options.setSort(sort);
     this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", null, searchHandler);
+
+  }
+
+  /**
+   * Migrate the collections to the current version.
+   *
+   * @return the future that will inform if the migration is a success or not.
+   */
+  public Future<Void> migrateDocumentsToCurrentVersions() {
+
+    return this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class).compose(map -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
 
   }
 
