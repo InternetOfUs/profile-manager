@@ -28,89 +28,82 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 
 /**
- * Test the {@link TrustsRepositoryImpl}.
+ * Test the {@link TrustsRepository}.
  *
- * @see TrustsRepositoryImpl
+ * @see TrustsRepository
  *
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith({ VertxExtension.class, MockitoExtension.class })
-public class TrustsRepositoryImplTest {
+public class TrustsRepositoryTest {
 
   /**
-   * Should not calculate the median when can not found the median value.
+   * Should not store trust event when DB failed.
    *
-   * @param pool        mocked connection to MongoDB.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotCalculateMedianTrustWhenFailFindMadian(@Mock final MongoClient pool, final VertxTestContext testContext) {
+  public void shouldNotStoreTrustEventWhenDBFailed(final VertxTestContext testContext) {
 
-    final var repository = new TrustsRepositoryImpl(new JsonObject(), pool, "version");
+    final var repository = mock(TrustsRepository.class, Answers.CALLS_REAL_METHODS);
     final var expectedCause = new Throwable("Expected cause");
-    repository.calculateMedianTrust(new JsonObject(), testContext.failing(cause -> testContext.verify(() -> {
+    final var event = new UserPerformanceRatingEvent();
+    repository.storeTrustEvent(event, testContext.failing(cause -> testContext.verify(() -> {
 
       assertThat(cause).isEqualTo(expectedCause);
       testContext.completeNow();
     })));
 
     @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<Long>>> countHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(pool, timeout(30000).times(1)).count(any(), any(), countHandler.capture());
-    countHandler.getValue().handle(Future.succeededFuture(109l));
-
-    @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<List<JsonObject>>>> saveHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(pool, timeout(30000).times(1)).findWithOptions(any(), any(), any(), saveHandler.capture());
+    final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> saveHandler = ArgumentCaptor.forClass(Handler.class);
+    verify(repository, timeout(30000).times(1)).storeTrustEvent(any(JsonObject.class), saveHandler.capture());
     saveHandler.getValue().handle(Future.failedFuture(expectedCause));
 
   }
 
   /**
-   * Should not store an event when the MongoDB fails.
+   * Should not store trust event when DB failed.
    *
-   * @param pool        mocked connection to MongoDB.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotStoreTrustEventBecausePoolFails(@Mock final MongoClient pool, final VertxTestContext testContext) {
+  public void shouldNotStoreTrustEventWhenReturnedValueIsNotAnEvent(final VertxTestContext testContext) {
 
-    final var repository = new TrustsRepositoryImpl(new JsonObject(), pool, "version");
-    final var expectedCause = new Throwable("Expected cause");
-    repository.storeTrustEvent(new JsonObject(), testContext.failing(cause -> testContext.verify(() -> {
+    final var repository = mock(TrustsRepository.class, Answers.CALLS_REAL_METHODS);
+    final var event = new UserPerformanceRatingEvent();
+    repository.storeTrustEvent(event, testContext.failing(cause -> testContext.verify(() -> {
 
-      assertThat(cause).isEqualTo(expectedCause);
+      assertThat(cause.getMessage()).isEqualTo("The stored event is not valid.");
       testContext.completeNow();
     })));
 
     @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<String>>> countHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(pool, timeout(30000).times(1)).save(any(), any(), countHandler.capture());
-    countHandler.getValue().handle(Future.failedFuture(expectedCause));
+    final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> saveHandler = ArgumentCaptor.forClass(Handler.class);
+    verify(repository, timeout(30000).times(1)).storeTrustEvent(any(JsonObject.class), saveHandler.capture());
+    saveHandler.getValue().handle(Future.succeededFuture());
 
   }
 

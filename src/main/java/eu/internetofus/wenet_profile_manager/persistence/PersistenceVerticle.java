@@ -42,8 +42,11 @@ public class PersistenceVerticle extends AbstractPersistenceVerticle {
   @Override
   protected Future<Void> registerRepositoriesFor(final String schemaVersion) {
 
-    return ProfilesRepository.register(this.vertx, this.pool, schemaVersion).compose(map -> TrustsRepository.register(this.vertx, this.config(), this.pool, schemaVersion))
-        .compose(map->CommunitiesRepository.register(this.vertx, this.pool, schemaVersion));
+    var future = ProfilesRepository.register(this.vertx, this.pool, schemaVersion);
+    future = future.compose(map -> TrustsRepository.register(this.vertx, this.config(), this.pool, schemaVersion));
+    future = future.compose(map -> CommunitiesRepository.register(this.vertx, this.pool, schemaVersion));
+    return future;
+
   }
 
 }

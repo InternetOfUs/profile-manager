@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,28 +24,56 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.persistence;
+package eu.internetofus.common.vertx;
 
-import eu.internetofus.common.vertx.AbstractPersistenceVerticleTestCase;
+import io.vertx.core.Verticle;
 
 /**
- * Test the {@link PersistenceVerticle}.
- *
- * @see PersistenceVerticle
+ * Dummy Main class for test.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class PersistenceVerticleTest extends AbstractPersistenceVerticleTestCase<PersistenceVerticle> {
+public class DummyMain extends AbstractMain {
+
+  /**
+   * The verticle of the main.
+   */
+  public Verticle verticle;
+
+  /**
+   * Create a new main.
+   *
+   * @param verticle to use.
+   */
+  public DummyMain(final Verticle verticle) {
+
+    this.verticle = verticle;
+  }
 
   /**
    * {@inheritDoc}
-   *
-   * @see PersistenceVerticle#PersistenceVerticle()
    */
   @Override
-  protected PersistenceVerticle createPersitenceVerticle() {
+  protected Verticle createMainVerticle() {
 
-    return new PersistenceVerticle();
+    return this.verticle;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String getModuleName() {
+
+    return "dummy";
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected String getDefaultModuleConfigurationResurcePath() {
+
+    return "eu/internetofus/common/vertx/"+super.getDefaultModuleConfigurationResurcePath();
+  }
 }

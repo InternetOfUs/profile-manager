@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,28 +24,25 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api;
+package eu.internetofus.common.vertx;
 
-import eu.internetofus.common.vertx.AbstractAPIVerticleTestCase;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
 
 /**
- * Test the {@link APIVerticle}.
- *
- * @see APIVerticle
+ * A verticle that can not start.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class APIVerticleTest extends AbstractAPIVerticleTestCase<APIVerticle> {
+public class NoStartVerticle extends AbstractVerticle {
 
   /**
    * {@inheritDoc}
-   *
-   * @see APIVerticle#APIVerticle()
    */
   @Override
-  protected APIVerticle createAPIVerticle() {
+  public void start(final Promise<Void> startPromise) throws Exception {
 
-    return new APIVerticle();
+    startPromise.fail("Verticle that not start");
   }
 
 }

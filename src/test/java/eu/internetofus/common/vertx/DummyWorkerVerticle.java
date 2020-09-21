@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,28 +24,25 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.services;
+package eu.internetofus.common.vertx;
 
-import eu.internetofus.common.vertx.AbstractServicesVerticleTestCase;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Promise;
 
 /**
- * Test the {@link ServicesVerticle}.
- *
- * @see ServicesVerticle
+ * A dummy worker verticle.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ServiceVerticleTest extends AbstractServicesVerticleTestCase<ServicesVerticle> {
+@Worker
+public class DummyWorkerVerticle extends AbstractVerticle {
 
   /**
    * {@inheritDoc}
-   *
-   * @see ServicesVerticle#ServicesVerticle()
    */
   @Override
-  protected ServicesVerticle createServicesVerticle() {
+  public void start(final Promise<Void> startPromise) throws Exception {
 
-    return new ServicesVerticle();
+    startPromise.complete();
   }
-
 }
