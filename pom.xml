@@ -399,6 +399,7 @@
 						<include>**/*Test.java</include>
 						<include>**/*IT.java</include>
 					</includes>
+					<runOrder>alphabetical</runOrder>
 				</configuration>
 			</plugin>
 			<plugin>
