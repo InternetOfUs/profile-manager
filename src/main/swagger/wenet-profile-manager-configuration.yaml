@@ -36,6 +36,8 @@ openAPI:
       description: The functionality provided allows to manage the members of a community.
     - name: Social practices
       description: The functionality provided allows to manage the social practices defined into a community profile.
+    - name: User identifiers
+      description: The functionality provided allows to obtain all the user identifiers.
     - name: Other
       description: Other services provided by the API.
   info:

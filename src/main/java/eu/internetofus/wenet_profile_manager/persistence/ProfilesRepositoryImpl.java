@@ -33,6 +33,7 @@ import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfi
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
@@ -167,6 +168,45 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
     return this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class).compose(map -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
 
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveProfileUserIdsPageObject(final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
+
+    final FindOptions options = new FindOptions();
+    options.setFields(new JsonObject().put("_id", true));
+    options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
+    options.setSkip(offset);
+    options.setLimit(limit);
+    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles", null, profilesHandler -> {
+
+      if (profilesHandler.failed()) {
+
+        searchHandler.handle(Future.failedFuture(profilesHandler.cause()));
+
+      } else {
+
+        final var page = profilesHandler.result();
+        final var userIds = new JsonArray();
+        page.put("userIds", userIds);
+        final var profiles = (JsonArray) page.remove("profiles");
+        if (profiles != null) {
+
+          for (var i = 0; i < profiles.size(); i++) {
+
+            final var profile = profiles.getJsonObject(i);
+            final var id = profile.getString("_id");
+            userIds.add(id);
+
+          }
+        }
+        searchHandler.handle(Future.succeededFuture(page));
+      }
+
+    });
   }
 
 }

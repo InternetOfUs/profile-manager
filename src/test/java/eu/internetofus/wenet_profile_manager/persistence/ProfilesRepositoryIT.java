@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -44,6 +44,7 @@ import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExten
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
+import eu.internetofus.wenet_profile_manager.api.profiles.UserIdentifiersPage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -879,6 +880,79 @@ public class ProfilesRepositoryIT {
       }));
     }));
 
+  }
+
+  /**
+   * Should retrieve profiles user identifiers page.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldRetrieveProfileUserIdsPageObject(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    repository.retrieveProfileUserIdsPageObject(0, Integer.MAX_VALUE, testContext.succeeding(page -> testContext.verify(() -> {
+
+      final var model = Model.fromJsonObject(page, UserIdentifiersPage.class);
+      assertThat(model).isNotNull();
+      if (model.total > 0) {
+
+        assertThat(model.userIds).isNotEmpty().hasSize((int) model.total);
+      }
+      vertx.setTimer(1500, time -> {
+        StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile -> {
+          StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile2 -> {
+            StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile3 -> {
+
+              repository.retrieveProfileUserIdsPageObject(0, Integer.MAX_VALUE, testContext.succeeding(page2 -> testContext.verify(() -> {
+
+                final var model2 = Model.fromJsonObject(page2, UserIdentifiersPage.class);
+                assertThat(model2).isNotNull();
+                assertThat(model2.offset).isEqualTo(0);
+                assertThat(model2.total).isEqualTo(model.total + 3);
+                model.userIds.add(profile.id);
+                model.userIds.add(profile2.id);
+                model.userIds.add(profile3.id);
+                assertThat(model2.userIds).isNotEmpty().hasSize((int) model.total + 3).isEqualTo(model.userIds);
+                repository.retrieveProfileUserIdsPageObject((int) model.total, 2, testContext.succeeding(page3 -> testContext.verify(() -> {
+
+                  final var model3 = Model.fromJsonObject(page3, UserIdentifiersPage.class);
+                  assertThat(model3).isNotNull();
+                  assertThat(model3.offset).isEqualTo(model.total);
+                  assertThat(model3.total).isEqualTo(model.total + 3);
+                  assertThat(model3.userIds).isNotEmpty().hasSize(2).containsExactly(profile.id, profile2.id);
+                  testContext.completeNow();
+
+                })));
+
+              })));
+            }));
+          }));
+        }));
+      });
+    })));
+
+  }
+
+  /**
+   * Should retrieve empty profiles user identifiers page.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldRetrieveEmptyProfileUserIdsPageObject(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    repository.retrieveProfileUserIdsPageObject(Integer.MAX_VALUE, 100, testContext.succeeding(page -> {
+
+      final var model = Model.fromJsonObject(page, UserIdentifiersPage.class);
+      assertThat(model).isNotNull();
+      assertThat(model.userIds).isEmpty();
+      testContext.completeNow();
+
+    }));
   }
 
 }

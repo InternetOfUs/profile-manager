@@ -328,4 +328,13 @@ public interface ProfilesRepository {
     return new JsonObject().put("from", Integer.parseInt(order + "1"));
   }
 
+  /**
+   * Retrieve a page with some user identifiers.
+   *
+   * @param offset        to the first user identifier to return.
+   * @param limit         the number maximum of identifiers to return.
+   * @param searchHandler handler to manage the search.
+   */
+  void retrieveProfileUserIdsPageObject(int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
+
 }

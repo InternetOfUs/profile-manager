@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,6 +38,7 @@ import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
 import eu.internetofus.wenet_profile_manager.api.personalities.PersonalitiesResource;
 import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
+import eu.internetofus.wenet_profile_manager.api.profiles.UserIds;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
 import io.vertx.core.json.JsonObject;
@@ -70,8 +71,12 @@ public class APIVerticle extends AbstractAPIVerticle {
     routerFactory.mountServiceInterface(Help.class, Help.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
 
+    routerFactory.mountServiceInterface(UserIds.class, UserIds.ADDRESS);
+    final var resource = new ProfilesResource(this.vertx);
+    new ServiceBinder(this.vertx).setAddress(UserIds.ADDRESS).register(UserIds.class, resource);
+
     routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class, new ProfilesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class, resource);
 
     routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class, new PersonalitiesResource(this.vertx));
