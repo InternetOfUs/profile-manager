@@ -24,35 +24,9 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
-
-import java.util.ArrayList;
-
-import eu.internetofus.common.components.ModelTestCase;
-
 /**
- * Test the {@link UserIdentifiersPage}.
- *
- * @see UserIdentifiersPage
+ * The components to manage the trust with another user.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class UserIdentifiersPageTest extends ModelTestCase<UserIdentifiersPage> {
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public UserIdentifiersPage createModelExample(final int index) {
-
-    final var model = new UserIdentifiersPage();
-    model.offset = index;
-    model.total = 100 + index;
-    model.userIds = new ArrayList<>();
-    model.userIds.add("id_" + (index - 1));
-    model.userIds.add("id_" + index);
-    model.userIds.add("id_" + (index + 1));
-    return model;
-  }
-
-}
+package eu.internetofus.wenet_profile_manager.api.trusts;

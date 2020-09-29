@@ -337,4 +337,13 @@ public interface ProfilesRepository {
    */
   void retrieveProfileUserIdsPageObject(int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
 
+  /**
+   * Retrieve a page with some profiles.
+   *
+   * @param offset        to the first profile to return.
+   * @param limit         the number maximum of profiles to return.
+   * @param searchHandler handler to manage the search.
+   */
+  void retrieveProfilesPageObject(int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
+
 }

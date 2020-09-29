@@ -153,7 +153,7 @@ public interface Profiles {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return some profiles", description = "Allow to get some user profiles")
-  @ApiResponse(responseCode = "200", description = "The page with the user profiles", content = @Content(schema = @Schema(implementation = UserIdentifiersPage.class)))
+  @ApiResponse(responseCode = "200", description = "The page with the user profiles", content = @Content(schema = @Schema(implementation = WeNetUserProfilesPage.class)))
   @ApiResponse(responseCode = "400", description = "If any of the search pattern is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void retrieveProfilesPage(@DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first user profile to return.", example = "4", required = false) int offset,
       @DefaultValue("10000") @QueryParam(value = "limit") @Parameter(description = "The number maximum of user profiles to return", example = "100", required = false) int limit,

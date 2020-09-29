@@ -10,8 +10,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,37 +26,32 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.ReflectionModel;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Schema;
+import eu.internetofus.common.components.ModelTestCase;
+import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 
 /**
- * Contains the found user identifiers.
+ * Test the {@link WeNetUserProfilesPage}.
+ *
+ * @see WeNetUserProfilesPage
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "UserIdentifiersPage", description = "Contains a set of user identifiers")
-public class UserIdentifiersPage extends ReflectionModel implements Model {
+public class WeNetUserProfilesPageTest extends ModelTestCase<WeNetUserProfilesPage> {
 
   /**
-   * The index of the first profile returned.
+   * {@inheritDoc}
    */
-  @Schema(description = "The index of the first user identifier returned.", example = "0")
-  public int offset;
+  @Override
+  public WeNetUserProfilesPage createModelExample(final int index) {
 
-  /**
-   * The number total of profiles that satisfies the search.
-   */
-  @Schema(description = "The number total of user identifiers that satisfies the search.", example = "100")
-  public long total;
-
-  /**
-   * The found profiles.
-   */
-  @ArraySchema(schema = @Schema(implementation = String.class), arraySchema = @Schema(description = "The found user identifiers"))
-  public List<String> userIds;
+    final var model = new WeNetUserProfilesPage();
+    model.offset = index;
+    model.total = 100 + index;
+    model.profiles = new ArrayList<>();
+    model.profiles.add(new WeNetUserProfileTest().createModelExample(index));
+    return model;
+  }
 
 }

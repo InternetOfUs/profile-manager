@@ -44,7 +44,8 @@ import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExten
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
-import eu.internetofus.wenet_profile_manager.api.profiles.UserIdentifiersPage;
+import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfilesPage;
+import eu.internetofus.wenet_profile_manager.api.user_identifiers.UserIdentifiersPage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -945,14 +946,87 @@ public class ProfilesRepositoryIT {
   public void shouldRetrieveEmptyProfileUserIdsPageObject(final Vertx vertx, final VertxTestContext testContext) {
 
     final var repository = ProfilesRepository.createProxy(vertx);
-    repository.retrieveProfileUserIdsPageObject(Integer.MAX_VALUE, 100, testContext.succeeding(page -> {
+    repository.retrieveProfileUserIdsPageObject(Integer.MAX_VALUE, 100, testContext.succeeding(page -> testContext.verify(() -> {
 
       final var model = Model.fromJsonObject(page, UserIdentifiersPage.class);
       assertThat(model).isNotNull();
-      assertThat(model.userIds).isEmpty();
+      assertThat(model.userIds).isNullOrEmpty();
       testContext.completeNow();
 
-    }));
+    })));
+  }
+
+  /**
+   * Should retrieve profiles page.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldRetrieveProfilesPageObject(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    repository.retrieveProfilesPageObject(0, Integer.MAX_VALUE, testContext.succeeding(page -> testContext.verify(() -> {
+
+      final var model = Model.fromJsonObject(page, WeNetUserProfilesPage.class);
+      assertThat(model).isNotNull();
+      if (model.total > 0) {
+
+        assertThat(model.profiles).isNotEmpty().hasSize((int) model.total);
+      }
+      vertx.setTimer(1500, time -> {
+        StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile -> {
+          StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile2 -> {
+            StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(profile3 -> {
+
+              repository.retrieveProfilesPageObject(0, Integer.MAX_VALUE, testContext.succeeding(page2 -> testContext.verify(() -> {
+
+                final var model2 = Model.fromJsonObject(page2, WeNetUserProfilesPage.class);
+                assertThat(model2).isNotNull();
+                assertThat(model2.offset).isEqualTo(0);
+                assertThat(model2.total).isEqualTo(model.total + 3);
+                model.profiles.add(profile);
+                model.profiles.add(profile2);
+                model.profiles.add(profile3);
+                assertThat(model2.profiles).isNotEmpty().hasSize((int) model.total + 3).isEqualTo(model.profiles);
+                repository.retrieveProfilesPageObject((int) model.total, 2, testContext.succeeding(page3 -> testContext.verify(() -> {
+
+                  final var model3 = Model.fromJsonObject(page3, WeNetUserProfilesPage.class);
+                  assertThat(model3).isNotNull();
+                  assertThat(model3.offset).isEqualTo(model.total);
+                  assertThat(model3.total).isEqualTo(model.total + 3);
+                  assertThat(model3.profiles).isNotEmpty().hasSize(2).containsExactly(profile, profile2);
+                  testContext.completeNow();
+
+                })));
+
+              })));
+            }));
+          }));
+        }));
+      });
+    })));
+
+  }
+
+  /**
+   * Should retrieve empty profiles page.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldRetrieveEmptyProfilesPageObject(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    repository.retrieveProfilesPageObject(Integer.MAX_VALUE, 100, testContext.succeeding(page -> testContext.verify(() -> {
+
+      final var model = Model.fromJsonObject(page, WeNetUserProfilesPage.class);
+      assertThat(model).isNotNull();
+      assertThat(model.profiles).isNullOrEmpty();
+      testContext.completeNow();
+
+    })));
   }
 
 }

@@ -1146,33 +1146,32 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * Verify that can retrieve the user identifiers.
+   * Verify that can retrieve some profiles.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#createProfile(io.vertx.core.json.JsonObject, io.vertx.ext.web.api.OperationRequest,
-   *      io.vertx.core.Handler)
+   * @see Profiles#retrieveProfilesPage(int, int, io.vertx.ext.web.api.OperationRequest, Handler)
    */
   @Test
-  public void shouldRetrieveProfileUserIdsPageObject(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldRetrieveProfilesPage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     final var checkpoint = testContext.checkpoint(2);
-    testRequest(client, HttpMethod.GET, UserIds.PATH ).expect(res -> {
+    testRequest(client, HttpMethod.GET, Profiles.PATH).expect(res -> {
 
       assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final var page = assertThatBodyIs(UserIdentifiersPage.class, res);
+      final var page = assertThatBodyIs(WeNetUserProfilesPage.class, res);
       assertThat(page).isNotNull();
-      assertThat(page.userIds).isNotNull().hasSize((int) page.total);
-      testRequest(client, HttpMethod.GET, UserIds.PATH).with(queryParam("offset", "5"), queryParam("limit", "3")).expect(res2 -> {
+      assertThat(page.profiles).isNotNull().hasSize((int) page.total);
+      testRequest(client, HttpMethod.GET, Profiles.PATH).with(queryParam("offset", "5"), queryParam("limit", "3")).expect(res2 -> {
 
         assertThat(res2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var page2 = assertThatBodyIs(UserIdentifiersPage.class, res2);
+        final var page2 = assertThatBodyIs(WeNetUserProfilesPage.class, res2);
         assertThat(page2).isNotNull();
         assertThat(page2.offset).isEqualTo(5);
         assertThat(page2.total).isEqualTo(page.total);
-        assertThat(page2.userIds).isNotNull().hasSize(3).isEqualTo(page.userIds.subList(5, 8));
+        assertThat(page2.profiles).isNotNull().hasSize(3).isEqualTo(page.profiles.subList(5, 8));
         testContext.completeNow();
 
       }).send(testContext, checkpoint);
@@ -1180,5 +1179,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     }).send(testContext, checkpoint);
 
   }
+
 
 }

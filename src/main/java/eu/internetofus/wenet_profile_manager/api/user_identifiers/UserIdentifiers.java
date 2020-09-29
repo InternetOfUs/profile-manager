@@ -24,7 +24,7 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.user_identifiers;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -47,24 +47,24 @@ import io.vertx.ext.web.api.OperationResponse;
 import io.vertx.ext.web.api.generator.WebApiServiceGen;
 
 /**
- * The definition of the web services to manage the user identifiers.
+ * The definition of the web services to obtain the user identifiers.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Path(UserIds.PATH)
+@Path(UserIdentifiers.PATH)
 @Tag(name = "User identifiers")
 @WebApiServiceGen
-public interface UserIds {
+public interface UserIdentifiers {
 
   /**
    * The path to the user identifiers resource.
    */
-  String PATH = "/userIds";
+  String PATH = "/userIdentifiers";
 
   /**
    * The address of this service.
    */
-  String ADDRESS = "wenet_profile_manager.api.userIds";
+  String ADDRESS = "wenet_profile_manager.api.user_identifiers";
 
   /**
    * Called when want to get the user identifiers of the profiles.
@@ -79,8 +79,8 @@ public interface UserIds {
   @Operation(summary = "Return the identifiers of the users", description = "Allow to get some user identifiers")
   @ApiResponse(responseCode = "200", description = "The page with the user identifiers", content = @Content(schema = @Schema(implementation = UserIdentifiersPage.class)))
   @ApiResponse(responseCode = "400", description = "If any of the search pattern is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void retrieveProfileUserIdsPage(@DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first user identifier to return.", example = "4", required = false) int offset,
-      @DefaultValue("10000") @QueryParam(value = "limit") @Parameter(description = "The number maximum of user identifiers to return", example = "100", required = false) int limit,
-      @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void getUserIdentifiersPage(@DefaultValue("0") @QueryParam("offset") @Parameter(description = "The index of the first task type to return") int offset,
+      @DefaultValue("10000") @QueryParam("limit") @Parameter(description = "The number maximum of task types to return") int limit, @Parameter(hidden = true, required = false) OperationRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
 
 }

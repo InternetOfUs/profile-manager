@@ -63,7 +63,7 @@ import io.vertx.ext.web.api.OperationResponse;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesResource implements Profiles, UserIds {
+public class ProfilesResource implements Profiles {
 
   /**
    * The event bus that is using.
@@ -111,7 +111,6 @@ public class ProfilesResource implements Profiles, UserIds {
     model.id = userId;
     final var context = new OperationContext(request, resultHandler);
     ModelResources.retrieveModel(model, this.repository::searchProfile, context);
-
   }
 
   /**
@@ -993,23 +992,17 @@ public class ProfilesResource implements Profiles, UserIds {
         this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveProfileUserIdsPage(final int offset, final int limit, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository.retrieveProfileUserIdsPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
-
-  }
 
   /**
    * {@inheritDoc}
    */
   @Override
   public void retrieveProfilesPage(final int offset, final int limit, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
-    // TODO Auto-generated method stub
+
+    final var context = new OperationContext(request, resultHandler);
+    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository.retrieveProfilesPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
+
 
   }
 

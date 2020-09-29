@@ -209,4 +209,18 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
     });
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void retrieveProfilesPageObject(final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
+
+    final FindOptions options = new FindOptions();
+    options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
+    options.setSkip(offset);
+    options.setLimit(limit);
+    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles", profile -> profile.put("id", profile.remove("_id")), searchHandler);
+
+  }
+
 }
