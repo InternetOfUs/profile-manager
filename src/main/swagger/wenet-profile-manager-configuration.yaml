@@ -42,7 +42,7 @@ openAPI:
       description: Other services provided by the API.
   info:
     # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-    version: '0.12.0'
+    version: '0.13.0'
     title: WeNet - Profile manager API
     description:  >-
       The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
@@ -78,5 +78,5 @@ openAPI:
       description: WeNet production server
     - url: https://wenet.u-hopper.com/dev/profile_manager
       description: WeNet development server server
-    - url: http://ardid.iiia.csic.es/wenet/profile-manager/0.4/
+    - url: http://ardid.iiia.csic.es/wenet/profile-manager/latest/
       description: IIIA development server
