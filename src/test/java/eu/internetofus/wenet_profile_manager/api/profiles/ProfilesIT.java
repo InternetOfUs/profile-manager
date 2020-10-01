@@ -80,7 +80,7 @@ import io.vertx.junit5.VertxTestContext;
 public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, String> {
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected String modelPath() {
@@ -90,7 +90,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected WeNetUserProfile createInvalidModel() {
@@ -102,7 +102,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> createHandler) {
@@ -112,7 +112,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected void assertThatCreatedEquals(final WeNetUserProfile source, final WeNetUserProfile target) {
@@ -151,7 +151,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * @{inheritDoc}
+   * {@inheritDoc}
    */
   @Override
   protected String idOf(final WeNetUserProfile model) {
