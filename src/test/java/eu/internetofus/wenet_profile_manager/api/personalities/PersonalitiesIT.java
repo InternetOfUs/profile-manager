@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api.personalities;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.vertx.junit5.web.TestRequest.requestHeader;
-import static io.vertx.junit5.web.TestRequest.testRequest;
+import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 

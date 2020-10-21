@@ -102,7 +102,6 @@ public class SocialNetworkRelationship extends ReflectionModel implements Model,
       } else {
 
         this.userId = Validations.validateStringField(codePrefix, "userId", 255, this.userId);
-        this.weight = Validations.validateNumberOnRange(codePrefix, "weight", this.weight, true, 0d, 1d);
         future = future.compose(mapper -> {
 
           final Promise<Void> searchPromise = Promise.promise();
@@ -120,6 +119,7 @@ public class SocialNetworkRelationship extends ReflectionModel implements Model,
           });
           return searchPromise.future();
         });
+        this.weight = Validations.validateNumberOnRange(codePrefix, "weight", this.weight, true, 0d, 1d);
         promise.complete();
       }
     } catch (final ValidationErrorException validationError) {
