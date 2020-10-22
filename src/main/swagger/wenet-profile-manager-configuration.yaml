@@ -78,5 +78,7 @@ openAPI:
       description: WeNet production server
     - url: https://wenet.u-hopper.com/dev/profile_manager
       description: WeNet development server server
-    - url: http://ardid.iiia.csic.es/wenet/profile-manager/latest/
+    - url: http://ardid.iiia.csic.es/wenet/profile-manager/prod/
+      description: IIIA production server
+    - url: http://ardid.iiia.csic.es/wenet/profile-manager/dev/
       description: IIIA development server
