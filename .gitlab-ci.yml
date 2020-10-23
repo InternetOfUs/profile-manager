@@ -6,7 +6,7 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   MVN_VERSION: "3.6.3-jdk-11-slim"
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
-  COMPONENT_NAME="internetofus/profile-manager"
+  COMPONENT_NAME: "internetofus/profile-manager"
 
 cache:
   paths:
