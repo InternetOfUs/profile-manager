@@ -30,7 +30,7 @@ build_development_environment:
 buil_test_site:
   stage: test
   script:
-    - docker run -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/app $CI_REGISTRY_IMAGE:dev mvn -B clean compile test-compile javadoc:javadoc javadoc:test-javadoc verify site post-site
+    - docker run -v /var/run/docker.sock:/var/run/docker.sock -v ${PWD}:/app $CI_REGISTRY_IMAGE:dev mvn -B -fn clean compile test-compile javadoc:javadoc javadoc:test-javadoc verify site post-site
     - awk -F"," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, "instructions covered"; print 100*covered/instructions, "% covered" }' target/site/jacoco/jacoco.csv
     - cp -r target/site public
   artifacts:
