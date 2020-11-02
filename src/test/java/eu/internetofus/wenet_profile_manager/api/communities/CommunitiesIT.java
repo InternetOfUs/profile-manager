@@ -46,6 +46,7 @@ import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.CommunityMemberTest;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
+import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepositoryIT;

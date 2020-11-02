@@ -26,7 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -86,9 +85,6 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
 
       community.put("_id", id);
     }
-    final var now = TimeManager.now();
-    community.put("_creationTs", now);
-    community.put("_lastUpdateTs", now);
     this.storeOneDocument(COMMUNITIES_COLLECTION, community, stored -> {
 
       final var _id = (String) stored.remove("_id");
@@ -106,8 +102,6 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
 
     final var id = community.remove("id");
     final var query = new JsonObject().put("_id", id);
-    final var now = TimeManager.now();
-    community.put("_lastUpdateTs", now);
     this.updateOneDocument(COMMUNITIES_COLLECTION, query, community, updateHandler);
 
   }

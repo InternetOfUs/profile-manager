@@ -31,10 +31,10 @@ import java.util.List;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.common.vertx.Repository;
-import eu.internetofus.wenet_profile_manager.api.communities.CommunityProfilesPage;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
@@ -245,6 +245,8 @@ public interface CommunitiesRepository {
       case "name":
       case "description":
       case "keywords":
+      case "_creationTs":
+      case "_lastUpdateTs":
         return value;
       case "members":
         return "members.userId";

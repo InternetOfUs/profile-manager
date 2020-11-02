@@ -26,7 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.vertx.Repository;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
@@ -94,9 +93,6 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
       profile.put("_id", id);
     }
-    final var now = TimeManager.now();
-    profile.put("_creationTs", now);
-    profile.put("_lastUpdateTs", now);
     this.storeOneDocument(PROFILES_COLLECTION, profile, stored -> {
 
       final var _id = (String) stored.remove("_id");
@@ -114,8 +110,6 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
     final var id = profile.remove("id");
     final var query = new JsonObject().put("_id", id);
-    final var now = TimeManager.now();
-    profile.put("_lastUpdateTs", now);
     this.updateOneDocument(PROFILES_COLLECTION, query, profile, updateHandler);
 
   }

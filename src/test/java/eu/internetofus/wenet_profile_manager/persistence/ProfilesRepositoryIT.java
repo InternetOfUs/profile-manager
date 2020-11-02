@@ -35,7 +35,6 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -186,13 +185,12 @@ public class ProfilesRepositoryIT {
     final var profile = new WeNetUserProfile();
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
-    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile).isNotNull();
       assertThat(storedProfile.id).isNotEmpty();
-      assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedProfile._creationTs).isEqualTo(0);
+      assertThat(storedProfile._lastUpdateTs).isEqualTo(1);
       testContext.completeNow();
     })));
 
@@ -214,12 +212,11 @@ public class ProfilesRepositoryIT {
     profile.id = id;
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
-    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(profile, testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile.id).isEqualTo(id);
-      assertThat(storedProfile._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedProfile._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedProfile._creationTs).isEqualTo(0);
+      assertThat(storedProfile._lastUpdateTs).isEqualTo(1);
       testContext.completeNow();
     })));
 
@@ -259,14 +256,13 @@ public class ProfilesRepositoryIT {
   @Test
   public void shouldStoreProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final var now = TimeManager.now();
     ProfilesRepository.createProxy(vertx).storeProfile(new JsonObject(), testContext.succeeding(storedProfile -> testContext.verify(() -> {
 
       assertThat(storedProfile).isNotNull();
       final var id = storedProfile.getString("id");
       assertThat(id).isNotEmpty();
-      assertThat(storedProfile.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedProfile.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedProfile.containsKey("_creationTs")).isFalse();
+      assertThat(storedProfile.containsKey("_lastUpdateTs")).isFalse();
       testContext.completeNow();
     })));
 
@@ -354,7 +350,6 @@ public class ProfilesRepositoryIT {
     final var repository = ProfilesRepository.createProxy(vertx);
     repository.storeProfile(profile, testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final var now = TimeManager.now();
       final var update = new WeNetUserProfileTest().createModelExample(23);
       update.id = stored.id;
       update._creationTs = stored._creationTs;
@@ -366,7 +361,7 @@ public class ProfilesRepositoryIT {
           assertThat(stored).isNotNull();
           assertThat(foundProfile.id).isNotEmpty().isEqualTo(stored.id);
           assertThat(foundProfile._creationTs).isEqualTo(stored._creationTs);
-          assertThat(foundProfile._lastUpdateTs).isGreaterThanOrEqualTo(now);
+          assertThat(foundProfile._lastUpdateTs).isEqualTo(1);
           update._lastUpdateTs = foundProfile._lastUpdateTs;
           assertThat(foundProfile).isEqualTo(update);
           testContext.completeNow();
@@ -389,14 +384,16 @@ public class ProfilesRepositoryIT {
   public void shouldUpdateProfileObject(final Vertx vertx, final VertxTestContext testContext) {
 
     final var repository = ProfilesRepository.createProxy(vertx);
-    repository.storeProfile(new JsonObject().put("nationality", "Italian"), testContext.succeeding(stored -> testContext.verify(() -> {
+    final var createTs = 123;
+    final var updateTs = 456;
+    repository.storeProfile(new JsonObject().put("nationality", "Italian").put("_creationTs", createTs).put("_lastUpdateTs", updateTs), testContext.succeeding(stored -> testContext.verify(() -> {
 
       final var id = stored.getString("id");
-      final var update = new JsonObject().put("id", id).put("occupation", "Unemployed");
+      final var update = new JsonObject().put("id", id).put("occupation", "Unemployed").put("_creationTs", createTs + 12345).put("_lastUpdateTs", updateTs + 12345);
       repository.updateProfile(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
         repository.searchProfileObject(id, testContext.succeeding(foundProfile -> testContext.verify(() -> {
-          stored.put("_lastUpdateTs", foundProfile.getLong("_lastUpdateTs"));
+          stored.put("_lastUpdateTs", updateTs + 12345);
           stored.put("occupation", "Unemployed");
           assertThat(foundProfile).isEqualTo(stored);
           testContext.completeNow();
@@ -985,10 +982,8 @@ public class ProfilesRepositoryIT {
                 assertThat(model2).isNotNull();
                 assertThat(model2.offset).isEqualTo(0);
                 assertThat(model2.total).isEqualTo(model.total + 3);
-                model.profiles.add(profile);
-                model.profiles.add(profile2);
-                model.profiles.add(profile3);
-                assertThat(model2.profiles).isNotEmpty().hasSize((int) model.total + 3).isEqualTo(model.profiles);
+                assertThat(model2.profiles).isNotEmpty().hasSize((int) model.total + 3).isNotEqualTo(model.profiles).endsWith(profile, profile2, profile3);
+
                 repository.retrieveProfilesPageObject((int) model.total, 2, testContext.succeeding(page3 -> testContext.verify(() -> {
 
                   final var model3 = Model.fromJsonObject(page3, WeNetUserProfilesPage.class);

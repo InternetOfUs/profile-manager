@@ -43,6 +43,7 @@ import javax.ws.rs.core.MediaType;
 
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -105,8 +106,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Create a community", description = "Create a new  community")
-  @RequestBody(description = "The new community to create", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
-  @ApiResponse(responseCode = "200", description = "The created community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @RequestBody(
+      description = "The new community to create",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The created community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
   @ApiResponse(responseCode = "400", description = "Bad community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void createCommunity(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
@@ -122,7 +129,10 @@ public interface Communities {
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a community", description = "Allow to get the community with the specified identifier")
-  @ApiResponse(responseCode = "200", description = "The community associated to the identifier", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The community associated to the identifier",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void retrieveCommunity(@PathParam("id") @Parameter(description = "The identifier of the community to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) OperationRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
@@ -147,12 +157,33 @@ public interface Communities {
   @ApiResponse(responseCode = "200", description = "The page with the communities that satisfy the search parameters", content = @Content(schema = @Schema(implementation = CommunityProfilesPage.class)))
   @ApiResponse(responseCode = "400", description = "If any search parameter is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void retrieveCommunityProfilesPage(
-      @QueryParam(value = "appId") @Parameter(description = "An application identifier to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the communities to return, if you write between '/'. For example to get the communitites for the aplications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.", example = "1", required = false) String appId,
-      @QueryParam(value = "name") @Parameter(description = "A name to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the name of the communities to return if you write between '/'. For example to get the communities with a name with the word 'eat' you must pass as 'name' '/.*eat.*/'", example = "/.*eat.*/", required = false) String name,
-      @QueryParam(value = "description") @Parameter(description = "A description to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the description of the communities to return if you write between '/'. For example to get the communities with a description with the word 'eat' you must pass as 'description' '/.*eat.*/'", example = "/.*eat.*/", required = false) String description,
-      @QueryParam(value = "keywords") @Parameter(description = "A set of keywords to be defined on the communities to be returned. For each keyword is separated by a ',' and each field keyword can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "key1,/.*eat.*/,key3", required = false, explode = Explode.FALSE) List<String> keywords,
-      @QueryParam(value = "members") @Parameter(description = "A set of user identifiers to be a member of the communities to be returned. For each member is separated by a ',' and each field user identifier can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "1,/.*2.*/,3", required = false, explode = Explode.FALSE) List<String> members,
-      @QueryParam(value = "order") @Parameter(description = "The order in witch the communities has to be returned. For each filed it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.", example = "name,-description,+members", required = false, explode = Explode.FALSE) List<String> order,
+      @QueryParam(value = "appId") @Parameter(
+          description = "An application identifier to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the communities to return, if you write between '/'. For example to get the communitites for the aplications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.",
+          example = "1",
+          required = false) String appId,
+      @QueryParam(value = "name") @Parameter(
+          description = "A name to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the name of the communities to return if you write between '/'. For example to get the communities with a name with the word 'eat' you must pass as 'name' '/.*eat.*/'",
+          example = "/.*eat.*/",
+          required = false) String name,
+      @QueryParam(value = "description") @Parameter(
+          description = "A description to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the description of the communities to return if you write between '/'. For example to get the communities with a description with the word 'eat' you must pass as 'description' '/.*eat.*/'",
+          example = "/.*eat.*/",
+          required = false) String description,
+      @QueryParam(value = "keywords") @Parameter(
+          description = "A set of keywords to be defined on the communities to be returned. For each keyword is separated by a ',' and each field keyword can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.",
+          example = "key1,/.*eat.*/,key3",
+          required = false,
+          explode = Explode.FALSE) List<String> keywords,
+      @QueryParam(value = "members") @Parameter(
+          description = "A set of user identifiers to be a member of the communities to be returned. For each member is separated by a ',' and each field user identifier can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.",
+          example = "1,/.*2.*/,3",
+          required = false,
+          explode = Explode.FALSE) List<String> members,
+      @QueryParam(value = "order") @Parameter(
+          description = "The order in witch the communities has to be returned. For each field it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.",
+          example = "name,-description,+members",
+          required = false,
+          explode = Explode.FALSE) List<String> order,
       @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first community to return.", example = "4", required = false) int offset,
       @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of communities to return", example = "100", required = false) int limit,
       @Parameter(hidden = true, required = false) OperationRequest request, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
@@ -170,8 +201,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify a community", description = "Change a community")
-  @RequestBody(description = "The new community", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
-  @ApiResponse(responseCode = "200", description = "The updated community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @RequestBody(
+      description = "The new community",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The updated community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
   @ApiResponse(responseCode = "400", description = "Bad community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void updateCommunity(@PathParam("id") @Parameter(description = "The identifier of the community to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) JsonObject body,
@@ -190,8 +227,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify partially a community", description = "Change some attributes of a community")
-  @RequestBody(description = "The new values for the community", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
-  @ApiResponse(responseCode = "200", description = "The merged community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @RequestBody(
+      description = "The new values for the community",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The merged community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityProfile")))
   @ApiResponse(responseCode = "400", description = "Bad community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void mergeCommunity(@PathParam("id") @Parameter(description = "The identifier of the community to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id, @Parameter(hidden = true, required = false) JsonObject body,
@@ -226,8 +269,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Insert a new social practice into a community")
-  @RequestBody(description = "The new social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  @ApiResponse(responseCode = "201", description = "The added social practice into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @RequestBody(
+      description = "The new social practice",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(
+      responseCode = "201",
+      description = "The added social practice into the profile",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "Bad social practice to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
@@ -245,7 +294,10 @@ public interface Communities {
   @Path("/{id}" + SOCIAL_PRACTICES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get all the social practices defined into a community")
-  @ApiResponse(responseCode = "200", description = "The social practices defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The social practices defined into the community",
+      content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
   void retrieveCommunitySocialPractices(@PathParam("id") @Parameter(description = "The identifier of community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -263,7 +315,10 @@ public interface Communities {
   @Path("/{id}" + SOCIAL_PRACTICES_PATH + "/{socialPracticeId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get a social practice defined into a community")
-  @ApiResponse(responseCode = "200", description = "The social practice defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The social practice defined into the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
   void retrieveCommunitySocialPractice(@PathParam("id") @Parameter(description = "The identifier of the community where the social practice is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -303,8 +358,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to update a social practice defined into a community")
-  @RequestBody(description = "The update values for the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  @ApiResponse(responseCode = "200", description = "The social practice that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @RequestBody(
+      description = "The update values for the social practice",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The social practice that has been updated on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "The social practice to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
@@ -326,8 +387,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to merge a social practice defined into a community")
-  @RequestBody(description = "The merge values for the social practice", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
-  @ApiResponse(responseCode = "200", description = "The social practice that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @RequestBody(
+      description = "The merge values for the social practice",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The social practice that has been merged on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/SocialPractice")))
   @ApiResponse(responseCode = "400", description = "The social practice to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or social practice", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Social practices")
@@ -349,7 +416,10 @@ public interface Communities {
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Insert a new norm into a community")
   @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "201", description = "The added norm into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(
+      responseCode = "201",
+      description = "The added norm into the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -367,7 +437,10 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get all the norms defined into a community")
-  @ApiResponse(responseCode = "200", description = "The norms defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The norms defined into the community",
+      content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveCommunityNorms(@PathParam("id") @Parameter(description = "The identifier of community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -385,7 +458,10 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH + "/{normId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get a norm defined into a community")
-  @ApiResponse(responseCode = "200", description = "The norm defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The norm defined into the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveCommunityNorm(@PathParam("id") @Parameter(description = "The identifier of the community where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -425,8 +501,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to update a norm defined into a community")
-  @RequestBody(description = "The update values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "200", description = "The norm that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @RequestBody(
+      description = "The update values for the norm",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The norm that has been updated on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "The norm to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -448,8 +530,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Merge a norm from a community", description = "Allow to merge a norm defined into a community")
-  @RequestBody(description = "The merge values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "200", description = "The norm that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @RequestBody(
+      description = "The merge values for the norm",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The norm that has been merged on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
   @ApiResponse(responseCode = "400", description = "The norm to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -470,8 +558,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a community member into a community", description = "Insert a new community member into a community")
-  @RequestBody(description = "The new community member", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
-  @ApiResponse(responseCode = "201", description = "The added community member into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @RequestBody(
+      description = "The new community member",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @ApiResponse(
+      responseCode = "201",
+      description = "The added community member into the profile",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
   @ApiResponse(responseCode = "400", description = "Bad community member to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
@@ -489,7 +583,10 @@ public interface Communities {
   @Path("/{id}" + COMMUNITY_MEMBERS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the community members from a community", description = "Allow to get all the community members defined into a community")
-  @ApiResponse(responseCode = "200", description = "The community members defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember"))))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The community members defined into the community",
+      content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void retrieveCommunityMembers(@PathParam("id") @Parameter(description = "The identifier of community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -507,7 +604,10 @@ public interface Communities {
   @Path("/{id}" + COMMUNITY_MEMBERS_PATH + "/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a community member from a community", description = "Allow to get a community member defined into a community")
-  @ApiResponse(responseCode = "200", description = "The community member defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The community member defined into the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
   void retrieveCommunityMember(@PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
@@ -547,8 +647,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a community member from a community", description = "Allow to update a community member defined into a community")
-  @RequestBody(description = "The update values for the community member", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
-  @ApiResponse(responseCode = "200", description = "The community member that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @RequestBody(
+      description = "The update values for the community member",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The community member that has been updated on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
   @ApiResponse(responseCode = "400", description = "The community member to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")
@@ -570,8 +676,14 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Merge a community member from a community", description = "Allow to merge a community member defined into a community")
-  @RequestBody(description = "The merge values for the community member", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
-  @ApiResponse(responseCode = "200", description = "The community member that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @RequestBody(
+      description = "The merge values for the community member",
+      required = true,
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
+  @ApiResponse(
+      responseCode = "200",
+      description = "The community member that has been merged on the community",
+      content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/CommunityMember")))
   @ApiResponse(responseCode = "400", description = "The community member to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or community member", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Community members")

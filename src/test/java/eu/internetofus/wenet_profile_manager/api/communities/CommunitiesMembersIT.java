@@ -109,6 +109,8 @@ public class CommunitiesMembersIT extends AbstractCommunityFieldResourcesIT<Comm
   protected void assertEqualsAdded(final CommunityMember source, final CommunityMember target) {
 
     source.userId = target.userId;
+    source._creationTs = target._creationTs;
+    source._lastUpdateTs = target._lastUpdateTs;
     assertThat(source).isEqualTo(target);
   }
 

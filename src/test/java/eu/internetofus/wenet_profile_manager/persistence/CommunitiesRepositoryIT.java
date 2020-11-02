@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.profile_manager.CommunityMemberTest;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
@@ -183,13 +182,12 @@ public class CommunitiesRepositoryIT {
     final var community = new CommunityProfile();
     community._creationTs = 0;
     community._lastUpdateTs = 1;
-    final var now = TimeManager.now();
     CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity).isNotNull();
       assertThat(storedCommunity.id).isNotEmpty();
-      assertThat(storedCommunity._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedCommunity._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedCommunity._creationTs).isEqualTo(0);
+      assertThat(storedCommunity._lastUpdateTs).isEqualTo(1);
       testContext.completeNow();
     })));
 
@@ -209,14 +207,13 @@ public class CommunitiesRepositoryIT {
     final var id = UUID.randomUUID().toString();
     final var community = new CommunityProfile();
     community.id = id;
-    community._creationTs = 0;
-    community._lastUpdateTs = 1;
-    final var now = TimeManager.now();
+    community._creationTs = 1;
+    community._lastUpdateTs = 2;
     CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity.id).isEqualTo(id);
-      assertThat(storedCommunity._creationTs).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedCommunity._lastUpdateTs).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedCommunity._creationTs).isEqualTo(1);
+      assertThat(storedCommunity._lastUpdateTs).isEqualTo(2);
       testContext.completeNow();
     })));
 
@@ -256,14 +253,13 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldStoreCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    final var now = TimeManager.now();
     CommunitiesRepository.createProxy(vertx).storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
       assertThat(storedCommunity).isNotNull();
       final var id = storedCommunity.getString("id");
       assertThat(id).isNotEmpty();
-      assertThat(storedCommunity.getLong("_creationTs", 0l)).isNotEqualTo(0).isGreaterThanOrEqualTo(now);
-      assertThat(storedCommunity.getLong("_lastUpdateTs", 1l)).isNotEqualTo(1).isGreaterThanOrEqualTo(now);
+      assertThat(storedCommunity.containsKey("_creationTs")).isFalse();
+      assertThat(storedCommunity.containsKey("_lastUpdateTs")).isFalse();
       testContext.completeNow();
     })));
 
@@ -351,7 +347,6 @@ public class CommunitiesRepositoryIT {
     final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(community, testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final var now = TimeManager.now();
       final var update = new CommunityProfileTest().createModelExample(23);
       update.id = stored.id;
       update._creationTs = stored._creationTs;
@@ -363,7 +358,7 @@ public class CommunitiesRepositoryIT {
           assertThat(stored).isNotNull();
           assertThat(foundCommunity.id).isNotEmpty().isEqualTo(stored.id);
           assertThat(foundCommunity._creationTs).isEqualTo(stored._creationTs);
-          assertThat(foundCommunity._lastUpdateTs).isGreaterThanOrEqualTo(now);
+          assertThat(foundCommunity._lastUpdateTs).isEqualTo(1);
           update._lastUpdateTs = foundCommunity._lastUpdateTs;
           assertThat(foundCommunity).isEqualTo(update);
           testContext.completeNow();
@@ -386,15 +381,17 @@ public class CommunitiesRepositoryIT {
   public void shouldUpdateCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
     final var repository = CommunitiesRepository.createProxy(vertx);
-    repository.storeCommunity(new JsonObject().put("nationality", "Italian"), testContext.succeeding(stored -> testContext.verify(() -> {
+    final var createTs = 123;
+    final var updateTs = 456;
+    repository.storeCommunity(new JsonObject().put("name", "Community Name").put("_creationTs", createTs).put("_lastUpdateTs", updateTs), testContext.succeeding(stored -> testContext.verify(() -> {
 
       final var id = stored.getString("id");
-      final var update = new JsonObject().put("id", id).put("occupation", "Unemployed");
+      final var update = new JsonObject().put("id", id).put("description", "Community Description").put("_creationTs", createTs+12345).put("_lastUpdateTs", updateTs+12345);
       repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
         repository.searchCommunityObject(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
-          stored.put("_lastUpdateTs", foundCommunity.getLong("_lastUpdateTs"));
-          stored.put("occupation", "Unemployed");
+          stored.put("_lastUpdateTs", updateTs+12345);
+          stored.put("description", "Community Description");
           assertThat(foundCommunity).isEqualTo(stored);
           testContext.completeNow();
         })));

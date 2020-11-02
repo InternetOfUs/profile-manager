@@ -28,7 +28,6 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 
 import java.util.List;
 
-import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.CommunityMember;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
@@ -126,7 +125,6 @@ public class CommunitiesResource implements Communities {
     final var context = new OperationContext(request, resultHandler);
     ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchCommunity, this.repository::updateCommunity, context, () -> {
 
-      model.value._lastUpdateTs = TimeManager.now();
       OperationReponseHandlers.responseOk(resultHandler, model.value);
 
     });
@@ -143,7 +141,6 @@ public class CommunitiesResource implements Communities {
     final var context = new OperationContext(request, resultHandler);
     ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchCommunity, this.repository::updateCommunity, context, () -> {
 
-      model.value._lastUpdateTs = TimeManager.now();
       OperationReponseHandlers.responseOk(resultHandler, model.value);
 
     });

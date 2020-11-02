@@ -24,13 +24,12 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.api.communities;
+package eu.internetofus.common.components.profile_manager;
 
 import java.util.List;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.ReflectionModel;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 
