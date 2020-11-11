@@ -70,16 +70,16 @@ If you want to create an image execute the next command.
 
 This creates the generic docker image, but you can create a different wit the **docker build** command and using the next arguments:
 
- - **API_HOST** to define the host where the API has to bind. By default is **0.0.0.0**.
- - **API_PORT** to define the port where the API has to bind. By default is **8080**.
- - **DB_HOST** to define the mongo database server hostname. By default is **localhost**.
- - **DB_PORT** to define the mongo database server port. By default is **27017**.
- - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
- - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
- - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
- - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
- - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
- - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+ - **DEFAULT_API_HOST** to define the host where the API has to bind. By default is **0.0.0.0**.
+ - **DEFAULT_API_PORT** to define the port where the API has to bind. By default is **8080**.
+ - **DEFAULT_DB_HOST** to define the mongo database server hostname. By default is **localhost**.
+ - **DEFAULT_DB_PORT** to define the mongo database server port. By default is **27017**.
+ - **DEFAULT_DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
+ - **DEFAULT_DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
+ - **DEFAULT_DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
+ - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
+ - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
+ - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
 
 Also, you can define your configuration that modifies these properties and mount to  **/usr/wenet/profile-manager/etc**.
 
@@ -92,7 +92,19 @@ You can start this component starting the [latest docker image upload to docker 
 docker run internetofus/profile-manager:latest 
 ```
 
-On this container, you can use the variables defined on the [previous section](#create-docker-image).
+On this container, you can use the next environment variables:
+
+ - **API_HOST** to define the host where the API has to bind. By default is **0.0.0.0**.
+ - **API_PORT** to define the port where the API has to bind. By default is **8080**.
+ - **DB_HOST** to define the mongo database server hostname. By default is **localhost**.
+ - **DB_PORT** to define the mongo database server port. By default is **27017**.
+ - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
+ - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
+ - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+
 
 If you want to start also a database and link both you can use the defined docker compose configuration. 
 
