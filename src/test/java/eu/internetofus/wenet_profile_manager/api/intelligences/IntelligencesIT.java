@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.intelligences;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static io.vertx.junit5.web.TestRequest.requestHeader;
+import static io.reactiverse.junit5.web.TestRequest.requestHeader;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
@@ -74,20 +74,23 @@ public class IntelligencesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#retrieveIntelligencesQuestionnaire(io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#retrieveIntelligencesQuestionnaire(io.vertx.ext.web.api.service.ServiceRequest,
+   *      Handler)
    */
   @ParameterizedTest(name = "Should return intelligences questionnaire for language {0}")
   @EmptySource
   @ValueSource(strings = { "*", "en", "es", "ca", "es-US,es;q=0.5", "ca,es,en", "en-US,en,es", "it" })
-  public void shouldRetrieveIntelligencesQuestionnaire(final String lang, final WebClient client, final VertxTestContext testContext) {
+  public void shouldRetrieveIntelligencesQuestionnaire(final String lang, final WebClient client,
+      final VertxTestContext testContext) {
 
-    testRequest(client, HttpMethod.GET, Intelligences.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es")).expect(res -> {
+    testRequest(client, HttpMethod.GET, Intelligences.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es"))
+        .expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
-      assertThat(questionnaire.questions).hasSize(IntelligencesResource.QUESTION_FACTORS.length);
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
+          assertThat(questionnaire.questions).hasSize(IntelligencesResource.QUESTION_FACTORS.length);
 
-    }).send(testContext);
+        }).send(testContext);
 
   }
 
@@ -97,10 +100,12 @@ public class IntelligencesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseNoAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseNoAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
@@ -114,15 +119,18 @@ public class IntelligencesIT {
   }
 
   /**
-   * Verify that not calculate the intelligences because no provide an empty answers list.
+   * Verify that not calculate the intelligences because no provide an empty
+   * answers list.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseNotEmptyAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseNotEmptyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -138,15 +146,18 @@ public class IntelligencesIT {
   }
 
   /**
-   * Verify that not calculate the intelligences because no provide enough answers.
+   * Verify that not calculate the intelligences because no provide enough
+   * answers.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseNotEnoughAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseNotEnoughAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -172,10 +183,12 @@ public class IntelligencesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseTooManyAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseTooManyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -197,15 +210,18 @@ public class IntelligencesIT {
   }
 
   /**
-   * Verify that not calculate the intelligences because an answer value is too low.
+   * Verify that not calculate the intelligences because an answer value is too
+   * low.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooLow(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooLow(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -229,15 +245,18 @@ public class IntelligencesIT {
   }
 
   /**
-   * Verify that not calculate the intelligences because an answer value is too high.
+   * Verify that not calculate the intelligences because an answer value is too
+   * high.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooHigh(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotcalculateGardnerIntelligencesBecauseAnswerValueIsTooHigh(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -266,14 +285,16 @@ public class IntelligencesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Intelligences#calculateGardnerIntelligences(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Intelligences#calculateGardnerIntelligences(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldcalculateGardnerIntelligences(final WebClient client, final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    Collections.addAll(answers.answerValues, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d, 1d, 0.5d, 1d, 1d, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d);
+    Collections.addAll(answers.answerValues, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d, 0d, 0.5d, 0.5d, 0d, 1d,
+        1d, 0.5d, 1d, 1d, 1d, 0.5d, 1d, 1d, 0d, 0d, 1d, 1d, 0.5d, 0.5d, 0.5d);
 
     testRequest(client, HttpMethod.POST, Intelligences.PATH).expect(res -> {
 
@@ -293,7 +314,8 @@ public class IntelligencesIT {
   }
 
   /**
-   * Verify that a meaning contains the specific intelligence factor with the specified value.
+   * Verify that a meaning contains the specific intelligence factor with the
+   * specified value.
    *
    * @param meaning to check that contains the intelligence.
    * @param factor  index of the factor to check.

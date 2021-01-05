@@ -70,9 +70,10 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldNotFoundUndefinedCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    CommunitiesRepository.createProxy(vertx).searchCommunity("undefined community identifier", testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
+    CommunitiesRepository.createProxy(vertx).searchCommunity("undefined community identifier",
+        testContext.failing(failed -> {
+          testContext.completeNow();
+        }));
 
   }
 
@@ -82,14 +83,16 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#searchCommunityObject(String, io.vertx.core.Handler)
+   * @see CommunitiesRepository#searchCommunityObject(String,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldNotFoundUndefinedCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    CommunitiesRepository.createProxy(vertx).searchCommunityObject("undefined community identifier", testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
+    CommunitiesRepository.createProxy(vertx).searchCommunityObject("undefined community identifier",
+        testContext.failing(failed -> {
+          testContext.completeNow();
+        }));
 
   }
 
@@ -122,7 +125,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#searchCommunityObject(String, io.vertx.core.Handler)
+   * @see CommunitiesRepository#searchCommunityObject(String,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldFoundCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
@@ -130,10 +134,11 @@ public class CommunitiesRepositoryIT {
     final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> {
 
-      repository.searchCommunityObject(storedCommunity.getString("id"), testContext.succeeding(foundCommunity -> testContext.verify(() -> {
-        assertThat(foundCommunity).isEqualTo(storedCommunity);
-        testContext.completeNow();
-      })));
+      repository.searchCommunityObject(storedCommunity.getString("id"),
+          testContext.succeeding(foundCommunity -> testContext.verify(() -> {
+            assertThat(foundCommunity).isEqualTo(storedCommunity);
+            testContext.completeNow();
+          })));
 
     }));
 
@@ -182,14 +187,15 @@ public class CommunitiesRepositoryIT {
     final var community = new CommunityProfile();
     community._creationTs = 0;
     community._lastUpdateTs = 1;
-    CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).storeCommunity(community,
+        testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
-      assertThat(storedCommunity).isNotNull();
-      assertThat(storedCommunity.id).isNotEmpty();
-      assertThat(storedCommunity._creationTs).isEqualTo(0);
-      assertThat(storedCommunity._lastUpdateTs).isEqualTo(1);
-      testContext.completeNow();
-    })));
+          assertThat(storedCommunity).isNotNull();
+          assertThat(storedCommunity.id).isNotEmpty();
+          assertThat(storedCommunity._creationTs).isEqualTo(0);
+          assertThat(storedCommunity._lastUpdateTs).isEqualTo(1);
+          testContext.completeNow();
+        })));
 
   }
 
@@ -209,13 +215,14 @@ public class CommunitiesRepositoryIT {
     community.id = id;
     community._creationTs = 1;
     community._lastUpdateTs = 2;
-    CommunitiesRepository.createProxy(vertx).storeCommunity(community, testContext.succeeding(storedCommunity -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).storeCommunity(community,
+        testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
-      assertThat(storedCommunity.id).isEqualTo(id);
-      assertThat(storedCommunity._creationTs).isEqualTo(1);
-      assertThat(storedCommunity._lastUpdateTs).isEqualTo(2);
-      testContext.completeNow();
-    })));
+          assertThat(storedCommunity.id).isEqualTo(id);
+          assertThat(storedCommunity._creationTs).isEqualTo(1);
+          assertThat(storedCommunity._lastUpdateTs).isEqualTo(2);
+          testContext.completeNow();
+        })));
 
   }
 
@@ -253,15 +260,16 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldStoreCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    CommunitiesRepository.createProxy(vertx).storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).storeCommunity(new JsonObject(),
+        testContext.succeeding(storedCommunity -> testContext.verify(() -> {
 
-      assertThat(storedCommunity).isNotNull();
-      final var id = storedCommunity.getString("id");
-      assertThat(id).isNotEmpty();
-      assertThat(storedCommunity.containsKey("_creationTs")).isFalse();
-      assertThat(storedCommunity.containsKey("_lastUpdateTs")).isFalse();
-      testContext.completeNow();
-    })));
+          assertThat(storedCommunity).isNotNull();
+          final var id = storedCommunity.getString("id");
+          assertThat(id).isNotEmpty();
+          assertThat(storedCommunity.containsKey("_creationTs")).isFalse();
+          assertThat(storedCommunity.containsKey("_lastUpdateTs")).isFalse();
+          testContext.completeNow();
+        })));
 
   }
 
@@ -271,7 +279,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#updateCommunity(CommunityProfile, io.vertx.core.Handler)
+   * @see CommunitiesRepository#updateCommunity(CommunityProfile,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldNotUpdateUndefinedCommunity(final Vertx vertx, final VertxTestContext testContext) {
@@ -308,7 +317,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#updateCommunity(CommunityProfile, io.vertx.core.Handler)
+   * @see CommunitiesRepository#updateCommunity(CommunityProfile,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldNotUpdateACommunityThatCanNotBeAnObject(final Vertx vertx, final VertxTestContext testContext) {
@@ -337,7 +347,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#updateCommunity(CommunityProfile, io.vertx.core.Handler)
+   * @see CommunitiesRepository#updateCommunity(CommunityProfile,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldUpdateCommunity(final Vertx vertx, final VertxTestContext testContext) {
@@ -383,21 +394,24 @@ public class CommunitiesRepositoryIT {
     final var repository = CommunitiesRepository.createProxy(vertx);
     final var createTs = 123;
     final var updateTs = 456;
-    repository.storeCommunity(new JsonObject().put("name", "Community Name").put("_creationTs", createTs).put("_lastUpdateTs", updateTs), testContext.succeeding(stored -> testContext.verify(() -> {
+    repository.storeCommunity(
+        new JsonObject().put("name", "Community Name").put("_creationTs", createTs).put("_lastUpdateTs", updateTs),
+        testContext.succeeding(stored -> testContext.verify(() -> {
 
-      final var id = stored.getString("id");
-      final var update = new JsonObject().put("id", id).put("description", "Community Description").put("_creationTs", createTs+12345).put("_lastUpdateTs", updateTs+12345);
-      repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
+          final var id = stored.getString("id");
+          final var update = new JsonObject().put("id", id).put("description", "Community Description")
+              .put("_creationTs", createTs + 12345).put("_lastUpdateTs", updateTs + 12345);
+          repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
-        repository.searchCommunityObject(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
-          stored.put("_lastUpdateTs", updateTs+12345);
-          stored.put("description", "Community Description");
-          assertThat(foundCommunity).isEqualTo(stored);
-          testContext.completeNow();
+            repository.searchCommunityObject(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
+              stored.put("_lastUpdateTs", updateTs + 12345);
+              stored.put("description", "Community Description");
+              assertThat(foundCommunity).isEqualTo(stored);
+              testContext.completeNow();
+            })));
+          })));
+
         })));
-      })));
-
-    })));
 
   }
 
@@ -412,9 +426,10 @@ public class CommunitiesRepositoryIT {
   @Test
   public void shouldNotDeleteUndefinedCommunity(final Vertx vertx, final VertxTestContext testContext) {
 
-    CommunitiesRepository.createProxy(vertx).deleteCommunity("undefined community identifier", testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
+    CommunitiesRepository.createProxy(vertx).deleteCommunity("undefined community identifier",
+        testContext.failing(failed -> {
+          testContext.completeNow();
+        }));
 
   }
 
@@ -448,7 +463,8 @@ public class CommunitiesRepositoryIT {
   }
 
   /**
-   * Create some {@link CommunityProfileTest#createModelExample(int, Vertx, VertxTestContext, Handler)}.
+   * Create some
+   * {@link CommunityProfileTest#createModelExample(int, Vertx, VertxTestContext)}.
    *
    * @param vertx           event bus to use.
    * @param testContext     context that executes the test.
@@ -457,7 +473,8 @@ public class CommunitiesRepositoryIT {
    * @param communities     list to add the created communities.
    * @param creationHandler that manage the creation.
    */
-  public static void storeSomeCommunityProfiles(final Vertx vertx, final VertxTestContext testContext, final Consumer<CommunityProfile> change, final int max, final List<CommunityProfile> communities,
+  public static void storeSomeCommunityProfiles(final Vertx vertx, final VertxTestContext testContext,
+      final Consumer<CommunityProfile> change, final int max, final List<CommunityProfile> communities,
       final Handler<AsyncResult<Void>> creationHandler) {
 
     if (communities.size() == max) {
@@ -484,7 +501,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject,
+   *      JsonObject, int, int, Handler)
    */
   @Test
   public void shouldRetrieveCommunityProfilesByAppId(final Vertx vertx, final VertxTestContext testContext) {
@@ -493,36 +511,40 @@ public class CommunitiesRepositoryIT {
     final ModelsPageContext context = new ModelsPageContext();
     context.query = CommunitiesRepository.createCommunityProfilesPageQuery(appId, null, null, null, null);
     context.limit = 10;
-    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+        testContext.succeeding(search -> testContext.verify(() -> {
 
-      assertThat(search).isNotNull();
-      assertThat(search.total).isEqualTo(0);
-      assertThat(search.offset).isEqualTo(0);
-      final List<CommunityProfile> communities = new ArrayList<>();
-      storeSomeCommunityProfiles(vertx, testContext, community -> community.appId = appId, 10, communities, testContext.succeeding(empty -> {
+          assertThat(search).isNotNull();
+          assertThat(search.total).isEqualTo(0);
+          assertThat(search.offset).isEqualTo(0);
+          final List<CommunityProfile> communities = new ArrayList<>();
+          storeSomeCommunityProfiles(vertx, testContext, community -> community.appId = appId, 10, communities,
+              testContext.succeeding(empty -> {
 
-        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
+                CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+                    testContext.succeeding(search2 -> testContext.verify(() -> {
 
-          assertThat(search2).isNotNull();
-          assertThat(search2.total).isEqualTo(10);
-          assertThat(search2.offset).isEqualTo(0);
-          assertThat(search2.communities).isEqualTo(communities);
+                      assertThat(search2).isNotNull();
+                      assertThat(search2.total).isEqualTo(10);
+                      assertThat(search2.offset).isEqualTo(0);
+                      assertThat(search2.communities).isEqualTo(communities);
 
-          context.offset = 2;
-          context.limit = 3;
-          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search3 -> testContext.verify(() -> {
+                      context.offset = 2;
+                      context.limit = 3;
+                      CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+                          testContext.succeeding(search3 -> testContext.verify(() -> {
 
-            assertThat(search3).isNotNull();
-            assertThat(search3.total).isEqualTo(10);
-            assertThat(search3.offset).isEqualTo(2);
-            assertThat(search3.communities).isEqualTo(communities.subList(2, 5));
-            testContext.completeNow();
+                            assertThat(search3).isNotNull();
+                            assertThat(search3.total).isEqualTo(10);
+                            assertThat(search3.offset).isEqualTo(2);
+                            assertThat(search3.communities).isEqualTo(communities.subList(2, 5));
+                            testContext.completeNow();
 
-          })));
+                          })));
 
+                    })));
+              }));
         })));
-      }));
-    })));
 
   }
 
@@ -532,48 +554,54 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject,
+   *      JsonObject, int, int, Handler)
    */
   @Test
   public void shouldRetrieveCommunityProfilesByName(final Vertx vertx, final VertxTestContext testContext) {
 
     final var name = UUID.randomUUID().toString();
     final ModelsPageContext context = new ModelsPageContext();
-    context.query = CommunitiesRepository.createCommunityProfilesPageQuery(null, "/.*" + name + ".*/", null, null, null);
+    context.query = CommunitiesRepository.createCommunityProfilesPageQuery(null, "/.*" + name + ".*/", null, null,
+        null);
     context.limit = 10;
-    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+        testContext.succeeding(search -> testContext.verify(() -> {
 
-      assertThat(search).isNotNull();
-      assertThat(search.total).isEqualTo(0);
-      assertThat(search.offset).isEqualTo(0);
-      final List<CommunityProfile> communities = new ArrayList<>();
-      storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(), 10, communities, testContext.succeeding(empty -> {
+          assertThat(search).isNotNull();
+          assertThat(search.total).isEqualTo(0);
+          assertThat(search.offset).isEqualTo(0);
+          final List<CommunityProfile> communities = new ArrayList<>();
+          storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(),
+              10, communities, testContext.succeeding(empty -> {
 
-        context.sort = new JsonObject().put("name", -1);
-        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search2 -> testContext.verify(() -> {
+                context.sort = new JsonObject().put("name", -1);
+                CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+                    testContext.succeeding(search2 -> testContext.verify(() -> {
 
-          assertThat(search2).isNotNull();
-          assertThat(search2.total).isEqualTo(10);
-          assertThat(search2.offset).isEqualTo(0);
-          Collections.reverse(communities);
-          assertThat(search2.communities).isEqualTo(communities);
-          context.sort = new JsonObject().put("name", 1);
+                      assertThat(search2).isNotNull();
+                      assertThat(search2.total).isEqualTo(10);
+                      assertThat(search2.offset).isEqualTo(0);
+                      Collections.reverse(communities);
+                      assertThat(search2.communities).isEqualTo(communities);
+                      context.sort = new JsonObject().put("name", 1);
 
-          context.offset = 2;
-          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context, testContext.succeeding(search3 -> testContext.verify(() -> {
+                      context.offset = 2;
+                      CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
+                          testContext.succeeding(search3 -> testContext.verify(() -> {
 
-            Collections.reverse(communities);
-            assertThat(search3).isNotNull();
-            assertThat(search3.total).isEqualTo(10);
-            assertThat(search3.offset).isEqualTo(2);
-            assertThat(search3.communities).isEqualTo(communities.subList(2, 10));
-            testContext.completeNow();
+                            Collections.reverse(communities);
+                            assertThat(search3).isNotNull();
+                            assertThat(search3.total).isEqualTo(10);
+                            assertThat(search3.offset).isEqualTo(2);
+                            assertThat(search3.communities).isEqualTo(communities.subList(2, 10));
+                            testContext.completeNow();
 
-          })));
+                          })));
 
+                    })));
+              }));
         })));
-      }));
-    })));
 
   }
 
@@ -583,40 +611,45 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject,
+   *      JsonObject, int, int, Handler)
    */
   @Test
   public void shouldRetrieveCommunityProfilesByDescription(final Vertx vertx, final VertxTestContext testContext) {
 
     final var description = UUID.randomUUID().toString();
     final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, description, null, null);
-    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10,
+        testContext.succeeding(search -> testContext.verify(() -> {
 
-      assertThat(search).isNotNull();
-      assertThat(search.total).isEqualTo(0);
-      assertThat(search.offset).isEqualTo(0);
-      final List<CommunityProfile> communities = new ArrayList<>();
-      storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
+          assertThat(search).isNotNull();
+          assertThat(search.total).isEqualTo(0);
+          assertThat(search.offset).isEqualTo(0);
+          final List<CommunityProfile> communities = new ArrayList<>();
+          storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10,
+              communities, testContext.succeeding(empty -> {
 
-        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+                CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10,
+                    testContext.succeeding(search2 -> testContext.verify(() -> {
 
-          assertThat(search2).isNotNull();
-          assertThat(search2.total).isEqualTo(10);
-          assertThat(search2.offset).isEqualTo(0);
-          assertThat(search2.communities).isEqualTo(communities);
-          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+                      assertThat(search2).isNotNull();
+                      assertThat(search2.total).isEqualTo(10);
+                      assertThat(search2.offset).isEqualTo(0);
+                      assertThat(search2.communities).isEqualTo(communities);
+                      CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2,
+                          5, testContext.succeeding(search3 -> testContext.verify(() -> {
 
-            assertThat(search3).isNotNull();
-            assertThat(search3.total).isEqualTo(10);
-            assertThat(search3.offset).isEqualTo(2);
-            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
-            testContext.completeNow();
+                            assertThat(search3).isNotNull();
+                            assertThat(search3.total).isEqualTo(10);
+                            assertThat(search3.offset).isEqualTo(2);
+                            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+                            testContext.completeNow();
 
-          })));
+                          })));
 
+                    })));
+              }));
         })));
-      }));
-    })));
 
   }
 
@@ -626,7 +659,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject,
+   *      JsonObject, int, int, Handler)
    */
   @Test
   public void shouldRetrieveCommunityProfilesByKeywords(final Vertx vertx, final VertxTestContext testContext) {
@@ -635,33 +669,37 @@ public class CommunitiesRepositoryIT {
     final var keyword = UUID.randomUUID().toString();
     keywords.add(keyword);
     final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, keywords, null);
-    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10,
+        testContext.succeeding(search -> testContext.verify(() -> {
 
-      assertThat(search).isNotNull();
-      assertThat(search.total).isEqualTo(0);
-      assertThat(search.offset).isEqualTo(0);
-      final List<CommunityProfile> communities = new ArrayList<>();
-      storeSomeCommunityProfiles(vertx, testContext, community -> community.keywords.add(keyword), 10, communities, testContext.succeeding(empty -> {
+          assertThat(search).isNotNull();
+          assertThat(search.total).isEqualTo(0);
+          assertThat(search.offset).isEqualTo(0);
+          final List<CommunityProfile> communities = new ArrayList<>();
+          storeSomeCommunityProfiles(vertx, testContext, community -> community.keywords.add(keyword), 10, communities,
+              testContext.succeeding(empty -> {
 
-        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+                CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10,
+                    testContext.succeeding(search2 -> testContext.verify(() -> {
 
-          assertThat(search2).isNotNull();
-          assertThat(search2.total).isEqualTo(10);
-          assertThat(search2.offset).isEqualTo(0);
-          assertThat(search2.communities).isEqualTo(communities);
-          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+                      assertThat(search2).isNotNull();
+                      assertThat(search2.total).isEqualTo(10);
+                      assertThat(search2.offset).isEqualTo(0);
+                      assertThat(search2.communities).isEqualTo(communities);
+                      CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 2,
+                          5, testContext.succeeding(search3 -> testContext.verify(() -> {
 
-            assertThat(search3).isNotNull();
-            assertThat(search3.total).isEqualTo(10);
-            assertThat(search3.offset).isEqualTo(2);
-            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
-            testContext.completeNow();
+                            assertThat(search3).isNotNull();
+                            assertThat(search3.total).isEqualTo(10);
+                            assertThat(search3.offset).isEqualTo(2);
+                            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+                            testContext.completeNow();
 
-          })));
+                          })));
 
+                    })));
+              }));
         })));
-      }));
-    })));
 
   }
 
@@ -671,7 +709,8 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject, JsonObject, int, int, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPageObject(JsonObject,
+   *      JsonObject, int, int, Handler)
    */
   @Test
   public void shouldRetrieveCommunityProfilesByMembers(final Vertx vertx, final VertxTestContext testContext) {
@@ -681,36 +720,41 @@ public class CommunitiesRepositoryIT {
     member.userId = UUID.randomUUID().toString();
     members.add(member.userId);
     final var query = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, null, members);
-    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10, testContext.succeeding(search -> testContext.verify(() -> {
+    CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, null, 0, 10,
+        testContext.succeeding(search -> testContext.verify(() -> {
 
-      assertThat(search).isNotNull();
-      assertThat(search.total).isEqualTo(0);
-      assertThat(search.offset).isEqualTo(0);
-      final List<CommunityProfile> communities = new ArrayList<>();
-      storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), 10, communities, testContext.succeeding(empty -> {
+          assertThat(search).isNotNull();
+          assertThat(search.total).isEqualTo(0);
+          assertThat(search.offset).isEqualTo(0);
+          final List<CommunityProfile> communities = new ArrayList<>();
+          storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), 10, communities,
+              testContext.succeeding(empty -> {
 
-        CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10, testContext.succeeding(search2 -> testContext.verify(() -> {
+                CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query, new JsonObject(), 0, 10,
+                    testContext.succeeding(search2 -> testContext.verify(() -> {
 
-          assertThat(search2).isNotNull();
-          assertThat(search2.total).isEqualTo(10);
-          assertThat(search2.offset).isEqualTo(0);
-          assertThat(search2.communities).isEqualTo(communities);
+                      assertThat(search2).isNotNull();
+                      assertThat(search2.total).isEqualTo(10);
+                      assertThat(search2.offset).isEqualTo(0);
+                      assertThat(search2.communities).isEqualTo(communities);
 
-          members.add("/User_.*/");
-          final var query2 = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, null, members);
-          CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query2, new JsonObject(), 2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
+                      members.add("/User_.*/");
+                      final var query2 = CommunitiesRepository.createCommunityProfilesPageQuery(null, null, null, null,
+                          members);
+                      CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(query2, new JsonObject(),
+                          2, 5, testContext.succeeding(search3 -> testContext.verify(() -> {
 
-            assertThat(search3).isNotNull();
-            assertThat(search3.total).isEqualTo(10);
-            assertThat(search3.offset).isEqualTo(2);
-            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
-            testContext.completeNow();
+                            assertThat(search3).isNotNull();
+                            assertThat(search3.total).isEqualTo(10);
+                            assertThat(search3.offset).isEqualTo(2);
+                            assertThat(search3.communities).isEqualTo(communities.subList(2, 7));
+                            testContext.completeNow();
 
-          })));
+                          })));
 
+                    })));
+              }));
         })));
-      }));
-    })));
 
   }
 

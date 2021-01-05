@@ -26,13 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import java.util.List;
-import java.util.function.BiFunction;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.tinylog.Logger;
-
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.Competence;
@@ -48,15 +41,19 @@ import eu.internetofus.common.components.social_context_builder.WeNetSocialConte
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;
-import eu.internetofus.common.vertx.OperationContext;
-import eu.internetofus.common.vertx.OperationReponseHandlers;
+import eu.internetofus.common.vertx.ServiceContext;
+import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
+import java.util.List;
+import java.util.function.BiFunction;
+import javax.ws.rs.core.Response.Status;
+import org.tinylog.Logger;
 
 /**
  * Resource that provide the methods for the {@link Profiles}.
@@ -105,11 +102,12 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfile(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfile(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var model = this.createProfileContext();
     model.id = userId;
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModel(model, this.repository::searchProfile, context);
   }
 
@@ -117,16 +115,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void createProfile(final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void createProfile(final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var model = this.createProfileContext();
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     ModelResources.createModelChain(this.vertx, body, model, this.repository::storeProfile, context, () -> {
 
-      OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
+      ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
 
       // Update the social context of the created user
-      WeNetSocialContextBuilder.createProxy(this.vertx).retrieveJsonArraySocialRelations(model.value.id, retrieve -> {
+      WeNetSocialContextBuilder.createProxy(this.vertx).retrieveSocialRelations(model.value.id).onComplete(retrieve -> {
 
         if (retrieve.failed()) {
 
@@ -134,7 +133,8 @@ public class ProfilesResource implements Profiles {
 
         } else {
 
-          Logger.trace("Obtained for the user {} the next social relations {}.", () -> model.value.id, () -> retrieve.result());
+          Logger.trace("Obtained for the user {} the next social relations {}.", () -> model.value.id,
+              () -> retrieve.result());
         }
       });
     });
@@ -145,13 +145,15 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfile(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfile(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var model = this.createProfileContext();
     model.id = userId;
-    final var context = new OperationContext(request, resultHandler);
-    ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchProfile, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(model, () -> OperationReponseHandlers.responseOk(resultHandler, model.value)));
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchProfile,
+        this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
 
   }
 
@@ -159,13 +161,15 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfile(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfile(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var model = this.createProfileContext();
     model.id = userId;
-    final var context = new OperationContext(request, resultHandler);
-    ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchProfile, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(model, () -> OperationReponseHandlers.responseOk(resultHandler, model.value)));
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchProfile,
+        this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
   }
 
   /**
@@ -176,7 +180,8 @@ public class ProfilesResource implements Profiles {
    *
    * @return the function to call to store the profile into the historic.
    */
-  protected Runnable addProfileToHistoricChain(final ModelContext<WeNetUserProfile, String> model, final Runnable success) {
+  protected Runnable addProfileToHistoricChain(final ModelContext<WeNetUserProfile, String> model,
+      final Runnable success) {
 
     return () -> {
 
@@ -184,7 +189,7 @@ public class ProfilesResource implements Profiles {
       historic.from = model.target._lastUpdateTs;
       historic.to = TimeManager.now();
       historic.profile = model.target;
-      this.repository.storeHistoricProfile(historic, store -> {
+      this.repository.storeHistoricProfile(historic).onComplete(store -> {
 
         if (store.failed()) {
 
@@ -204,13 +209,15 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfile(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfile(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var model = this.createProfileContext();
     model.id = userId;
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelChain(model, this.repository::searchProfile, context,
-        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context, this.addProfileToHistoricChain(model, () -> OperationReponseHandlers.responseOk(resultHandler))));
+        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context,
+            this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler))));
 
   }
 
@@ -218,29 +225,31 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order, final int offset, final int limit, final OperationRequest request,
-      final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileHistoricPage(final String userId, final Long from, final Long to, final String order,
+      final int offset, final int limit, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
     final var sort = ProfilesRepository.createProfileHistoricPageSort(order);
-    this.repository.searchHistoricProfilePage(query, sort, offset, limit, search -> {
+    this.repository.searchHistoricProfilePage(query, sort, offset, limit).onComplete(search -> {
 
       if (search.failed()) {
 
         final var cause = search.cause();
         Logger.debug(cause, "Cannot found historic profile for the user {}.", userId);
-        OperationReponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
+        ServiceResponseHandlers.responseFailedWith(resultHandler, Status.NOT_FOUND, cause);
 
       } else {
 
         final var page = search.result();
         if (page.total == 0l) {
 
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found", "Not found any historic profile that match to the specific parameters.");
+          ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found",
+              "Not found any historic profile that match to the specific parameters.");
 
         } else {
 
-          OperationReponseHandlers.responseOk(resultHandler, page);
+          ServiceResponseHandlers.responseOk(resultHandler, page);
         }
       }
     });
@@ -251,13 +260,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileNorm(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileNorm(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
+        "norms", Norm.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.norms, (profile, norms) -> profile.norms = norms, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.norms, (profile, norms) -> profile.norms = norms, this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -273,7 +286,8 @@ public class ProfilesResource implements Profiles {
    *
    * @return the filled element.
    */
-  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I> fillElementContext(final ModelFieldContext<WeNetUserProfile, String, T, I> element, final String name, final Class<T> type) {
+  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I> fillElementContext(
+      final ModelFieldContext<WeNetUserProfile, String, T, I> element, final String name, final Class<T> type) {
 
     element.model = this.createProfileContext();
     element.name = name;
@@ -285,9 +299,10 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileNorms(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileNorms(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.norms, context);
@@ -298,13 +313,16 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileNorm(final String userId, final String normId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
+        "norms", Norm.class);
     element.model.id = userId;
     element.id = normId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.norms, this.searchProfileNorm(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.norms,
+        this.searchProfileNorm(), context);
 
   }
 
@@ -322,15 +340,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileNorm(final String userId, final String normId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
+        "norms", Norm.class);
     element.model.id = userId;
     element.id = normId;
 
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.norms, this.searchProfileNorm(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.norms, this.searchProfileNorm(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -338,15 +360,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileNorm(final String userId, final String normId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileNorm(final String userId, final String normId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
+        "norms", Norm.class);
     element.model.id = userId;
     element.id = normId;
 
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.norms, this.searchProfileNorm(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.norms, this.searchProfileNorm(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -354,14 +380,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileNorm(final String userId, final String normId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileNorm(final String userId, final String normId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(), "norms", Norm.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
+        "norms", Norm.class);
     element.model.id = userId;
     element.id = normId;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.norms, this.searchProfileNorm(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.norms,
+        this.searchProfileNorm(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -369,13 +398,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfilePlannedActivity(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfilePlannedActivity(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
+        PlannedActivity.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.plannedActivities, (profile, plannedActivities) -> profile.plannedActivities = plannedActivities,
-        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.plannedActivities,
+        (profile, plannedActivities) -> profile.plannedActivities = plannedActivities, this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -383,12 +418,14 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilePlannedActivities(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePlannedActivities(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
-    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.plannedActivities, context);
+    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.plannedActivities,
+        context);
 
   }
 
@@ -396,20 +433,25 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePlannedActivity(final String userId, final String plannedActivityId,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
+        PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile,
+        profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), context);
 
   }
 
   /**
    * Return the search for a plannedActivity.
    *
-   * @return the function to obtain a plannedActivity in a list of plannedActivities.
+   * @return the function to obtain a plannedActivity in a list of
+   *         plannedActivities.
    */
   private BiFunction<List<PlannedActivity>, String, Integer> searchProfilePlannedActivity() {
 
@@ -420,15 +462,20 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
+        PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
 
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -436,15 +483,20 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfilePlannedActivity(final String userId, final String plannedActivityId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
+        PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
 
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -452,14 +504,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfilePlannedActivity(final String userId, final String plannedActivityId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfilePlannedActivity(final String userId, final String plannedActivityId,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities", PlannedActivity.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
+        PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile,
+        profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), this.repository::updateProfile,
+        context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -467,13 +524,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileRelevantLocation(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileRelevantLocation(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevant_location", RelevantLocation.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevant_location",
+        RelevantLocation.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relevantLocations, (profile, relevantLocations) -> profile.relevantLocations = relevantLocations,
-        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relevantLocations,
+        (profile, relevantLocations) -> profile.relevantLocations = relevantLocations, this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -481,12 +544,14 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileRelevantLocations(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelevantLocations(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
-    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.relevantLocations, context);
+    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.relevantLocations,
+        context);
 
   }
 
@@ -494,20 +559,25 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelevantLocation(final String userId, final String relevantLocationId,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
+        RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile,
+        profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), context);
 
   }
 
   /**
    * Return the search for a relevant location.
    *
-   * @return the function to obtain a relevant location in a list of relevant locations.
+   * @return the function to obtain a relevant location in a list of relevant
+   *         locations.
    */
   private BiFunction<List<RelevantLocation>, String, Integer> searchProfileRelevantLocation() {
 
@@ -518,15 +588,20 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
+        RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -534,15 +609,20 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileRelevantLocation(final String userId, final String relevantLocationId, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
+        RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -550,15 +630,20 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileRelevantLocation(final String userId, final String relevantLocationId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileRelevantLocation(final String userId, final String relevantLocationId,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations", RelevantLocation.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
+        RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile,
+        profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), this.repository::updateProfile,
+        context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -566,13 +651,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileRelationship(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileRelationship(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship", SocialNetworkRelationship.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship",
+        SocialNetworkRelationship.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships, this.repository::updateProfile,
-        context, this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships,
+        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -580,9 +670,10 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileRelationships(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelationships(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.relationships, context);
@@ -593,13 +684,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileRelationship(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
+        SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.relationships, ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.relationships,
+        ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -607,14 +702,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileRelationship(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
+        SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -622,14 +722,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileRelationship(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileRelationship(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
+        SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -637,14 +742,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileRelationship(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileRelationship(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships", SocialNetworkRelationship.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
+        SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile,
+        profile -> profile.relationships, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -652,13 +762,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfilePersonalBehavior(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfilePersonalBehavior(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
+        "personalBehaviors", Routine.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.personalBehaviors, (profile, personalBehaviours) -> profile.personalBehaviors = personalBehaviours,
-        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.personalBehaviors,
+        (profile, personalBehaviours) -> profile.personalBehaviors = personalBehaviours, this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -666,12 +781,14 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilePersonalBehaviors(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePersonalBehaviors(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
-    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.personalBehaviors, context);
+    ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.personalBehaviors,
+        context);
 
   }
 
@@ -679,13 +796,16 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilePersonalBehavior(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
+        "personalBehaviors", Routine.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile,
+        profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -693,14 +813,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfilePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfilePersonalBehavior(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
+        "personalBehaviors", Routine.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -708,14 +832,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfilePersonalBehavior(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfilePersonalBehavior(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
+        "personalBehaviors", Routine.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -723,15 +851,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfilePersonalBehavior(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfilePersonalBehavior(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(), "personalBehaviors", Routine.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
+        "personalBehaviors", Routine.class);
     element.id = index;
     element.model.id = userId;
 
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile,
+        profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), this.repository::updateProfile,
+        context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -739,13 +871,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileMaterial(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileMaterial(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
+        "materials", Material.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.materials, (profile, materials) -> profile.materials = materials, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.materials, (profile, materials) -> profile.materials = materials,
+        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -753,9 +889,10 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileMaterials(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMaterials(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.materials, context);
@@ -766,13 +903,16 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMaterial(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
+        "materials", Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.materials, ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.materials,
+        ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -780,14 +920,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileMaterial(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
+        "materials", Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.materials, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.materials, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -795,14 +939,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileMaterial(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileMaterial(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
+        "materials", Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.materials, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.materials, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -810,14 +958,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileMaterial(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileMaterial(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(), "materials", Material.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
+        "materials", Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.materials, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.materials,
+        ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -825,13 +976,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileCompetence(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileCompetence(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
+        "competences", Competence.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.competences, (profile, competences) -> profile.competences = competences, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.competences, (profile, competences) -> profile.competences = competences,
+        this.repository::updateProfile, context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -839,9 +994,10 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileCompetences(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileCompetences(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.competences, context);
@@ -852,13 +1008,16 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileCompetence(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
+        "competences", Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.competences, ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.competences,
+        ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -866,14 +1025,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileCompetence(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
+        "competences", Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.competences, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.competences, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -881,14 +1044,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileCompetence(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileCompetence(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
+        "competences", Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.competences, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.competences, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -896,14 +1063,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileCompetence(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileCompetence(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(), "competences", Competence.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
+        "competences", Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.competences, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.competences,
+        ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
   }
 
@@ -911,13 +1081,17 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileMeaning(final String userId, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addProfileMeaning(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
+        "meanings", Meaning.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings, this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.createModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings, this.repository::updateProfile,
+        context, this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -925,9 +1099,10 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileMeanings(final String userId, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMeanings(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
+    final var context = new ServiceContext(request, resultHandler);
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model, this.repository::searchProfile, profile -> profile.meanings, context);
@@ -938,13 +1113,16 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfileMeaning(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
+        "meanings", Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.meanings, ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element, this.repository::searchProfile, profile -> profile.meanings,
+        ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -952,14 +1130,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void updateProfileMeaning(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
+        "meanings", Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.meanings, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.updateModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.meanings, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -967,14 +1149,18 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileMeaning(final String userId, final int index, final JsonObject body, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void mergeProfileMeaning(final String userId, final int index, final JsonObject body,
+      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
+        "meanings", Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile, profile -> profile.meanings, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler, element.value)));
+    ModelResources.mergeModelFieldElementChain(this.vertx, body, element, this.repository::searchProfile,
+        profile -> profile.meanings, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model,
+            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
 
@@ -982,27 +1168,29 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileMeaning(final String userId, final int index, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void deleteProfileMeaning(final String userId, final int index, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(), "meanings", Meaning.class);
+    final var context = new ServiceContext(request, resultHandler);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
+        "meanings", Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.meanings, ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
-        this.addProfileToHistoricChain(element.model, () -> OperationReponseHandlers.responseOk(resultHandler)));
+    ModelResources.deleteModelFieldElementChain(element, this.repository::searchProfile, profile -> profile.meanings,
+        ModelResources.searchElementByIndex(), this.repository::updateProfile, context,
+        this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
   }
-
-
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilesPage(final int offset, final int limit, final OperationRequest request, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveProfilesPage(final int offset, final int limit, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var context = new OperationContext(request, resultHandler);
-    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository.retrieveProfilesPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
-
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository
+        .retrieveProfilesPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
 
   }
 

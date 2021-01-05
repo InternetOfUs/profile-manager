@@ -32,15 +32,15 @@ import org.tinylog.Logger;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.vertx.OperationReponseHandlers;
+import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
 
 /**
  * Resource that implements the web services defined at {@link Trusts}.
@@ -77,13 +77,13 @@ public class TrustsResource implements Trusts {
    * {@inheritDoc}
    */
   @Override
-  public void addTrustEvent(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void addTrustEvent(final JsonObject body, final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
     if (event == null) {
 
       Logger.debug("The {} is not a valid TrustEvent.", body);
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event", "The trust event is not right.");
+      ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event", "The trust event is not right.");
 
     } else {
 
@@ -93,7 +93,7 @@ public class TrustsResource implements Trusts {
 
           final var cause = validation.cause();
           Logger.debug(cause, "The {} is not valid.", event);
-          OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+          ServiceResponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
         } else {
 
@@ -103,12 +103,12 @@ public class TrustsResource implements Trusts {
 
               final var cause = store.cause();
               Logger.debug(cause, "Cannot store {}.", event);
-              OperationReponseHandlers.responseFailedWith(resultHandler, Status.INTERNAL_SERVER_ERROR, cause);
+              ServiceResponseHandlers.responseFailedWith(resultHandler, Status.INTERNAL_SERVER_ERROR, cause);
 
             } else {
 
               final var storedEvent = store.result();
-              OperationReponseHandlers.responseWith(resultHandler, Status.CREATED, storedEvent);
+              ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, storedEvent);
             }
           });
         }
@@ -123,7 +123,7 @@ public class TrustsResource implements Trusts {
    */
   @Override
   public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,
-      final TrustAggregator aggregator, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+      final TrustAggregator aggregator, final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId).withEqOrRegex("taskId", taskId)
         .withRange("reportTime", reportFrom, reportTo).build();
@@ -133,14 +133,14 @@ public class TrustsResource implements Trusts {
 
         final var cause = calculation.cause();
         Logger.debug(cause, "Cannot calculate the trust {} for {}.", aggregator, query);
-        OperationReponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
+        ServiceResponseHandlers.responseFailedWith(resultHandler, Status.BAD_REQUEST, cause);
 
       } else {
 
         final var trust = new Trust();
         trust.value = calculation.result();
         trust.calculatedTime = TimeManager.now();
-        OperationReponseHandlers.responseOk(resultHandler, trust);
+        ServiceResponseHandlers.responseOk(resultHandler, trust);
 
       }
 

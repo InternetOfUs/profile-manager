@@ -49,9 +49,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
-import io.vertx.ext.web.api.generator.WebApiServiceGen;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
+import io.vertx.ext.web.api.service.WebApiServiceGen;
 
 /**
  * The definition of the web services to manage the user personality.
@@ -84,7 +84,7 @@ public interface Personalities {
   @Operation(summary = "Obtain the personality test", description = "Return the questionnaire used to obtain the personality of a person")
   @Parameter(in = ParameterIn.HEADER, name = HttpHeaders.ACCEPT_LANGUAGE, description = "The preferred language for the text on the questionnaire. If it is not available the texts will be on English.", example = "en", schema = @Schema(type = "string", defaultValue = "en"))
   @ApiResponse(responseCode = "200", description = "The questionnaire to evaluate the personality of a person", content = @Content(schema = @Schema(implementation = Questionnaire.class)))
-  void retrievePersonalityQuestionnaire(@Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void retrievePersonalityQuestionnaire(@Parameter(hidden = true, required = false) ServiceRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
   /**
    * Called when want to evaluate the personality of a person.
@@ -99,9 +99,9 @@ public interface Personalities {
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Calculate the personality of a person", description = "Evaluate the answers to the personality test to obtain the personality of the person")
   @RequestBody(description = "The values of the answers that the person has selected on the personality questionnaire.", required = true, content = @Content(schema = @Schema(implementation = QuestionnaireAnswers.class)))
-  @ApiResponse(responseCode = "200", description = "The personality of the person", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
+  @ApiResponse(responseCode = "200", description = "The personality of the person", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
   @ApiResponse(responseCode = "404", description = "If it can not calculate the personality", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void calculatePersonality(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void calculatePersonality(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) ServiceRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
 }

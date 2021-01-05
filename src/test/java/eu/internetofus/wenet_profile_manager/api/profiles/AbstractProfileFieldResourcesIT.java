@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -38,6 +36,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Check the manipulation of a field in a {@link WeNetUserProfile}.
@@ -48,7 +47,8 @@ import io.vertx.junit5.VertxTestContext;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public abstract class AbstractProfileFieldResourcesIT<T extends Model, I> extends AbstractModelFieldResourcesIT<WeNetUserProfile, String, T, I> {
+public abstract class AbstractProfileFieldResourcesIT<T extends Model, I>
+    extends AbstractModelFieldResourcesIT<WeNetUserProfile, String, T, I> {
 
   /**
    * {@inheritDoc}
@@ -72,12 +72,16 @@ public abstract class AbstractProfileFieldResourcesIT<T extends Model, I> extend
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
-      profile.id = null;
-      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
-    }));
+    succeeding.handle(testContext
+        .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
+
+          profile.id = null;
+          return StoreServices.storeProfile(profile, vertx, testContext);
+
+        })));
 
   }
 

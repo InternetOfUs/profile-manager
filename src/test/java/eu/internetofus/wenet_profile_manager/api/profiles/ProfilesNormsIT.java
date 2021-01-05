@@ -28,8 +28,6 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.Norm;
@@ -41,6 +39,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.List;
 
 /**
  * Check the manipulation of the {@link Norm}s in a {@link WeNetUserProfile}.
@@ -62,7 +61,8 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Norm>> createHandler) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<Norm>> createHandler) {
 
     final var element = new NormTest().createModelExample(index);
     createHandler.handle(Future.succeededFuture(element));
@@ -94,13 +94,15 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
-      profile.id = null;
-      profile.norms = null;
-      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
-    }));
+    succeeding.handle(testContext
+        .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
+          profile.id = null;
+          profile.norms = null;
+          return StoreServices.storeProfile(profile, vertx, testContext);
+        })));
 
   }
 

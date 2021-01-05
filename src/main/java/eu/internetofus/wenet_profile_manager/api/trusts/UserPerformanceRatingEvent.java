@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,8 @@ import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 
 /**
- * Contains information that rates the performance of an user over a task that it has done in WeNet.
+ * Contains information that rates the performance of an user over a task that
+ * it has done in WeNet.
  *
  * @author UDT-IA, IIIA-CSIC
  */
@@ -98,8 +99,9 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
   public Double rating;
 
   /**
-   * The time when this event is reported. It is measured as the difference, measured in seconds, between the time when
-   * its was reported and midnight, January 1, 1970 UTC.
+   * The time when this event is reported. It is measured as the difference,
+   * measured in seconds, between the time when its was reported and midnight,
+   * January 1, 1970 UTC.
    */
   @Schema(description = "The difference, measured in seconds, between the time when this event was reported and midnight, January 1, 1970 UTC.", example = "1571412479710")
   public long reportTime;
@@ -118,7 +120,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
     } else if (this.rating < 0d || this.rating > 1d) {
 
-      promise.fail(new ValidationErrorException(codePrefix + ".rating", "The rating value has to be in the range [0,1]."));
+      promise
+          .fail(new ValidationErrorException(codePrefix + ".rating", "The rating value has to be in the range [0,1]."));
 
     } else {
 
@@ -132,18 +135,20 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
         this.taskId = Validations.validateNullableStringField(codePrefix, "taskId", 255, this.taskId);
         if (this.sourceId.equals(this.targetId)) {
 
-          promise.fail(new ValidationErrorException(codePrefix + ".targetId", "The 'targetId' can not be the same as the 'sourceId'."));
+          promise.fail(new ValidationErrorException(codePrefix + ".targetId",
+              "The 'targetId' can not be the same as the 'sourceId'."));
 
         } else {
 
           future = future.compose(mapper -> {
 
             final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
-            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId, search -> {
+            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
 
               if (search.failed()) {
 
-                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId", "The '" + this.sourceId + "' is not defined.", search.cause()));
+                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
+                    "The '" + this.sourceId + "' is not defined.", search.cause()));
 
               } else {
 
@@ -166,8 +171,10 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
                 }
                 if (!validRelationship) {
 
-                  verifyRequesterIdExistPromise.fail(
-                      new ValidationErrorException(codePrefix + ".relationship", "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId + "' with the target user '" + this.targetId + "'.", search.cause()));
+                  verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".relationship",
+                      "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId
+                          + "' with the target user '" + this.targetId + "'.",
+                      search.cause()));
 
                 } else {
 
@@ -189,7 +196,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
               } else {
 
-                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".targetId", "The '" + this.targetId + "' is not defined.", search.cause()));
+                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".targetId",
+                    "The '" + this.targetId + "' is not defined.", search.cause()));
               }
             });
             return verifyRequesterIdExistPromise.future();
@@ -208,7 +216,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
                 } else {
 
-                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not defined."));
+                  verifyNotRepeatedIdPromise.fail(
+                      new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not defined."));
                 }
               });
               return verifyNotRepeatedIdPromise.future();
@@ -221,7 +230,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
           // future = future.compose(mcommunityer -> {
           //
           // final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-          // WeNetService.createProxy(vertx).retrieveCommunity(this.communityId, community -> {
+          // WeNetService.createProxy(vertx).retrieveCommunity(this.communityId, community
+          // -> {
           //
           // if (!community.failed()) {
           //
@@ -229,7 +239,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
           //
           // } else {
           //
-          // verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".communityId", "The '" + this.communityId
+          // verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix +
+          // ".communityId", "The '" + this.communityId
           // + "' is not defined."));
           // }
           // });
@@ -251,7 +262,8 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
                 } else {
 
-                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId", "The '" + this.taskTypeId + "' is not defined."));
+                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
+                      "The '" + this.taskTypeId + "' is not defined."));
                 }
               });
               return verifyNotRepeatedIdPromise.future();
@@ -264,22 +276,25 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
             future = future.compose(mapper -> {
 
               final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-              WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId, retrieve -> {
+              WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId).onComplete(retrieve -> {
 
                 if (retrieve.failed()) {
 
-                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskId", "The '" + this.taskId + "' is not defined."));
+                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskId",
+                      "The '" + this.taskId + "' is not defined."));
 
                 } else {
 
                   final var task = retrieve.result();
                   if (this.appId != null && !this.appId.equals(task.appId)) {
 
-                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
+                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId",
+                        "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
 
                   } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
 
-                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId", "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
+                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
+                        "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
 
                   } else {
 

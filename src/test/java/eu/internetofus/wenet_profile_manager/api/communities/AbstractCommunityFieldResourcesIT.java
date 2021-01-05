@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
@@ -38,6 +36,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Check the manipulation of a field in a {@link CommunityProfile}.
@@ -48,7 +47,8 @@ import io.vertx.junit5.VertxTestContext;
  * @author UDT-IA, IIIA-CSIC
  */
 @ExtendWith(WeNetProfileManagerIntegrationExtension.class)
-public abstract class AbstractCommunityFieldResourcesIT<T extends Model, I> extends AbstractModelFieldResourcesIT<CommunityProfile, String, T, I> {
+public abstract class AbstractCommunityFieldResourcesIT<T extends Model, I>
+    extends AbstractModelFieldResourcesIT<CommunityProfile, String, T, I> {
 
   /**
    * {@inheritDoc}
@@ -72,12 +72,14 @@ public abstract class AbstractCommunityFieldResourcesIT<T extends Model, I> exte
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
 
-    new CommunityProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(community -> {
-      community.id = null;
-      StoreServices.storeCommunity(community, vertx, testContext, succeeding);
-    }));
+    testContext.assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext))
+        .onSuccess(community -> {
+          community.id = null;
+          succeeding.handle(StoreServices.storeCommunity(community, vertx, testContext));
+        });
 
   }
 

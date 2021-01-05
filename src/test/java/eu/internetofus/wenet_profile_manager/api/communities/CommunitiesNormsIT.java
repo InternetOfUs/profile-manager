@@ -28,26 +28,25 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
 import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.profile_manager.NormTest;
+import eu.internetofus.common.components.task_manager.ProtocolNorm;
+import eu.internetofus.common.components.task_manager.ProtocolNormTest;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.List;
 
 /**
  * Check the manipulation of the {@link Norm}s in a {@link CommunityProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, String> {
+public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<ProtocolNorm, Integer> {
 
   /**
    * {@inheritDoc}
@@ -62,9 +61,10 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<Norm>> createHandler) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<ProtocolNorm>> createHandler) {
 
-    final var element = new NormTest().createModelExample(index);
+    final var element = new ProtocolNormTest().createModelExample(index);
     createHandler.handle(Future.succeededFuture(element));
 
   }
@@ -73,10 +73,10 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected Norm createInvalidModelFieldElement() {
+  protected ProtocolNorm createInvalidModelFieldElement() {
 
-    final var element = new NormTest().createModelExample(2);
-    element.attribute = ValidationsTest.STRING_256;
+    final var element = new ProtocolNormTest().createModelExample(2);
+    element.thenceforth = null;
     return element;
 
   }
@@ -85,7 +85,7 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected List<Norm> fieldOf(final CommunityProfile model) {
+  protected List<ProtocolNorm> fieldOf(final CommunityProfile model) {
 
     return model.norms;
   }
@@ -94,13 +94,15 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
 
-    new CommunityProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(community -> {
-      community.id = null;
-      community.norms = null;
-      StoreServices.storeCommunity(community, vertx, testContext, succeeding);
-    }));
+    succeeding.handle(testContext
+        .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
+          community.id = null;
+          community.norms = null;
+          return StoreServices.storeCommunity(community, vertx, testContext);
+        })));
 
   }
 
@@ -108,9 +110,8 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected void assertEqualsAdded(final Norm source, final Norm target) {
+  protected void assertEqualsAdded(final ProtocolNorm source, final ProtocolNorm target) {
 
-    source.id = target.id;
     assertThat(source).isEqualTo(target);
   }
 
@@ -118,9 +119,18 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Norm, 
    * {@inheritDoc}
    */
   @Override
-  protected String idOfElementIn(final CommunityProfile model, final Norm element) {
+  protected Integer idOfElementIn(final CommunityProfile model, final ProtocolNorm element) {
 
-    return element.id;
+    if (model.norms == null) {
+
+      return -1;
+
+    } else {
+
+      return model.norms.indexOf(element);
+
+    }
+
   }
 
 }

@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.user_identifiers;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static io.vertx.junit5.web.TestRequest.queryParam;
+import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +59,7 @@ public class UserIdentifiersIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see UserIdentifiers#getUserIdentifiersPage(int, int, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   * @see UserIdentifiers#getUserIdentifiersPage(int, int, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldGetUserIdentifiersPage(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {

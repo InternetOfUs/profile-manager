@@ -28,8 +28,6 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipTest;
@@ -39,9 +37,11 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.List;
 
 /**
- * Check the manipulation of the personal behaviors ({@link SocialNetworkRelationship}) in a {@link WeNetUserProfile}.
+ * Check the manipulation of the personal behaviors
+ * ({@link SocialNetworkRelationship}) in a {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
@@ -60,9 +60,11 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<SocialNetworkRelationship>> createHandler) {
+  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<SocialNetworkRelationship>> createHandler) {
 
-    new SocialNetworkRelationshipTest().createModelExample(index, vertx, testContext, createHandler);
+    createHandler.handle(
+        testContext.assertComplete(new SocialNetworkRelationshipTest().createModelExample(index, vertx, testContext)));
 
   }
 
@@ -90,13 +92,15 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
 
-    new WeNetUserProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(profile -> {
-      profile.id = null;
-      profile.relationships = null;
-      StoreServices.storeProfile(profile, vertx, testContext, succeeding);
-    }));
+    succeeding.handle(testContext
+        .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
+          profile.id = null;
+          profile.relationships = null;
+          return StoreServices.storeProfile(profile, vertx, testContext);
+        })));
 
   }
 

@@ -27,19 +27,9 @@
 package eu.internetofus.wenet_profile_manager.api.communities;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static io.vertx.junit5.web.TestRequest.queryParam;
+import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.StoreServices;
@@ -57,6 +47,13 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * The integration test over the {@link Communities}.
@@ -91,12 +88,14 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> createHandler) {
+  protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext,
+      final Handler<AsyncResult<CommunityProfile>> createHandler) {
 
-    new CommunityProfileTest().createModelExample(index, vertx, testContext, testContext.succeeding(model -> {
-      model.id = null;
-      createHandler.handle(Future.succeededFuture(model));
-    }));
+    testContext.assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext))
+        .onSuccess(model -> {
+          model.id = null;
+          createHandler.handle(Future.succeededFuture(model));
+        });
 
   }
 
@@ -104,9 +103,10 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * {@inheritDoc}
    */
   @Override
-  protected void storeModel(final CommunityProfile source, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected void storeModel(final CommunityProfile source, final Vertx vertx, final VertxTestContext testContext,
+      final Handler<AsyncResult<CommunityProfile>> succeeding) {
 
-    StoreServices.storeCommunity(source, vertx, testContext, succeeding);
+    succeeding.handle(testContext.assertComplete(StoreServices.storeCommunity(source, vertx, testContext)));
 
   }
 
@@ -119,16 +119,8 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
     source.id = target.id;
     source._creationTs = target._creationTs;
     source._lastUpdateTs = target._lastUpdateTs;
-    if (source.norms != null && target.norms != null && source.norms.size() == target.norms.size()) {
-
-      final var max = source.norms.size();
-      for (var i = 0; i < max; i++) {
-
-        source.norms.get(i).id = target.norms.get(i).id;
-      }
-
-    }
-    if (source.socialPractices != null && target.socialPractices != null && source.socialPractices.size() == target.socialPractices.size()) {
+    if (source.socialPractices != null && target.socialPractices != null
+        && source.socialPractices.size() == target.socialPractices.size()) {
 
       final var max = source.socialPractices.size();
       for (var i = 0; i < max; i++) {
@@ -158,7 +150,8 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * @param testContext context to test.
    */
   @Test
-  public void shoudFailRetrieveCommunityProfilesPageWithBadOrderParameter(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shoudFailRetrieveCommunityProfilesPageWithBadOrderParameter(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
     testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("order", "undefinedKey")).expect(res -> {
 
@@ -171,16 +164,18 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
   }
 
   /**
-   * Should retrieve the expected communities with the specified application identifier.
+   * Should retrieve the expected communities with the specified application
+   * identifier.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
    * @param testContext context to test.
    */
   @Test
-  public void shoudRetrieveCommunityProfilesPageMatchingAppId(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shoudRetrieveCommunityProfilesPageMatchingAppId(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
-    StoreServices.storeCommunityExample(1, vertx, testContext, testContext.succeeding(community -> {
+    testContext.assertComplete(StoreServices.storeCommunityExample(1, vertx, testContext)).onSuccess(community -> {
 
       testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("appId", community.appId)).expect(res -> {
 
@@ -192,7 +187,7 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
 
       }).send(testContext);
 
-    }));
+    });
 
   }
 
@@ -204,24 +199,28 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * @param testContext context to test.
    */
   @Test
-  public void shoudRetrieveCommunityProfilesPageMatchingName(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shoudRetrieveCommunityProfilesPageMatchingName(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
     final var name = UUID.randomUUID().toString();
     final List<CommunityProfile> communities = new ArrayList<>();
-    CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext, community -> community.name = name + "_" + communities.size(), 10, communities, testContext.succeeding(empty -> {
+    CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext,
+        community -> community.name = name + "_" + communities.size(), 10, communities,
+        testContext.succeeding(empty -> {
 
-      testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("name", "/" + name + "_.*/"), queryParam("order", "-name"), queryParam("offset", "3"), queryParam("limit", "5")).expect(res -> {
+          testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("name", "/" + name + "_.*/"),
+              queryParam("order", "-name"), queryParam("offset", "3"), queryParam("limit", "5")).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
-        assertThat(page).isNotNull();
-        assertThat(page.total).isEqualTo(communities.size());
-        Collections.reverse(communities);
-        assertThat(page.communities).isNotEmpty().hasSize(5).isEqualTo(communities.subList(3, 8));
+                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
+                assertThat(page).isNotNull();
+                assertThat(page.total).isEqualTo(communities.size());
+                Collections.reverse(communities);
+                assertThat(page.communities).isNotEmpty().hasSize(5).isEqualTo(communities.subList(3, 8));
 
-      }).send(testContext);
+              }).send(testContext);
 
-    }));
+        }));
 
   }
 
@@ -233,34 +232,37 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * @param testContext context to test.
    */
   @Test
-  public void shoudRetrieveCommunityProfilesPageMatchingDescription(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shoudRetrieveCommunityProfilesPageMatchingDescription(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
     final var description = UUID.randomUUID().toString();
     final List<CommunityProfile> communities = new ArrayList<>();
-    CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext, community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
+    CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext,
+        community -> community.description = description, 10, communities, testContext.succeeding(empty -> {
 
-      testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("description", description), queryParam("order", "-appId,+name"), queryParam("offset", "5"), queryParam("limit", "3")).expect(res -> {
+          testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("description", description),
+              queryParam("order", "-appId,+name"), queryParam("offset", "5"), queryParam("limit", "3")).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
-        assertThat(page).isNotNull();
-        assertThat(page.total).isEqualTo(communities.size());
-        communities.sort((c1, c2) -> {
+                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
+                assertThat(page).isNotNull();
+                assertThat(page.total).isEqualTo(communities.size());
+                communities.sort((c1, c2) -> {
 
-          var r = c2.appId.compareTo(c1.appId);
-          if (r == 0) {
+                  var r = c2.appId.compareTo(c1.appId);
+                  if (r == 0) {
 
-            r = c1.name.compareTo(c2.name);
-          }
+                    r = c1.name.compareTo(c2.name);
+                  }
 
-          return r;
+                  return r;
 
-        });
-        assertThat(page.communities).isNotEmpty().hasSize(3).isEqualTo(communities.subList(5, 8));
+                });
+                assertThat(page.communities).isNotEmpty().hasSize(3).isEqualTo(communities.subList(5, 8));
 
-      }).send(testContext);
+              }).send(testContext);
 
-    }));
+        }));
 
   }
 
@@ -272,7 +274,8 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * @param testContext context to test.
    */
   @Test
-  public void shoudRetrieveCommunityProfilesPageMatchingKeywords(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shoudRetrieveCommunityProfilesPageMatchingKeywords(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
     final var keyword = UUID.randomUUID().toString();
     final List<CommunityProfile> communities = new ArrayList<>();
@@ -282,52 +285,10 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
       community.keywords.add(keyword + "_11");
     }, 10, communities, testContext.succeeding(empty -> {
 
-      testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("keywords", keyword + "_2,/" + keyword + "_1.*/"), queryParam("order", "+name,-description"), queryParam("limit", "3")).expect(res -> {
-
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
-        assertThat(page).isNotNull();
-        assertThat(page.total).isEqualTo(communities.size());
-        communities.sort((c1, c2) -> {
-
-          var r = c1.name.compareTo(c2.name);
-          if (r == 0) {
-
-            r = c2.description.compareTo(c1.description);
-          }
-
-          return r;
-
-        });
-        assertThat(page.communities).isNotEmpty().hasSize(3).isEqualTo(communities.subList(0, 3));
-
-      }).send(testContext);
-
-    }));
-
-  }
-
-  /**
-   * Should retrieve the expected communities with the specified members.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   */
-  @Test
-  public void shoudRetrieveCommunityProfilesPageMatchingMembers(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
-
-    new CommunityMemberTest().createModelExample(1, vertx, testContext, testContext.succeeding(member1 -> {
-
-      new CommunityMemberTest().createModelExample(11, vertx, testContext, testContext.succeeding(member11 -> {
-
-        final List<CommunityProfile> communities = new ArrayList<>();
-        CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext, community -> {
-          community.members.add(member11);
-          community.members.add(member1);
-        }, 10, communities, testContext.succeeding(empty -> {
-
-          testRequest(client, HttpMethod.GET, this.modelPath()).with(queryParam("members", member1.userId + "," + member11.userId), queryParam("order", "+name,-description"), queryParam("limit", "5")).expect(res -> {
+      testRequest(client, HttpMethod.GET, this.modelPath())
+          .with(queryParam("keywords", keyword + "_2,/" + keyword + "_1.*/"), queryParam("order", "+name,-description"),
+              queryParam("limit", "3"))
+          .expect(res -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
             final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
@@ -344,15 +305,66 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
               return r;
 
             });
-            assertThat(page.communities).isNotEmpty().hasSize(5).isEqualTo(communities.subList(0, 5));
+            assertThat(page.communities).isNotEmpty().hasSize(3).isEqualTo(communities.subList(0, 3));
 
           }).send(testContext);
 
-        }));
-
-      }));
-
     }));
+
+  }
+
+  /**
+   * Should retrieve the expected communities with the specified members.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shoudRetrieveCommunityProfilesPageMatchingMembers(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(new CommunityMemberTest().createModelExample(1, vertx, testContext))
+        .onSuccess(member1 -> {
+
+          testContext.assertComplete(new CommunityMemberTest().createModelExample(11, vertx, testContext))
+              .onSuccess(member11 -> {
+
+                final List<CommunityProfile> communities = new ArrayList<>();
+                CommunitiesRepositoryIT.storeSomeCommunityProfiles(vertx, testContext, community -> {
+                  community.members.add(member11);
+                  community.members.add(member1);
+                }, 10, communities, testContext.succeeding(empty -> {
+
+                  testRequest(client, HttpMethod.GET, this.modelPath())
+                      .with(queryParam("members", member1.userId + "," + member11.userId),
+                          queryParam("order", "+name,-description"), queryParam("limit", "5"))
+                      .expect(res -> {
+
+                        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                        final var page = assertThatBodyIs(CommunityProfilesPage.class, res);
+                        assertThat(page).isNotNull();
+                        assertThat(page.total).isEqualTo(communities.size());
+                        communities.sort((c1, c2) -> {
+
+                          var r = c1.name.compareTo(c2.name);
+                          if (r == 0) {
+
+                            r = c2.description.compareTo(c1.description);
+                          }
+
+                          return r;
+
+                        });
+                        assertThat(page.communities).isNotEmpty().hasSize(5).isEqualTo(communities.subList(0, 5));
+
+                      }).send(testContext);
+
+                }));
+
+              });
+
+        });
 
   }
 

@@ -32,15 +32,15 @@ import javax.ws.rs.core.Response.Status;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.Meaning;
-import eu.internetofus.common.vertx.OperationReponseHandlers;
+import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireResources;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
 
 /**
  * Resource that provide the methods for the {@link Intelligences}.
@@ -125,7 +125,7 @@ public class IntelligencesResource implements Intelligences {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveIntelligencesQuestionnaire(final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void retrieveIntelligencesQuestionnaire(final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     QuestionnaireResources.retrieveQuestionnaire(lang -> "eu/internetofus/wenet_profile_manager/api/intelligences/IntelligencesQuestionnaire." + lang + ".json", this.vertx, context, resultHandler);
 
@@ -135,12 +135,12 @@ public class IntelligencesResource implements Intelligences {
    * {@inheritDoc}
    */
   @Override
-  public void calculateGardnerIntelligences(final JsonObject body, final OperationRequest context, final Handler<AsyncResult<OperationResponse>> resultHandler) {
+  public void calculateGardnerIntelligences(final JsonObject body, final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var questionnaireAnswers = Model.fromJsonObject(body, QuestionnaireAnswers.class);
     if (questionnaireAnswers.answerValues == null || questionnaireAnswers.answerValues.size() != QUESTION_FACTORS.length) {
 
-      OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
+      ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_number_of_answers",
           "To calculate the Gardner intelligences it is necessary the " + QUESTION_FACTORS.length + " responses of the intelligences questionnaire test.");
     } else {
 
@@ -151,7 +151,7 @@ public class IntelligencesResource implements Intelligences {
         final double value = questionnaireAnswers.answerValues.get(index);
         if (value < 0d || value > 1d) {
 
-          OperationReponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [0,1]");
+          ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_answer_value_at_" + index, "The answer[" + index + "] '" + value + "' is not on the range [0,1]");
           return;
 
         }
@@ -174,7 +174,7 @@ public class IntelligencesResource implements Intelligences {
       }
 
       final var array = Model.toJsonArray(intelligences);
-      OperationReponseHandlers.responseOk(resultHandler, array);
+      ServiceResponseHandlers.responseOk(resultHandler, array);
 
     }
   }

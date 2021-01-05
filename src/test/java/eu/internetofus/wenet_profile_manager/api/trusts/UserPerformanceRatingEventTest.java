@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,8 +48,8 @@ import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManagerMocker;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.service.WeNetService;
-import eu.internetofus.common.components.service.WeNetServiceMocker;
 import eu.internetofus.common.components.service.WeNetServiceSimulator;
+import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.task_manager.Task;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
@@ -84,7 +84,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   /**
    * The service mocked server.
    */
-  protected static WeNetServiceMocker serviceMocker;
+  protected static WeNetServiceSimulatorMocker serviceMocker;
 
   /**
    * Start the mocker server.
@@ -94,7 +94,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     profileManagerMocker = WeNetProfileManagerMocker.start();
     taskManagerMocker = WeNetTaskManagerMocker.start();
-    serviceMocker = WeNetServiceMocker.start();
+    serviceMocker = WeNetServiceSimulatorMocker.start();
   }
 
   /**
@@ -143,17 +143,19 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param testContext   test context to use.
    * @param createHandler the component that will manage the created model.
    */
-  public void createModelExample(final int index, final Vertx vertx, final VertxTestContext testContext, final Handler<AsyncResult<UserPerformanceRatingEvent>> createHandler) {
+  public void createModelExample(final int index, final Vertx vertx, final VertxTestContext testContext,
+      final Handler<AsyncResult<UserPerformanceRatingEvent>> createHandler) {
 
-    StoreServices.storeTaskExample(index, vertx, testContext, testContext.succeeding(task -> {
+    testContext.assertComplete(StoreServices.storeTaskExample(index, vertx, testContext)).onSuccess(task -> {
 
       final var profile = new WeNetUserProfile();
       profile.relationships = new ArrayList<>();
       profile.relationships.add(new SocialNetworkRelationship());
       profile.relationships.get(0).userId = task.requesterId;
-      final var relationship = SocialNetworkRelationshipType.values()[index % SocialNetworkRelationshipType.values().length];
+      final var relationship = SocialNetworkRelationshipType.values()[index
+          % SocialNetworkRelationshipType.values().length];
       profile.relationships.get(0).type = relationship;
-      StoreServices.storeProfile(profile, vertx, testContext, testContext.succeeding(stored -> {
+      testContext.assertComplete(StoreServices.storeProfile(profile, vertx, testContext)).onSuccess(stored -> {
 
         final var model = new UserPerformanceRatingEvent();
         model.sourceId = stored.id;
@@ -166,8 +168,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
         model.rating = 1.0 / Math.max(1, index + 2);
         createHandler.handle(Future.succeededFuture(model));
 
-      }));
-    }));
+      });
+    });
 
   }
 
@@ -251,7 +253,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   }
 
   /**
-   * Check that an event with source, target, rating and application identifier be valid.
+   * Check that an event with source, target, rating and application identifier be
+   * valid.
    *
    * @param vertx       event bus to use.
    * @param testContext test context to use.
@@ -279,7 +282,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   }
 
   /**
-   * Check that an event with source, target, rating and community identifier be valid.
+   * Check that an event with source, target, rating and community identifier be
+   * valid.
    *
    * @param vertx       event bus to use.
    * @param testContext test context to use.
@@ -287,7 +291,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldEventWithSourceTargetRatingAndCommunityBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithSourceTargetRatingAndCommunityBeValid(final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
@@ -307,7 +312,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   }
 
   /**
-   * Check that an event with source, target, rating and task type identifier be valid.
+   * Check that an event with source, target, rating and task type identifier be
+   * valid.
    *
    * @param vertx       event bus to use.
    * @param testContext test context to use.
@@ -315,7 +321,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldEventWithSourceTargetRatingAndTaskTypeBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithSourceTargetRatingAndTaskTypeBeValid(final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
@@ -371,7 +378,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldEventWithSourceTargetRatingAndRelationshipBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithSourceTargetRatingAndRelationshipBeValid(final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
 
@@ -387,7 +395,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   }
 
   /**
-   * Check that the {@link #createModelExample(int, Vertx, VertxTestContext, Handler)} is valid.
+   * Check that the
+   * {@link #createModelExample(int, Vertx, VertxTestContext, Handler)} is valid.
    *
    * @param index       to verify
    *
@@ -400,7 +409,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
   public void shouldExampleBeValid(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(index, vertx, testContext, testContext.succeeding(model -> assertIsValid(model, vertx, testContext)));
+    this.createModelExample(index, vertx, testContext,
+        testContext.succeeding(model -> assertIsValid(model, vertx, testContext)));
 
   }
 
@@ -416,7 +426,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with a rating {0} has not to be valid")
   @ValueSource(doubles = { -0.0001, -0.1, 1.1, 1.000001 })
-  public void shouldEventWithBadRatingNotBeValid(final double rating, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadRatingNotBeValid(final double rating, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
@@ -438,17 +449,19 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with the sourceId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  public void shouldEventWithBadSourceIdNotBeValid(final String sourceId, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadSourceIdNotBeValid(final String sourceId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
+    testContext.assertComplete(StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext))
+        .onSuccess(stored -> {
 
-      final var model = new UserPerformanceRatingEvent();
-      model.sourceId = sourceId;
-      model.targetId = stored.id;
-      model.rating = Math.random();
-      assertIsNotValid(model, "sourceId", vertx, testContext);
+          final var model = new UserPerformanceRatingEvent();
+          model.sourceId = sourceId;
+          model.targetId = stored.id;
+          model.rating = Math.random();
+          assertIsNotValid(model, "sourceId", vertx, testContext);
 
-    }));
+        });
 
   }
 
@@ -463,17 +476,19 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with the targetId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  public void shouldEventWithBadTargetIdNotBeValid(final String targetId, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadTargetIdNotBeValid(final String targetId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext, testContext.succeeding(stored -> {
+    testContext.assertComplete(StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext))
+        .onSuccess(stored -> {
 
-      final var model = new UserPerformanceRatingEvent();
-      model.sourceId = stored.id;
-      model.targetId = targetId;
-      model.rating = Math.random();
-      assertIsNotValid(model, "targetId", vertx, testContext);
+          final var model = new UserPerformanceRatingEvent();
+          model.sourceId = stored.id;
+          model.targetId = targetId;
+          model.rating = Math.random();
+          assertIsNotValid(model, "targetId", vertx, testContext);
 
-    }));
+        });
 
   }
 
@@ -488,7 +503,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with the appId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  public void shouldEventWithBadAppIdNotBeValid(final String appId, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadAppIdNotBeValid(final String appId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
@@ -508,16 +524,17 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldEventWithAppIdDiferentTotehAppIdOfTheTaskNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithAppIdDiferentTotehAppIdOfTheTaskNotBeValid(final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    StoreServices.storeAppExample(2, vertx, testContext, testContext.succeeding(stored -> {
+    testContext.assertComplete(StoreServices.storeAppExample(2, vertx, testContext)).onSuccess(stored -> {
       this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
         model.appId = stored.appId;
         assertIsNotValid(model, "appId", vertx, testContext);
 
       }));
-    }));
+    });
 
   }
 
@@ -531,9 +548,9 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the communityId {0} has not to be valid")
-  // @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  @ValueSource(strings = { ValidationsTest.STRING_256 })
-  public void shouldEventWithBadCommunityIdNotBeValid(final String communityId, final Vertx vertx, final VertxTestContext testContext) {
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  public void shouldEventWithBadCommunityIdNotBeValid(final String communityId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
@@ -555,7 +572,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with the taskTypeId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  public void shouldEventWithBadTaskTypeIdNotBeValid(final String taskTypeId, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadTaskTypeIdNotBeValid(final String taskTypeId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
@@ -567,7 +585,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   }
 
   /**
-   * Check that an event with a taskTypeId that is not equals to the taskTypeId of the task.
+   * Check that an event with a taskTypeId that is not equals to the taskTypeId of
+   * the task.
    *
    * @param vertx       event bus to use.
    * @param testContext test context to use.
@@ -575,16 +594,17 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldEventWithTaskTypeIdDiferentTotehTaskTypeIdOfTheTaskNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithTaskTypeIdDiferentTotehTaskTypeIdOfTheTaskNotBeValid(final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    StoreServices.storeTaskTypeExample(2, vertx, testContext, testContext.succeeding(stored -> {
+    testContext.assertComplete(StoreServices.storeTaskTypeExample(2, vertx, testContext)).onSuccess(stored -> {
       this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 
         model.taskTypeId = stored.id;
         assertIsNotValid(model, "taskTypeId", vertx, testContext);
 
       }));
-    }));
+    });
 
   }
 
@@ -599,7 +619,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    */
   @ParameterizedTest(name = "The event with the taskId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
-  public void shouldEventWithBadTaskIdNotBeValid(final String taskId, final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldEventWithBadTaskIdNotBeValid(final String taskId, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
 

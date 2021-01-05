@@ -36,6 +36,7 @@ import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -127,38 +128,40 @@ public interface ProfilesRepository {
    *
    * @param profile      to store.
    * @param storeHandler handler to manage the store.
+   *
+   * @deprecated Use instead {@link #storeProfile(WeNetUserProfile)}
+   *
+   * @see #storeProfile(WeNetUserProfile)
    */
   @GenIgnore
+  @Deprecated
   default void storeProfile(final WeNetUserProfile profile, final Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
 
+    storeHandler.handle(storeProfile(profile));
+  }
+
+  /**
+   * Store a profile.
+   *
+   * @param profile to store.
+   *
+   * @return the future stored profile.
+   */
+  @GenIgnore
+  default Future<WeNetUserProfile> storeProfile(final WeNetUserProfile profile) {
+
+    Promise<JsonObject> promise = Promise.promise();
     final var object = profile.toJsonObject();
     if (object == null) {
 
-      storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      promise.fail("The profile can not converted to JSON.");
 
     } else {
 
-      this.storeProfile(object, stored -> {
-        if (stored.failed()) {
-
-          storeHandler.handle(Future.failedFuture(stored.cause()));
-
-        } else {
-
-          final var value = stored.result();
-          final var storedProfile = Model.fromJsonObject(value, WeNetUserProfile.class);
-          if (storedProfile == null) {
-
-            storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
-
-          } else {
-
-            storeHandler.handle(Future.succeededFuture(storedProfile));
-          }
-
-        }
-      });
+      this.storeProfile(object, promise);
     }
+
+    return Model.fromFutureJsonObject(promise.future(), WeNetUserProfile.class);
   }
 
   /**
@@ -174,19 +177,41 @@ public interface ProfilesRepository {
    *
    * @param profile       to update.
    * @param updateHandler handler to manage the update.
+   *
+   * @deprecated Use instead {@link #updateProfile(WeNetUserProfile)}
+   *
+   * @see #updateProfile(WeNetUserProfile)
    */
   @GenIgnore
+  @Deprecated
   default void updateProfile(final WeNetUserProfile profile, final Handler<AsyncResult<Void>> updateHandler) {
 
+    updateHandler.handle(updateProfile(profile));
+
+  }
+
+  /**
+   * Update a profile.
+   *
+   * @param profile to update.
+   *
+   * @return the future that inform when the profile is updated.
+   */
+  @GenIgnore
+  default Future<Void> updateProfile(final WeNetUserProfile profile) {
+
+    Promise<Void> promise = Promise.promise();
     final var object = profile.toJsonObjectWithEmptyValues();
     if (object == null) {
 
-      updateHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      promise.fail("The profile can not converted to JSON.");
 
     } else {
 
-      this.updateProfile(object, updateHandler);
+      this.updateProfile(object, promise);
     }
+
+    return promise.future();
 
   }
 
@@ -207,43 +232,61 @@ public interface ProfilesRepository {
   void deleteProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
 
   /**
+   * Delete a profile.
+   *
+   * @param id identifier of the user to delete.
+   *
+   * @return the future that inform when the profile is removed.
+   */
+  @GenIgnore
+  default Future<Void> deleteProfile(String id) {
+
+    Promise<Void> promise = Promise.promise();
+    this.deleteProfile(id, promise);
+    return promise.future();
+  }
+
+  /**
    * Store a historic profile.
    *
    * @param profile      to store.
    * @param storeHandler handler to manage the store.
+   *
+   * @deprecated Use instead
+   *             {@link #storeHistoricProfile(HistoricWeNetUserProfile)}
+   *
+   * @see #storeHistoricProfile(HistoricWeNetUserProfile)
    */
   @GenIgnore
-  default void storeHistoricProfile(final HistoricWeNetUserProfile profile, final Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
+  default void storeHistoricProfile(final HistoricWeNetUserProfile profile,
+      final Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
 
+    storeHandler.handle(storeHistoricProfile(profile));
+  }
+
+  /**
+   * Store a historic profile.
+   *
+   * @param profile to store.
+   *
+   * @return the future stored profile.
+   */
+  @GenIgnore
+  default Future<HistoricWeNetUserProfile> storeHistoricProfile(final HistoricWeNetUserProfile profile) {
+
+    Promise<JsonObject> promise = Promise.promise();
     final var object = profile.toJsonObject();
     if (object == null) {
 
-      storeHandler.handle(Future.failedFuture("The profile can not converted to JSON."));
+      return Future.failedFuture("The profile can not converted to JSON.");
 
     } else {
 
-      this.storeHistoricProfile(object, stored -> {
-        if (stored.failed()) {
+      this.storeHistoricProfile(object, promise);
 
-          storeHandler.handle(Future.failedFuture(stored.cause()));
-
-        } else {
-
-          final var value = stored.result();
-          value.remove("_id");
-          final var storedProfile = Model.fromJsonObject(value, HistoricWeNetUserProfile.class);
-          if (storedProfile == null) {
-
-            storeHandler.handle(Future.failedFuture("The stored profile is not valid."));
-
-          } else {
-
-            storeHandler.handle(Future.succeededFuture(storedProfile));
-          }
-
-        }
-      });
     }
+
+    return Model.fromFutureJsonObject(promise.future(), HistoricWeNetUserProfile.class);
   }
 
   /**
@@ -259,34 +302,44 @@ public interface ProfilesRepository {
    *
    *
    * @param query         that define the historic profiles to return.
-   * @param sort          define the order in with the historic profiles has to be returned.
+   * @param sort          define the order in with the historic profiles has to be
+   *                      returned.
    * @param offset        index of the first profile to return.
    * @param limit         number maximum of profiles to return.
    * @param searchHandler handler to manage the search.
+   *
+   * @deprecated Use instead
+   *             {@link #searchHistoricProfilePage(JsonObject, JsonObject, int, int)}
+   *
+   * @see #searchHistoricProfilePage(JsonObject, JsonObject, int, int)
    */
   @GenIgnore
-  default void searchHistoricProfilePage(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
+  default void searchHistoricProfilePage(final JsonObject query, final JsonObject sort, final int offset,
+      final int limit, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
 
-    this.searchHistoricProfilePageObject(query, sort, offset, limit, search -> {
+    searchHandler.handle(searchHistoricProfilePage(query, sort, offset, limit));
 
-      if (search.failed()) {
+  }
 
-        searchHandler.handle(Future.failedFuture(search.cause()));
+  /**
+   * Search for some historic profiles.
+   *
+   *
+   * @param query  that define the historic profiles to return.
+   * @param sort   define the order in with the historic profiles has to be
+   *               returned.
+   * @param offset index of the first profile to return.
+   * @param limit  number maximum of profiles to return.
+   *
+   * @return the future with the found page.
+   */
+  @GenIgnore
+  default Future<HistoricWeNetUserProfilesPage> searchHistoricProfilePage(final JsonObject query, final JsonObject sort,
+      final int offset, int limit) {
 
-      } else {
-
-        final var value = search.result();
-        final var page = Model.fromJsonObject(value, HistoricWeNetUserProfilesPage.class);
-        if (page == null) {
-
-          searchHandler.handle(Future.failedFuture("The stored page is not valid."));
-
-        } else {
-
-          searchHandler.handle(Future.succeededFuture(page));
-        }
-      }
-    });
+    Promise<JsonObject> promise = Promise.promise();
+    this.searchHistoricProfilePageObject(query, sort, offset, limit, promise);
+    return Model.fromFutureJsonObject(promise.future(), HistoricWeNetUserProfilesPage.class);
 
   }
 
@@ -295,25 +348,32 @@ public interface ProfilesRepository {
    *
    *
    * @param query         that define the historic profiles to return.
-   * @param sort          define the order in with the historic profiles has to be returned.
+   * @param sort          define the order in with the historic profiles has to be
+   *                      returned.
    * @param offset        index of the first profile to return.
    * @param limit         number maximum of profiles to return.
    * @param searchHandler handler to manage the search.
    */
-  void searchHistoricProfilePageObject(JsonObject query, JsonObject sort, int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
+  void searchHistoricProfilePageObject(JsonObject query, JsonObject sort, int offset, int limit,
+      Handler<AsyncResult<JsonObject>> searchHandler);
 
   /**
-   * Create the query to obtain the historic pages that match the specified parameters.
+   * Create the query to obtain the historic pages that match the specified
+   * parameters.
    *
    * @param userId identifier of the user to get the historic values.
-   * @param from   the minimum time stamp that define the range the profile is active.
-   * @param to     the maximum time stamp that define the range the profile is active.
+   * @param from   the minimum time stamp that define the range the profile is
+   *               active.
+   * @param to     the maximum time stamp that define the range the profile is
+   *               active.
    *
-   * @return the query to obtain the page with the profiles with the specified parameters.
+   * @return the query to obtain the page with the profiles with the specified
+   *         parameters.
    */
   static JsonObject createProfileHistoricPageQuery(final String userId, final Long from, final Long to) {
 
-    return new QueryBuilder().with("profile.id", userId).withRange("from", from, null).withRange("to", null, to).build();
+    return new QueryBuilder().with("profile.id", userId).withRange("from", from, null).withRange("to", null, to)
+        .build();
   }
 
   /**

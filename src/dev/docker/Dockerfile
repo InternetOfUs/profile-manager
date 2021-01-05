@@ -4,8 +4,6 @@ FROM maven:3.6.3-adoptopenjdk-11
 
 WORKDIR /app
 
-COPY pom.xml .
-RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn dependency:go-offline
-
+RUN echo "PS1='\[\033[01;32m\]WeNet@Profile-Manager-Dev\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] \$ '" >> /root/.bashrc
 
 CMD ["bash"]

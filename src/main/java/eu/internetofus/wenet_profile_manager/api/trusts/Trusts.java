@@ -47,9 +47,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
-import io.vertx.ext.web.api.generator.WebApiServiceGen;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
+import io.vertx.ext.web.api.service.WebApiServiceGen;
 
 /**
  * Service used to manage the trust of an user respect another.
@@ -95,8 +95,8 @@ public interface Trusts {
   @RequestBody(description = "The event to store", required = true, content = @Content(schema = @Schema(implementation = UserPerformanceRatingEvent.class)))
   @ApiResponse(responseCode = "201", description = "The event has been stored", content = @Content(schema = @Schema(implementation = UserPerformanceRatingEvent.class)))
   @ApiResponse(responseCode = "400", description = "Bad event", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  void addTrustEvent(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) OperationRequest context,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+  void addTrustEvent(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) ServiceRequest context,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
   /**
    * Called when want to calculate the trust of an user respect another.
@@ -130,6 +130,6 @@ public interface Trusts {
       @QueryParam(value = "reportFrom") @Parameter(description = "The difference, measured in seconds, between the minimum report time stamp of the event and midnight, January 1, 1970 UTC.", example = "1457166440", required = false) Long reportFrom,
       @QueryParam(value = "reportTo") @Parameter(description = "The difference, measured in seconds, between the maximum report time stamp of the event and midnight, January 1, 1970 UTC.", example = "1571664406", required = false) Long reportTo,
       @QueryParam(value = "aggregator") @Parameter(description = "The type of aggregation that has to be used to calculate the trust.", required = false, schema = @Schema(implementation = TrustAggregator.class, example = "MAXIMUM")) @DefaultValue("RECENCY_BASED") TrustAggregator aggregator,
-      @Parameter(hidden = true, required = false) OperationRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @Parameter(hidden = true, required = false) ServiceRequest context, @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
 }

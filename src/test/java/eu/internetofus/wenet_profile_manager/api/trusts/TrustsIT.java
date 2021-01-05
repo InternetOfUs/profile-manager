@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static io.vertx.junit5.web.TestRequest.queryParam;
+import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
@@ -69,7 +69,7 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldNotAddEventBecauseIsNotAValidEvent(final WebClient client, final VertxTestContext testContext) {
@@ -91,7 +91,7 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldNotAddBadEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -115,7 +115,7 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldAddEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -147,7 +147,7 @@ public class TrustsIT {
    * @param testContext context to test.
    *
    * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
-   *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
   @EnumSource(TrustAggregator.class)
@@ -172,7 +172,7 @@ public class TrustsIT {
    * @param testContext context to test.
    *
    * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
-   *      io.vertx.ext.web.api.OperationRequest, io.vertx.core.Handler)
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
   @EnumSource(TrustAggregator.class)
@@ -199,7 +199,7 @@ public class TrustsIT {
    * @param testContext    context to test.
    *
    * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
-   *      io.vertx.ext.web.api.OperationRequest, Handler)
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @ParameterizedTest(name = "Should calcuate the trust for {0}")
   @CsvSource(value = { "MAXIMUM,1.0", "MINIMUM,0.0", "AVERAGE,0.5", "MEDIAN,0.5", "RECENCY_BASED,0.5" })

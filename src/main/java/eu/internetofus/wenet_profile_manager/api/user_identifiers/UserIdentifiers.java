@@ -42,9 +42,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.ext.web.api.OperationRequest;
-import io.vertx.ext.web.api.OperationResponse;
-import io.vertx.ext.web.api.generator.WebApiServiceGen;
+import io.vertx.ext.web.api.service.ServiceRequest;
+import io.vertx.ext.web.api.service.ServiceResponse;
+import io.vertx.ext.web.api.service.WebApiServiceGen;
 
 /**
  * The definition of the web services to obtain the user identifiers.
@@ -80,7 +80,7 @@ public interface UserIdentifiers {
   @ApiResponse(responseCode = "200", description = "The page with the user identifiers", content = @Content(schema = @Schema(implementation = UserIdentifiersPage.class)))
   @ApiResponse(responseCode = "400", description = "If any of the search pattern is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void getUserIdentifiersPage(@DefaultValue("0") @QueryParam("offset") @Parameter(description = "The index of the first task type to return") int offset,
-      @DefaultValue("10000") @QueryParam("limit") @Parameter(description = "The number maximum of task types to return") int limit, @Parameter(hidden = true, required = false) OperationRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<OperationResponse>> resultHandler);
+      @DefaultValue("10000") @QueryParam("limit") @Parameter(description = "The number maximum of task types to return") int limit, @Parameter(hidden = true, required = false) ServiceRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
 }

@@ -27,7 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api.personalities;
 
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static io.vertx.junit5.web.TestRequest.requestHeader;
+import static io.reactiverse.junit5.web.TestRequest.requestHeader;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
@@ -73,7 +73,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#retrievePersonalityQuestionnaire(io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#retrievePersonalityQuestionnaire(io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @ParameterizedTest(name = "Should return personality questionnaire for language {0}")
   @EmptySource
@@ -96,7 +96,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseNoAnswers(final WebClient client, final VertxTestContext testContext) {
@@ -118,7 +118,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseNotEmptyAnswers(final WebClient client, final VertxTestContext testContext) {
@@ -142,7 +142,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseNotEnoughAnswers(final WebClient client, final VertxTestContext testContext) {
@@ -171,7 +171,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseTooManyAnswers(final WebClient client, final VertxTestContext testContext) {
@@ -201,7 +201,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooLow(final WebClient client, final VertxTestContext testContext) {
@@ -233,7 +233,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooHigh(final WebClient client, final VertxTestContext testContext) {
@@ -265,7 +265,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculateENTJPersonality(final WebClient client, final VertxTestContext testContext) {
@@ -305,7 +305,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculateISFPPersonality(final WebClient client, final VertxTestContext testContext) {
@@ -345,7 +345,7 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.OperationRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculatePersonality(final WebClient client, final VertxTestContext testContext) {

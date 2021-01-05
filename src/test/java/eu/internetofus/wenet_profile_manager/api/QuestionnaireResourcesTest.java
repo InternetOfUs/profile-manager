@@ -36,7 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.api.OperationRequest;
+import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.junit5.VertxTestContext;
 
 /**
@@ -58,7 +58,7 @@ public class QuestionnaireResourcesTest {
   @Test
   public void shouldReplyWithErrorBecauseCannotObtainQuestionnaire(final Vertx vertx, final VertxTestContext testContext) {
 
-    final var request = new OperationRequest();
+    final var request = new ServiceRequest();
     QuestionnaireResources.retrieveQuestionnaire(lang -> lang, vertx, request, testContext.succeeding(retrieve -> {
 
       assertThat(retrieve.getStatusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
@@ -76,7 +76,7 @@ public class QuestionnaireResourcesTest {
   @Test
   public void shouldReplyQuestionnaire(final Vertx vertx, final VertxTestContext testContext) {
 
-    final var request = new OperationRequest();
+    final var request = new ServiceRequest();
     QuestionnaireResources.retrieveQuestionnaire(lang -> "eu/internetofus/wenet_profile_manager/api/Questionnaire.100.json", vertx, request, testContext.succeeding(retrieve -> {
 
       assertThat(retrieve.getStatusCode()).isEqualTo(Status.OK.getStatusCode());

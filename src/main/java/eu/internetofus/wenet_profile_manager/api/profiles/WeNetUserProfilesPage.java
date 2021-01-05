@@ -57,7 +57,7 @@ public class WeNetUserProfilesPage extends ReflectionModel implements Model {
   /**
    * The found profiles.
    */
-  @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), arraySchema = @Schema(description = "The set of profiles found"))
+  @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), arraySchema = @Schema(description = "The set of profiles found"))
   public List<WeNetUserProfile> profiles;
 
 }

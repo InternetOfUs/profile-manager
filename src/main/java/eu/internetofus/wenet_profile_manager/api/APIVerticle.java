@@ -43,8 +43,8 @@ import eu.internetofus.wenet_profile_manager.api.trusts.TrustsResource;
 import eu.internetofus.wenet_profile_manager.api.user_identifiers.UserIdentifiers;
 import eu.internetofus.wenet_profile_manager.api.user_identifiers.UserIdentifiersResource;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.api.contract.openapi3.OpenAPI3RouterFactory;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.serviceproxy.ServiceBinder;
 
 /**
@@ -67,28 +67,33 @@ public class APIVerticle extends AbstractAPIVerticle {
    * {@inheritDoc}
    */
   @Override
-  protected void mountServiceInterfaces(final OpenAPI3RouterFactory routerFactory) {
+  protected void mountServiceInterfaces(final RouterBuilder routerFactory) {
 
     routerFactory.mountServiceInterface(Help.class, Help.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
 
     routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class, new ProfilesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
+        new ProfilesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class, new PersonalitiesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
+        new PersonalitiesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class, new IntelligencesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
+        new IntelligencesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
 
     routerFactory.mountServiceInterface(Communities.class, Communities.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Communities.ADDRESS).register(Communities.class, new CommunitiesResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(Communities.ADDRESS).register(Communities.class,
+        new CommunitiesResource(this.vertx));
 
     routerFactory.mountServiceInterface(UserIdentifiers.class, UserIdentifiers.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(UserIdentifiers.ADDRESS).register(UserIdentifiers.class, new UserIdentifiersResource(this.vertx));
+    new ServiceBinder(this.vertx).setAddress(UserIdentifiers.ADDRESS).register(UserIdentifiers.class,
+        new UserIdentifiersResource(this.vertx));
 
   }
 
