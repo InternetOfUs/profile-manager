@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:experimental
 
-FROM maven:3.6.3-adoptopenjdk-11
+FROM maven:3.6.3-jdk-11-slim
 
 WORKDIR /app
 
