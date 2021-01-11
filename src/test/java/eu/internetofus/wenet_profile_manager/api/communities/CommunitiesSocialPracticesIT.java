@@ -34,9 +34,7 @@ import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
 import eu.internetofus.common.components.profile_manager.SocialPractice;
 import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -62,11 +60,11 @@ public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResource
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<SocialPractice>> succeeding) {
+  protected Future<SocialPractice> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var element = new SocialPracticeTest().createModelExample(index);
-    succeeding.handle(Future.succeededFuture(element));
+    return Future.succeededFuture(element);
 
   }
 
@@ -95,16 +93,16 @@ public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResource
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected Future<CommunityProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
           community.id = null;
           community.socialPractices = null;
           return StoreServices.storeCommunity(community, vertx, testContext);
 
-        })));
+        }));
 
   }
 

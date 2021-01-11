@@ -2,6 +2,12 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+
+## Version 0.16.0 (2021-01-11)
+
+ * Adapt to the new task models.
+
+
 ## Version 0.15.0 (2020-09-29)
 
  * Add the web services to manage the community profiles.

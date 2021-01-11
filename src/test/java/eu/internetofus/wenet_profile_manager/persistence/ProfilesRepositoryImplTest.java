@@ -26,18 +26,14 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import java.util.function.Consumer;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import java.util.function.Consumer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Test the {@link ProfilesRepositoryImpl}.
@@ -61,9 +57,10 @@ public class ProfilesRepositoryImplTest {
        * {@inheritDoc}
        */
       @Override
-      protected void searchPageObject(final String collectionName, final JsonObject query, final FindOptions options, final String resultKey, final Consumer<JsonObject> map, final Handler<AsyncResult<JsonObject>> searchHandler) {
+      protected Future<JsonObject> searchPageObject(final String collectionName, final JsonObject query,
+          final FindOptions options, final String resultKey, final Consumer<JsonObject> map) {
 
-        searchHandler.handle(Future.failedFuture("Not found"));
+        return Future.failedFuture("Not found");
       }
 
     };

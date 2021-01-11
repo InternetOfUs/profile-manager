@@ -32,8 +32,7 @@ import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.common.vertx.AbstractModelFieldResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,16 +71,16 @@ public abstract class AbstractProfileFieldResourcesIT<T extends Model, I>
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
 
           profile.id = null;
           return StoreServices.storeProfile(profile, vertx, testContext);
 
-        })));
+        }));
 
   }
 

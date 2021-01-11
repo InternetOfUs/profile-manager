@@ -32,8 +32,7 @@ import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
 import eu.internetofus.common.vertx.AbstractModelFieldResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,14 +71,14 @@ public abstract class AbstractCommunityFieldResourcesIT<T extends Model, I>
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected Future<CommunityProfile> storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    testContext.assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext))
-        .onSuccess(community -> {
+    return testContext
+        .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
           community.id = null;
-          succeeding.handle(StoreServices.storeCommunity(community, vertx, testContext));
-        });
+          return StoreServices.storeCommunity(community, vertx, testContext);
+        }));
 
   }
 

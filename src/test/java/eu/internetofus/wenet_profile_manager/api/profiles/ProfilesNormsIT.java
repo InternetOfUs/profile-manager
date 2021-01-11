@@ -34,9 +34,7 @@ import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.profile_manager.NormTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -61,11 +59,11 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<Norm>> createHandler) {
+  protected Future<Norm> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var element = new NormTest().createModelExample(index);
-    createHandler.handle(Future.succeededFuture(element));
+    return Future.succeededFuture(element);
 
   }
 
@@ -94,15 +92,15 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
           profile.id = null;
           profile.norms = null;
           return StoreServices.storeProfile(profile, vertx, testContext);
-        })));
+        }));
 
   }
 

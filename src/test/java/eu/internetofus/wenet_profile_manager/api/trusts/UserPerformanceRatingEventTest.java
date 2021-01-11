@@ -30,15 +30,6 @@ import static eu.internetofus.common.components.ValidationsTest.assertIsNotValid
 import static eu.internetofus.common.components.ValidationsTest.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import eu.internetofus.common.components.ModelTestCase;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
@@ -53,13 +44,18 @@ import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.task_manager.Task;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Test the {@link UserPerformanceRatingEvent}
@@ -138,38 +134,42 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   /**
    * Create an example model that has the specified index.
    *
-   * @param index         to use in the example.
-   * @param vertx         event bus to use.
-   * @param testContext   test context to use.
-   * @param createHandler the component that will manage the created model.
+   * @param index       to use in the example.
+   * @param vertx       event bus to use.
+   * @param testContext test context to use.
+   *
+   * @return the future created model.
    */
-  public void createModelExample(final int index, final Vertx vertx, final VertxTestContext testContext,
-      final Handler<AsyncResult<UserPerformanceRatingEvent>> createHandler) {
+  public Future<UserPerformanceRatingEvent> createModelExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    testContext.assertComplete(StoreServices.storeTaskExample(index, vertx, testContext)).onSuccess(task -> {
+    return testContext.assertComplete(
 
-      final var profile = new WeNetUserProfile();
-      profile.relationships = new ArrayList<>();
-      profile.relationships.add(new SocialNetworkRelationship());
-      profile.relationships.get(0).userId = task.requesterId;
-      final var relationship = SocialNetworkRelationshipType.values()[index
-          % SocialNetworkRelationshipType.values().length];
-      profile.relationships.get(0).type = relationship;
-      testContext.assertComplete(StoreServices.storeProfile(profile, vertx, testContext)).onSuccess(stored -> {
+        StoreServices.storeTaskExample(index, vertx, testContext).compose(task -> {
 
-        final var model = new UserPerformanceRatingEvent();
-        model.sourceId = stored.id;
-        model.targetId = task.requesterId;
-        model.relationship = relationship;
-        model.appId = task.appId;
-        model.communityId = "CommunityId" + index;
-        model.taskTypeId = task.taskTypeId;
-        model.taskId = task.id;
-        model.rating = 1.0 / Math.max(1, index + 2);
-        createHandler.handle(Future.succeededFuture(model));
+          final var profile = new WeNetUserProfile();
+          profile.relationships = new ArrayList<>();
+          profile.relationships.add(new SocialNetworkRelationship());
+          profile.relationships.get(0).userId = task.requesterId;
+          final var relationship = SocialNetworkRelationshipType.values()[index
+              % SocialNetworkRelationshipType.values().length];
+          profile.relationships.get(0).type = relationship;
+          return StoreServices.storeProfile(profile, vertx, testContext).compose(stored -> {
 
-      });
-    });
+            final var model = new UserPerformanceRatingEvent();
+            model.sourceId = stored.id;
+            model.targetId = task.requesterId;
+            model.relationship = relationship;
+            model.appId = task.appId;
+            model.communityId = task.communityId;
+            model.taskTypeId = task.taskTypeId;
+            model.taskId = task.id;
+            model.rating = 1.0 / Math.max(1, index + 2);
+            return Future.succeededFuture(model);
+
+          });
+
+        }));
 
   }
 
@@ -215,7 +215,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEventWithSourceTargetAndRatingBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = "   " + created.sourceId + "   ";
@@ -228,7 +228,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
       });
 
-    }));
+    });
 
   }
 
@@ -243,12 +243,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEventWithSourceEqualsToTargetNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.targetId = model.sourceId;
       assertIsNotValid(model, "targetId", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -264,7 +264,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEventWithSourceTargetRatingAndAppBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
@@ -277,7 +277,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
       });
 
-    }));
+    });
 
   }
 
@@ -294,7 +294,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithSourceTargetRatingAndCommunityBeValid(final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
@@ -307,7 +307,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
       });
 
-    }));
+    });
 
   }
 
@@ -324,7 +324,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithSourceTargetRatingAndTaskTypeBeValid(final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
@@ -337,7 +337,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
       });
 
-    }));
+    });
 
   }
 
@@ -352,7 +352,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEventWithSourceTargetRatingAndTaskBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
@@ -365,7 +365,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
       });
 
-    }));
+    });
 
   }
 
@@ -381,7 +381,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithSourceTargetRatingAndRelationshipBeValid(final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(created -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
       model.sourceId = created.sourceId;
@@ -390,13 +390,13 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.relationship = created.relationship;
       assertIsValid(model, vertx, testContext);
 
-    }));
+    });
 
   }
 
   /**
-   * Check that the
-   * {@link #createModelExample(int, Vertx, VertxTestContext, Handler)} is valid.
+   * Check that the {@link #createModelExample(int, Vertx, VertxTestContext)} is
+   * valid.
    *
    * @param index       to verify
    *
@@ -409,8 +409,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
   public void shouldExampleBeValid(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(index, vertx, testContext,
-        testContext.succeeding(model -> assertIsValid(model, vertx, testContext)));
+    this.createModelExample(index, vertx, testContext).onSuccess(model -> assertIsValid(model, vertx, testContext));
 
   }
 
@@ -429,12 +428,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithBadRatingNotBeValid(final double rating, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.rating = rating;
       assertIsNotValid(model, "rating", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -506,12 +505,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithBadAppIdNotBeValid(final String appId, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.appId = appId;
       assertIsNotValid(model, "appId", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -528,12 +527,13 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       final VertxTestContext testContext) {
 
     testContext.assertComplete(StoreServices.storeAppExample(2, vertx, testContext)).onSuccess(stored -> {
-      this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+
+      testContext.assertComplete(this.createModelExample(1, vertx, testContext)).onSuccess(model -> {
 
         model.appId = stored.appId;
         assertIsNotValid(model, "appId", vertx, testContext);
 
-      }));
+      });
     });
 
   }
@@ -552,12 +552,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithBadCommunityIdNotBeValid(final String communityId, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.communityId = communityId;
       assertIsNotValid(model, "communityId", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -575,12 +575,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithBadTaskTypeIdNotBeValid(final String taskTypeId, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.taskTypeId = taskTypeId;
       assertIsNotValid(model, "taskTypeId", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -598,12 +598,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       final VertxTestContext testContext) {
 
     testContext.assertComplete(StoreServices.storeTaskTypeExample(2, vertx, testContext)).onSuccess(stored -> {
-      this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+      this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
         model.taskTypeId = stored.id;
         assertIsNotValid(model, "taskTypeId", vertx, testContext);
 
-      }));
+      });
     });
 
   }
@@ -622,12 +622,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldEventWithBadTaskIdNotBeValid(final String taskId, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.taskId = taskId;
       assertIsNotValid(model, "taskId", vertx, testContext);
 
-    }));
+    });
 
   }
 
@@ -642,12 +642,12 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEventWithBadRelationshipNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(1, vertx, testContext, testContext.succeeding(model -> {
+    this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.relationship = SocialNetworkRelationshipType.acquaintance;
       assertIsNotValid(model, "relationship", vertx, testContext);
 
-    }));
+    });
 
   }
 

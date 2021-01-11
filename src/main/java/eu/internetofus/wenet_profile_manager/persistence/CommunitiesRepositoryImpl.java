@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -70,7 +71,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
     this.findOneDocument(COMMUNITIES_COLLECTION, query, null, found -> {
       final var _id = (String) found.remove("_id");
       return found.put("id", _id);
-    }, searchHandler);
+    }).onComplete(searchHandler);
 
   }
 
@@ -90,7 +91,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
       final var _id = (String) stored.remove("_id");
       return stored.put("id", _id);
 
-    }, storeHandler);
+    }).onComplete(storeHandler);
 
   }
 
@@ -102,7 +103,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
 
     final var id = community.remove("id");
     final var query = new JsonObject().put("_id", id);
-    this.updateOneDocument(COMMUNITIES_COLLECTION, query, community, updateHandler);
+    this.updateOneDocument(COMMUNITIES_COLLECTION, query, community).onComplete(updateHandler);
 
   }
 
@@ -113,7 +114,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   public void deleteCommunity(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
     final var query = new JsonObject().put("_id", id);
-    this.deleteOneDocument(COMMUNITIES_COLLECTION, query, deleteHandler);
+    this.deleteOneDocument(COMMUNITIES_COLLECTION, query).onComplete(deleteHandler);
 
   }
 
@@ -121,13 +122,15 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCommunityProfilesPageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> handler) {
+  public void retrieveCommunityProfilesPageObject(final JsonObject query, final JsonObject sort, final int offset,
+      final int limit, final Handler<AsyncResult<JsonObject>> handler) {
 
     final var options = new FindOptions();
     options.setSort(sort);
     options.setSkip(offset);
     options.setLimit(limit);
-    this.searchPageObject(COMMUNITIES_COLLECTION, query, options, "communities", community -> community.put("id", community.remove("_id")), handler);
+    this.searchPageObject(COMMUNITIES_COLLECTION, query, options, "communities",
+        community -> community.put("id", community.remove("_id"))).onComplete(handler);
 
   }
 
@@ -138,8 +141,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
    */
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
-    // First time => no migration necessary
-    return Future.succeededFuture();
+    return this.migrateCollection(COMMUNITIES_COLLECTION, CommunityProfile.class);
   }
 
 }

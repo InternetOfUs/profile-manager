@@ -34,9 +34,7 @@ import eu.internetofus.common.components.profile_manager.RelevantLocation;
 import eu.internetofus.common.components.profile_manager.RelevantLocationTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -62,12 +60,12 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldResourcesIT
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<RelevantLocation>> createHandler) {
+  protected Future<RelevantLocation> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var element = new RelevantLocationTest().createModelExample(index);
     element.id = null;
-    createHandler.handle(Future.succeededFuture(element));
+    return Future.succeededFuture(element);
 
   }
 
@@ -96,15 +94,15 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldResourcesIT
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
           profile.id = null;
           profile.relevantLocations = null;
           return StoreServices.storeProfile(profile, vertx, testContext);
-        })));
+        }));
 
   }
 

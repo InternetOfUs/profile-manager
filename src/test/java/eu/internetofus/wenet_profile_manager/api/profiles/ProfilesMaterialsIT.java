@@ -34,9 +34,7 @@ import eu.internetofus.common.components.profile_manager.Material;
 import eu.internetofus.common.components.profile_manager.MaterialTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -62,11 +60,11 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Materia
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<Material>> createHandler) {
+  protected Future<Material> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var model = new MaterialTest().createModelExample(index);
-    createHandler.handle(Future.succeededFuture(model));
+    return Future.succeededFuture(model);
 
   }
 
@@ -95,15 +93,15 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Materia
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
           profile.id = null;
           profile.materials = null;
           return StoreServices.storeProfile(profile, vertx, testContext);
-        })));
+        }));
 
   }
 

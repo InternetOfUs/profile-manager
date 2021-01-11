@@ -26,14 +26,13 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import java.util.List;
-
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.profile_manager.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -154,9 +153,9 @@ public interface Communities {
       @QueryParam(value = "appId") @Parameter(description = "An application identifier to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the communities to return, if you write between '/'. For example to get the communitites for the aplications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.", example = "1", required = false) String appId,
       @QueryParam(value = "name") @Parameter(description = "A name to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the name of the communities to return if you write between '/'. For example to get the communities with a name with the word 'eat' you must pass as 'name' '/.*eat.*/'", example = "/.*eat.*/", required = false) String name,
       @QueryParam(value = "description") @Parameter(description = "A description to be equals on the communities to return. You can use a Perl compatible regular expressions (PCRE) that has to match the description of the communities to return if you write between '/'. For example to get the communities with a description with the word 'eat' you must pass as 'description' '/.*eat.*/'", example = "/.*eat.*/", required = false) String description,
-      @QueryParam(value = "keywords") @Parameter(description = "A set of keywords to be defined on the communities to be returned. For each keyword is separated by a ',' and each field keyword can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "key1,/.*eat.*/,key3", required = false, explode = Explode.FALSE) List<String> keywords,
-      @QueryParam(value = "members") @Parameter(description = "A set of user identifiers to be a member of the communities to be returned. For each member is separated by a ',' and each field user identifier can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "1,/.*2.*/,3", required = false, explode = Explode.FALSE) List<String> members,
-      @QueryParam(value = "order") @Parameter(description = "The order in witch the communities has to be returned. For each field it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.", example = "name,-description,+members", required = false, explode = Explode.FALSE) List<String> order,
+      @QueryParam(value = "keywords") @Parameter(description = "A set of keywords to be defined on the communities to be returned. For each keyword is separated by a ',' and each field keyword can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "key1,/.*eat.*/,key3", required = false, style = ParameterStyle.FORM, explode = Explode.FALSE) String keywords,
+      @QueryParam(value = "members") @Parameter(description = "A set of user identifiers to be a member of the communities to be returned. For each member is separated by a ',' and each field user identifier can be between '/' to use a Perl compatible regular expressions (PCRE) instead the exact value.", example = "1,/.*2.*/,3", required = false, style = ParameterStyle.FORM, explode = Explode.FALSE) String members,
+      @QueryParam(value = "order") @Parameter(description = "The order in witch the communities has to be returned. For each field it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.", example = "name,-description,+members", required = false, style = ParameterStyle.FORM, explode = Explode.FALSE) String order,
       @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first community to return.", example = "4", required = false) int offset,
       @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of communities to return", example = "100", required = false) int limit,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -381,8 +380,8 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Insert a new norm into a community")
-  @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "201", description = "The added norm into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "201", description = "The added norm into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -403,7 +402,7 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get all the norms defined into a community")
-  @ApiResponse(responseCode = "200", description = "The norms defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm"))))
+  @ApiResponse(responseCode = "200", description = "The norms defined into the community", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm"))))
   @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveCommunityNorms(
@@ -423,7 +422,7 @@ public interface Communities {
   @Path("/{id}" + NORMS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to get a norm defined into a community")
-  @ApiResponse(responseCode = "200", description = "The norm defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @ApiResponse(responseCode = "200", description = "The norm defined into the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveCommunityNorm(
@@ -467,8 +466,8 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(description = "Allow to update a norm defined into a community")
-  @RequestBody(description = "The update values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "200", description = "The norm that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @RequestBody(description = "The update values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "200", description = "The norm that has been updated on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "The norm to update is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -493,8 +492,8 @@ public interface Communities {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Merge a norm from a community", description = "Allow to merge a norm defined into a community")
-  @RequestBody(description = "The merge values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
-  @ApiResponse(responseCode = "200", description = "The norm that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Norm")))
+  @RequestBody(description = "The merge values for the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "200", description = "The norm that has been merged on the community", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "The norm to merge is not valid", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found community or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")

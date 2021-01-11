@@ -33,8 +33,7 @@ import eu.internetofus.common.components.profile_manager.Routine;
 import eu.internetofus.common.components.profile_manager.RoutineTest;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -60,10 +59,10 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldResourcesIT
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<Routine>> createHandler) {
+  protected Future<Routine> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    createHandler.handle(testContext.assertComplete(new RoutineTest().createModelExample(index, vertx, testContext)));
+    return testContext.assertComplete(new RoutineTest().createModelExample(index, vertx, testContext));
 
   }
 
@@ -91,15 +90,15 @@ public class ProfilesPersonalBehaviorsIT extends AbstractProfileFieldResourcesIT
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext).compose(profile -> {
           profile.id = null;
           profile.personalBehaviors = null;
           return StoreServices.storeProfile(profile, vertx, testContext);
-        })));
+        }));
 
   }
 

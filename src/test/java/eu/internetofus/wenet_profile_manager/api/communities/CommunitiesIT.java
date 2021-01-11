@@ -40,9 +40,7 @@ import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepositoryIT;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClient;
@@ -88,13 +86,13 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext,
-      final Handler<AsyncResult<CommunityProfile>> createHandler) {
+  protected Future<CommunityProfile> createValidModelExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    testContext.assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext))
-        .onSuccess(model -> {
+    return testContext.assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext))
+        .compose(model -> {
           model.id = null;
-          createHandler.handle(Future.succeededFuture(model));
+          return Future.succeededFuture(model);
         });
 
   }
@@ -103,10 +101,10 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
    * {@inheritDoc}
    */
   @Override
-  protected void storeModel(final CommunityProfile source, final Vertx vertx, final VertxTestContext testContext,
-      final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected Future<CommunityProfile> storeModel(final CommunityProfile source, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext.assertComplete(StoreServices.storeCommunity(source, vertx, testContext)));
+    return StoreServices.storeCommunity(source, vertx, testContext);
 
   }
 

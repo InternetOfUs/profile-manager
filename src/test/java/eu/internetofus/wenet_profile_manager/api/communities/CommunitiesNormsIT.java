@@ -34,9 +34,7 @@ import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
 import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.task_manager.ProtocolNorm;
 import eu.internetofus.common.components.task_manager.ProtocolNormTest;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
@@ -61,11 +59,11 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Protoc
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelFieldElementExample(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<ProtocolNorm>> createHandler) {
+  protected Future<ProtocolNorm> createValidModelFieldElementExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var element = new ProtocolNormTest().createModelExample(index);
-    createHandler.handle(Future.succeededFuture(element));
+    return Future.succeededFuture(element);
 
   }
 
@@ -76,7 +74,7 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Protoc
   protected ProtocolNorm createInvalidModelFieldElement() {
 
     final var element = new ProtocolNormTest().createModelExample(2);
-    element.thenceforth = null;
+    element.thenceforth = element.whenever;
     return element;
 
   }
@@ -94,15 +92,15 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Protoc
    * {@inheritDoc}
    */
   @Override
-  protected void storeValidExampleModelWithNullField(final int index, final Vertx vertx,
-      final VertxTestContext testContext, final Handler<AsyncResult<CommunityProfile>> succeeding) {
+  protected Future<CommunityProfile> storeValidExampleModelWithNullField(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext
+    return testContext
         .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
           community.id = null;
           community.norms = null;
           return StoreServices.storeCommunity(community, vertx, testContext);
-        })));
+        }));
 
   }
 

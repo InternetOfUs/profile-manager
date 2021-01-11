@@ -42,7 +42,7 @@ openAPI:
       description: Other services provided by the API.
   info:
     # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-    version: '0.13.0'
+    version: '0.14.0'
     title: WeNet - Profile manager API
     description:  >-
       The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
@@ -51,7 +51,7 @@ openAPI:
       the platform, such as social relationships, routines,.... Every time a profile is modified a copy of
       the previous profile values is stored in the historic. This allows knowing, to the rest of the components,
       how the state of the user evolves in the time.
-      
+
       Another responsibility of the profile manager is to evaluate the trust of one user over another when it is
       doing some action. The trust is dynamic and will be updated every time they collaborate to achieve a task.
       When a user has received help it can rate the performance of the user that has helped it. For this, it has to
@@ -59,7 +59,7 @@ openAPI:
       it has to provide the trust that has a user that another does a certain action. When you want to calculate
       the trust, you must specify some parameters that are used to select with events has to be aggregated to obtain
       the trust. Also, you must define the aggregation function, that can be:
-      
+
        - RECENCY_BASED: the trust is the average of the last 'n' rating events. At the moment n=5.
        - AVERAGE: the trust is the average of all the rating events.
        - MEDIAN: the trust is the median of all the rating events.

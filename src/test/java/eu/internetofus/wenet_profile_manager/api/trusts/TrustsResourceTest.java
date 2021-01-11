@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,19 +32,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManagerMocker;
 import eu.internetofus.common.components.service.WeNetService;
-import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.service.WeNetServiceSimulator;
+import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
@@ -56,6 +48,12 @@ import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 
 /**
  * Test the {@link TrustsResource}.
@@ -135,10 +133,11 @@ public class TrustsResourceTest {
    * @param testContext test context to use.
    */
   @Test
-  public void shouldFailAddTrustEventBecasueRepositoryFailsToStore(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldFailAddTrustEventBecasueRepositoryFailsToStore(final Vertx vertx,
+      final VertxTestContext testContext) {
 
     final var resource = createTrustsResource(vertx);
-    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(event -> {
+    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext).onSuccess(event -> {
 
       final var context = mock(ServiceRequest.class);
       resource.addTrustEvent(event.toJsonObject(), context, testContext.succeeding(create -> testContext.verify(() -> {
@@ -148,10 +147,11 @@ public class TrustsResourceTest {
 
       })));
 
-    }));
+    });
 
     @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<UserPerformanceRatingEvent>>> storeHandler = ArgumentCaptor.forClass(Handler.class);
+    final ArgumentCaptor<Handler<AsyncResult<UserPerformanceRatingEvent>>> storeHandler = ArgumentCaptor
+        .forClass(Handler.class);
     verify(resource.repository, timeout(30000).times(1)).storeTrustEvent(any(), storeHandler.capture());
     storeHandler.getValue().handle(Future.failedFuture("Store profile error"));
 

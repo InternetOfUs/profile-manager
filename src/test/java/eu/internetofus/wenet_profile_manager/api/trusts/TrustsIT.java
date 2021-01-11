@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,16 +32,6 @@ import static eu.internetofus.common.vertx.ext.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
-import java.util.UUID;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.EnumSource;
-
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
@@ -52,6 +42,13 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
+import java.util.UUID;
+import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * The integration test over the {@link Trusts}.
@@ -69,7 +66,8 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldNotAddEventBecauseIsNotAValidEvent(final WebClient client, final VertxTestContext testContext) {
@@ -91,7 +89,8 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldNotAddBadEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
@@ -115,12 +114,13 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#addTrustEvent( JsonObject, io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   * @see Trusts#addTrustEvent( JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @Test
   public void shouldAddEvent(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext, testContext.succeeding(event -> {
+    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext).onSuccess(event -> {
 
       final var time = TimeManager.now();
       testRequest(client, HttpMethod.POST, Trusts.PATH + Trusts.RATING_PATH).expect(res -> {
@@ -134,7 +134,7 @@ public class TrustsIT {
 
       }).sendJson(event.toJsonObject(), testContext);
 
-    }));
+    });
 
   }
 
@@ -146,21 +146,24 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
+   * @see Trusts#calculateTrust(String, String, String, String, String, String,
+   *      String, Long, Long, TrustAggregator,
    *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
   @EnumSource(TrustAggregator.class)
-  public void shouldNotCalculateTrustWithBadRegex(final TrustAggregator aggregator, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculateTrustWithBadRegex(final TrustAggregator aggregator, final Vertx vertx,
+      final WebClient client, final VertxTestContext testContext) {
 
-    testRequest(client, HttpMethod.GET, Trusts.PATH + "/1/with/2").with(queryParam("aggregator", aggregator.name()), queryParam("appId", "/1(?:{/")).expect(res -> {
+    testRequest(client, HttpMethod.GET, Trusts.PATH + "/1/with/2")
+        .with(queryParam("aggregator", aggregator.name()), queryParam("appId", "/1(?:{/")).expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+          assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
+          assertThat(error.code).isNotEmpty();
+          assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-    }).send(testContext);
+        }).send(testContext);
   }
 
   /**
@@ -171,22 +174,25 @@ public class TrustsIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
+   * @see Trusts#calculateTrust(String, String, String, String, String, String,
+   *      String, Long, Long, TrustAggregator,
    *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
    */
   @ParameterizedTest(name = "Shoulf not calculate the {0} trust because a regular expresion is wrong")
   @EnumSource(TrustAggregator.class)
-  public void shouldNotCalculateTrustWithNoMatchingEvents(final TrustAggregator aggregator, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculateTrustWithNoMatchingEvents(final TrustAggregator aggregator, final Vertx vertx,
+      final WebClient client, final VertxTestContext testContext) {
 
     final var id = UUID.randomUUID().toString();
-    testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + id + "/with/" + id).with(queryParam("aggregator", aggregator.name())).expect(res -> {
+    testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + id + "/with/" + id)
+        .with(queryParam("aggregator", aggregator.name())).expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-      final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty();
-      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+          assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+          final var error = assertThatBodyIs(ErrorMessage.class, res);
+          assertThat(error.code).isNotEmpty();
+          assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
-    }).send(testContext);
+        }).send(testContext);
   }
 
   /**
@@ -198,12 +204,14 @@ public class TrustsIT {
    * @param client         to connect to the server.
    * @param testContext    context to test.
    *
-   * @see Trusts#calculateTrust(String, String, String, String, String, String, String, Long, Long, TrustAggregator,
+   * @see Trusts#calculateTrust(String, String, String, String, String, String,
+   *      String, Long, Long, TrustAggregator,
    *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @ParameterizedTest(name = "Should calcuate the trust for {0}")
   @CsvSource(value = { "MAXIMUM,1.0", "MINIMUM,0.0", "AVERAGE,0.5", "MEDIAN,0.5", "RECENCY_BASED,0.5" })
-  public void shouldCalculateTrust(final String aggregatorName, final String value, final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+  public void shouldCalculateTrust(final String aggregatorName, final String value, final Vertx vertx,
+      final WebClient client, final VertxTestContext testContext) {
 
     final var aggregator = TrustAggregator.valueOf(aggregatorName);
     final var expectedTrust = Double.parseDouble(value);
@@ -220,15 +228,16 @@ public class TrustsIT {
 
       final var now = TimeManager.now();
       final var event0 = events.get(0);
-      testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + event0.sourceId + "/with/" + event0.targetId).with(queryParam("aggregator", aggregator.name())).expect(res -> {
+      testRequest(client, HttpMethod.GET, Trusts.PATH + "/" + event0.sourceId + "/with/" + event0.targetId)
+          .with(queryParam("aggregator", aggregator.name())).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-        final var trust = assertThatBodyIs(Trust.class, res);
-        assertThat(trust.value).isNotNull();
-        assertThat(trust.value.doubleValue()).isEqualTo(expectedTrust, offset(0.0000000001d));
-        assertThat(trust.calculatedTime).isGreaterThanOrEqualTo(now);
+            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var trust = assertThatBodyIs(Trust.class, res);
+            assertThat(trust.value).isNotNull();
+            assertThat(trust.value.doubleValue()).isEqualTo(expectedTrust, offset(0.0000000001d));
+            assertThat(trust.calculatedTime).isGreaterThanOrEqualTo(now);
 
-      }).send(testContext);
+          }).send(testContext);
 
     }));
 

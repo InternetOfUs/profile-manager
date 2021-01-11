@@ -185,89 +185,28 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
             });
             return verifyRequesterIdExistPromise.future();
           });
-          future = future.compose(mapper -> {
 
-            final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
-            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.targetId, search -> {
-
-              if (!search.failed()) {
-
-                verifyRequesterIdExistPromise.complete();
-
-              } else {
-
-                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".targetId",
-                    "The '" + this.targetId + "' is not defined.", search.cause()));
-              }
-            });
-            return verifyRequesterIdExistPromise.future();
-          });
+          future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
+              WeNetProfileManager.createProxy(vertx)::retrieveProfile);
 
           if (this.appId != null) {
 
-            future = future.compose(mapper -> {
-
-              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-              WeNetService.createProxy(vertx).retrieveApp(this.appId, app -> {
-
-                if (!app.failed()) {
-
-                  verifyNotRepeatedIdPromise.complete();
-
-                } else {
-
-                  verifyNotRepeatedIdPromise.fail(
-                      new ValidationErrorException(codePrefix + ".appId", "The '" + this.appId + "' is not defined."));
-                }
-              });
-              return verifyNotRepeatedIdPromise.future();
-            });
+            future = Validations.composeValidateId(future, codePrefix, "appId", this.appId, true,
+                WeNetService.createProxy(vertx)::retrieveApp);
 
           }
 
-          // if( this.communityId != null ) {
-          //
-          // future = future.compose(mcommunityer -> {
-          //
-          // final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-          // WeNetService.createProxy(vertx).retrieveCommunity(this.communityId, community
-          // -> {
-          //
-          // if (!community.failed()) {
-          //
-          // verifyNotRepeatedIdPromise.complete();
-          //
-          // } else {
-          //
-          // verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix +
-          // ".communityId", "The '" + this.communityId
-          // + "' is not defined."));
-          // }
-          // });
-          // return verifyNotRepeatedIdPromise.future();
-          // });
-          //
-          // }
+          if (this.communityId != null) {
+
+            future = Validations.composeValidateId(future, codePrefix, "communityId", this.communityId, true,
+                WeNetProfileManager.createProxy(vertx)::retrieveCommunity);
+
+          }
 
           if (this.taskTypeId != null) {
 
-            future = future.compose(mapper -> {
-
-              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-              WeNetTaskManager.createProxy(vertx).retrieveTaskType(this.taskTypeId, taskType -> {
-
-                if (!taskType.failed()) {
-
-                  verifyNotRepeatedIdPromise.complete();
-
-                } else {
-
-                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
-                      "The '" + this.taskTypeId + "' is not defined."));
-                }
-              });
-              return verifyNotRepeatedIdPromise.future();
-            });
+            future = Validations.composeValidateId(future, codePrefix, "taskTypeId", this.taskTypeId, true,
+                WeNetTaskManager.createProxy(vertx)::retrieveTaskType);
 
           }
 

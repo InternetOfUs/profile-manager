@@ -87,32 +87,17 @@ public interface ProfilesRepository {
   /**
    * Search for the profile with the specified identifier.
    *
-   * @param id            identifier of the user to search.
-   * @param searchHandler handler to manage the search.
+   * @param id identifier of the user to search.
+   *
+   * @return the future found profile.
    */
   @GenIgnore
-  default void searchProfile(final String id, final Handler<AsyncResult<WeNetUserProfile>> searchHandler) {
+  default Future<WeNetUserProfile> searchProfile(final String id) {
 
-    this.searchProfileObject(id, search -> {
+    Promise<JsonObject> promise = Promise.promise();
+    this.searchProfile(id, promise);
+    return Model.fromFutureJsonObject(promise.future(), WeNetUserProfile.class);
 
-      if (search.failed()) {
-
-        searchHandler.handle(Future.failedFuture(search.cause()));
-
-      } else {
-
-        final var value = search.result();
-        final var profile = Model.fromJsonObject(value, WeNetUserProfile.class);
-        if (profile == null) {
-
-          searchHandler.handle(Future.failedFuture("The stored profile is not valid."));
-
-        } else {
-
-          searchHandler.handle(Future.succeededFuture(profile));
-        }
-      }
-    });
   }
 
   /**
@@ -121,24 +106,7 @@ public interface ProfilesRepository {
    * @param id            identifier of the user to search.
    * @param searchHandler handler to manage the search.
    */
-  void searchProfileObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
-
-  /**
-   * Store a profile.
-   *
-   * @param profile      to store.
-   * @param storeHandler handler to manage the store.
-   *
-   * @deprecated Use instead {@link #storeProfile(WeNetUserProfile)}
-   *
-   * @see #storeProfile(WeNetUserProfile)
-   */
-  @GenIgnore
-  @Deprecated
-  default void storeProfile(final WeNetUserProfile profile, final Handler<AsyncResult<WeNetUserProfile>> storeHandler) {
-
-    storeHandler.handle(storeProfile(profile));
-  }
+  void searchProfile(String id, Handler<AsyncResult<JsonObject>> searchHandler);
 
   /**
    * Store a profile.
@@ -171,24 +139,6 @@ public interface ProfilesRepository {
    * @param storeHandler handler to manage the store.
    */
   void storeProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
-
-  /**
-   * Update a profile.
-   *
-   * @param profile       to update.
-   * @param updateHandler handler to manage the update.
-   *
-   * @deprecated Use instead {@link #updateProfile(WeNetUserProfile)}
-   *
-   * @see #updateProfile(WeNetUserProfile)
-   */
-  @GenIgnore
-  @Deprecated
-  default void updateProfile(final WeNetUserProfile profile, final Handler<AsyncResult<Void>> updateHandler) {
-
-    updateHandler.handle(updateProfile(profile));
-
-  }
 
   /**
    * Update a profile.
@@ -249,24 +199,6 @@ public interface ProfilesRepository {
   /**
    * Store a historic profile.
    *
-   * @param profile      to store.
-   * @param storeHandler handler to manage the store.
-   *
-   * @deprecated Use instead
-   *             {@link #storeHistoricProfile(HistoricWeNetUserProfile)}
-   *
-   * @see #storeHistoricProfile(HistoricWeNetUserProfile)
-   */
-  @GenIgnore
-  default void storeHistoricProfile(final HistoricWeNetUserProfile profile,
-      final Handler<AsyncResult<HistoricWeNetUserProfile>> storeHandler) {
-
-    storeHandler.handle(storeHistoricProfile(profile));
-  }
-
-  /**
-   * Store a historic profile.
-   *
    * @param profile to store.
    *
    * @return the future stored profile.
@@ -296,30 +228,6 @@ public interface ProfilesRepository {
    * @param storeHandler handler to manage the search.
    */
   void storeHistoricProfile(JsonObject profile, Handler<AsyncResult<JsonObject>> storeHandler);
-
-  /**
-   * Search for some historic profiles.
-   *
-   *
-   * @param query         that define the historic profiles to return.
-   * @param sort          define the order in with the historic profiles has to be
-   *                      returned.
-   * @param offset        index of the first profile to return.
-   * @param limit         number maximum of profiles to return.
-   * @param searchHandler handler to manage the search.
-   *
-   * @deprecated Use instead
-   *             {@link #searchHistoricProfilePage(JsonObject, JsonObject, int, int)}
-   *
-   * @see #searchHistoricProfilePage(JsonObject, JsonObject, int, int)
-   */
-  @GenIgnore
-  default void searchHistoricProfilePage(final JsonObject query, final JsonObject sort, final int offset,
-      final int limit, final Handler<AsyncResult<HistoricWeNetUserProfilesPage>> searchHandler) {
-
-    searchHandler.handle(searchHistoricProfilePage(query, sort, offset, limit));
-
-  }
 
   /**
    * Search for some historic profiles.

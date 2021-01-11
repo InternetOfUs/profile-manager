@@ -53,7 +53,7 @@ import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
-import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -102,11 +102,10 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void createValidModelExample(final int index, final Vertx vertx, final VertxTestContext testContext,
-      final Handler<AsyncResult<WeNetUserProfile>> createHandler) {
+  protected Future<WeNetUserProfile> createValidModelExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    createHandler
-        .handle(testContext.assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext)));
+    return testContext.assertComplete(new WeNetUserProfileTest().createModelExample(index, vertx, testContext));
 
   }
 
@@ -164,10 +163,10 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void storeModel(final WeNetUserProfile source, final Vertx vertx, final VertxTestContext testContext,
-      final Handler<AsyncResult<WeNetUserProfile>> succeeding) {
+  protected Future<WeNetUserProfile> storeModel(final WeNetUserProfile source, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    succeeding.handle(testContext.assertComplete(StoreServices.storeProfile(source, vertx, testContext)));
+    return testContext.assertComplete(StoreServices.storeProfile(source, vertx, testContext));
 
   }
 
@@ -197,13 +196,13 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       profile._creationTs = stored._creationTs;
       profile._lastUpdateTs = stored._lastUpdateTs;
       assertThat(stored).isEqualTo(profile);
-      ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
-          testContext.succeeding(foundProfile -> testContext.verify(() -> {
+      testContext.assertComplete(ProfilesRepository.createProxy(vertx).searchProfile(stored.id))
+          .onSuccess(foundProfile -> testContext.verify(() -> {
 
             assertThat(foundProfile).isEqualTo(stored);
             testContext.completeNow();
 
-          })));
+          }));
 
     }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
@@ -237,13 +236,13 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
       profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
       assertThat(stored).isEqualTo(profile);
-      ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
-          testContext.succeeding(foundProfile -> testContext.verify(() -> {
+      testContext.assertComplete(ProfilesRepository.createProxy(vertx).searchProfile(stored.id))
+          .onSuccess(foundProfile -> testContext.verify(() -> {
 
             assertThat(foundProfile).isEqualTo(stored);
             testContext.completeNow();
 
-          })));
+          }));
 
     }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
@@ -319,25 +318,27 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   @Test
   public void shouldMergeBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    testContext.assertComplete(StoreServices.storeProfileExample(1, vertx, testContext)).onSuccess(storedProfile -> {
+    var basicExample = new WeNetUserProfileTest().createBasicExample(1);
+    testContext.assertComplete(StoreServices.storeProfile(basicExample, vertx, testContext))
+        .onSuccess(storedProfile -> {
 
-      final var newProfile = new WeNetUserProfileTest().createBasicExample(2);
-      newProfile.id = UUID.randomUUID().toString();
-      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id)
-          .expect(res -> testContext.verify(() -> {
+          final var newProfile = new WeNetUserProfileTest().createBasicExample(2);
+          newProfile.id = UUID.randomUUID().toString();
+          testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id)
+              .expect(res -> testContext.verify(() -> {
 
-            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
-            assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-            newProfile.id = storedProfile.id;
-            newProfile._creationTs = storedProfile._creationTs;
-            newProfile._lastUpdateTs = merged._lastUpdateTs;
-            newProfile.norms.get(0).id = merged.norms.get(0).id;
-            assertThat(merged).isEqualTo(newProfile);
+                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
+                assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+                newProfile.id = storedProfile.id;
+                newProfile._creationTs = storedProfile._creationTs;
+                newProfile._lastUpdateTs = merged._lastUpdateTs;
+                newProfile.norms.get(0).id = merged.norms.get(0).id;
+                assertThat(merged).isEqualTo(newProfile);
 
-          })).sendJson(newProfile.toJsonObject(), testContext);
+              })).sendJson(newProfile.toJsonObject(), testContext);
 
-    });
+        });
 
   }
 
@@ -536,7 +537,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.name = new UserName();
@@ -571,7 +572,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -598,7 +599,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.dateOfBirth = new AliveBirthDate();
@@ -631,7 +632,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -658,7 +659,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.gender = Gender.M;
@@ -690,7 +691,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -716,7 +717,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.norms = new ArrayList<>();
@@ -791,7 +792,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -818,7 +819,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.plannedActivities = new ArrayList<>();
@@ -894,7 +895,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -921,7 +922,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.relevantLocations = new ArrayList<>();
@@ -999,7 +1000,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext);
-            }));
+            });
           });
         });
 
@@ -1026,7 +1027,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
-            repository.storeProfile(created, testContext.succeeding(storedProfile -> {
+            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
               newProfile.personalBehaviors = new ArrayList<>();
@@ -1068,7 +1069,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         }).send(testContext, checkpoint);
 
                   })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            }));
+            });
           });
         });
 
@@ -1218,13 +1219,13 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       assertThat(stored.materials).isNull();
       assertThat(stored.competences).isNull();
       assertThat(stored.meanings).isNull();
-      ProfilesRepository.createProxy(vertx).searchProfile(stored.id,
-          testContext.succeeding(foundProfile -> testContext.verify(() -> {
+      testContext.assertComplete(ProfilesRepository.createProxy(vertx).searchProfile(stored.id))
+          .onSuccess(foundProfile -> testContext.verify(() -> {
 
             assertThat(foundProfile).isEqualTo(stored);
             testContext.completeNow();
 
-          })));
+          }));
 
     }).sendJson(new JsonObject().put("id", id), testContext, testContext.checkpoint(2));
 

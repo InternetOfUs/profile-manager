@@ -72,13 +72,13 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void searchProfileObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void searchProfile(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final var query = new JsonObject().put("_id", id);
     this.findOneDocument(PROFILES_COLLECTION, query, null, found -> {
       final var _id = (String) found.remove("_id");
       return found.put("id", _id);
-    }, searchHandler);
+    }).onComplete(searchHandler);
 
   }
 
@@ -98,7 +98,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
       final var _id = (String) stored.remove("_id");
       return stored.put("id", _id);
 
-    }, storeHandler);
+    }).onComplete(storeHandler);
 
   }
 
@@ -110,7 +110,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
     final var id = profile.remove("id");
     final var query = new JsonObject().put("_id", id);
-    this.updateOneDocument(PROFILES_COLLECTION, query, profile, updateHandler);
+    this.updateOneDocument(PROFILES_COLLECTION, query, profile).onComplete(updateHandler);
 
   }
 
@@ -121,7 +121,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   public void deleteProfile(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
     final var query = new JsonObject().put("_id", id);
-    this.deleteOneDocument(PROFILES_COLLECTION, query, deleteHandler);
+    this.deleteOneDocument(PROFILES_COLLECTION, query).onComplete(deleteHandler);
 
   }
 
@@ -131,10 +131,10 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void storeHistoricProfile(final JsonObject profile, final Handler<AsyncResult<JsonObject>> storeHandler) {
 
-    this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, stored -> {
-      stored.remove("_id");
-      return stored;
-    }, storeHandler);
+    this.storeOneDocument(HISTORIC_PROFILES_COLLECTION, profile, value -> {
+      value.remove("_id");
+      return value;
+    }).onComplete(storeHandler);
 
   }
 
@@ -142,14 +142,16 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void searchHistoricProfilePageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void searchHistoricProfilePageObject(final JsonObject query, final JsonObject sort, final int offset,
+      final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final var options = new FindOptions();
     options.setSkip(offset);
     options.setLimit(limit);
-    options.getFields().put("_id", 0);
+    options.getFields().put("_id", false);
     options.setSort(sort);
-    this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", null, searchHandler);
+    this.searchPageObject(HISTORIC_PROFILES_COLLECTION, query, options, "profiles", value -> value.remove("_id"))
+        .onComplete(searchHandler);
 
   }
 
@@ -160,7 +162,8 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    */
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
-    return this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class).compose(map -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
+    return this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class)
+        .compose(map -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
 
   }
 
@@ -168,52 +171,47 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileUserIdsPageObject(final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void retrieveProfileUserIdsPageObject(final int offset, final int limit,
+      final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final FindOptions options = new FindOptions();
     options.setFields(new JsonObject().put("_id", true));
     options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
     options.setSkip(offset);
     options.setLimit(limit);
-    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles", null, profilesHandler -> {
+    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles", null).compose(page -> {
 
-      if (profilesHandler.failed()) {
+      final var userIds = new JsonArray();
+      page.put("userIds", userIds);
+      final var profiles = (JsonArray) page.remove("profiles");
+      if (profiles != null) {
 
-        searchHandler.handle(Future.failedFuture(profilesHandler.cause()));
+        for (var i = 0; i < profiles.size(); i++) {
 
-      } else {
+          final var profile = profiles.getJsonObject(i);
+          final var id = profile.getString("_id");
+          userIds.add(id);
 
-        final var page = profilesHandler.result();
-        final var userIds = new JsonArray();
-        page.put("userIds", userIds);
-        final var profiles = (JsonArray) page.remove("profiles");
-        if (profiles != null) {
-
-          for (var i = 0; i < profiles.size(); i++) {
-
-            final var profile = profiles.getJsonObject(i);
-            final var id = profile.getString("_id");
-            userIds.add(id);
-
-          }
         }
-        searchHandler.handle(Future.succeededFuture(page));
       }
+      return Future.succeededFuture(page);
 
-    });
+    }).onComplete(searchHandler);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfilesPageObject(final int offset, final int limit, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void retrieveProfilesPageObject(final int offset, final int limit,
+      final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final FindOptions options = new FindOptions();
     options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
     options.setSkip(offset);
     options.setLimit(limit);
-    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles", profile -> profile.put("id", profile.remove("_id")), searchHandler);
+    this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles",
+        profile -> profile.put("id", profile.remove("_id"))).onComplete(searchHandler);
 
   }
 
