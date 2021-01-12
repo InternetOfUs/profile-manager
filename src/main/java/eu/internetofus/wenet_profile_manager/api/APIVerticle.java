@@ -27,6 +27,7 @@
 package eu.internetofus.wenet_profile_manager.api;
 
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManagerClient;
 import eu.internetofus.common.vertx.AbstractAPIVerticle;
 import eu.internetofus.wenet_profile_manager.api.communities.Communities;
 import eu.internetofus.wenet_profile_manager.api.communities.CommunitiesResource;
@@ -108,7 +109,7 @@ public class APIVerticle extends AbstractAPIVerticle {
   protected void startedServerAt(final String host, final int port) {
 
     final var conf = new JsonObject();
-    conf.put("profileManager", "http://" + host + ":" + port);
+    conf.put(WeNetProfileManagerClient.PROFILE_MANAGER_CONF_KEY, "http://" + host + ":" + port);
     final var client = WebClient.create(this.vertx);
     WeNetProfileManager.register(this.vertx, client, conf);
 
