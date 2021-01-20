@@ -28,8 +28,8 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import static eu.internetofus.common.components.ValidationsTest.assertIsValid;
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
-import static eu.internetofus.common.vertx.ext.TestRequest.queryParam;
-import static eu.internetofus.common.vertx.ext.TestRequest.testRequest;
+import static io.reactiverse.junit5.web.TestRequest.queryParam;
+import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
