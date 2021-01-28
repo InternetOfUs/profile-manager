@@ -24,36 +24,48 @@
  * -----------------------------------------------------------------------------
  */
 
-package eu.internetofus.wenet_profile_manager.services;
+package eu.internetofus.common.vertx;
 
+import eu.internetofus.common.components.incentive_server.WeNetIncentiveServer;
+import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngine;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
-import eu.internetofus.common.vertx.AbstractServicesVerticle;
 import io.vertx.core.json.JsonObject;
 
 /**
- * The verticle that provide the services to interact with the other WeNet
- * modules.
+ * Register all the services to interact with all the WeNet services.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ServicesVerticle extends AbstractServicesVerticle {
+public class WeNetServicesVerticle extends AbstractServicesVerticle {
 
   /**
    * {@inheritDoc}
+   *
+   * @see WeNetProfileManager#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
+   * @see WeNetTaskManager#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
+   * @see WeNetInteractionProtocolEngine#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
+   * @see WeNetService#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
+   * @see WeNetSocialContextBuilder#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
+   * @see WeNetIncentiveServer#register(io.vertx.core.Vertx,
+   *      io.vertx.ext.web.client.WebClient, JsonObject)
    */
   @Override
   protected void registerServices(final JsonObject serviceConf) throws Exception {
 
-    // register the task manager
+    WeNetProfileManager.register(this.vertx, this.client, serviceConf);
     WeNetTaskManager.register(this.vertx, this.client, serviceConf);
-
-    // register the service
+    WeNetInteractionProtocolEngine.register(this.vertx, this.client, serviceConf);
     WeNetService.register(this.vertx, this.client, serviceConf);
-
-    // register the social context builder
     WeNetSocialContextBuilder.register(this.vertx, this.client, serviceConf);
+    WeNetIncentiveServer.register(this.vertx, this.client, serviceConf);
 
   }
 

@@ -47,7 +47,7 @@ The scrip start the next services:
 
  - [Mongo express](http://localhost:8081)
  - [Swagger editor](http://localhost:8080)
- 
+
 And also start a bash console where you can compile and test the project. The project uses the [Apache maven](https://maven.apache.org/)
 to solve the dependencies, generate the Open API documentation, compile the component and run the test.
 
@@ -89,7 +89,7 @@ Also, you can define your configuration that modifies these properties and mount
 You can start this component starting the [latest docker image upload to docker hub](https://hub.docker.com/r/internetofus/profile-manager).
 
 ```
-docker run internetofus/profile-manager:latest 
+docker run internetofus/profile-manager:latest
 ```
 
 On this container, you can use the next environment variables:
@@ -104,9 +104,9 @@ On this container, you can use the next environment variables:
  - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
  - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
  - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+ - **COMP_AUTH_KEY** to define the authentication key that the componet has to use to interact with the other WeNet components.
 
-
-If you want to start also a database and link both you can use the defined docker compose configuration. 
+If you want to start also a database and link both you can use the defined docker compose configuration.
 
 ```
 docker-compose -f src/main/docker/docker-compose.yml up -d
@@ -133,7 +133,7 @@ When the container is ready you can access the logs of the component, following 
 
 This component provides a performance test using [K6](https://k6.io/). To run this test use the script `./runPerformanceTest.sh`.
 By default, it is run over the development server, if you want to test another server pass the environment property **PROFILE_MANAGER_API**,
-and also you can pass any parameter to configure **k6**. For example to run the test over the production one with 10 virtual users 
+and also you can pass any parameter to configure **k6**. For example to run the test over the production one with 10 virtual users
 during 30 seconds execute:
 
 ```
@@ -162,7 +162,7 @@ This software is under the [MIT license](LICENSE)
 
 ## Interaction with other WeNet components
 
-### Social context builder 
+### Social context builder
 
  - Inform every time a new user profile is created. (GET {{social_context_builder_api}}/social/relations/{{userId}})
 
@@ -173,7 +173,7 @@ This software is under the [MIT license](LICENSE)
 ### [Service](https://hub.docker.com/r/internetofus/service-api)
 
  - Used to validate that an application is defined (GET {{service_api}}/app/{{appId}}).
- 
+
 
 ## Contact
 
