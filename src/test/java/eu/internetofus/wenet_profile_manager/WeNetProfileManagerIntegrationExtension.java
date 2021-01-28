@@ -30,6 +30,7 @@ import eu.internetofus.common.Containers;
 import eu.internetofus.common.components.service.WeNetServiceSimulator;
 import eu.internetofus.common.vertx.AbstractMain;
 import eu.internetofus.common.vertx.AbstractWeNetComponentIntegrationExtension;
+import eu.internetofus.common.vertx.MainArgumentBuilder;
 import eu.internetofus.common.vertx.WeNetModuleContext;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
@@ -61,11 +62,10 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
   @Override
   protected String[] createMainStartArguments() {
 
-    final var containers = Containers.status().startBasic().startTaskManagerContainer().startInteractionProtocolEngineContainer();
+    final var containers = Containers.status().startBasic().startTaskManagerContainer()
+        .startInteractionProtocolEngineContainer();
 
-    return new String[] { "-papi.port=" + containers.profileManagerApiPort, "-ppersistence.db_name=" + Containers.MONGODB_NAME, "-ppersistence.host=" + containers.getMongoDBHost(), "-ppersistence.port=" + containers.getMongoDBPort(),
-        "-ppersistence.username=" + Containers.MONGODB_USER, "-ppersistence.password=" + Containers.MONGODB_PASSWORD, "-pwenetComponents.taskManager=\"" + containers.getTaskManagerApi() + "\"",
-        "-pwenetComponents.service=\"" + containers.service.getApiUrl() + "\"", "-pwenetComponents.socialContextBuilder=\"" + containers.socialContextBuilder.getApiUrl() + "\"" };
+    return new MainArgumentBuilder().withApiPort(containers.profileManagerApiPort).with(containers).build();
 
   }
 

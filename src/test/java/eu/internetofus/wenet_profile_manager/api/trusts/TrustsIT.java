@@ -215,7 +215,7 @@ public class TrustsIT {
 
     final var aggregator = TrustAggregator.valueOf(aggregatorName);
     final var expectedTrust = Double.parseDouble(value);
-    TrustsRepositoryIT.storeMultipleTamesAnUserPerformanceRatingEvent(5, vertx, testContext, (index, event) -> {
+    TrustsRepositoryIT.assertStoreMultipleUserPerformanceRatingEvent(5, vertx, testContext, (index, event) -> {
       if (index % 2 == 0) {
 
         event.rating = index * (1.0 / 4.0);
@@ -224,7 +224,7 @@ public class TrustsIT {
 
         event.rating = (4 - index) * (1.0 / 4.0);
       }
-    }).onComplete(testContext.succeeding(events -> {
+    }).onSuccess(events -> {
 
       final var now = TimeManager.now();
       final var event0 = events.get(0);
@@ -239,7 +239,7 @@ public class TrustsIT {
 
           }).send(testContext);
 
-    }));
+    });
 
   }
 

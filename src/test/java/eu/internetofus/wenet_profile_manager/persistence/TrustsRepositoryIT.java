@@ -30,14 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
 import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.Model;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEventTest;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
@@ -65,7 +63,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
+   * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent)
    */
   @Test
   public void shouldNotStoreATrustThatCanNotBeAnObject(final Vertx vertx, final VertxTestContext testContext) {
@@ -81,9 +79,8 @@ public class TrustsRepositoryIT {
         return null;
       }
     };
-    TrustsRepository.createProxy(vertx).storeTrustEvent(trust, testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
+    testContext.assertFailure(TrustsRepository.createProxy(vertx).storeTrustEvent(trust))
+        .onFailure(failed -> testContext.completeNow());
 
   }
 
@@ -93,22 +90,22 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent, Handler)
+   * @see TrustsRepository#storeTrustEvent(UserPerformanceRatingEvent)
    */
   @Test
   public void shouldStoreAnEvent(final Vertx vertx, final VertxTestContext testContext) {
 
     final var now = TimeManager.now();
     final var event = new UserPerformanceRatingEventTest().createModelExample(1);
-    TrustsRepository.createProxy(vertx).storeTrustEvent(event,
-        testContext.succeeding(stored -> testContext.verify(() -> {
+    testContext.assertComplete(TrustsRepository.createProxy(vertx).storeTrustEvent(event))
+        .onSuccess(stored -> testContext.verify(() -> {
 
           assertThat(stored).isNotNull();
           assertThat(stored.reportTime).isGreaterThanOrEqualTo(now);
           event.reportTime = stored.reportTime;
           assertThat(stored).isEqualTo(event);
           testContext.completeNow();
-        })));
+        }));
 
   }
 
@@ -124,44 +121,28 @@ public class TrustsRepositoryIT {
    *
    * @return the future with the created tasks.
    */
-  public static Future<List<UserPerformanceRatingEvent>> storeMultipleTamesAnUserPerformanceRatingEvent(final int max,
+  public static Future<List<UserPerformanceRatingEvent>> assertStoreMultipleUserPerformanceRatingEvent(final int max,
       final Vertx vertx, final VertxTestContext testContext,
       final BiConsumer<Integer, UserPerformanceRatingEvent> change) {
 
-    final Promise<List<UserPerformanceRatingEvent>> promise = Promise.promise();
-    new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext).onSuccess(pattern -> {
+    Future<List<UserPerformanceRatingEvent>> future = Future.succeededFuture(new ArrayList<>());
+    for (var i = 0; i < max; i++) {
 
-      final Promise<List<UserPerformanceRatingEvent>> storeEvents = Promise.promise();
-      var storeEventsFuture = storeEvents.future();
-      for (var i = 0; i < max; i++) {
+      final var index = i;
+      future = future.compose(events -> new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext)
+          .compose(event -> TrustsRepository.createProxy(vertx).storeTrustEvent(event)).compose(storedEvent -> {
+            if (change != null) {
 
-        final var event = Model.fromJsonObject(pattern.toJsonObject(), UserPerformanceRatingEvent.class);
-        event.rating = Math.random();
-        if (change != null) {
-
-          change.accept(i, event);
-        }
-        storeEventsFuture = storeEventsFuture.compose(events -> {
-
-          final Promise<List<UserPerformanceRatingEvent>> storeEvent = Promise.promise();
-          TrustsRepository.createProxy(vertx).storeTrustEvent(event, testContext.succeeding(storedEvent -> {
-
+              change.accept(index, storedEvent);
+            }
             events.add(storedEvent);
-            storeEvent.complete(events);
+            return Future.succeededFuture(events);
 
           }));
 
-          return storeEvent.future();
-        });
+    }
+    return testContext.assertComplete(future);
 
-      }
-
-      storeEventsFuture.onComplete(testContext.succeeding(events -> promise.complete(events)));
-      storeEvents.complete(new ArrayList<>());
-
-    });
-
-    return promise.future();
   }
 
   /**
@@ -182,7 +163,7 @@ public class TrustsRepositoryIT {
 
     final var aggregator = TrustAggregator.valueOf(aggregatorName);
     final var expectedTrust = Double.parseDouble(value);
-    storeMultipleTamesAnUserPerformanceRatingEvent(5, vertx, testContext, (index, event) -> {
+    assertStoreMultipleUserPerformanceRatingEvent(5, vertx, testContext, (index, event) -> {
       if (index % 2 == 0) {
 
         event.rating = index * (1.0 / 4.0);
@@ -191,18 +172,18 @@ public class TrustsRepositoryIT {
 
         event.rating = (4 - index) * (1.0 / 4.0);
       }
-    }).onComplete(testContext.succeeding(events -> {
+    }).onSuccess(events -> {
 
       final var event0 = events.get(0);
       final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-      TrustsRepository.createProxy(vertx).calculateTrustBy(aggregator, query,
-          testContext.succeeding(trust -> testContext.verify(() -> {
+      testContext.assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(aggregator, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
             assertThat(trust).isEqualTo(expectedTrust, offset(0.0000000001d));
             testContext.completeNow();
-          })));
+          }));
 
-    }));
+    });
 
   }
 
@@ -218,25 +199,24 @@ public class TrustsRepositoryIT {
   @Test
   public void shouldCalculateMaximumTrust(final Vertx vertx, final VertxTestContext testContext) {
 
-    storeMultipleTamesAnUserPerformanceRatingEvent(100, vertx, testContext, null)
-        .onComplete(testContext.succeeding(events -> {
+    assertStoreMultipleUserPerformanceRatingEvent(100, vertx, testContext, null).onSuccess(events -> {
 
-          final var event0 = events.get(0);
-          final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-          TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MAXIMUM, query,
-              testContext.succeeding(trust -> testContext.verify(() -> {
+      final var event0 = events.get(0);
+      final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
+      testContext.assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MAXIMUM, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
-                var max = 0d;
-                for (final UserPerformanceRatingEvent event : events) {
+            var max = 0d;
+            for (final UserPerformanceRatingEvent event : events) {
 
-                  max = Math.max(max, event.rating);
+              max = Math.max(max, event.rating);
 
-                }
-                assertThat(trust).isEqualTo(max, offset(0.0000000001d));
-                testContext.completeNow();
-              })));
+            }
+            assertThat(trust).isEqualTo(max, offset(0.0000000001d));
+            testContext.completeNow();
+          }));
 
-        }));
+    });
 
   }
 
@@ -252,25 +232,24 @@ public class TrustsRepositoryIT {
   @Test
   public void shouldCalculateMinimumTrust(final Vertx vertx, final VertxTestContext testContext) {
 
-    storeMultipleTamesAnUserPerformanceRatingEvent(100, vertx, testContext, null)
-        .onComplete(testContext.succeeding(events -> {
+    assertStoreMultipleUserPerformanceRatingEvent(100, vertx, testContext, null).onSuccess(events -> {
 
-          final var event0 = events.get(0);
-          final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-          TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MINIMUM, query,
-              testContext.succeeding(trust -> testContext.verify(() -> {
+      final var event0 = events.get(0);
+      final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
+      testContext.assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MINIMUM, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
-                var min = 1d;
-                for (final UserPerformanceRatingEvent event : events) {
+            var min = 1d;
+            for (final UserPerformanceRatingEvent event : events) {
 
-                  min = Math.min(min, event.rating);
+              min = Math.min(min, event.rating);
 
-                }
-                assertThat(trust).isEqualTo(min, offset(0.0000000001d));
-                testContext.completeNow();
-              })));
+            }
+            assertThat(trust).isEqualTo(min, offset(0.0000000001d));
+            testContext.completeNow();
+          }));
 
-        }));
+    });
 
   }
 
@@ -287,26 +266,25 @@ public class TrustsRepositoryIT {
   public void shouldCalculateAverageTrust(final Vertx vertx, final VertxTestContext testContext) {
 
     final var maxEvents = 100;
-    storeMultipleTamesAnUserPerformanceRatingEvent(maxEvents, vertx, testContext, null)
-        .onComplete(testContext.succeeding(events -> {
+    assertStoreMultipleUserPerformanceRatingEvent(maxEvents, vertx, testContext, null).onSuccess(events -> {
 
-          final var event0 = events.get(0);
-          final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-          TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.AVERAGE, query,
-              testContext.succeeding(trust -> testContext.verify(() -> {
+      final var event0 = events.get(0);
+      final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
+      testContext.assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.AVERAGE, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
-                var avg = 0d;
-                for (final UserPerformanceRatingEvent event : events) {
+            var avg = 0d;
+            for (final UserPerformanceRatingEvent event : events) {
 
-                  avg += event.rating;
+              avg += event.rating;
 
-                }
-                avg /= maxEvents;
-                assertThat(trust).isEqualTo(avg, offset(0.0000000001d));
-                testContext.completeNow();
-              })));
+            }
+            avg /= maxEvents;
+            assertThat(trust).isEqualTo(avg, offset(0.0000000001d));
+            testContext.completeNow();
+          }));
 
-        }));
+    });
 
   }
 
@@ -323,21 +301,20 @@ public class TrustsRepositoryIT {
   public void shouldCalculateMedianTrust(final Vertx vertx, final VertxTestContext testContext) {
 
     final var maxEvents = 100;
-    storeMultipleTamesAnUserPerformanceRatingEvent(maxEvents, vertx, testContext, null)
-        .onComplete(testContext.succeeding(events -> {
+    assertStoreMultipleUserPerformanceRatingEvent(maxEvents, vertx, testContext, null).onSuccess(events -> {
 
-          final var event0 = events.get(0);
-          final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-          TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MEDIAN, query,
-              testContext.succeeding(trust -> testContext.verify(() -> {
+      final var event0 = events.get(0);
+      final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
+      testContext.assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.MEDIAN, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
-                events.sort((e1, e2) -> Double.compare(e1.rating, e2.rating));
-                final var medianEvent = events.get(maxEvents / 2 - 1);
-                assertThat(trust).isEqualTo(medianEvent.rating, offset(0.0000000001d));
-                testContext.completeNow();
-              })));
+            events.sort((e1, e2) -> Double.compare(e1.rating, e2.rating));
+            final var medianEvent = events.get(maxEvents / 2 - 1);
+            assertThat(trust).isEqualTo(medianEvent.rating, offset(0.0000000001d));
+            testContext.completeNow();
+          }));
 
-        }));
+    });
 
   }
 
@@ -354,7 +331,7 @@ public class TrustsRepositoryIT {
   public void shouldCalculateRecencyAdded(final Vertx vertx, final VertxTestContext testContext) {
 
     final var maxEvents = 100;
-    storeMultipleTamesAnUserPerformanceRatingEvent(maxEvents, vertx, testContext, (index, event) -> {
+    assertStoreMultipleUserPerformanceRatingEvent(maxEvents, vertx, testContext, (index, event) -> {
 
       if (index + 5 >= maxEvents) {
 
@@ -364,12 +341,13 @@ public class TrustsRepositoryIT {
         }
       }
 
-    }).onComplete(testContext.succeeding(events -> {
+    }).onSuccess(events -> {
 
       final var event0 = events.get(0);
       final var query = new JsonObject().put("sourceId", event0.sourceId).put("targetId", event0.targetId);
-      TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.RECENCY_BASED, query,
-          testContext.succeeding(trust -> testContext.verify(() -> {
+      testContext
+          .assertComplete(TrustsRepository.createProxy(vertx).calculateTrustBy(TrustAggregator.RECENCY_BASED, query))
+          .onSuccess(trust -> testContext.verify(() -> {
 
             events.sort((e1, e2) -> Long.compare(e2.reportTime, e1.reportTime));
             var avg = 0d;
@@ -381,9 +359,9 @@ public class TrustsRepositoryIT {
             avg /= 5.0;
             assertThat(trust).isEqualTo(avg, offset(0.0000000001d));
             testContext.completeNow();
-          })));
+          }));
 
-    }));
+    });
 
   }
 

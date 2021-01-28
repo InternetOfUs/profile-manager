@@ -35,10 +35,12 @@ import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
+import javax.validation.constraints.NotNull;
 
 /**
  * The service to manage the {@link Trust} on the database.
@@ -86,40 +88,17 @@ public interface TrustsRepository {
   /**
    * Store a trust event.
    *
-   * @param event        of trust to store.
-   * @param storeHandler handler to manage the store.
+   * @param event of trust to store.
+   *
+   * @return the future stored event.
    */
   @GenIgnore
-  default void storeTrustEvent(final UserPerformanceRatingEvent event, final Handler<AsyncResult<UserPerformanceRatingEvent>> storeHandler) {
+  default Future<UserPerformanceRatingEvent> storeTrustEvent(@NotNull final UserPerformanceRatingEvent event) {
 
-    final var object = event.toJsonObject();
-    if (object == null) {
+    final Promise<JsonObject> promise = Promise.promise();
+    this.storeTrustEvent(event.toJsonObject(), promise);
+    return Model.fromFutureJsonObject(promise.future(), UserPerformanceRatingEvent.class);
 
-      storeHandler.handle(Future.failedFuture("The event can not converted to JSON."));
-
-    } else {
-
-      this.storeTrustEvent(object, stored -> {
-        if (stored.failed()) {
-
-          storeHandler.handle(Future.failedFuture(stored.cause()));
-
-        } else {
-
-          final var value = stored.result();
-          final var storedEvent = Model.fromJsonObject(value, UserPerformanceRatingEvent.class);
-          if (storedEvent == null) {
-
-            storeHandler.handle(Future.failedFuture("The stored event is not valid."));
-
-          } else {
-
-            storeHandler.handle(Future.succeededFuture(storedEvent));
-          }
-
-        }
-      });
-    }
   }
 
   /**
@@ -131,7 +110,26 @@ public interface TrustsRepository {
   void storeTrustEvent(JsonObject event, Handler<AsyncResult<JsonObject>> storeHandler);
 
   /**
-   * Calculate the trust using the specified trust and the events that matches the query.
+   * Calculate the trust using the specified trust and the events that matches the
+   * query.
+   *
+   * @param aggregator to use.
+   * @param query      that has to match the vents.
+   *
+   * @return the future calculated trust.
+   */
+  @GenIgnore
+  default Future<Double> calculateTrustBy(final TrustAggregator aggregator, final JsonObject query) {
+
+    final Promise<Double> promise = Promise.promise();
+    this.calculateTrustBy(aggregator, query, promise);
+    return promise.future();
+
+  }
+
+  /**
+   * Calculate the trust using the specified trust and the events that matches the
+   * query.
    *
    * @param aggregator   to use.
    * @param query        that has to match the vents.

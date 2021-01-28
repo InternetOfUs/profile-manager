@@ -28,9 +28,8 @@ package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManagerMocker;
@@ -40,9 +39,7 @@ import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.client.WebClient;
@@ -53,7 +50,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 
 /**
  * Test the {@link TrustsResource}.
@@ -137,6 +133,7 @@ public class TrustsResourceTest {
       final VertxTestContext testContext) {
 
     final var resource = createTrustsResource(vertx);
+    doReturn(Future.failedFuture("Store profile error")).when(resource.repository).storeTrustEvent(any());
     new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext).onSuccess(event -> {
 
       final var context = mock(ServiceRequest.class);
@@ -148,12 +145,6 @@ public class TrustsResourceTest {
       })));
 
     });
-
-    @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<UserPerformanceRatingEvent>>> storeHandler = ArgumentCaptor
-        .forClass(Handler.class);
-    verify(resource.repository, timeout(30000).times(1)).storeTrustEvent(any(), storeHandler.capture());
-    storeHandler.getValue().handle(Future.failedFuture("Store profile error"));
 
   }
 

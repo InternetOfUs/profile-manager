@@ -27,24 +27,17 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
+import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
+import io.vertx.core.Future;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
-import io.vertx.junit5.VertxExtension;
-import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link TrustsRepository}.
@@ -61,7 +54,8 @@ public class TrustsRepositoryTest {
    *
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldNotStoreTrustEventWhenDBFailed(final VertxTestContext testContext) {
@@ -69,16 +63,12 @@ public class TrustsRepositoryTest {
     final var repository = mock(TrustsRepository.class, Answers.CALLS_REAL_METHODS);
     final var expectedCause = new Throwable("Expected cause");
     final var event = new UserPerformanceRatingEvent();
-    repository.storeTrustEvent(event, testContext.failing(cause -> testContext.verify(() -> {
+    doReturn(Future.failedFuture(expectedCause)).when(repository).storeTrustEvent(event);
+    testContext.assertFailure(repository.storeTrustEvent(event)).onFailure(cause -> testContext.verify(() -> {
 
       assertThat(cause).isEqualTo(expectedCause);
       testContext.completeNow();
-    })));
-
-    @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> saveHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).storeTrustEvent(any(JsonObject.class), saveHandler.capture());
-    saveHandler.getValue().handle(Future.failedFuture(expectedCause));
+    }));
 
   }
 
@@ -87,23 +77,20 @@ public class TrustsRepositoryTest {
    *
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#storeTrustEvent(io.vertx.core.json.JsonObject,
+   *      io.vertx.core.Handler)
    */
   @Test
   public void shouldNotStoreTrustEventWhenReturnedValueIsNotAnEvent(final VertxTestContext testContext) {
 
     final var repository = mock(TrustsRepository.class, Answers.CALLS_REAL_METHODS);
     final var event = new UserPerformanceRatingEvent();
-    repository.storeTrustEvent(event, testContext.failing(cause -> testContext.verify(() -> {
+    doReturn(Future.succeededFuture()).when(repository).storeTrustEvent(event);
+    testContext.assertFailure(repository.storeTrustEvent(event)).onFailure(cause -> testContext.verify(() -> {
 
       assertThat(cause.getMessage()).isEqualTo("The stored event is not valid.");
       testContext.completeNow();
-    })));
-
-    @SuppressWarnings("unchecked")
-    final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> saveHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).storeTrustEvent(any(JsonObject.class), saveHandler.capture());
-    saveHandler.getValue().handle(Future.succeededFuture());
+    }));
 
   }
 

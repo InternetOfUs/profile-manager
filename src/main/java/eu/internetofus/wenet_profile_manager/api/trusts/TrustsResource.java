@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,10 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import javax.ws.rs.core.Response.Status;
-
-import org.tinylog.Logger;
-
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.common.vertx.QueryBuilder;
+import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -41,6 +37,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
+import javax.ws.rs.core.Response.Status;
+import org.tinylog.Logger;
 
 /**
  * Resource that implements the web services defined at {@link Trusts}.
@@ -77,13 +75,15 @@ public class TrustsResource implements Trusts {
    * {@inheritDoc}
    */
   @Override
-  public void addTrustEvent(final JsonObject body, final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+  public void addTrustEvent(final JsonObject body, final ServiceRequest context,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var event = Model.fromJsonObject(body, UserPerformanceRatingEvent.class);
     if (event == null) {
 
       Logger.debug("The {} is not a valid TrustEvent.", body);
-      ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event", "The trust event is not right.");
+      ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.BAD_REQUEST, "bad_trust_event",
+          "The trust event is not right.");
 
     } else {
 
@@ -97,7 +97,7 @@ public class TrustsResource implements Trusts {
 
         } else {
 
-          this.repository.storeTrustEvent(event, store -> {
+          this.repository.storeTrustEvent(event).onComplete(store -> {
 
             if (store.failed()) {
 
@@ -122,11 +122,14 @@ public class TrustsResource implements Trusts {
    * {@inheritDoc}
    */
   @Override
-  public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId, final String taskTypeId, final String taskId, final String relationship, final Long reportFrom, final Long reportTo,
-      final TrustAggregator aggregator, final ServiceRequest context, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+  public void calculateTrust(final String sourceId, final String targetId, final String appId, final String communityId,
+      final String taskTypeId, final String taskId, final String relationship, final Long reportFrom,
+      final Long reportTo, final TrustAggregator aggregator, final ServiceRequest context,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId).withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId).withEqOrRegex("taskId", taskId)
-        .withRange("reportTime", reportFrom, reportTo).build();
+    final var query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId)
+        .withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
+        .withEqOrRegex("taskId", taskId).withRange("reportTime", reportFrom, reportTo).build();
     this.repository.calculateTrustBy(aggregator, query, calculation -> {
 
       if (calculation.failed()) {
