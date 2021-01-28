@@ -86,10 +86,10 @@ staticOpenApiFile.delete()
 
 String text = generatedOpenApiFile.text
 
-def externalRefPattern = /[\"\']?(https:\/\/bitbucket.org\/wenet\/wenet-components-documentation\/.+\.yaml)(#\/components\/schemas\/)(\S+)[\"\']?/
+def externalRefPattern = /[\"\']?(http.+\.yaml)#\/components\/schemas\/(\S+)[\"\']?/
 def externalPatterns = (text =~ externalRefPattern).findAll() as Set
 
-text = text.replaceAll(externalRefPattern, /"$2$3"/)
+text = text.replaceAll(externalRefPattern, /"#\/components\/schemas\/$2"/)
 
 YamlSlurper yaml = new YamlSlurper()
 def staticYAML =  yaml.parseText(text)
@@ -105,7 +105,7 @@ for( pattern in externalPatterns){
     externalRefs[url] = externalRef
   }
 
-  String modelName = pattern[3]
+  String modelName = pattern[2]
   importModelFromTo(url,modelName,staticYAML,externalRef)
 }
 
