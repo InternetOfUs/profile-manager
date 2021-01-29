@@ -30,12 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
 import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.components.Model;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEventTest;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
@@ -125,22 +125,30 @@ public class TrustsRepositoryIT {
       final Vertx vertx, final VertxTestContext testContext,
       final BiConsumer<Integer, UserPerformanceRatingEvent> change) {
 
-    Future<List<UserPerformanceRatingEvent>> future = Future.succeededFuture(new ArrayList<>());
-    for (var i = 0; i < max; i++) {
+    final var future = new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext)
+        .compose(pattern -> {
 
-      final var index = i;
-      future = future.compose(events -> new UserPerformanceRatingEventTest().createModelExample(1, vertx, testContext)
-          .compose(event -> TrustsRepository.createProxy(vertx).storeTrustEvent(event)).compose(storedEvent -> {
+          Future<List<UserPerformanceRatingEvent>> eventsFuture = Future.succeededFuture(new ArrayList<>());
+          for (var i = 0; i < max; i++) {
+            final var event = Model.fromJsonObject(pattern.toJsonObject(), UserPerformanceRatingEvent.class);
+            event.rating = Math.random();
             if (change != null) {
 
-              change.accept(index, storedEvent);
+              change.accept(i, event);
             }
-            events.add(storedEvent);
-            return Future.succeededFuture(events);
 
-          }));
+            eventsFuture = eventsFuture
+                .compose(events -> TrustsRepository.createProxy(vertx).storeTrustEvent(event).compose(storedEvent -> {
 
-    }
+                  events.add(storedEvent);
+                  return Future.succeededFuture(events);
+
+                }));
+          }
+
+          return eventsFuture;
+
+        });
     return testContext.assertComplete(future);
 
   }
@@ -154,7 +162,7 @@ public class TrustsRepositoryIT {
    * @param testContext    context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @ParameterizedTest(name = "Should calcuate the trust for {0}")
   @CsvSource(value = { "MAXIMUM,1.0", "MINIMUM,0.0", "AVERAGE,0.5", "MEDIAN,0.5", "RECENCY_BASED,0.5" })
@@ -194,7 +202,7 @@ public class TrustsRepositoryIT {
    * @param testContext context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @Test
   public void shouldCalculateMaximumTrust(final Vertx vertx, final VertxTestContext testContext) {
@@ -227,7 +235,7 @@ public class TrustsRepositoryIT {
    * @param testContext context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @Test
   public void shouldCalculateMinimumTrust(final Vertx vertx, final VertxTestContext testContext) {
@@ -260,7 +268,7 @@ public class TrustsRepositoryIT {
    * @param testContext context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @Test
   public void shouldCalculateAverageTrust(final Vertx vertx, final VertxTestContext testContext) {
@@ -295,7 +303,7 @@ public class TrustsRepositoryIT {
    * @param testContext context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @Test
   public void shouldCalculateMedianTrust(final Vertx vertx, final VertxTestContext testContext) {
@@ -325,7 +333,7 @@ public class TrustsRepositoryIT {
    * @param testContext context that executes the test.
    *
    * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
-   *      JsonObject, Handler)
+   *      JsonObject)
    */
   @Test
   public void shouldCalculateRecencyAdded(final Vertx vertx, final VertxTestContext testContext) {
@@ -366,37 +374,18 @@ public class TrustsRepositoryIT {
   }
 
   /**
-   * Should not store {@code null} event.
-   *
-   * @param vertx       event bus to use.
-   * @param testContext context that executes the test.
-   *
-   * @see TrustsRepository#storeTrustEvent(JsonObject, Handler)
-   */
-  @Test
-  public void shouldNotStoreATrustNullJsonObject(final Vertx vertx, final VertxTestContext testContext) {
-
-    final JsonObject event = null;
-    TrustsRepository.createProxy(vertx).storeTrustEvent(event, testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
-
-  }
-
-  /**
    * Should not calculate trust by {@code null} aggregator.
    *
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(TrustAggregator, JsonObject, Handler)
+   * @see TrustsRepository#calculateTrustBy(TrustAggregator, JsonObject)
    */
   @Test
   public void shouldNotCalculateTrustWithNullAggregator(final Vertx vertx, final VertxTestContext testContext) {
 
-    TrustsRepository.createProxy(vertx).calculateTrustBy(null, null, testContext.failing(failed -> {
-      testContext.completeNow();
-    }));
+    testContext.assertFailure(TrustsRepository.createProxy(vertx).calculateTrustBy(null, null))
+        .onFailure(failed -> testContext.completeNow());
 
   }
 

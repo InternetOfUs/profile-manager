@@ -130,7 +130,7 @@ public class TrustsResource implements Trusts {
     final var query = new QueryBuilder().with("sourceId", sourceId).with("targetId", targetId)
         .withEqOrRegex("appId", appId).withEqOrRegex("communityId", communityId).withEqOrRegex("taskTypeId", taskTypeId)
         .withEqOrRegex("taskId", taskId).withRange("reportTime", reportFrom, reportTo).build();
-    this.repository.calculateTrustBy(aggregator, query, calculation -> {
+    this.repository.calculateTrustBy(aggregator, query).onComplete(calculation -> {
 
       if (calculation.failed()) {
 
