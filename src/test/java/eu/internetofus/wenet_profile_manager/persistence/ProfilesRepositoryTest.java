@@ -222,7 +222,7 @@ public class ProfilesRepositoryTest {
    * @param testContext context that executes the test.
    *
    * @see ProfilesRepository#searchHistoricProfilePage(JsonObject, JsonObject,
-   *      int, int, Handler)
+   *      int, int)
    */
   @Test
   public void shouldNotFoundHistoricProfileBecauseReturnedJsonObjectIsNotRight(final VertxTestContext testContext) {

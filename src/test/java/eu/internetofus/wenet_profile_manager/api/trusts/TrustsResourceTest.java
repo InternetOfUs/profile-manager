@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
+import static eu.internetofus.common.components.AbstractComponentMocker.createClientWithDefaultSession;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -42,7 +43,6 @@ import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.api.service.ServiceRequest;
-import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import javax.ws.rs.core.Response.Status;
@@ -95,7 +95,7 @@ public class TrustsResourceTest {
   @BeforeEach
   public void registerServices(final Vertx vertx) {
 
-    final var client = WebClient.create(vertx);
+    final var client = createClientWithDefaultSession(vertx);
     final var profileConf = profileManagerMocker.getComponentConfiguration();
     WeNetProfileManager.register(vertx, client, profileConf);
 
