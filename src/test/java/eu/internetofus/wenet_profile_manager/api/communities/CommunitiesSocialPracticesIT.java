@@ -37,6 +37,7 @@ import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -87,6 +88,25 @@ public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResource
   protected List<SocialPractice> fieldOf(final CommunityProfile model) {
 
     return model.socialPractices;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Future<CommunityProfile> storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
+
+    return testContext
+        .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
+          community.id = null;
+          community.socialPractices = new ArrayList<>();
+          community.socialPractices.add(new SocialPracticeTest().createModelExample(index - 1));
+          community.socialPractices.add(new SocialPracticeTest().createModelExample(index));
+          community.socialPractices.add(new SocialPracticeTest().createModelExample(index + 1));
+          return StoreServices.storeCommunity(community, vertx, testContext);
+        }));
+
   }
 
   /**

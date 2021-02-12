@@ -37,6 +37,7 @@ import eu.internetofus.common.components.task_manager.ProtocolNormTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -86,6 +87,25 @@ public class CommunitiesNormsIT extends AbstractCommunityFieldResourcesIT<Protoc
   protected List<ProtocolNorm> fieldOf(final CommunityProfile model) {
 
     return model.norms;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  protected Future<CommunityProfile> storeValidExampleModelWithFieldElements(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
+
+    return testContext
+        .assertComplete(new CommunityProfileTest().createModelExample(index, vertx, testContext).compose(community -> {
+          community.id = null;
+          community.norms = new ArrayList<>();
+          community.norms.add(new ProtocolNormTest().createModelExample(index - 1));
+          community.norms.add(new ProtocolNormTest().createModelExample(index));
+          community.norms.add(new ProtocolNormTest().createModelExample(index + 1));
+          return StoreServices.storeCommunity(community, vertx, testContext);
+        }));
+
   }
 
   /**
