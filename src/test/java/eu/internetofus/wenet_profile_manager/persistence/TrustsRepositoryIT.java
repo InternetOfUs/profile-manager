@@ -341,7 +341,7 @@ public class TrustsRepositoryIT {
     final var maxEvents = 100;
     assertStoreMultipleUserPerformanceRatingEvent(maxEvents, vertx, testContext, (index, event) -> {
 
-      if (index + 5 >= maxEvents) {
+      if (index >= maxEvents - 6) {
 
         try {
           Thread.sleep(1000);

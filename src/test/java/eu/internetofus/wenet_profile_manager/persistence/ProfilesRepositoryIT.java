@@ -28,6 +28,7 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
@@ -182,13 +183,14 @@ public class ProfilesRepositoryIT {
     final var profile = new WeNetUserProfile();
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
+    final var now = TimeManager.now();
     testContext.assertComplete(ProfilesRepository.createProxy(vertx).storeProfile(profile))
         .onSuccess(storedProfile -> testContext.verify(() -> {
 
           assertThat(storedProfile).isNotNull();
           assertThat(storedProfile.id).isNotEmpty();
-          assertThat(storedProfile._creationTs).isEqualTo(0);
-          assertThat(storedProfile._lastUpdateTs).isEqualTo(1);
+          assertThat(storedProfile._creationTs).isBetween(now, now + 1);
+          assertThat(storedProfile._lastUpdateTs).isEqualTo(storedProfile._creationTs);
           testContext.completeNow();
         }));
 
@@ -210,12 +212,13 @@ public class ProfilesRepositoryIT {
     profile.id = id;
     profile._creationTs = 0;
     profile._lastUpdateTs = 1;
+    final var now = TimeManager.now();
     testContext.assertComplete(ProfilesRepository.createProxy(vertx).storeProfile(profile))
         .onSuccess(storedProfile -> testContext.verify(() -> {
 
           assertThat(storedProfile.id).isEqualTo(id);
-          assertThat(storedProfile._creationTs).isEqualTo(0);
-          assertThat(storedProfile._lastUpdateTs).isEqualTo(1);
+          assertThat(storedProfile._creationTs).isBetween(now, now + 1);
+          assertThat(storedProfile._lastUpdateTs).isEqualTo(storedProfile._creationTs);
           testContext.completeNow();
         }));
 
@@ -322,20 +325,22 @@ public class ProfilesRepositoryIT {
 
     final var profile = new WeNetUserProfile();
     profile.occupation = "Doctor";
-    final var repository = ProfilesRepository.createProxy(vertx);
-    testContext.assertComplete(repository.storeProfile(profile)).onSuccess(stored -> {
+    testContext.assertComplete(ProfilesRepository.createProxy(vertx).storeProfile(profile)).onSuccess(stored -> {
 
       final var update = new WeNetUserProfileTest().createModelExample(23);
       update.id = stored.id;
       update._creationTs = stored._creationTs;
       update._lastUpdateTs = 1;
-      testContext.assertComplete(repository.updateProfile(update).compose(empty -> repository.searchProfile(stored.id)))
+      final var now = TimeManager.now();
+      testContext
+          .assertComplete(ProfilesRepository.createProxy(vertx).updateProfile(update)
+              .compose(empty -> ProfilesRepository.createProxy(vertx).searchProfile(stored.id)))
           .onSuccess(foundProfile -> testContext.verify(() -> {
 
             assertThat(stored).isNotNull();
             assertThat(foundProfile.id).isNotEmpty().isEqualTo(stored.id);
             assertThat(foundProfile._creationTs).isEqualTo(stored._creationTs);
-            assertThat(foundProfile._lastUpdateTs).isEqualTo(1);
+            assertThat(foundProfile._lastUpdateTs).isBetween(now, now + 1);
             update._lastUpdateTs = foundProfile._lastUpdateTs;
             assertThat(foundProfile).isEqualTo(update);
             testContext.completeNow();
@@ -590,10 +595,10 @@ public class ProfilesRepositoryIT {
    *
    * @return the future profile page.
    */
-  public static Future<HistoricWeNetUserProfilesPage> createProfilePage(int total, final String userId,
+  public static Future<HistoricWeNetUserProfilesPage> createProfilePage(final int total, final String userId,
       final Vertx vertx, final VertxTestContext testContext) {
 
-    Promise<HistoricWeNetUserProfilesPage> promise = Promise.promise();
+    final Promise<HistoricWeNetUserProfilesPage> promise = Promise.promise();
     var future = promise.future();
     for (var i = 0; i < total; i++) {
 
@@ -846,9 +851,8 @@ public class ProfilesRepositoryIT {
 
       final var emptyProfile = new WeNetUserProfile();
       emptyProfile.id = profile.id;
-      final var repository = ProfilesRepository.createProxy(vertx);
-      testContext.assertComplete(
-          repository.updateProfile(emptyProfile).compose(stored -> repository.searchProfile(profile.id))).onSuccess(
+      testContext.assertComplete(ProfilesRepository.createProxy(vertx).updateProfile(emptyProfile)
+          .compose(stored -> ProfilesRepository.createProxy(vertx).searchProfile(profile.id))).onSuccess(
 
               found -> testContext.verify(() -> {
 

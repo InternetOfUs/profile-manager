@@ -26,6 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.vertx.QueryBuilder;
@@ -94,7 +95,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default Future<WeNetUserProfile> searchProfile(final String id) {
 
-    Promise<JsonObject> promise = Promise.promise();
+    final Promise<JsonObject> promise = Promise.promise();
     this.searchProfile(id, promise);
     return Model.fromFutureJsonObject(promise.future(), WeNetUserProfile.class);
 
@@ -118,7 +119,8 @@ public interface ProfilesRepository {
   @GenIgnore
   default Future<WeNetUserProfile> storeProfile(final WeNetUserProfile profile) {
 
-    Promise<JsonObject> promise = Promise.promise();
+    final Promise<JsonObject> promise = Promise.promise();
+    profile._creationTs = profile._lastUpdateTs = TimeManager.now();
     final var object = profile.toJsonObject();
     if (object == null) {
 
@@ -150,7 +152,8 @@ public interface ProfilesRepository {
   @GenIgnore
   default Future<Void> updateProfile(final WeNetUserProfile profile) {
 
-    Promise<Void> promise = Promise.promise();
+    final Promise<Void> promise = Promise.promise();
+    profile._lastUpdateTs = TimeManager.now();
     final var object = profile.toJsonObjectWithEmptyValues();
     if (object == null) {
 
@@ -189,9 +192,9 @@ public interface ProfilesRepository {
    * @return the future that inform when the profile is removed.
    */
   @GenIgnore
-  default Future<Void> deleteProfile(String id) {
+  default Future<Void> deleteProfile(final String id) {
 
-    Promise<Void> promise = Promise.promise();
+    final Promise<Void> promise = Promise.promise();
     this.deleteProfile(id, promise);
     return promise.future();
   }
@@ -206,7 +209,7 @@ public interface ProfilesRepository {
   @GenIgnore
   default Future<HistoricWeNetUserProfile> storeHistoricProfile(final HistoricWeNetUserProfile profile) {
 
-    Promise<JsonObject> promise = Promise.promise();
+    final Promise<JsonObject> promise = Promise.promise();
     final var object = profile.toJsonObject();
     if (object == null) {
 
@@ -243,9 +246,9 @@ public interface ProfilesRepository {
    */
   @GenIgnore
   default Future<HistoricWeNetUserProfilesPage> searchHistoricProfilePage(final JsonObject query, final JsonObject sort,
-      final int offset, int limit) {
+      final int offset, final int limit) {
 
-    Promise<JsonObject> promise = Promise.promise();
+    final Promise<JsonObject> promise = Promise.promise();
     this.searchHistoricProfilePageObject(query, sort, offset, limit, promise);
     return Model.fromFutureJsonObject(promise.future(), HistoricWeNetUserProfilesPage.class);
 
