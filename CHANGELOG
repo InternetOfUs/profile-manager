@@ -3,7 +3,7 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
-## Version 0.17.2 (2021-02-12)
+## Version 0.17.2 (2021-02-15)
 
  * Fix unit tests problems with new common models.
 
