@@ -156,7 +156,7 @@ public class ProfilesResource implements Profiles {
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.updateModelChain(this.vertx, body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
         this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
 
   }
@@ -173,7 +173,7 @@ public class ProfilesResource implements Profiles {
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.mergeModelChain(this.vertx, body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
         this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
   }
 
@@ -206,7 +206,6 @@ public class ProfilesResource implements Profiles {
         }
         success.run();
       });
-
     };
   }
 

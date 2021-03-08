@@ -99,7 +99,7 @@ public interface Personalities {
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Calculate the personality of a person", description = "Evaluate the answers to the personality test to obtain the personality of the person")
   @RequestBody(description = "The values of the answers that the person has selected on the personality questionnaire.", required = true, content = @Content(schema = @Schema(implementation = QuestionnaireAnswers.class)))
-  @ApiResponse(responseCode = "200", description = "The personality of the person", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/5c28427ce0c05596ef9001ffa8a08f8eb125611f/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
+  @ApiResponse(responseCode = "200", description = "The personality of the person", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/d5a0ce2ad7572225777cadf782e3ce0929d804bb/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
   @ApiResponse(responseCode = "404", description = "If it can not calculate the personality", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void calculatePersonality(@Parameter(hidden = true, required = false) JsonObject body, @Parameter(hidden = true, required = false) ServiceRequest context,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);

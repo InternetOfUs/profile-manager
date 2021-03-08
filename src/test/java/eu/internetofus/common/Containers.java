@@ -39,7 +39,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import java.net.ServerSocket;
 import java.nio.file.FileSystems;
-import java.util.UUID;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -88,7 +87,7 @@ public class Containers {
   /**
    * The name of the WeNet profile manager docker container to use.
    */
-  public static final String WENET_PROFILE_MANAGER_DOCKER_NAME = "internetofus/profile-manager:0.17.4";
+  public static final String WENET_PROFILE_MANAGER_DOCKER_NAME = "internetofus/profile-manager:0.18.0";
 
   /**
    * The name of the WeNet task manager docker container to use.
@@ -103,7 +102,7 @@ public class Containers {
   /**
    * The default wenet component apikey.
    */
-  public static final String DEFAULT_WENET_COMPONENT_APIKEY = UUID.randomUUID().toString();
+  public static final String DEFAULT_WENET_COMPONENT_APIKEY = "secret";
 
   /**
    * The current implementation of the containers.

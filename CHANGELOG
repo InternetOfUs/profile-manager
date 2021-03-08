@@ -3,13 +3,10 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
-## Version 0.17.4 (2021-03-03)
+## Version 0.18.0 (2021-03-08)
 
+ * Add new genders O, non-binary, and not-say.
  * Fix common models.
-
-
-## Version 0.17.3 (2021-02-19)
-
  * Upgrade Vert.x version.
 
 

@@ -39,7 +39,6 @@ import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.ValidationsTest;
 import eu.internetofus.common.components.profile_manager.AliveBirthDate;
-import eu.internetofus.common.components.profile_manager.Gender;
 import eu.internetofus.common.components.profile_manager.Norm;
 import eu.internetofus.common.components.profile_manager.PlannedActivity;
 import eu.internetofus.common.components.profile_manager.RelevantLocation;
@@ -63,6 +62,7 @@ import io.vertx.junit5.VertxTestContext;
 import java.util.ArrayList;
 import java.util.UUID;
 import javax.ws.rs.core.Response.Status;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -92,7 +92,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   @Override
   protected WeNetUserProfile createInvalidModel() {
 
-    final WeNetUserProfile model = new WeNetUserProfile();
+    final var model = new WeNetUserProfile();
     model.nationality = ValidationsTest.STRING_256;
     return model;
 
@@ -318,7 +318,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   @Test
   public void shouldMergeBasicProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
-    var basicExample = new WeNetUserProfileTest().createBasicExample(1);
+    final var basicExample = new WeNetUserProfileTest().createBasicExample(1);
     testContext.assertComplete(StoreServices.storeProfile(basicExample, vertx, testContext))
         .onSuccess(storedProfile -> {
 
@@ -662,7 +662,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
 
               final var newProfile = new WeNetUserProfile();
-              newProfile.gender = Gender.M;
+              newProfile.gender = WeNetUserProfile.MALE;
               final var checkpoint = testContext.checkpoint(2);
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
                   .expect(res -> testContext.verify(() -> {
@@ -672,7 +672,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                     assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
                     final var old_lastUpdateTs = storedProfile._lastUpdateTs;
                     storedProfile._lastUpdateTs = updated._lastUpdateTs;
-                    storedProfile.gender = Gender.M;
+                    storedProfile.gender = WeNetUserProfile.MALE;
                     assertThat(updated).isEqualTo(storedProfile);
 
                     testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
@@ -685,7 +685,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
                           assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
                           storedProfile._lastUpdateTs = old_lastUpdateTs;
-                          storedProfile.gender = Gender.F;
+                          storedProfile.gender = WeNetUserProfile.FEMALE;
                           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
                         }).send(testContext, checkpoint);
@@ -1266,6 +1266,26 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
           }).send(testContext, checkpoint);
 
     }).send(testContext, checkpoint);
+
+  }
+
+  /**
+   * Ignored because allow to merge equals models. {@inheritDoc}
+   */
+  @Ignore
+  @Override
+  public void shouldNotMergeWithSameModel(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+  }
+
+  /**
+   * Ignored because allow to merge equals models. {@inheritDoc}
+   */
+  @Ignore
+  @Override
+  public void shouldNotUpdateWithSameModel(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
   }
 
