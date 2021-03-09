@@ -46,6 +46,7 @@ import eu.internetofus.common.components.profile_manager.RoutineTest;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
 import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.UserName;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
@@ -652,48 +653,52 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   public void shouldUpdateOnlyProfileGender(final Vertx vertx, final WebClient client,
       final VertxTestContext testContext) {
 
-    testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
-        .onSuccess(created -> {
+    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext).onSuccess(storedProfile -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+      final var newProfile = new WeNetUserProfile();
+      newProfile.gender = WeNetUserProfile.OTHER;
+      testContext
+          .assertComplete(WeNetProfileManager.createProxy(vertx).updateProfile(storedProfile.id, newProfile)
+              .compose(ignored -> WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id)))
+          .onSuccess(updatedProfile -> testContext.verify(() -> {
 
-            final var repository = ProfilesRepository.createProxy(vertx);
+            storedProfile._lastUpdateTs = updatedProfile._lastUpdateTs;
+            storedProfile.gender = WeNetUserProfile.OTHER;
+            assertThat(updatedProfile).isEqualTo(storedProfile);
 
-            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
+            testContext
+                .assertComplete(
+                    WeNetProfileManager.createProxy(vertx).updateProfile(storedProfile.id, new WeNetUserProfile())
+                        .compose(ignored -> WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id)))
+                .onSuccess(updatedProfile2 -> testContext.verify(() -> {
 
-              final var newProfile = new WeNetUserProfile();
-              newProfile.gender = WeNetUserProfile.MALE;
-              final var checkpoint = testContext.checkpoint(2);
-              testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-                  .expect(res -> testContext.verify(() -> {
+                  storedProfile._lastUpdateTs = updatedProfile2._lastUpdateTs;
+                  storedProfile.gender = null;
+                  assertThat(updatedProfile2).isEqualTo(storedProfile);
+                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+                      .expect(resPage -> {
 
-                    assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                    final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
-                    assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-                    final var old_lastUpdateTs = storedProfile._lastUpdateTs;
-                    storedProfile._lastUpdateTs = updated._lastUpdateTs;
-                    storedProfile.gender = WeNetUserProfile.MALE;
-                    assertThat(updated).isEqualTo(storedProfile);
+                        assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                        final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
-                    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                        .expect(resPage -> {
+                        assertThat(page.profiles).hasSize(2);
+                        final var historic0 = page.profiles.get(0);
+                        assertThat(historic0.from).isEqualTo(storedProfile._creationTs);
+                        assertThat(historic0.to).isEqualTo(updatedProfile._lastUpdateTs);
+                        assertThat(historic0.profile.gender).isNull();
 
-                          assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                          final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+                        final var historic1 = page.profiles.get(1);
+                        assertThat(historic1.from).isEqualTo(updatedProfile._lastUpdateTs);
+                        assertThat(historic1.to).isEqualTo(updatedProfile2._lastUpdateTs);
+                        assertThat(historic1.profile.gender).isEqualTo(WeNetUserProfile.OTHER);
 
-                          assertThat(page.profiles).hasSize(1);
-                          assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                          assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
-                          storedProfile._lastUpdateTs = old_lastUpdateTs;
-                          storedProfile.gender = WeNetUserProfile.FEMALE;
-                          assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+                      }).send(testContext);
 
-                        }).send(testContext, checkpoint);
+                }));
 
-                  })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            });
-          });
-        });
+          }));
+
+    });
 
   }
 

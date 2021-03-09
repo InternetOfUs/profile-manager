@@ -3,6 +3,11 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
+## Version 0.18.1 (2021-03-09)
+
+ * Fix bug to allow update gender with null.
+
+
 ## Version 0.18.0 (2021-03-08)
 
  * Add new genders O, non-binary, and not-say.

@@ -214,10 +214,8 @@ public class WeNetUserProfile extends CreateUpdateTsDetails
         future = future.compose(mapper -> this.dateOfBirth.validate(codePrefix + ".dateOfBirth", vertx));
 
       }
-      if (this.gender != null) {
 
-        this.gender = Validations.validateStringField(codePrefix, "gender", 50, this.gender, GENDERS);
-      }
+      this.gender = Validations.validateNullableStringField(codePrefix, "gender", 25, this.gender, GENDERS);
       this.email = Validations.validateNullableEmailField(codePrefix, "email", this.email);
       this.locale = Validations.validateNullableLocaleField(codePrefix, "locale", this.locale);
       this.phoneNumber = Validations.validateNullableTelephoneField(codePrefix, "phoneNumber", this.locale,
