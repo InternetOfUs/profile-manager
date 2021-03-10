@@ -1315,6 +1315,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             final var res = updated.result();
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
             final var updatedProfile = assertThatBodyIs(WeNetUserProfile.class, res);
+            newProfile.id = storedProfile.id;
             newProfile._creationTs = storedProfile._creationTs;
             newProfile._lastUpdateTs = updatedProfile._lastUpdateTs;
             assertThat(updatedProfile).isEqualTo(newProfile);
