@@ -1308,26 +1308,26 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     StoreServices.storeProfileExample(1, vertx, testContext).onSuccess(storedProfile -> {
 
       final var newProfile = new WeNetUserProfile();
-      client.put("/profiles/" + storedProfile.id).sendJson(newProfile.toJsonObjectWithEmptyValues())
-          .onComplete(updated -> testContext.verify(() -> {
+      final var value = newProfile.toJsonObjectWithEmptyValues();
+      client.put("/profiles/" + storedProfile.id).sendJson(value).onComplete(updated -> testContext.verify(() -> {
 
-            assertThat(updated.failed()).isFalse();
-            final var res = updated.result();
-            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-            final var updatedProfile = assertThatBodyIs(WeNetUserProfile.class, res);
-            newProfile.id = storedProfile.id;
-            newProfile._creationTs = storedProfile._creationTs;
-            newProfile._lastUpdateTs = updatedProfile._lastUpdateTs;
-            assertThat(updatedProfile).isEqualTo(newProfile);
-            testContext.assertComplete(WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id))
-                .onSuccess(retrivedProfile -> testContext.verify(() -> {
+        assertThat(updated.failed()).isFalse();
+        final var res = updated.result();
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var updatedProfile = assertThatBodyIs(WeNetUserProfile.class, res);
+        newProfile.id = storedProfile.id;
+        newProfile._creationTs = storedProfile._creationTs;
+        newProfile._lastUpdateTs = updatedProfile._lastUpdateTs;
+        assertThat(updatedProfile).isEqualTo(newProfile);
+        testContext.assertComplete(WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id))
+            .onSuccess(retrivedProfile -> testContext.verify(() -> {
 
-                  assertThat(retrivedProfile).isEqualTo(newProfile);
-                  testContext.completeNow();
+              assertThat(retrivedProfile).isEqualTo(newProfile);
+              testContext.completeNow();
 
-                }));
+            }));
 
-          }));
+      }));
 
     });
 
