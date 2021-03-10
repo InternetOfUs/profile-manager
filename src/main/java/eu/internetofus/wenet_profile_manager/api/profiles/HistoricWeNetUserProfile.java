@@ -56,7 +56,7 @@ public class HistoricWeNetUserProfile extends ReflectionModel implements Model {
   /**
    * The profile on the period of time
    */
-  @Schema(description = "The profile on the period of time.", ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/d5a0ce2ad7572225777cadf782e3ce0929d804bb/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
+  @Schema(description = "The profile on the period of time.", ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/9fa82be7ae8b46fd2190d8531ee14ff3c1cacf3f/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
   public WeNetUserProfile profile;
 
 }

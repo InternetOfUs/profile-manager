@@ -1294,4 +1294,28 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
   }
 
+  /**
+   * Should allow to update the profile with {@code null} values.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAllowToUpdateProfileWithNulls(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    StoreServices.storeProfileExample(1, vertx, testContext).onSuccess(storedProfile -> {
+
+      client.put("/profiles/" + storedProfile.id).sendJson(new WeNetUserProfilesPage().toJsonObjectWithEmptyValues())
+          .onComplete(updated -> testContext.verify(() -> {
+
+            assertThat(updated.failed()).isFalse();
+
+          }));
+
+    });
+
+  }
+
 }

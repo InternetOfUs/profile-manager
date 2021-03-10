@@ -3,6 +3,11 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
+## Version 0.18.2 (2021-03-10)
+
+ * Fix API to allow null for genders.
+
+
 ## Version 0.18.1 (2021-03-09)
 
  * Fix bug to allow update gender with null.
