@@ -3,9 +3,10 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
-## Version 0.18.3 (2021-03-22)
+## Version 0.18.3 (2021-03-31)
 
  * Upgrade VertX.
+ * Add event management to the interaction protocol engine client.
 
 
 ## Version 0.18.2 (2021-03-10)
