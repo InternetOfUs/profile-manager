@@ -77,9 +77,9 @@ This creates the generic docker image, but you can create a different wit the **
  - **DEFAULT_DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DEFAULT_DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DEFAULT_DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
- - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
- - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
- - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+ - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
+ - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
+ - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
 
 Also, you can define your configuration that modifies these properties and mount to  **/usr/wenet/profile-manager/etc**.
 
@@ -101,12 +101,12 @@ On this container, you can use the next environment variables:
  - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
- - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
- - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
- - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
- - **COMP_AUTH_KEY** to define the authentication key that the componet has to use to interact with the other WeNet components.
+ - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
+ - **COMP_AUTH_KEY** to define the authentication key that the component has to use to interact with the other WeNet components.
 
-When the container is started, it stores the log mesages at **/usr/wenet/profile-manager/var/log/profile-manager.log**. This file is limited
+When the container is started, it stores the log messages at **/usr/wenet/profile-manager/var/log/profile-manager.log**. This file is limited
 to 10 MB and rolled every day using the pattern **profile-manager.log.X** (where X is a number between 1 and 99).
 
 If you want to start also a database and link both you can use the defined docker compose configuration.
@@ -120,9 +120,9 @@ This docker compose has the next variables:
  - **PROFILE_MANAGER_API_PORT** to define the port to listen for the API calls. By default is **8083**.
  - **MONGO_ROOT_USER** to define the root user for the MongoDB. By default is **root**.
  - **MONGO_ROOT_PASSWORD** to define the password of the root user for the MongoDB. By default is **password**.
- - **WENET_TASK_MANAGER_API** to define the path to the profile manager component to use. By default is **"https://wenet.u-hopper.com/prod/task_manager**.
- - **WENET_SERVICE_API** to define the path to the service component to use. By default is **"https://wenet.u-hopper.com/prod/service**.
- - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **"https://wenet.u-hopper.com/prod/social_context_builder**.
+ - **WENET_TASK_MANAGER_API** to define the path to the profile manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
+ - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
+ - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
 
 ### Show running logs
 
