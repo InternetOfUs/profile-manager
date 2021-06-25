@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.CommunityMember;
-import eu.internetofus.common.components.profile_manager.CommunityMemberTest;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
-import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
+import eu.internetofus.common.components.models.CommunityMember;
+import eu.internetofus.common.components.models.CommunityMemberTest;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -73,10 +72,10 @@ public class CommunitiesMembersIT extends AbstractCommunityFieldResourcesIT<Comm
   @Override
   protected CommunityMember createInvalidModelFieldElement() {
 
-    final var element = new CommunityMemberTest().createModelExample(2);
-    element.privileges.add(ValidationsTest.STRING_256);
-    return element;
-
+    final var model = new CommunityMemberTest().createModelExample(2);
+    model.privileges.add("duplicated");
+    model.privileges.add("duplicated");
+    return model;
   }
 
   /**

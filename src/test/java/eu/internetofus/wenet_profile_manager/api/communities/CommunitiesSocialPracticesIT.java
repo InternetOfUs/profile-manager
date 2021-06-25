@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
-import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
-import eu.internetofus.common.components.profile_manager.SocialPractice;
-import eu.internetofus.common.components.profile_manager.SocialPracticeTest;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfileTest;
+import eu.internetofus.common.components.models.SocialPractice;
+import eu.internetofus.common.components.models.SocialPracticeTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -76,7 +75,7 @@ public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResource
   protected SocialPractice createInvalidModelFieldElement() {
 
     final var element = new SocialPracticeTest().createModelExample(2);
-    element.label = ValidationsTest.STRING_256;
+    element.norms.get(0).whenever = element.norms.get(0).thenceforth;
     return element;
 
   }
@@ -133,15 +132,6 @@ public class CommunitiesSocialPracticesIT extends AbstractCommunityFieldResource
   protected void assertEqualsAdded(final SocialPractice source, final SocialPractice target) {
 
     source.id = target.id;
-    if (source.norms != null && target.norms != null && source.norms.size() == target.norms.size()) {
-
-      final var max = source.norms.size();
-      for (var i = 0; i < max; i++) {
-
-        source.norms.get(i).id = target.norms.get(i).id;
-      }
-
-    }
     assertThat(source).isEqualTo(target);
   }
 

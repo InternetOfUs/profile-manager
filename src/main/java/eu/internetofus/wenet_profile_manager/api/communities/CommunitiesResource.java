@@ -27,10 +27,10 @@
 package eu.internetofus.wenet_profile_manager.api.communities;
 
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.profile_manager.CommunityMember;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
-import eu.internetofus.common.components.profile_manager.SocialPractice;
-import eu.internetofus.common.components.task_manager.ProtocolNorm;
+import eu.internetofus.common.components.models.CommunityMember;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.ProtocolNorm;
+import eu.internetofus.common.components.models.SocialPractice;
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;
@@ -513,9 +513,9 @@ public class CommunitiesResource implements Communities {
       final String keywordsValue, final String membersValue, final String orderValue, final int offset, final int limit,
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    var keywords = ServiceRequests.extractQueryArray(keywordsValue);
-    var members = ServiceRequests.extractQueryArray(membersValue);
-    var order = ServiceRequests.extractQueryArray(orderValue);
+    final var keywords = ServiceRequests.extractQueryArray(keywordsValue);
+    final var members = ServiceRequests.extractQueryArray(membersValue);
+    final var order = ServiceRequests.extractQueryArray(orderValue);
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> {
 

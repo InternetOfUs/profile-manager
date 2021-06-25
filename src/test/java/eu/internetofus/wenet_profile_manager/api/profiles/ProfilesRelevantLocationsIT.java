@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.RelevantLocation;
-import eu.internetofus.common.components.profile_manager.RelevantLocationTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.RelevantLocation;
+import eu.internetofus.common.components.models.RelevantLocationTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -76,7 +75,7 @@ public class ProfilesRelevantLocationsIT extends AbstractProfileFieldResourcesIT
   protected RelevantLocation createInvalidModelFieldElement() {
 
     final var element = new RelevantLocationTest().createModelExample(0);
-    element.label = ValidationsTest.STRING_256;
+    element.latitude = 1900d;
     return element;
 
   }

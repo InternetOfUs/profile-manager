@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.Material;
-import eu.internetofus.common.components.profile_manager.MaterialTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.Material;
+import eu.internetofus.common.components.models.MaterialTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -75,7 +74,7 @@ public class ProfilesMaterialsIT extends AbstractProfileFieldResourcesIT<Materia
   protected Material createInvalidModelFieldElement() {
 
     final var element = new MaterialTest().createModelExample(0);
-    element.name = ValidationsTest.STRING_256;
+    element.quantity = -1;
     return element;
 
   }

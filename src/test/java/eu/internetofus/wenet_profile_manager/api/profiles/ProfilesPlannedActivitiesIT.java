@@ -29,14 +29,14 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.PlannedActivity;
-import eu.internetofus.common.components.profile_manager.PlannedActivityTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.PlannedActivity;
+import eu.internetofus.common.components.models.PlannedActivityTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,7 +79,8 @@ public class ProfilesPlannedActivitiesIT extends AbstractProfileFieldResourcesIT
   protected PlannedActivity createInvalidModelFieldElement() {
 
     final var element = new PlannedActivityTest().createModelExample(0);
-    element.description = ValidationsTest.STRING_1024;
+    element.attendees = new ArrayList<>();
+    element.attendees.add("undefined");
     return element;
 
   }

@@ -37,18 +37,17 @@ import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.AliveBirthDate;
-import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.profile_manager.PlannedActivity;
-import eu.internetofus.common.components.profile_manager.RelevantLocation;
-import eu.internetofus.common.components.profile_manager.RoutineTest;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
-import eu.internetofus.common.components.profile_manager.UserName;
+import eu.internetofus.common.components.models.AliveBirthDate;
+import eu.internetofus.common.components.models.PlannedActivity;
+import eu.internetofus.common.components.models.ProtocolNorm;
+import eu.internetofus.common.components.models.RelevantLocation;
+import eu.internetofus.common.components.models.RoutineTest;
+import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
+import eu.internetofus.common.components.models.UserName;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
@@ -94,7 +93,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   protected WeNetUserProfile createInvalidModel() {
 
     final var model = new WeNetUserProfile();
-    model.nationality = ValidationsTest.STRING_256;
+    model.phoneNumber = "+123456789012345678901234567";
     return model;
 
   }
@@ -119,15 +118,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     source.id = target.id;
     source._creationTs = target._creationTs;
     source._lastUpdateTs = target._lastUpdateTs;
-    if (source.norms != null && target.norms != null && source.norms.size() == target.norms.size()) {
-
-      final var max = source.norms.size();
-      for (var i = 0; i < max; i++) {
-
-        source.norms.get(i).id = target.norms.get(i).id;
-      }
-
-    }
     if (source.plannedActivities != null && target.plannedActivities != null
         && source.plannedActivities.size() == target.plannedActivities.size()) {
 
@@ -233,7 +223,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       profile._creationTs = stored._creationTs;
       profile._lastUpdateTs = stored._lastUpdateTs;
       assertThat(stored).isNotNull().isNotEqualTo(profile);
-      profile.norms.get(0).id = stored.norms.get(0).id;
       profile.plannedActivities.get(0).id = stored.plannedActivities.get(0).id;
       profile.relevantLocations.get(0).id = stored.relevantLocations.get(0).id;
       assertThat(stored).isEqualTo(profile);
@@ -278,7 +267,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   newProfile.id = storedProfile.id;
                   newProfile._creationTs = storedProfile._creationTs;
                   newProfile._lastUpdateTs = updated._lastUpdateTs;
-                  newProfile.norms.get(0).id = updated.norms.get(0).id;
                   newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
                   newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
                   newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
@@ -334,7 +322,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                 newProfile.id = storedProfile.id;
                 newProfile._creationTs = storedProfile._creationTs;
                 newProfile._lastUpdateTs = merged._lastUpdateTs;
-                newProfile.norms.get(0).id = merged.norms.get(0).id;
                 assertThat(merged).isEqualTo(newProfile);
 
               })).sendJson(newProfile.toJsonObject(), testContext);
@@ -371,7 +358,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             newProfile.id = storedProfile.id;
             newProfile._creationTs = storedProfile._creationTs;
             newProfile._lastUpdateTs = merged._lastUpdateTs;
-            newProfile.norms.get(0).id = merged.norms.get(0).id;
             newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
             newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
             newProfile.relationships = merged.relationships;
@@ -726,10 +712,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
               final var newProfile = new WeNetUserProfile();
               newProfile.norms = new ArrayList<>();
-              newProfile.norms.add(new Norm());
-              newProfile.norms.add(new Norm());
-              newProfile.norms.get(1).id = storedProfile.norms.get(0).id;
-              newProfile.norms.get(1).attribute = "Attribute";
+              newProfile.norms.add(new ProtocolNorm());
+              newProfile.norms.add(new ProtocolNorm());
               final var checkpoint = testContext.checkpoint(4);
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
                   .expect(res -> testContext.verify(() -> {
@@ -748,9 +732,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                     expected.total++;
 
                     storedProfile._lastUpdateTs = updated._lastUpdateTs;
-                    storedProfile.norms.add(0, new Norm());
-                    storedProfile.norms.get(0).id = updated.norms.get(0).id;
-                    storedProfile.norms.get(1).attribute = "Attribute";
+                    storedProfile.norms.add(0, new ProtocolNorm());
                     assertThat(updated).isEqualTo(storedProfile);
                     testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
                         .expect(resPage -> {
@@ -759,9 +741,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                           final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
                           assertThat(page).isEqualTo(expected);
                           newProfile.norms = new ArrayList<>();
-                          newProfile.norms.add(new Norm());
-                          newProfile.norms.get(0).id = updated.norms.get(0).id;
-                          newProfile.norms.get(0).attribute = "Attribute2";
+                          newProfile.norms.add(new ProtocolNorm());
                           testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
                               .expect(res2 -> testContext.verify(() -> {
 
@@ -779,7 +759,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                                 storedProfile._lastUpdateTs = updated2._lastUpdateTs;
                                 storedProfile.norms = new ArrayList<>();
                                 storedProfile.norms.remove(1);
-                                storedProfile.norms.get(0).attribute = "Attribute2";
                                 assertThat(updated2).isEqualTo(storedProfile);
                                 testRequest(client, HttpMethod.GET,
                                     Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
@@ -935,8 +914,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
               newProfile.relevantLocations.add(new RelevantLocation());
               newProfile.relevantLocations.get(1).id = storedProfile.relevantLocations.get(0).id;
               newProfile.relevantLocations.get(1).label = "Label";
-              newProfile.relevantLocations.get(1).latitude = -24;
-              newProfile.relevantLocations.get(1).longitude = 24;
+              newProfile.relevantLocations.get(1).latitude = -24d;
+              newProfile.relevantLocations.get(1).longitude = 24d;
               final var checkpoint = testContext.checkpoint(4);
               testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
                   .expect(res -> testContext.verify(() -> {

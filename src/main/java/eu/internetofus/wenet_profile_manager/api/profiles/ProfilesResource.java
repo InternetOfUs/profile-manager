@@ -28,15 +28,15 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.TimeManager;
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.profile_manager.Competence;
-import eu.internetofus.common.components.profile_manager.Material;
-import eu.internetofus.common.components.profile_manager.Meaning;
-import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.profile_manager.PlannedActivity;
-import eu.internetofus.common.components.profile_manager.RelevantLocation;
-import eu.internetofus.common.components.profile_manager.Routine;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.models.Competence;
+import eu.internetofus.common.components.models.Material;
+import eu.internetofus.common.components.models.Meaning;
+import eu.internetofus.common.components.models.PlannedActivity;
+import eu.internetofus.common.components.models.ProtocolNorm;
+import eu.internetofus.common.components.models.RelevantLocation;
+import eu.internetofus.common.components.models.Routine;
+import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
@@ -269,8 +269,8 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
-        "norms", Norm.class);
+    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, String>(),
+        "norm", ProtocolNorm.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(this.vertx, body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
@@ -279,27 +279,6 @@ public class ProfilesResource implements Profiles {
         this.addProfileToHistoricChain(element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
-  }
-
-  /**
-   * Add into a {@link ModelFieldContext} the necessaries values.
-   *
-   * @param element to fill in.
-   * @param name    for the element.
-   * @param type    for the element.
-   *
-   * @param <T>     class for the element.
-   * @param <I>     class for the element identifier.
-   *
-   * @return the filled element.
-   */
-  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I> fillElementContext(
-      final ModelFieldContext<WeNetUserProfile, String, T, I> element, final String name, final Class<T> type) {
-
-    element.model = this.createProfileContext();
-    element.name = name;
-    element.type = type;
-    return element;
   }
 
   /**
@@ -322,47 +301,37 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveProfileNorm(final String userId, final String normId, final ServiceRequest request,
+  public void retrieveProfileNorm(final String userId, final int index, final ServiceRequest request,
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
-        "norms", Norm.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = userId;
-    element.id = normId;
+    element.id = index;
     ModelResources.retrieveModelFieldElement(element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        this.searchProfileNorm(), context);
+        ModelResources.searchElementByIndex(), context);
 
-  }
-
-  /**
-   * Return the search for a norm.
-   *
-   * @return the function to obtain a norm in a list of norms.
-   */
-  private BiFunction<List<Norm>, String, Integer> searchProfileNorm() {
-
-    return ModelResources.searchElementById((norm, id) -> id != null && id.equals(norm.id));
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public void updateProfileNorm(final String userId, final String normId, final JsonObject body,
+  public void updateProfileNorm(final String userId, final int index, final JsonObject body,
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
-        "norms", Norm.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = userId;
-    element.id = normId;
-
+    element.id = index;
     ModelResources.updateModelFieldElementChain(this.vertx, body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        this.searchProfileNorm(), (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler),
-        context, this.addProfileToHistoricChain(element.model,
+        ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        this.addProfileToHistoricChain(element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
@@ -371,19 +340,19 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void mergeProfileNorm(final String userId, final String normId, final JsonObject body,
+  public void mergeProfileNorm(final String userId, final int index, final JsonObject body,
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
-        "norms", Norm.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = userId;
-    element.id = normId;
-
+    element.id = index;
     ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        this.searchProfileNorm(), (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler),
-        context, this.addProfileToHistoricChain(element.model,
+        ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        this.addProfileToHistoricChain(element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
   }
@@ -392,20 +361,41 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfileNorm(final String userId, final String normId, final ServiceRequest request,
+  public void deleteProfileNorm(final String userId, final int index, final ServiceRequest request,
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Norm, String>(),
-        "norms", Norm.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = userId;
-    element.id = normId;
+    element.id = index;
     ModelResources.deleteModelFieldElementChain(element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        this.searchProfileNorm(), (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler),
-        context,
+        ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(element.model, () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
+  }
+
+  /**
+   * Add into a {@link ModelFieldContext} the necessaries values.
+   *
+   * @param element to fill in.
+   * @param name    for the element.
+   * @param type    for the element.
+   *
+   * @param <T>     class for the element.
+   * @param <I>     class for the element identifier.
+   *
+   * @return the filled element.
+   */
+  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I> fillElementContext(
+      final ModelFieldContext<WeNetUserProfile, String, T, I> element, final String name, final Class<T> type) {
+
+    element.model = this.createProfileContext();
+    element.name = name;
+    element.type = type;
+    return element;
   }
 
   /**

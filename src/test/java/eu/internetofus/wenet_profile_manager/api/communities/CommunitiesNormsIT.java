@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.communities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
-import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
-import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.task_manager.ProtocolNorm;
-import eu.internetofus.common.components.task_manager.ProtocolNormTest;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfileTest;
+import eu.internetofus.common.components.models.ProtocolNorm;
+import eu.internetofus.common.components.models.ProtocolNormTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -41,7 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Check the manipulation of the {@link Norm}s in a {@link CommunityProfile}.
+ * Check the manipulation of the {@link ProtocolNorm}s in a
+ * {@link CommunityProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */

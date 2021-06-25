@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.ReflectionModel;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -40,15 +40,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class HistoricWeNetUserProfile extends ReflectionModel implements Model {
 
   /**
-   * The difference, measured in milliseconds, between the time when the profile is modified to have the current state and
-   * midnight, January 1, 1970 UTC.
+   * The difference, measured in milliseconds, between the time when the profile
+   * is modified to have the current state and midnight, January 1, 1970 UTC.
    */
   @Schema(description = "The difference, measured in seconds, between the time when the profile is modified to have the current state and midnight, January 1, 1970 UTC.", example = "1457166440")
   public long from;
 
   /**
-   * The difference, measured in milliseconds, between the time when the profile is not more valid and midnight, January
-   * 1, 1970 UTC.
+   * The difference, measured in milliseconds, between the time when the profile
+   * is not more valid and midnight, January 1, 1970 UTC.
    */
   @Schema(description = "The difference, measured in seconds, between the time when the profile is not more valid and midnight, January 1, 1970 UTC.", example = "1571664406")
   public long to;
@@ -56,7 +56,7 @@ public class HistoricWeNetUserProfile extends ReflectionModel implements Model {
   /**
    * The profile on the period of time
    */
-  @Schema(description = "The profile on the period of time.", ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/99249b00800807c94cb973b08c265e0a37f820ab/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
+  @Schema(description = "The profile on the period of time.", ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/7af902b41c0d088f33ba35efd095624aa8aa6a6a/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile")
   public WeNetUserProfile profile;
 
 }

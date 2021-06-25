@@ -42,7 +42,7 @@ openAPI:
       description: Other services provided by the API.
   info:
     # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-    version: '0.15.1'
+    version: '0.16.0'
     title: WeNet - Profile manager API
     description:  >-
       The profile manager component is the one responsible for storing and maintaining the WeNet user profiles
@@ -73,10 +73,10 @@ openAPI:
       name: MIT
       url: https://opensource.org/licenses/MIT
   servers:
-    - url: https://wenet.u-hopper.com/prod/profile_manager
-      description: WeNet production server
+    - url: https://internetofus.u-hopper.com/prod/profile_manager
+      description: Production instance
     - url: https://wenet.u-hopper.com/dev/profile_manager
-      description: WeNet development server server
+      description: Staging instance
     - url: http://ardid.iiia.csic.es/wenet/profile-manager/prod/
       description: IIIA production server
     - url: http://ardid.iiia.csic.es/wenet/profile-manager/dev/

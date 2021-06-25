@@ -33,16 +33,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.ModelTestCase;
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
+import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
+import eu.internetofus.common.components.models.Task;
+import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManagerMocker;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
 import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.service.WeNetServiceSimulator;
 import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
-import eu.internetofus.common.components.task_manager.Task;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
 import io.vertx.core.Future;
@@ -218,8 +217,8 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(created -> {
 
       final var model = new UserPerformanceRatingEvent();
-      model.sourceId = "   " + created.sourceId + "   ";
-      model.targetId = "   " + created.targetId + "   ";
+      model.sourceId = created.sourceId;
+      model.targetId = created.targetId;
       model.rating = created.rating;
       assertIsValid(model, vertx, testContext, () -> {
 
@@ -270,7 +269,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
-      model.appId = "   " + created.appId + "   ";
+      model.appId = created.appId;
       assertIsValid(model, vertx, testContext, () -> {
 
         assertThat(model.appId).isEqualTo(created.appId);
@@ -300,7 +299,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
-      model.communityId = "   " + created.communityId + "   ";
+      model.communityId = created.communityId;
       assertIsValid(model, vertx, testContext, () -> {
 
         assertThat(model.communityId).isEqualTo(created.communityId);
@@ -330,7 +329,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
-      model.taskTypeId = "   " + created.taskTypeId + "   ";
+      model.taskTypeId = created.taskTypeId;
       assertIsValid(model, vertx, testContext, () -> {
 
         assertThat(model.taskTypeId).isEqualTo(created.taskTypeId);
@@ -358,7 +357,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
-      model.taskId = "   " + created.taskId + "   ";
+      model.taskId = created.taskId;
       assertIsValid(model, vertx, testContext, () -> {
 
         assertThat(model.taskId).isEqualTo(created.taskId);
@@ -447,7 +446,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the sourceId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadSourceIdNotBeValid(final String sourceId, final Vertx vertx,
       final VertxTestContext testContext) {
 
@@ -474,7 +473,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the targetId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadTargetIdNotBeValid(final String targetId, final Vertx vertx,
       final VertxTestContext testContext) {
 
@@ -501,7 +500,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the appId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadAppIdNotBeValid(final String appId, final Vertx vertx,
       final VertxTestContext testContext) {
 
@@ -548,7 +547,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the communityId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadCommunityIdNotBeValid(final String communityId, final Vertx vertx,
       final VertxTestContext testContext) {
 
@@ -571,7 +570,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the taskTypeId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadTaskTypeIdNotBeValid(final String taskTypeId, final Vertx vertx,
       final VertxTestContext testContext) {
 
@@ -618,7 +617,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @ParameterizedTest(name = "The event with the taskId {0} has not to be valid")
-  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000", ValidationsTest.STRING_256 })
+  @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
   public void shouldEventWithBadTaskIdNotBeValid(final String taskId, final Vertx vertx,
       final VertxTestContext testContext) {
 

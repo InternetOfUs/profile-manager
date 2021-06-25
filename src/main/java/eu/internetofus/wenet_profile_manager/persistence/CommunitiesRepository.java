@@ -26,11 +26,9 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import java.util.List;
-
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.ValidationErrorException;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.common.vertx.QueryBuilder;
@@ -44,6 +42,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
+import java.util.List;
 
 /**
  * The service to manage the {@link CommunityProfile} on the database.
@@ -82,7 +81,8 @@ public interface CommunitiesRepository {
   static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version) {
 
     final var repository = new CommunitiesRepositoryImpl(pool, version);
-    new ServiceBinder(vertx).setAddress(CommunitiesRepository.ADDRESS).register(CommunitiesRepository.class, repository);
+    new ServiceBinder(vertx).setAddress(CommunitiesRepository.ADDRESS).register(CommunitiesRepository.class,
+        repository);
     return repository.migrateDocumentsToCurrentVersions();
 
   }
@@ -133,7 +133,8 @@ public interface CommunitiesRepository {
    * @param storeHandler handler to manage the store.
    */
   @GenIgnore
-  default void storeCommunity(final CommunityProfile community, final Handler<AsyncResult<CommunityProfile>> storeHandler) {
+  default void storeCommunity(final CommunityProfile community,
+      final Handler<AsyncResult<CommunityProfile>> storeHandler) {
 
     final var object = community.toJsonObject();
     if (object == null) {
@@ -213,7 +214,8 @@ public interface CommunitiesRepository {
   /**
    * Create a query to obtain the communities that has the specified parameters.
    *
-   * @param appId       application identifier to match for the communities to return.
+   * @param appId       application identifier to match for the communities to
+   *                    return.
    * @param name        to match for the communities to return.
    * @param description to match for the communities to return.
    * @param keywords    to match for the communities to return.
@@ -221,9 +223,12 @@ public interface CommunitiesRepository {
    *
    * @return the query that will return the required communities.
    */
-  static JsonObject createCommunityProfilesPageQuery(final String appId, final String name, final String description, final List<String> keywords, final List<String> members) {
+  static JsonObject createCommunityProfilesPageQuery(final String appId, final String name, final String description,
+      final List<String> keywords, final List<String> members) {
 
-    return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("name", name).withEqOrRegex("description", description).withEqOrRegex("keywords", keywords).withElementEqOrRegex("members", "userId", members).build();
+    return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("name", name)
+        .withEqOrRegex("description", description).withEqOrRegex("keywords", keywords)
+        .withElementEqOrRegex("members", "userId", members).build();
 
   }
 
@@ -265,7 +270,8 @@ public interface CommunitiesRepository {
    * @param handler for the obtained page.
    */
   @GenIgnore
-  default void retrieveCommunityProfilesPageObject(final ModelsPageContext context, final Handler<AsyncResult<JsonObject>> handler) {
+  default void retrieveCommunityProfilesPageObject(final ModelsPageContext context,
+      final Handler<AsyncResult<JsonObject>> handler) {
 
     this.retrieveCommunityProfilesPageObject(context.query, context.sort, context.offset, context.limit, handler);
   }
@@ -277,7 +283,8 @@ public interface CommunitiesRepository {
    * @param searchHandler for the obtained page.
    */
   @GenIgnore
-  default void retrieveCommunityProfilesPage(final ModelsPageContext context, final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
+  default void retrieveCommunityProfilesPage(final ModelsPageContext context,
+      final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
 
     this.retrieveCommunityProfilesPage(context.query, context.sort, context.offset, context.limit, searchHandler);
 
@@ -293,7 +300,8 @@ public interface CommunitiesRepository {
    * @param searchHandler for the obtained page.
    */
   @GenIgnore
-  default void retrieveCommunityProfilesPage(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
+  default void retrieveCommunityProfilesPage(final JsonObject query, final JsonObject sort, final int offset,
+      final int limit, final Handler<AsyncResult<CommunityProfilesPage>> searchHandler) {
 
     this.retrieveCommunityProfilesPageObject(query, sort, offset, limit, search -> {
 
@@ -327,6 +335,7 @@ public interface CommunitiesRepository {
    * @param limit   the number maximum of communities to return.
    * @param handler to inform of the found communities.
    */
-  void retrieveCommunityProfilesPageObject(JsonObject query, JsonObject sort, int offset, int limit, Handler<AsyncResult<JsonObject>> handler);
+  void retrieveCommunityProfilesPageObject(JsonObject query, JsonObject sort, int offset, int limit,
+      Handler<AsyncResult<JsonObject>> handler);
 
 }

@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.Meaning;
-import eu.internetofus.common.components.profile_manager.MeaningTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.Meaning;
+import eu.internetofus.common.components.models.MeaningTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -74,9 +73,7 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldResourcesIT<Meaning,
   @Override
   protected Meaning createInvalidModelFieldElement() {
 
-    final var element = new MeaningTest().createModelExample(0);
-    element.name = ValidationsTest.STRING_256;
-    return element;
+    return null;
 
   }
 

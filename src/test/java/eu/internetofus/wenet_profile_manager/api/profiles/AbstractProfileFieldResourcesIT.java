@@ -28,8 +28,8 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import eu.internetofus.common.vertx.AbstractModelFieldResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Future;

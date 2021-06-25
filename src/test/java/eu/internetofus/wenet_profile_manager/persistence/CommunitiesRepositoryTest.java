@@ -34,17 +34,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.junit.jupiter.MockitoExtension;
-
 import eu.internetofus.common.components.ValidationErrorException;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -52,6 +43,13 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Test {@link CommunitiesRepository}
@@ -104,7 +102,8 @@ public class CommunitiesRepositoryTest {
   }
 
   /**
-   * Should not obtain community if the obtainer object not match a {@link CommunityProfile}.
+   * Should not obtain community if the obtainer object not match a
+   * {@link CommunityProfile}.
    *
    * @param testContext context that executes the test.
    *
@@ -113,7 +112,7 @@ public class CommunitiesRepositoryTest {
   @Test
   public void shouldFailSearchCommunityWhenFoundObjectNotMatch(final VertxTestContext testContext) {
 
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     repository.searchCommunity("id", testContext.failing(error -> testContext.completeNow()));
 
     @SuppressWarnings("unchecked")
@@ -124,7 +123,8 @@ public class CommunitiesRepositoryTest {
   }
 
   /**
-   * Should not store community if the stored object not match a {@link CommunityProfile}.
+   * Should not store community if the stored object not match a
+   * {@link CommunityProfile}.
    *
    * @param testContext context that executes the test.
    *
@@ -133,7 +133,7 @@ public class CommunitiesRepositoryTest {
   @Test
   public void shouldFailStoreCommunityWhenStoredObjectNotMatch(final VertxTestContext testContext) {
 
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     repository.storeCommunity(new CommunityProfile(), testContext.failing(error -> testContext.completeNow()));
 
     @SuppressWarnings("unchecked")
@@ -165,7 +165,7 @@ public class CommunitiesRepositoryTest {
       }
     };
     final Handler<AsyncResult<Void>> handler = testContext.failing(error -> testContext.completeNow());
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     repository.updateCommunity(community, handler);
 
   }
@@ -181,7 +181,7 @@ public class CommunitiesRepositoryTest {
   @Test
   public void shouldFailRetrieveCommunityProfilesPageObjectWhenSearchFail(final VertxTestContext testContext) {
 
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     final var context = new ModelsPageContext();
     context.query = CommunitiesRepository.createCommunityProfilesPageQuery("appId", "name", "description", null, null);
     context.sort = CommunitiesRepository.createCommunityProfilesPageSort(Arrays.asList("name", "-description"));
@@ -191,7 +191,8 @@ public class CommunitiesRepositoryTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort), eq(context.offset), eq(context.limit), searchHandler.capture());
+    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort),
+        eq(context.offset), eq(context.limit), searchHandler.capture());
     searchHandler.getValue().handle(Future.failedFuture("Not found"));
 
   }
@@ -201,14 +202,16 @@ public class CommunitiesRepositoryTest {
    *
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPage(ModelsPageContext, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPage(ModelsPageContext,
+   *      Handler)
    */
   @Test
   public void shouldFailRetrieveCommunityProfilesPageWhenObjectNotMatch(final VertxTestContext testContext) {
 
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     final var context = new ModelsPageContext();
-    context.query = CommunitiesRepository.createCommunityProfilesPageQuery("appId", "name", "description", Arrays.asList("keywords"), Arrays.asList("members"));
+    context.query = CommunitiesRepository.createCommunityProfilesPageQuery("appId", "name", "description",
+        Arrays.asList("keywords"), Arrays.asList("members"));
     context.sort = CommunitiesRepository.createCommunityProfilesPageSort(Arrays.asList("-name", "description"));
     context.offset = 23;
     context.limit = 100;
@@ -216,7 +219,8 @@ public class CommunitiesRepositoryTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort), eq(context.offset), eq(context.limit), searchHandler.capture());
+    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort),
+        eq(context.offset), eq(context.limit), searchHandler.capture());
     searchHandler.getValue().handle(Future.succeededFuture(new JsonObject().put("udefinedKey", "value")));
 
   }
@@ -226,14 +230,16 @@ public class CommunitiesRepositoryTest {
    *
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#retrieveCommunityProfilesPage(ModelsPageContext, Handler)
+   * @see CommunitiesRepository#retrieveCommunityProfilesPage(ModelsPageContext,
+   *      Handler)
    */
   @Test
   public void shouldFailRetrieveCommunityProfilesPageWhenObjectNotFound(final VertxTestContext testContext) {
 
-    final DummyCommunitiesRepository repository = spy(new DummyCommunitiesRepository());
+    final var repository = spy(new DummyCommunitiesRepository());
     final var context = new ModelsPageContext();
-    context.query = CommunitiesRepository.createCommunityProfilesPageQuery("appId", "name", "description", Arrays.asList("keywords"), Arrays.asList("members"));
+    context.query = CommunitiesRepository.createCommunityProfilesPageQuery("appId", "name", "description",
+        Arrays.asList("keywords"), Arrays.asList("members"));
     context.sort = CommunitiesRepository.createCommunityProfilesPageSort(Arrays.asList("-name", "description"));
     context.offset = 23;
     context.limit = 100;
@@ -241,7 +247,8 @@ public class CommunitiesRepositoryTest {
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort), eq(context.offset), eq(context.limit), searchHandler.capture());
+    verify(repository, timeout(30000).times(1)).retrieveCommunityProfilesPageObject(eq(context.query), eq(context.sort),
+        eq(context.offset), eq(context.limit), searchHandler.capture());
     searchHandler.getValue().handle(Future.failedFuture("Not found"));
 
   }

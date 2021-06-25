@@ -31,8 +31,8 @@ import eu.internetofus.common.components.ReflectionModel;
 import eu.internetofus.common.components.Validable;
 import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.Validations;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationship;
-import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipType;
+import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
@@ -123,138 +123,123 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
       promise
           .fail(new ValidationErrorException(codePrefix + ".rating", "The rating value has to be in the range [0,1]."));
 
+    } else if (this.sourceId.equals(this.targetId)) {
+
+      promise.fail(new ValidationErrorException(codePrefix + ".targetId",
+          "The 'targetId' can not be the same as the 'sourceId'."));
+
     } else {
 
-      try {
+      future = future.compose(mapper -> {
 
-        this.sourceId = Validations.validateStringField(codePrefix, "sourceId", 255, this.sourceId);
-        this.targetId = Validations.validateStringField(codePrefix, "targetId", 255, this.targetId);
-        this.appId = Validations.validateNullableStringField(codePrefix, "appId", 255, this.appId);
-        this.communityId = Validations.validateNullableStringField(codePrefix, "communityId", 255, this.communityId);
-        this.taskTypeId = Validations.validateNullableStringField(codePrefix, "taskTypeId", 255, this.taskTypeId);
-        this.taskId = Validations.validateNullableStringField(codePrefix, "taskId", 255, this.taskId);
-        if (this.sourceId.equals(this.targetId)) {
+        final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
+        WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
 
-          promise.fail(new ValidationErrorException(codePrefix + ".targetId",
-              "The 'targetId' can not be the same as the 'sourceId'."));
+          if (search.failed()) {
 
-        } else {
+            verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
+                "The '" + this.sourceId + "' is not defined.", search.cause()));
 
-          future = future.compose(mapper -> {
+          } else {
 
-            final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
-            WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
+            final var profile = search.result();
+            var validRelationship = true;
+            if (this.relationship != null) {
 
-              if (search.failed()) {
+              validRelationship = false;
+              if (profile.relationships != null) {
 
-                verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
-                    "The '" + this.sourceId + "' is not defined.", search.cause()));
+                for (final SocialNetworkRelationship relation : profile.relationships) {
+
+                  if (relation.type == this.relationship && relation.userId.equals(this.targetId)) {
+                    // exist relation between them
+                    validRelationship = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!validRelationship) {
+
+              verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".relationship",
+                  "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId
+                      + "' with the target user '" + this.targetId + "'.",
+                  search.cause()));
+
+            } else {
+
+              verifyRequesterIdExistPromise.complete();
+            }
+
+          }
+        });
+        return verifyRequesterIdExistPromise.future();
+      });
+
+      future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
+          WeNetProfileManager.createProxy(vertx)::retrieveProfile);
+
+      if (this.appId != null) {
+
+        future = Validations.composeValidateId(future, codePrefix, "appId", this.appId, true,
+            WeNetService.createProxy(vertx)::retrieveApp);
+
+      }
+
+      if (this.communityId != null) {
+
+        future = Validations.composeValidateId(future, codePrefix, "communityId", this.communityId, true,
+            WeNetProfileManager.createProxy(vertx)::retrieveCommunity);
+
+      }
+
+      if (this.taskTypeId != null) {
+
+        future = Validations.composeValidateId(future, codePrefix, "taskTypeId", this.taskTypeId, true,
+            WeNetTaskManager.createProxy(vertx)::retrieveTaskType);
+
+      }
+
+      if (this.taskId != null) {
+
+        future = future.compose(mapper -> {
+
+          final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
+          WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId).onComplete(retrieve -> {
+
+            if (retrieve.failed()) {
+
+              verifyNotRepeatedIdPromise.fail(
+                  new ValidationErrorException(codePrefix + ".taskId", "The '" + this.taskId + "' is not defined."));
+
+            } else {
+
+              final var task = retrieve.result();
+              if (this.appId != null && !this.appId.equals(task.appId)) {
+
+                verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId",
+                    "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
+
+              } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
+
+                verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
+                    "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
 
               } else {
 
-                final var profile = search.result();
-                var validRelationship = true;
-                if (this.relationship != null) {
-
-                  validRelationship = false;
-                  if (profile.relationships != null) {
-
-                    for (final SocialNetworkRelationship relation : profile.relationships) {
-
-                      if (relation.type == this.relationship && relation.userId.equals(this.targetId)) {
-                        // exist relation between them
-                        validRelationship = true;
-                        break;
-                      }
-                    }
-                  }
-                }
-                if (!validRelationship) {
-
-                  verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".relationship",
-                      "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId
-                          + "' with the target user '" + this.targetId + "'.",
-                      search.cause()));
-
-                } else {
-
-                  verifyRequesterIdExistPromise.complete();
-                }
+                verifyNotRepeatedIdPromise.complete();
 
               }
-            });
-            return verifyRequesterIdExistPromise.future();
+            }
+
           });
+          return verifyNotRepeatedIdPromise.future();
+        });
 
-          future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
-              WeNetProfileManager.createProxy(vertx)::retrieveProfile);
-
-          if (this.appId != null) {
-
-            future = Validations.composeValidateId(future, codePrefix, "appId", this.appId, true,
-                WeNetService.createProxy(vertx)::retrieveApp);
-
-          }
-
-          if (this.communityId != null) {
-
-            future = Validations.composeValidateId(future, codePrefix, "communityId", this.communityId, true,
-                WeNetProfileManager.createProxy(vertx)::retrieveCommunity);
-
-          }
-
-          if (this.taskTypeId != null) {
-
-            future = Validations.composeValidateId(future, codePrefix, "taskTypeId", this.taskTypeId, true,
-                WeNetTaskManager.createProxy(vertx)::retrieveTaskType);
-
-          }
-
-          if (this.taskId != null) {
-
-            future = future.compose(mapper -> {
-
-              final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-              WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId).onComplete(retrieve -> {
-
-                if (retrieve.failed()) {
-
-                  verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskId",
-                      "The '" + this.taskId + "' is not defined."));
-
-                } else {
-
-                  final var task = retrieve.result();
-                  if (this.appId != null && !this.appId.equals(task.appId)) {
-
-                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId",
-                        "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
-
-                  } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
-
-                    verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
-                        "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
-
-                  } else {
-
-                    verifyNotRepeatedIdPromise.complete();
-
-                  }
-                }
-
-              });
-              return verifyNotRepeatedIdPromise.future();
-            });
-
-          }
-
-          promise.complete();
-        }
-
-      } catch (final ValidationErrorException validationError) {
-
-        promise.fail(validationError);
       }
+
+      promise.complete();
+
     }
     return future;
 

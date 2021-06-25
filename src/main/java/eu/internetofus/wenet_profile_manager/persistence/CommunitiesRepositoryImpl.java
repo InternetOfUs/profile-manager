@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;

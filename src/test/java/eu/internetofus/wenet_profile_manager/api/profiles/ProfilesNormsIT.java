@@ -29,22 +29,22 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.Norm;
-import eu.internetofus.common.components.profile_manager.NormTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.ProtocolNorm;
+import eu.internetofus.common.components.models.ProtocolNormTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
 
 /**
- * Check the manipulation of the {@link Norm}s in a {@link WeNetUserProfile}.
+ * Check the manipulation of the {@link ProtocolNorm}s in a
+ * {@link WeNetUserProfile}.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, String> {
+public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<ProtocolNorm, Integer> {
 
   /**
    * {@inheritDoc}
@@ -59,10 +59,10 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected Future<Norm> createValidModelFieldElementExample(final int index, final Vertx vertx,
+  protected Future<ProtocolNorm> createValidModelFieldElementExample(final int index, final Vertx vertx,
       final VertxTestContext testContext) {
 
-    final var element = new NormTest().createModelExample(index);
+    final var element = new ProtocolNormTest().createModelExample(index);
     return Future.succeededFuture(element);
 
   }
@@ -71,10 +71,10 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected Norm createInvalidModelFieldElement() {
+  protected ProtocolNorm createInvalidModelFieldElement() {
 
-    final var element = new NormTest().createModelExample(2);
-    element.attribute = ValidationsTest.STRING_256;
+    final var element = new ProtocolNormTest().createModelExample(200);
+    element.whenever = element.thenceforth;
     return element;
 
   }
@@ -83,7 +83,7 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected List<Norm> fieldOf(final WeNetUserProfile model) {
+  protected List<ProtocolNorm> fieldOf(final WeNetUserProfile model) {
 
     return model.norms;
   }
@@ -108,9 +108,8 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected void assertEqualsAdded(final Norm source, final Norm target) {
+  protected void assertEqualsAdded(final ProtocolNorm source, final ProtocolNorm target) {
 
-    source.id = target.id;
     assertThat(source).isEqualTo(target);
   }
 
@@ -118,9 +117,9 @@ public class ProfilesNormsIT extends AbstractProfileFieldResourcesIT<Norm, Strin
    * {@inheritDoc}
    */
   @Override
-  protected String idOfElementIn(final WeNetUserProfile model, final Norm element) {
+  protected Integer idOfElementIn(final WeNetUserProfile model, final ProtocolNorm element) {
 
-    return element.id;
+    return model.norms.indexOf(element);
   }
 
 }

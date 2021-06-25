@@ -28,18 +28,9 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Consumer;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import eu.internetofus.common.components.profile_manager.CommunityMemberTest;
-import eu.internetofus.common.components.profile_manager.CommunityProfile;
-import eu.internetofus.common.components.profile_manager.CommunityProfileTest;
+import eu.internetofus.common.components.models.CommunityMemberTest;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfileTest;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.AsyncResult;
@@ -48,6 +39,13 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
  * Integration test over the {@link CommunitiesRepository}.
@@ -508,7 +506,7 @@ public class CommunitiesRepositoryIT {
   public void shouldRetrieveCommunityProfilesByAppId(final Vertx vertx, final VertxTestContext testContext) {
 
     final var appId = UUID.randomUUID().toString();
-    final ModelsPageContext context = new ModelsPageContext();
+    final var context = new ModelsPageContext();
     context.query = CommunitiesRepository.createCommunityProfilesPageQuery(appId, null, null, null, null);
     context.limit = 10;
     CommunitiesRepository.createProxy(vertx).retrieveCommunityProfilesPage(context,
@@ -561,7 +559,7 @@ public class CommunitiesRepositoryIT {
   public void shouldRetrieveCommunityProfilesByName(final Vertx vertx, final VertxTestContext testContext) {
 
     final var name = UUID.randomUUID().toString();
-    final ModelsPageContext context = new ModelsPageContext();
+    final var context = new ModelsPageContext();
     context.query = CommunitiesRepository.createCommunityProfilesPageQuery(null, "/.*" + name + ".*/", null, null,
         null);
     context.limit = 10;

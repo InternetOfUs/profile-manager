@@ -29,11 +29,10 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.ValidationsTest;
-import eu.internetofus.common.components.profile_manager.Competence;
-import eu.internetofus.common.components.profile_manager.CompetenceTest;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetUserProfileTest;
+import eu.internetofus.common.components.models.Competence;
+import eu.internetofus.common.components.models.CompetenceTest;
+import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
@@ -75,7 +74,7 @@ public class ProfilesCompetencesIT extends AbstractProfileFieldResourcesIT<Compe
   protected Competence createInvalidModelFieldElement() {
 
     final var element = new CompetenceTest().createModelExample(0);
-    element.name = ValidationsTest.STRING_256;
+    element.level = 100d;
     return element;
 
   }

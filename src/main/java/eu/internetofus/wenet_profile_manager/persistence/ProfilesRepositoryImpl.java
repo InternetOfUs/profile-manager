@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.components.profile_manager.WeNetUserProfile;
+import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.vertx.Repository;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import io.vertx.core.AsyncResult;
@@ -174,7 +174,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   public void retrieveProfileUserIdsPageObject(final int offset, final int limit,
       final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-    final FindOptions options = new FindOptions();
+    final var options = new FindOptions();
     options.setFields(new JsonObject().put("_id", true));
     options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
     options.setSkip(offset);
@@ -206,7 +206,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   public void retrieveProfilesPageObject(final int offset, final int limit,
       final Handler<AsyncResult<JsonObject>> searchHandler) {
 
-    final FindOptions options = new FindOptions();
+    final var options = new FindOptions();
     options.setSort(new JsonObject().put("_creationTs", 1).put("_id", 1));
     options.setSkip(offset);
     options.setLimit(limit);

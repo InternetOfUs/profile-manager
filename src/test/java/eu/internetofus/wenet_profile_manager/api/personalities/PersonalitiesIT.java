@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,21 +32,9 @@ import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.Status;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
-
 import eu.internetofus.common.components.ErrorMessage;
 import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.profile_manager.Meaning;
+import eu.internetofus.common.components.models.Meaning;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
@@ -55,6 +43,15 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * The integration test over the {@link Personalities}.
@@ -73,20 +70,23 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#retrievePersonalityQuestionnaire(io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#retrievePersonalityQuestionnaire(io.vertx.ext.web.api.service.ServiceRequest,
+   *      Handler)
    */
   @ParameterizedTest(name = "Should return personality questionnaire for language {0}")
   @EmptySource
   @ValueSource(strings = { "*", "en", "es", "ca", "es-US,es;q=0.5", "ca,es,en", "en-US,en,es", "it" })
-  public void shouldRetrievePersonalityQuestionnaire(final String lang, final WebClient client, final VertxTestContext testContext) {
+  public void shouldRetrievePersonalityQuestionnaire(final String lang, final WebClient client,
+      final VertxTestContext testContext) {
 
-    testRequest(client, HttpMethod.GET, Personalities.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es")).expect(res -> {
+    testRequest(client, HttpMethod.GET, Personalities.PATH).with(requestHeader(HttpHeaders.ACCEPT_LANGUAGE, "en-US,es"))
+        .expect(res -> {
 
-      assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-      final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
-      assertThat(questionnaire.questions).hasSize(20);
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var questionnaire = assertThatBodyIs(Questionnaire.class, res);
+          assertThat(questionnaire.questions).hasSize(20);
 
-    }).send(testContext);
+        }).send(testContext);
 
   }
 
@@ -96,10 +96,12 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseNoAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseNoAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
@@ -113,15 +115,18 @@ public class PersonalitiesIT {
   }
 
   /**
-   * Verify that not calculate the personality because no provide an empty answers list.
+   * Verify that not calculate the personality because no provide an empty answers
+   * list.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseNotEmptyAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseNotEmptyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -142,10 +147,12 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseNotEnoughAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseNotEnoughAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -171,10 +178,12 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseTooManyAnswers(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseTooManyAnswers(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -201,10 +210,12 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooLow(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooLow(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -228,15 +239,18 @@ public class PersonalitiesIT {
   }
 
   /**
-   * Verify that not calculate the personality because an answer value is too high.
+   * Verify that not calculate the personality because an answer value is too
+   * high.
    *
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
-  public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooHigh(final WebClient client, final VertxTestContext testContext) {
+  public void shouldNotCalculatePersonalityBecauseAnswerValueIsTooHigh(final WebClient client,
+      final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
@@ -265,7 +279,8 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculateENTJPersonality(final WebClient client, final VertxTestContext testContext) {
@@ -305,7 +320,8 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculateISFPPersonality(final WebClient client, final VertxTestContext testContext) {
@@ -345,14 +361,16 @@ public class PersonalitiesIT {
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Personalities#calculatePersonality(JsonObject, io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   * @see Personalities#calculatePersonality(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldCalculatePersonality(final WebClient client, final VertxTestContext testContext) {
 
     final var answers = new QuestionnaireAnswers();
     answers.answerValues = new ArrayList<Double>();
-    Collections.addAll(answers.answerValues, 1d, -1d, 1d, 1d, 0d, 0d, 1d, 1d, -1d, -1d, -1d, 0d, -1d, -1d, 0d, 1d, 1d, -1d, 1d, 1d);
+    Collections.addAll(answers.answerValues, 1d, -1d, 1d, 1d, 0d, 0d, 1d, 1d, -1d, -1d, -1d, 0d, -1d, -1d, 0d, 1d, 1d,
+        -1d, 1d, 1d);
 
     testRequest(client, HttpMethod.POST, Personalities.PATH).expect(res -> {
 
@@ -377,7 +395,8 @@ public class PersonalitiesIT {
   }
 
   /**
-   * Verify that a meaning contains the specific personality factor with the specified value.
+   * Verify that a meaning contains the specific personality factor with the
+   * specified value.
    *
    * @param meaning to check that contains the personality.
    * @param factor  index of the factor to check.
