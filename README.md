@@ -160,7 +160,7 @@ The profile manager has the next available instances:
 
 ## License
 
-This software is under the [MIT license](LICENSE)
+This software is under the [Apache V2 license](LICENSE)
 
 
 ## Interaction with other WeNet components
