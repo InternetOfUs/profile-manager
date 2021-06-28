@@ -31,7 +31,7 @@ import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.CommunityMemberTest;
 import eu.internetofus.common.components.models.CommunityProfile;

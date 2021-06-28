@@ -26,16 +26,16 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.ReflectionModel;
-import eu.internetofus.common.components.Validable;
-import eu.internetofus.common.components.ValidationErrorException;
-import eu.internetofus.common.components.Validations;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.ReflectionModel;
+import eu.internetofus.common.model.Validable;
+import eu.internetofus.common.model.ValidationErrorException;
+import eu.internetofus.common.model.Validations;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;

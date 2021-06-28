@@ -33,7 +33,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.api.service.ServiceRequest;

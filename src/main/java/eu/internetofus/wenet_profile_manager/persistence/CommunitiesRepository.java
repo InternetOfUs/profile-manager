@@ -26,10 +26,10 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.components.Model;
-import eu.internetofus.common.components.ValidationErrorException;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.ValidationErrorException;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.common.vertx.Repository;

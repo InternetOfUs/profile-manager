@@ -28,8 +28,8 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.TimeManager;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;

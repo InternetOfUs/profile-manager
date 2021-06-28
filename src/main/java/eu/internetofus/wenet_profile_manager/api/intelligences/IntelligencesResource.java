@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.intelligences;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.Meaning;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;

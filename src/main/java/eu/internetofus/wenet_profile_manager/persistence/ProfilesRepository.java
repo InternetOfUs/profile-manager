@@ -26,8 +26,8 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.TimeManager;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;

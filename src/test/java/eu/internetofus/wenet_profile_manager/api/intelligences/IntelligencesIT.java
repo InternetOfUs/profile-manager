@@ -32,8 +32,8 @@ import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
-import eu.internetofus.common.components.ErrorMessage;
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.ErrorMessage;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.Meaning;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;

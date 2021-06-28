@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import eu.internetofus.common.components.ModelTestCase;
+import eu.internetofus.common.model.ModelTestCase;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import java.util.ArrayList;
 

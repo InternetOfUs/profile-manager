@@ -28,7 +28,7 @@ package eu.internetofus.wenet_profile_manager.api;
 
 import java.util.function.Function;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.vertx.ServiceRequests;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import io.vertx.core.AsyncResult;

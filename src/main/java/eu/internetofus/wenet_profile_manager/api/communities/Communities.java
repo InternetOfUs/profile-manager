@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
 import io.swagger.v3.oas.annotations.Operation;

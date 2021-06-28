@@ -26,8 +26,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.Model;
 import eu.internetofus.common.components.models.Competence;
 import eu.internetofus.common.components.models.Material;
 import eu.internetofus.common.components.models.Meaning;
@@ -38,6 +36,8 @@ import eu.internetofus.common.components.models.Routine;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;

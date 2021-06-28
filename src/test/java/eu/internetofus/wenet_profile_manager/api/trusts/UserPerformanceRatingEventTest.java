@@ -27,11 +27,10 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import static eu.internetofus.common.components.AbstractComponentMocker.createClientWithDefaultSession;
-import static eu.internetofus.common.components.ValidationsTest.assertIsNotValid;
-import static eu.internetofus.common.components.ValidationsTest.assertIsValid;
+import static eu.internetofus.common.model.ValidableAsserts.assertIsNotValid;
+import static eu.internetofus.common.model.ValidableAsserts.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import eu.internetofus.common.components.ModelTestCase;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
@@ -44,6 +43,7 @@ import eu.internetofus.common.components.service.WeNetServiceSimulator;
 import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
+import eu.internetofus.common.model.ModelTestCase;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;

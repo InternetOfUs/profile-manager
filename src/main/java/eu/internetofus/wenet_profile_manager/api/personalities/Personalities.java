@@ -34,7 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import eu.internetofus.common.components.ErrorMessage;
+import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.api.Questionnaire;
 import eu.internetofus.wenet_profile_manager.api.QuestionnaireAnswers;
 import io.swagger.v3.oas.annotations.Operation;

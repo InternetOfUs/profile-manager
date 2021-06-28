@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;

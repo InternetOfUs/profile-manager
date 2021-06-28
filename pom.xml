@@ -52,21 +52,6 @@
   <groovy-version>3.0.8</groovy-version>
   <!-- Library versions -->
   <eu.internetofus.common-version>0.7.0</eu.internetofus.common-version>
-  <io.vertx-version>4.1.0</io.vertx-version>
-  <io.swagger-version>2.1.6</io.swagger-version>
-  <commons-validator-version>1.7</commons-validator-version>
-  <com.googlecode.libphonenumber-version>8.12.15</com.googlecode.libphonenumber-version>
-  <jakarta.ws.rs-version>2.1.6</jakarta.ws.rs-version>
-  <org.apache.commons-lang3-version>3.11</org.apache.commons-lang3-version>
-  <org.tinylog-version>2.2.1</org.tinylog-version>
-  <commons-cli-version>1.4</commons-cli-version>
-  <!-- Test library versions -->
-  <org.junit.jupiter-version>5.7.0</org.junit.jupiter-version>
-  <io.reactiverse-version>0.3.0</io.reactiverse-version>
-  <org.assertj-version>3.18.1</org.assertj-version>
-  <org.itsallcode-junit5-system-extensions-version>1.1.0</org.itsallcode-junit5-system-extensions-version>
-  <org.mockito-version>3.6.28</org.mockito-version>
-  <org.testcontainers-version>1.15.1</org.testcontainers-version>
  </properties>
  <repositories>
   <repository>
@@ -93,100 +78,45 @@
     <type>pom</type>
     <scope>test</scope>
    </dependency>
-   <dependency>
-    <groupId>io.vertx</groupId>
-    <artifactId>vertx-stack-depchain</artifactId>
-    <version>${io.vertx-version}</version>
-    <type>pom</type>
-    <scope>import</scope>
-   </dependency>
-   <dependency>
-    <groupId>org.testcontainers</groupId>
-    <artifactId>testcontainers-bom</artifactId>
-    <version>${org.testcontainers-version}</version>
-    <type>pom</type>
-    <scope>import</scope>
-   </dependency>
   </dependencies>
  </dependencyManagement>
  <dependencies>
   <dependency>
    <groupId>eu.internetofus</groupId>
-   <artifactId>common</artifactId>
+   <artifactId>common-vertx</artifactId>
    <version>${eu.internetofus.common-version}</version>
   </dependency>
   <dependency>
    <groupId>eu.internetofus</groupId>
-   <artifactId>common</artifactId>
+   <artifactId>common-components</artifactId>
+   <version>${eu.internetofus.common-version}</version>
+  </dependency>
+  <dependency>
+   <groupId>eu.internetofus</groupId>
+   <artifactId>common-test</artifactId>
+   <version>${eu.internetofus.common-version}</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>eu.internetofus</groupId>
+   <artifactId>common-model</artifactId>
    <version>${eu.internetofus.common-version}</version>
    <type>test-jar</type>
    <scope>test</scope>
   </dependency>
-  <!-- Test dependencies -->
   <dependency>
-   <groupId>io.vertx</groupId>
-   <artifactId>vertx-junit5</artifactId>
+   <groupId>eu.internetofus</groupId>
+   <artifactId>common-vertx</artifactId>
+   <version>${eu.internetofus.common-version}</version>
+   <type>test-jar</type>
    <scope>test</scope>
   </dependency>
   <dependency>
-   <groupId>io.reactiverse</groupId>
-   <artifactId>reactiverse-junit5-web-client</artifactId>
-   <version>${io.reactiverse-version}</version>
+   <groupId>eu.internetofus</groupId>
+   <artifactId>common-components</artifactId>
+   <version>${eu.internetofus.common-version}</version>
+   <type>test-jar</type>
    <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.junit.jupiter</groupId>
-   <artifactId>junit-jupiter-api</artifactId>
-   <version>${org.junit.jupiter-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.junit.jupiter</groupId>
-   <artifactId>junit-jupiter-engine</artifactId>
-   <version>${org.junit.jupiter-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.junit.jupiter</groupId>
-   <artifactId>junit-jupiter-params</artifactId>
-   <version>${org.junit.jupiter-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.assertj</groupId>
-   <artifactId>assertj-core</artifactId>
-   <version>${org.assertj-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.itsallcode</groupId>
-   <artifactId>junit5-system-extensions</artifactId>
-   <version>${org.itsallcode-junit5-system-extensions-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.mockito</groupId>
-   <artifactId>mockito-core</artifactId>
-   <version>${org.mockito-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.mockito</groupId>
-   <artifactId>mockito-junit-jupiter</artifactId>
-   <version>${org.mockito-version}</version>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.testcontainers</groupId>
-   <artifactId>junit-jupiter</artifactId>
-   <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.jacoco</groupId>
-   <artifactId>org.jacoco.agent</artifactId>
-   <classifier>runtime</classifier>
-   <scope>test</scope>
-   <version>${org.jacoco-version}</version>
   </dependency>
  </dependencies>
  <build>

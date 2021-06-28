@@ -26,16 +26,16 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import static eu.internetofus.common.components.ValidationsTest.assertIsValid;
+import static eu.internetofus.common.model.ValidableAsserts.assertIsValid;
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
-import eu.internetofus.common.TimeManager;
-import eu.internetofus.common.components.ErrorMessage;
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.TimeManager;
+import eu.internetofus.common.model.ErrorMessage;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.AliveBirthDate;
 import eu.internetofus.common.components.models.PlannedActivity;

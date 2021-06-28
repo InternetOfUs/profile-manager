@@ -26,9 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import org.tinylog.Logger;
-
-import eu.internetofus.common.TimeManager;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.Repository;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import io.vertx.core.AsyncResult;
@@ -39,6 +37,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.AggregateOptions;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
+import org.tinylog.Logger;
 
 /**
  * Implementation of the {@link TrustsRepository}.
@@ -56,7 +55,8 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   public static final String TRUSTS_COLLECTION = "trusts";
 
   /**
-   * The default value for n parameters used to {@link TrustAggregator#RECENCY_BASED}.
+   * The default value for n parameters used to
+   * {@link TrustAggregator#RECENCY_BASED}.
    */
   public static final int DEFAULT_N = 5;
 
@@ -77,7 +77,8 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   public TrustsRepositoryImpl(final JsonObject conf, final MongoClient pool, final String version) {
 
     super(pool, version);
-    this.n = conf.getJsonObject("TrustAggregator", new JsonObject()).getJsonObject("RECENCY_BASED", new JsonObject()).getInteger("n", DEFAULT_N);
+    this.n = conf.getJsonObject("TrustAggregator", new JsonObject()).getJsonObject("RECENCY_BASED", new JsonObject())
+        .getInteger("n", DEFAULT_N);
 
   }
 
@@ -109,7 +110,8 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
    * {@inheritDoc}
    */
   @Override
-  public void calculateTrustBy(final TrustAggregator aggregator, final JsonObject query, final Handler<AsyncResult<Double>> trustHandler) {
+  public void calculateTrustBy(final TrustAggregator aggregator, final JsonObject query,
+      final Handler<AsyncResult<Double>> trustHandler) {
 
     switch (aggregator) {
 
@@ -145,8 +147,10 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
 
     final var pipeline = new JsonArray();
     pipeline.add(new JsonObject().put("$match", query));
-    pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$" + aggregator, "$rating"))));
-    return new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
+    pipeline.add(new JsonObject().put("$group",
+        new JsonObject().putNull("_id").put("trust", new JsonObject().put("$" + aggregator, "$rating"))));
+    return new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor",
+        new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
 
   }
 
@@ -244,8 +248,10 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
     pipeline.add(new JsonObject().put("$match", query));
     pipeline.add(new JsonObject().put("$sort", new JsonObject().put("reportTime", -1)));
     pipeline.add(new JsonObject().put("$limit", this.n));
-    pipeline.add(new JsonObject().put("$group", new JsonObject().putNull("_id").put("trust", new JsonObject().put("$avg", "$rating"))));
-    final var command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor", new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
+    pipeline.add(new JsonObject().put("$group",
+        new JsonObject().putNull("_id").put("trust", new JsonObject().put("$avg", "$rating"))));
+    final var command = new JsonObject().put("aggregate", TRUSTS_COLLECTION).put("pipeline", pipeline).put("cursor",
+        new JsonObject().put("batchSize", AggregateOptions.DEFAULT_BATCH_SIZE));
     this.processAggregation(command, trustHandler);
   }
 

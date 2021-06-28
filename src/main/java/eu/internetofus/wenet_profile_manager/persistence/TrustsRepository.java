@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trust;
 import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;

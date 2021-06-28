@@ -26,7 +26,7 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import eu.internetofus.common.components.Model;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.CommunityMember;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.models.ProtocolNorm;
