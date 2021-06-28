@@ -7,10 +7,8 @@ ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 RUN mkdir -p /build
 WORKDIR /build
 COPY pom.xml .
-RUN mkdir -p /root/.m2
-RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn dependency:go-offline
 COPY src/ /build/src/
-RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn -DfinalName=wenet-profile-manager -DskipTests install
+RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn -DskipTests -DfinalName=wenet-profile-manager clean install -U
 
 # --- Run the code
 FROM openjdk:11.0.5-jre
@@ -68,10 +66,10 @@ RUN chmod +x /wait
 
 EXPOSE ${API_PORT}
 CMD /wait && java -jar wenet-profile-manager.jar -c etc \
-  -papi.host=${API_HOST} -papi.port=${API_PORT}\
-  -ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD}\
-  -pwenetComponents.taskManager=${WENET_TASK_MANAGER_API}\
-  -pwenetComponents.service=${WENET_SERVICE_API}\
-  -pwenetComponents.socialContextBuilder=${WENET_SOCIAL_CONTEXT_BUILDER_API}\
-  -pwebClient.wenetComponentApikey=${COMP_AUTH_KEY}\
-  ${RUN_ARGS}
+	-papi.host=${API_HOST} -papi.port=${API_PORT}\
+	-ppersistence.host=${DB_HOST} -ppersistence.port=${DB_PORT} -ppersistence.db_name=${DB_NAME} -ppersistence.username=${DB_USER_NAME} -ppersistence.password=${DB_USER_PASSWORD}\
+	-pwenetComponents.taskManager=${WENET_TASK_MANAGER_API}\
+	-pwenetComponents.service=${WENET_SERVICE_API}\
+	-pwenetComponents.socialContextBuilder=${WENET_SOCIAL_CONTEXT_BUILDER_API}\
+	-pwebClient.wenetComponentApikey=${COMP_AUTH_KEY}\
+	${RUN_ARGS}
