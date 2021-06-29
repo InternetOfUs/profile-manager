@@ -35,6 +35,7 @@ import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
 
@@ -73,7 +74,9 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldResourcesIT<Meaning,
   @Override
   protected Meaning createInvalidModelFieldElement() {
 
-    return null;
+    final var model = new MeaningTest().createModelExample(2);
+    model.name = null;
+    return model;
 
   }
 
@@ -128,6 +131,19 @@ public class ProfilesMeaningsIT extends AbstractProfileFieldResourcesIT<Meaning,
 
     }
 
+  }
+
+  /**
+   * Merge can not fail never because to be invalid has to set a {@code null} a
+   * field, but in merge any {@code null} field is ignored.
+   *
+   * {@inheritDoc}
+   */
+  @Override
+  public void shouldNotMergeWithInvalidElement(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    // Disable because the merge every time works
   }
 
 }
