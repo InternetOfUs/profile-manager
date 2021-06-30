@@ -31,18 +31,20 @@ import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.CommunityMemberTest;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.models.CommunityProfileTest;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
+import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepositoryIT;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 import java.util.ArrayList;
@@ -363,6 +365,44 @@ public class CommunitiesIT extends AbstractModelResourcesIT<CommunityProfile, St
               });
 
         });
+
+  }
+
+  /**
+   * Verify that store an empty profile.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Communities#createCommunity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldStoreEmptyProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    final var profile = new CommunityProfile();
+    profile._creationTs = 0;
+    profile._lastUpdateTs = 1;
+    testRequest(client, HttpMethod.POST, Communities.PATH).expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+      final var stored = assertThatBodyIs(CommunityProfile.class, res);
+      assertThat(stored).isNotNull().isNotEqualTo(profile);
+      profile.id = stored.id;
+      assertThat(stored).isNotNull().isNotEqualTo(profile);
+      profile._creationTs = stored._creationTs;
+      profile._lastUpdateTs = stored._lastUpdateTs;
+      assertThat(stored).isEqualTo(profile);
+      testContext.assertComplete(CommunitiesRepository.createProxy(vertx).searchCommunity(stored.id))
+          .onSuccess(foundProfile -> testContext.verify(() -> {
+
+            assertThat(foundProfile).isEqualTo(stored);
+            testContext.completeNow();
+
+          }));
+
+    }).sendJson(profile.toJsonObject(), testContext, testContext.checkpoint(2));
 
   }
 

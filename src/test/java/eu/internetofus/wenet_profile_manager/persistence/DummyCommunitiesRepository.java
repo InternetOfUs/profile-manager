@@ -41,7 +41,7 @@ public class DummyCommunitiesRepository implements CommunitiesRepository {
    * {@inheritDoc}
    */
   @Override
-  public void searchCommunityObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void searchCommunity(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
   }
 
@@ -73,7 +73,8 @@ public class DummyCommunitiesRepository implements CommunitiesRepository {
    * {@inheritDoc}
    */
   @Override
-  public void retrieveCommunityProfilesPageObject(final JsonObject query, final JsonObject sort, final int offset, final int limit, final Handler<AsyncResult<JsonObject>> handler) {
+  public void retrieveCommunityProfilesPageObject(final JsonObject query, final JsonObject sort, final int offset,
+      final int limit, final Handler<AsyncResult<JsonObject>> handler) {
 
   }
 

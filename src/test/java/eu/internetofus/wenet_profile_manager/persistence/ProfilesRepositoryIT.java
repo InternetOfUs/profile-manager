@@ -28,11 +28,11 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import eu.internetofus.common.model.TimeManager;
-import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
@@ -852,10 +852,11 @@ public class ProfilesRepositoryIT {
       final var emptyProfile = new WeNetUserProfile();
       emptyProfile.id = profile.id;
       testContext.assertComplete(ProfilesRepository.createProxy(vertx).updateProfile(emptyProfile)
-          .compose(stored -> ProfilesRepository.createProxy(vertx).searchProfile(profile.id))).onSuccess(
+          .compose(updated -> ProfilesRepository.createProxy(vertx).searchProfile(profile.id))).onSuccess(
 
               found -> testContext.verify(() -> {
 
+                emptyProfile._creationTs = found._creationTs;
                 emptyProfile._lastUpdateTs = found._lastUpdateTs;
                 assertThat(found).isEqualTo(emptyProfile);
                 testContext.completeNow();

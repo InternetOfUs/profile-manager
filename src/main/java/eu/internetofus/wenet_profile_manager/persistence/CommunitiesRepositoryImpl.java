@@ -65,7 +65,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
    * {@inheritDoc}
    */
   @Override
-  public void searchCommunityObject(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
+  public void searchCommunity(final String id, final Handler<AsyncResult<JsonObject>> searchHandler) {
 
     final var query = new JsonObject().put("_id", id);
     this.findOneDocument(COMMUNITIES_COLLECTION, query, null, found -> {

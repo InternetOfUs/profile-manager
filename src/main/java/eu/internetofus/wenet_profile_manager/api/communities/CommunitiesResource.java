@@ -26,11 +26,11 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.CommunityMember;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.components.models.SocialPractice;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;
@@ -111,7 +111,8 @@ public class CommunitiesResource implements Communities {
     final var model = this.createCommunityContext();
     model.id = id;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.retrieveModel(model, this.repository::searchCommunity, context);
+    ModelResources.retrieveModel(model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler), context);
 
   }
 
@@ -125,7 +126,8 @@ public class CommunitiesResource implements Communities {
     final var model = this.createCommunityContext();
     model.id = id;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.updateModelChain(this.vertx, body, model, this.repository::searchCommunity,
+    ModelResources.updateModelChain(this.vertx, body, model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         this.repository::updateCommunity, context, () -> {
 
           ServiceResponseHandlers.responseOk(resultHandler, model.value);
@@ -143,7 +145,8 @@ public class CommunitiesResource implements Communities {
     final var model = this.createCommunityContext();
     model.id = id;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.mergeModelChain(this.vertx, body, model, this.repository::searchCommunity,
+    ModelResources.mergeModelChain(this.vertx, body, model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         this.repository::updateCommunity, context, () -> {
 
           ServiceResponseHandlers.responseOk(resultHandler, model.value);
@@ -179,7 +182,8 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, SocialPractice, String>(), "socialPractices",
         SocialPractice.class);
     element.model.id = id;
-    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.createModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.socialPractices,
         (community, socialPractices) -> community.socialPractices = socialPractices, this.repository::updateCommunity,
         context);
@@ -217,8 +221,9 @@ public class CommunitiesResource implements Communities {
     final var context = new ServiceContext(request, resultHandler);
     final var model = this.createCommunityContext();
     model.id = id;
-    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.socialPractices,
-        context);
+    ModelResources.retrieveModelField(model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.socialPractices, context);
 
   }
 
@@ -235,7 +240,8 @@ public class CommunitiesResource implements Communities {
         SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity,
+    ModelResources.retrieveModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.socialPractices,
         ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)), context);
 
@@ -254,7 +260,8 @@ public class CommunitiesResource implements Communities {
         SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity,
+    ModelResources.deleteModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.socialPractices,
         ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
         this.repository::updateCommunity, context);
@@ -274,7 +281,8 @@ public class CommunitiesResource implements Communities {
         SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.updateModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.socialPractices,
         ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
         this.repository::updateCommunity, context);
@@ -294,7 +302,8 @@ public class CommunitiesResource implements Communities {
         SocialPractice.class);
     element.model.id = id;
     element.id = socialPracticeId;
-    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.mergeModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.socialPractices,
         ModelResources.searchElementById((socialPractice, searchId) -> socialPractice.id.equals(searchId)),
         this.repository::updateCommunity, context);
@@ -312,7 +321,8 @@ public class CommunitiesResource implements Communities {
     final var element = this.fillElementContext(
         new ModelFieldContext<CommunityProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = id;
-    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.createModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.norms, (community, norms) -> community.norms = norms, this.repository::updateCommunity,
         context);
 
@@ -328,7 +338,9 @@ public class CommunitiesResource implements Communities {
     final var context = new ServiceContext(request, resultHandler);
     final var model = this.createCommunityContext();
     model.id = id;
-    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.norms, context);
+    ModelResources.retrieveModelField(model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.norms, context);
 
   }
 
@@ -344,8 +356,9 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = id;
     element.id = index;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.norms,
-        ModelResources.searchElementByIndex(), context);
+    ModelResources.retrieveModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.norms, ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -361,8 +374,9 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = id;
     element.id = index;
-    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.norms,
-        ModelResources.searchElementByIndex(), this.repository::updateCommunity, context);
+    ModelResources.deleteModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.norms, ModelResources.searchElementByIndex(), this.repository::updateCommunity, context);
 
   }
 
@@ -378,7 +392,8 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = id;
     element.id = index;
-    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.updateModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.norms, ModelResources.searchElementByIndex(), this.repository::updateCommunity, context);
 
   }
@@ -395,7 +410,8 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
     element.model.id = id;
     element.id = index;
-    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.mergeModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.norms, ModelResources.searchElementByIndex(), this.repository::updateCommunity, context);
 
   }
@@ -411,7 +427,8 @@ public class CommunitiesResource implements Communities {
     final var element = this.fillElementContext(
         new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
-    ModelResources.createModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.createModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.members, (community, communityMembers) -> community.members = communityMembers,
         this.repository::updateCommunity, context);
 
@@ -427,7 +444,9 @@ public class CommunitiesResource implements Communities {
     final var context = new ServiceContext(request, resultHandler);
     final var model = this.createCommunityContext();
     model.id = id;
-    ModelResources.retrieveModelField(model, this.repository::searchCommunity, community -> community.members, context);
+    ModelResources.retrieveModelField(model,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.members, context);
 
   }
 
@@ -443,7 +462,9 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
     element.id = userId;
-    ModelResources.retrieveModelFieldElement(element, this.repository::searchCommunity, community -> community.members,
+    ModelResources.retrieveModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.members,
         ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         context);
 
@@ -461,7 +482,9 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
     element.id = userId;
-    ModelResources.deleteModelFieldElement(element, this.repository::searchCommunity, community -> community.members,
+    ModelResources.deleteModelFieldElement(element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
+        community -> community.members,
         ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
 
@@ -479,7 +502,8 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
     element.id = userId;
-    ModelResources.updateModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.updateModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.members,
         ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);
@@ -498,7 +522,8 @@ public class CommunitiesResource implements Communities {
         new ModelFieldContext<CommunityProfile, String, CommunityMember, String>(), "members", CommunityMember.class);
     element.model.id = id;
     element.id = userId;
-    ModelResources.mergeModelFieldElement(this.vertx, body, element, this.repository::searchCommunity,
+    ModelResources.mergeModelFieldElement(this.vertx, body, element,
+        (communityId, handler) -> this.repository.searchCommunity(communityId).onComplete(handler),
         community -> community.members,
         ModelResources.searchElementById((communityMember, searchId) -> communityMember.userId.equals(searchId)),
         this.repository::updateCommunity, context);

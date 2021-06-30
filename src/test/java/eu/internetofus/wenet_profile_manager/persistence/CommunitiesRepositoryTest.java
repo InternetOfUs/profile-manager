@@ -34,8 +34,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import eu.internetofus.common.model.ValidationErrorException;
 import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.model.ValidationErrorException;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -113,11 +113,11 @@ public class CommunitiesRepositoryTest {
   public void shouldFailSearchCommunityWhenFoundObjectNotMatch(final VertxTestContext testContext) {
 
     final var repository = spy(new DummyCommunitiesRepository());
-    repository.searchCommunity("id", testContext.failing(error -> testContext.completeNow()));
+    repository.searchCommunity("id").onComplete(testContext.failing(error -> testContext.completeNow()));
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<Handler<AsyncResult<JsonObject>>> searchHandler = ArgumentCaptor.forClass(Handler.class);
-    verify(repository, timeout(30000).times(1)).searchCommunityObject(any(), searchHandler.capture());
+    verify(repository, timeout(30000).times(1)).searchCommunity(any(), searchHandler.capture());
     searchHandler.getValue().handle(Future.succeededFuture(new JsonObject().put("udefinedKey", "value")));
 
   }

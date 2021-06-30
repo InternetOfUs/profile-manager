@@ -81,16 +81,13 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#searchCommunityObject(String,
-   *      io.vertx.core.Handler)
+   * @see CommunitiesRepository#searchCommunity(String)
    */
   @Test
   public void shouldNotFoundUndefinedCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
 
-    CommunitiesRepository.createProxy(vertx).searchCommunityObject("undefined community identifier",
-        testContext.failing(failed -> {
-          testContext.completeNow();
-        }));
+    CommunitiesRepository.createProxy(vertx).searchCommunity("undefined community identifier")
+        .onComplete(testContext.failing(error -> testContext.completeNow()));
 
   }
 
@@ -100,7 +97,7 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#searchCommunity(String, io.vertx.core.Handler)
+   * @see CommunitiesRepository#searchCommunity(String)
    */
   @Test
   public void shouldFoundCommunity(final Vertx vertx, final VertxTestContext testContext) {
@@ -108,32 +105,8 @@ public class CommunitiesRepositoryIT {
     final var repository = CommunitiesRepository.createProxy(vertx);
     repository.storeCommunity(new CommunityProfile(), testContext.succeeding(storedCommunity -> {
 
-      repository.searchCommunity(storedCommunity.id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
-        assertThat(foundCommunity).isEqualTo(storedCommunity);
-        testContext.completeNow();
-      })));
-
-    }));
-
-  }
-
-  /**
-   * Verify that can found a community object.
-   *
-   * @param vertx       event bus to use.
-   * @param testContext context that executes the test.
-   *
-   * @see CommunitiesRepository#searchCommunityObject(String,
-   *      io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldFoundCommunityObject(final Vertx vertx, final VertxTestContext testContext) {
-
-    final var repository = CommunitiesRepository.createProxy(vertx);
-    repository.storeCommunity(new JsonObject(), testContext.succeeding(storedCommunity -> {
-
-      repository.searchCommunityObject(storedCommunity.getString("id"),
-          testContext.succeeding(foundCommunity -> testContext.verify(() -> {
+      repository.searchCommunity(storedCommunity.id)
+          .onComplete(testContext.succeeding(foundCommunity -> testContext.verify(() -> {
             assertThat(foundCommunity).isEqualTo(storedCommunity);
             testContext.completeNow();
           })));
@@ -362,16 +335,17 @@ public class CommunitiesRepositoryIT {
       update._lastUpdateTs = 1;
       repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
-        repository.searchCommunity(stored.id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
+        repository.searchCommunity(stored.id)
+            .onComplete(testContext.succeeding(foundCommunity -> testContext.verify(() -> {
 
-          assertThat(stored).isNotNull();
-          assertThat(foundCommunity.id).isNotEmpty().isEqualTo(stored.id);
-          assertThat(foundCommunity._creationTs).isEqualTo(stored._creationTs);
-          assertThat(foundCommunity._lastUpdateTs).isEqualTo(1);
-          update._lastUpdateTs = foundCommunity._lastUpdateTs;
-          assertThat(foundCommunity).isEqualTo(update);
-          testContext.completeNow();
-        })));
+              assertThat(stored).isNotNull();
+              assertThat(foundCommunity.id).isNotEmpty().isEqualTo(stored.id);
+              assertThat(foundCommunity._creationTs).isEqualTo(stored._creationTs);
+              assertThat(foundCommunity._lastUpdateTs).isEqualTo(1);
+              update._lastUpdateTs = foundCommunity._lastUpdateTs;
+              assertThat(foundCommunity).isEqualTo(update);
+              testContext.completeNow();
+            })));
       })));
 
     })));
@@ -401,7 +375,7 @@ public class CommunitiesRepositoryIT {
               .put("_creationTs", createTs + 12345).put("_lastUpdateTs", updateTs + 12345);
           repository.updateCommunity(update, testContext.succeeding(empty -> testContext.verify(() -> {
 
-            repository.searchCommunityObject(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
+            repository.searchCommunity(id, testContext.succeeding(foundCommunity -> testContext.verify(() -> {
               stored.put("_lastUpdateTs", updateTs + 12345);
               stored.put("description", "Community Description");
               assertThat(foundCommunity).isEqualTo(stored);
@@ -448,7 +422,7 @@ public class CommunitiesRepositoryIT {
       final var id = stored.getString("id");
       repository.deleteCommunity(id, testContext.succeeding(success -> {
 
-        repository.searchCommunityObject(id, testContext.failing(search -> {
+        repository.searchCommunity(id, testContext.failing(search -> {
 
           testContext.completeNow();
 

@@ -38,6 +38,7 @@ import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -90,32 +91,17 @@ public interface CommunitiesRepository {
   /**
    * Search for the community with the specified identifier.
    *
-   * @param id            identifier of the user to search.
-   * @param searchHandler handler to manage the search.
+   * @param id identifier of the user to search.
+   *
+   * @return the future found community.
    */
   @GenIgnore
-  default void searchCommunity(final String id, final Handler<AsyncResult<CommunityProfile>> searchHandler) {
+  default Future<CommunityProfile> searchCommunity(final String id) {
 
-    this.searchCommunityObject(id, search -> {
+    final Promise<JsonObject> promise = Promise.promise();
+    this.searchCommunity(id, promise);
+    return Model.fromFutureJsonObject(promise.future(), CommunityProfile.class);
 
-      if (search.failed()) {
-
-        searchHandler.handle(Future.failedFuture(search.cause()));
-
-      } else {
-
-        final var value = search.result();
-        final var community = Model.fromJsonObject(value, CommunityProfile.class);
-        if (community == null) {
-
-          searchHandler.handle(Future.failedFuture("The stored community is not valid."));
-
-        } else {
-
-          searchHandler.handle(Future.succeededFuture(community));
-        }
-      }
-    });
   }
 
   /**
@@ -124,7 +110,7 @@ public interface CommunitiesRepository {
    * @param id            identifier of the user to search.
    * @param searchHandler handler to manage the search.
    */
-  void searchCommunityObject(String id, Handler<AsyncResult<JsonObject>> searchHandler);
+  void searchCommunity(String id, Handler<AsyncResult<JsonObject>> searchHandler);
 
   /**
    * Store a community.
