@@ -17,10 +17,8 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.persistence;
 
-/**
- * The services that can be used to calculate the user personality.
- *
- * @author UDT-IA, IIIA-CSIC
- */
-package eu.internetofus.wenet_profile_manager.api.personalities;
+public class ProfilesRepositoryImplIT {
+
+}
