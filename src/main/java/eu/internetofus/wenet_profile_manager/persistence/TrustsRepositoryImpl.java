@@ -26,6 +26,7 @@ import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.AggregateOptions;
@@ -65,12 +66,13 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
    * Create a new repository.
    *
    * @param conf    configuration to use.
+   * @param vertx   event bus to use.
    * @param pool    to create the connections.
    * @param version of the schemas.
    */
-  public TrustsRepositoryImpl(final JsonObject conf, final MongoClient pool, final String version) {
+  public TrustsRepositoryImpl(final JsonObject conf, final Vertx vertx, final MongoClient pool, final String version) {
 
-    super(pool, version);
+    super(vertx, pool, version);
     this.n = conf.getJsonObject("TrustAggregator", new JsonObject()).getJsonObject("RECENCY_BASED", new JsonObject())
         .getInteger("n", DEFAULT_N);
 

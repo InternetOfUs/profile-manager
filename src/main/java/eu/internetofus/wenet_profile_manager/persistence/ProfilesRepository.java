@@ -20,9 +20,9 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
-import eu.internetofus.common.model.TimeManager;
-import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
@@ -73,7 +73,7 @@ public interface ProfilesRepository {
    */
   static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version) {
 
-    final var repository = new ProfilesRepositoryImpl(pool, version);
+    final var repository = new ProfilesRepositoryImpl(vertx, pool, version);
     new ServiceBinder(vertx).setAddress(ProfilesRepository.ADDRESS).register(ProfilesRepository.class, repository);
     return repository.migrateDocumentsToCurrentVersions();
 

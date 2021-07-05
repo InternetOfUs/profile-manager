@@ -25,6 +25,7 @@ import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
@@ -46,12 +47,13 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   /**
    * Create a new repository.
    *
+   * @param vertx   event bus to use.
    * @param pool    to create the connections.
    * @param version of the schemas.
    */
-  public CommunitiesRepositoryImpl(final MongoClient pool, final String version) {
+  public CommunitiesRepositoryImpl(final Vertx vertx, final MongoClient pool, final String version) {
 
-    super(pool, version);
+    super(vertx, pool, version);
 
   }
 

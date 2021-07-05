@@ -53,7 +53,7 @@ to solve the dependencies, generate the Open API documentation, compile the comp
 
  - Use `mvn dependency:list` to show the component dependencies.
  - Use `mvn compile` to compile and generate the Open API documentation (**target/classes/wenet-profile_manager-openapi.yml**).
- - Use `mvn test` to run the test.
+ - Use `mvn test` to run the test. Exist some Integration test that requires around 10 minutes, so if you want to ignore them execute them with `mvn -Ddisable.large.unit.tests=true test`.
  - Use `mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=0.0.0.0:5005 -Xnoagent -Djava.compiler=NONE" test` to run the test on debug mode.
  - Use `mvn site` to generate a HTML page (**target/site/index.html**) with all the reports (test, javadoc, PMD,CPD and coverage).
 

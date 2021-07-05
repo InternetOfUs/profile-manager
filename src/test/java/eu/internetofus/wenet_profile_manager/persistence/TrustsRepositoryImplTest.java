@@ -25,21 +25,20 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.MongoClient;
+import io.vertx.junit5.VertxExtension;
+import io.vertx.junit5.VertxTestContext;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
-import io.vertx.junit5.VertxExtension;
-import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link TrustsRepositoryImpl}.
@@ -55,14 +54,17 @@ public class TrustsRepositoryImplTest {
    * Should not calculate the median when can not found the median value.
    *
    * @param pool        mocked connection to MongoDB.
+   * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject,
+   *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotCalculateMedianTrustWhenFailFindMadian(@Mock final MongoClient pool, final VertxTestContext testContext) {
+  public void shouldNotCalculateMedianTrustWhenFailFindMadian(@Mock final MongoClient pool, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    final var repository = new TrustsRepositoryImpl(new JsonObject(), pool, "version");
+    final var repository = new TrustsRepositoryImpl(new JsonObject(), vertx, pool, "version");
     final var expectedCause = new Throwable("Expected cause");
     repository.calculateMedianTrust(new JsonObject(), testContext.failing(cause -> testContext.verify(() -> {
 
@@ -86,14 +88,17 @@ public class TrustsRepositoryImplTest {
    * Should not store an event when the MongoDB fails.
    *
    * @param pool        mocked connection to MongoDB.
+   * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject, io.vertx.core.Handler)
+   * @see TrustsRepositoryImpl#calculateMedianTrust(io.vertx.core.json.JsonObject,
+   *      io.vertx.core.Handler)
    */
   @Test
-  public void shouldNotStoreTrustEventBecausePoolFails(@Mock final MongoClient pool, final VertxTestContext testContext) {
+  public void shouldNotStoreTrustEventBecausePoolFails(@Mock final MongoClient pool, final Vertx vertx,
+      final VertxTestContext testContext) {
 
-    final var repository = new TrustsRepositoryImpl(new JsonObject(), pool, "version");
+    final var repository = new TrustsRepositoryImpl(new JsonObject(), vertx, pool, "version");
     final var expectedCause = new Throwable("Expected cause");
     repository.storeTrustEvent(new JsonObject(), testContext.failing(cause -> testContext.verify(() -> {
 

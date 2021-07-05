@@ -73,7 +73,7 @@ public interface TrustsRepository {
    */
   static Future<Void> register(final Vertx vertx, final JsonObject conf, final MongoClient pool, final String version) {
 
-    final var repository = new TrustsRepositoryImpl(conf, pool, version);
+    final var repository = new TrustsRepositoryImpl(conf, vertx, pool, version);
     new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class, repository);
     return repository.migrateDocumentsToCurrentVersions();
 

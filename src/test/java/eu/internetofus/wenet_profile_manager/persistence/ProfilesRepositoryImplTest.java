@@ -45,7 +45,7 @@ public class ProfilesRepositoryImplTest {
   @Test
   public void shouldNotRetrieveProfileUserIdsPageObject(final VertxTestContext testContext) {
 
-    final var repository = new ProfilesRepositoryImpl(null, null) {
+    final var repository = new ProfilesRepositoryImpl(null, null, null) {
 
       /**
        * {@inheritDoc}

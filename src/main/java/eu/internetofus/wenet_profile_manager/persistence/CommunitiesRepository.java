@@ -75,7 +75,7 @@ public interface CommunitiesRepository {
    */
   static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version) {
 
-    final var repository = new CommunitiesRepositoryImpl(pool, version);
+    final var repository = new CommunitiesRepositoryImpl(vertx, pool, version);
     new ServiceBinder(vertx).setAddress(CommunitiesRepository.ADDRESS).register(CommunitiesRepository.class,
         repository);
     return repository.migrateDocumentsToCurrentVersions();

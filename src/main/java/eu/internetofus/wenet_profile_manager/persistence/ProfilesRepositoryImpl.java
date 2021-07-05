@@ -26,6 +26,7 @@ import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfi
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
@@ -53,12 +54,13 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   /**
    * Create a new repository.
    *
+   * @param vertx   event bus to use.
    * @param pool    to create the connections.
    * @param version of the schemas.
    */
-  public ProfilesRepositoryImpl(final MongoClient pool, final String version) {
+  public ProfilesRepositoryImpl(final Vertx vertx, final MongoClient pool, final String version) {
 
-    super(pool, version);
+    super(vertx, pool, version);
 
   }
 
