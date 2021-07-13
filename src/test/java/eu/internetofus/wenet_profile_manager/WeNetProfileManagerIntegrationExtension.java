@@ -45,7 +45,7 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
     final var containers = Containers.status().startBasic().startTaskManagerContainer()
         .startInteractionProtocolEngineContainer();
 
-    return new MainArgumentBuilder().withApiPort(containers.profileManagerApiPort).with(containers).build();
+    return new MainArgumentBuilder().withApiPort(containers.profileManagerApiPort).withComponents(containers).build();
 
   }
 
