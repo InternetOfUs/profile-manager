@@ -20,10 +20,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.help;
 
-import java.nio.charset.Charset;
-
-import org.apache.commons.io.IOUtils;
-
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.api.APIVerticle;
 import io.vertx.core.AsyncResult;
@@ -36,7 +32,9 @@ import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
+import java.nio.charset.Charset;
 import javax.ws.rs.core.Response.Status;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Resource to provide the help about the API.
@@ -71,7 +69,7 @@ public class HelpResource implements Help {
     this.info.apiVersion = conf.getString("apiVersion", "Undefined");
     this.info.softwareVersion = conf.getString("softwareVersion", "Undefined");
     this.info.vendor = conf.getString("vendor", "UDT-IA, IIIA-CSIC");
-    this.info.license = conf.getString("license", "MIT");
+    this.info.license = conf.getString("license", "Apache v2");
 
   }
 
