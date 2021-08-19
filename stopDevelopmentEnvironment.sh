@@ -5,7 +5,9 @@ else
 	DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 	pushd $DIR >/dev/null
 	docker-compose -p wenet_profile_manager_services_dev -f src/dev/docker/docker-compose.yml down --remove-orphans
-	docker stop wenet_profile_manager_dev
-	docker rm wenet_profile_manager_dev
+	if [ "$(docker container ls |grep wenet_profile_manager_dev |wc -l)" -gt "0" ]
+	then
+		docker stop wenet_profile_manager_dev
+	fi
 	popd >/dev/null
 fi
