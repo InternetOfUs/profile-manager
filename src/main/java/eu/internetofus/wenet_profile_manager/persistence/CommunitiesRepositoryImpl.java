@@ -21,19 +21,23 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.vertx.Repository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.UpdateOptions;
 
 /**
  * Implementation of the {@link CommunitiesRepository}.
  *
  * @see CommunitiesRepository
+ * @see CommunityProfile
  *
  * @author UDT-IA, IIIA-CSIC
  */
@@ -137,7 +141,45 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
    */
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
-    return this.migrateCollection(COMMUNITIES_COLLECTION, CommunityProfile.class);
+    return this.migrateComunitiesWithoutNorms_with_API_0_16_0_OR_LESS()
+        .compose(empty -> this.migrateCollection(COMMUNITIES_COLLECTION, CommunityProfile.class));
+  }
+
+  /**
+   * Migrate the communities that with the API less than or equals to 0.16.0 that
+   * does not have norms.
+   *
+   * @return the future that inform if the communities has been migrated.
+   */
+  protected Future<Void> migrateComunitiesWithoutNorms_with_API_0_16_0_OR_LESS() {
+
+    final var notExists = new JsonObject().put("norms", new JsonObject().put("$exists", false));
+    final var notString = new JsonObject().put("norms",
+        new JsonObject().put("$not", new JsonObject().put("$type", "array")));
+    final var notEq = new JsonObject().put("norms",
+        new JsonObject().put("$exists", true).put("$type", "array").put("$eq", new JsonArray()));
+    final var query = new JsonObject().put("$and",
+        new JsonArray().add(this.createQueryToReturnDocumentsWithAVersionLessThan("0.16.1"))
+            .add(new JsonObject().put("$or", new JsonArray().add(notExists).add(notString).add(notEq))));
+    final var update = new JsonObject().put("$set",
+        new JsonObject().put("norms", this.defaultNormsForCommunitiesWitghoutNormsAndSchema_0_16_0_or_less()));
+    final var options = new UpdateOptions();
+    options.setMulti(true);
+    return this.pool.updateCollectionWithOptions(COMMUNITIES_COLLECTION, query, update, options).map(any -> null);
+  }
+
+  /**
+   * The norms to set for the communities to migrate.
+   *
+   * @return the norms for the community profiles.
+   */
+  protected JsonArray defaultNormsForCommunitiesWitghoutNormsAndSchema_0_16_0_or_less() {
+
+    final var norm = new ProtocolNorm();
+    norm.description = "Notify user of any received incentive";
+    norm.whenever = "is_received_send_incentive(Incentive)";
+    norm.thenceforth = "send_user_message('INCENTIVE',Incentive)";
+    return new JsonArray().add(norm.toJsonObject());
   }
 
 }
