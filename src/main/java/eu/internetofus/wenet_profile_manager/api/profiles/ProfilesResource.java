@@ -121,17 +121,16 @@ public class ProfilesResource implements Profiles {
           ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
 
           // Update the social context of the created user
-          WeNetSocialContextBuilder.createProxy(this.vertx).retrieveSocialRelations(model.value.id)
+          WeNetSocialContextBuilder.createProxy(this.vertx).initializeSocialRelations(model.value)
               .onComplete(retrieve -> {
 
                 if (retrieve.failed()) {
 
-                  Logger.trace(retrieve.cause(), "Cannot update the social relations of {}.", () -> model.value.id);
+                  Logger.trace(retrieve.cause(), "Cannot initialize the social relations of {}.", () -> model.value.id);
 
                 } else {
 
-                  Logger.trace("Obtained for the user {} the next social relations {}.", () -> model.value.id,
-                      () -> retrieve.result());
+                  Logger.trace("Initialized social relations of the user {}.", () -> model.value.id);
                 }
               });
         });

@@ -3,6 +3,13 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
+## Version 0.21.0 (2021-09-06)
+
+ * Add web services to obtain a diversity team.
+ * Modify initilaization of the social context builder social relations
+   for a created user.
+
+
 ## Version 0.20.0 (2021-08-23)
 
  * Upgrade common version that fix migrate collections stack overflow error.

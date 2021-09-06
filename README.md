@@ -77,6 +77,7 @@ This creates the generic docker image, but you can create a different wit the **
  - **DEFAULT_DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DEFAULT_DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DEFAULT_DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
+ - **DEFAULT_WENET_PROFILE_MANAGER_EXT_WORDNETSIM_API** to define the path to the profile manager extension for the word net similarity component to use. By default is **https://wenet.u-hopper.com/prod/profile_manager_ext_wordnetsim**.
  - **DEFAULT_WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
  - **DEFAULT_WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
  - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
@@ -101,6 +102,7 @@ On this container, you can use the next environment variables:
  - **DB_NAME** to define the mongo database name. By default is **wenetProfileManagerDB**.
  - **DB_USER_NAME** to define the mongo database user name. By default is **wenetProfileManager**.
  - **DB_USER_PASSWORD** to define the mongo database user password. By default is **password**.
+ - **WENET_PROFILE_MANAGER_EXT_WORDNETSIM_API** to define the path to the profile manager extension for the word net similarity component to use. By default is **https://wenet.u-hopper.com/prod/profile_manager_ext_wordnetsim**.
  - **WENET_TASK_MANAGER_API** to define the path to the task manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
  - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
  - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
@@ -120,6 +122,7 @@ This docker compose has the next variables:
  - **PROFILE_MANAGER_API_PORT** to define the port to listen for the API calls. By default is **8083**.
  - **MONGO_ROOT_USER** to define the root user for the MongoDB. By default is **root**.
  - **MONGO_ROOT_PASSWORD** to define the password of the root user for the MongoDB. By default is **password**.
+ - **WENET_PROFILE_MANAGER_EXT_WORDNETSIM_API** to define the path to the profile manager extension for the word net similarity component to use. By default is **https://wenet.u-hopper.com/prod/profile_manager_ext_wordnetsim**.
  - **WENET_TASK_MANAGER_API** to define the path to the profile manager component to use. By default is **https://wenet.u-hopper.com/prod/task_manager**.
  - **WENET_SERVICE_API** to define the path to the service component to use. By default is **https://wenet.u-hopper.com/prod/service**.
  - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
@@ -167,7 +170,7 @@ This software is under the [Apache V2 license](LICENSE)
 
 ### Social context builder
 
- - Inform every time a new user profile is created. (GET {{social_context_builder_api}}/social/relations/{{userId}})
+ - Inform every time a new user profile is created. (POST {{social_context_builder_api}}/social/relations/initialize/{{userId}})
 
 ### [Task manager](https://hub.docker.com/r/internetofus/task-manager)
 
