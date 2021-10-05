@@ -28,10 +28,6 @@ import eu.internetofus.wenet_profile_manager.api.communities.Communities;
 import eu.internetofus.wenet_profile_manager.api.communities.CommunitiesResource;
 import eu.internetofus.wenet_profile_manager.api.help.Help;
 import eu.internetofus.wenet_profile_manager.api.help.HelpResource;
-import eu.internetofus.wenet_profile_manager.api.intelligences.Intelligences;
-import eu.internetofus.wenet_profile_manager.api.intelligences.IntelligencesResource;
-import eu.internetofus.wenet_profile_manager.api.personalities.Personalities;
-import eu.internetofus.wenet_profile_manager.api.personalities.PersonalitiesResource;
 import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
@@ -70,14 +66,6 @@ public class APIVerticle extends AbstractAPIVerticle {
     routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
         new ProfilesResource(this.vertx));
-
-    routerFactory.mountServiceInterface(Personalities.class, Personalities.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Personalities.ADDRESS).register(Personalities.class,
-        new PersonalitiesResource(this.vertx));
-
-    routerFactory.mountServiceInterface(Intelligences.class, Intelligences.ADDRESS);
-    new ServiceBinder(this.vertx).setAddress(Intelligences.ADDRESS).register(Intelligences.class,
-        new IntelligencesResource(this.vertx));
 
     routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));
