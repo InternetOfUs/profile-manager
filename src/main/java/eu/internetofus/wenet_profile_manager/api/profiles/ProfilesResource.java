@@ -1261,4 +1261,48 @@ public class ProfilesResource implements Profiles {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void addOrUpdateProfileRelationship(final String userId, final JsonObject body, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+
+    this.repository.searchProfile(userId).onComplete(search -> {
+
+      final var profile = search.result();
+      if (profile != null && profile.relationships != null) {
+
+        final var newRelationship = Model.fromJsonObject(body, SocialNetworkRelationship.class);
+        if (newRelationship != null) {
+
+          final var max = profile.relationships.size();
+          for (var index = 0; index < max; index++) {
+
+            final var relationship = profile.relationships.get(index);
+            if (relationship.equalsByUserAndType(newRelationship)) {
+
+              this.mergeProfileRelationship(userId, index, body, request, resultHandler);
+              return;
+            }
+          }
+        }
+      }
+
+      // not defined => add
+      final var context = new ServiceContext(request, resultHandler);
+      final var element = this.fillElementContext(
+          new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship",
+          SocialNetworkRelationship.class);
+      element.model.id = userId;
+      ModelResources.createModelFieldElementChain(this.vertx, body, element, (any, handler) -> handler.handle(search),
+          model -> model.relationships, (model, relationships) -> model.relationships = relationships,
+          (model, handler) -> this.repository.updateProfile(model).onComplete(handler), context,
+          this.addProfileToHistoricChain(element.model,
+              () -> ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, element.value)));
+
+    });
+
+  }
+
 }

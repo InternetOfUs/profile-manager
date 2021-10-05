@@ -20,7 +20,6 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import static eu.internetofus.common.components.AbstractComponentMocker.createClientWithDefaultSession;
 import static eu.internetofus.common.model.ValidableAsserts.assertIsNotValid;
 import static eu.internetofus.common.model.ValidableAsserts.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,21 +29,12 @@ import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.Task;
 import eu.internetofus.common.components.models.WeNetUserProfile;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManagerMocker;
-import eu.internetofus.common.components.service.WeNetService;
-import eu.internetofus.common.components.service.WeNetServiceSimulator;
-import eu.internetofus.common.components.service.WeNetServiceSimulatorMocker;
-import eu.internetofus.common.components.task_manager.WeNetTaskManager;
-import eu.internetofus.common.components.task_manager.WeNetTaskManagerMocker;
 import eu.internetofus.common.model.ModelTestCase;
+import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import java.util.ArrayList;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,55 +47,8 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@ExtendWith(VertxExtension.class)
+@ExtendWith(WeNetProfileManagerIntegrationExtension.class)
 public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanceRatingEvent> {
-
-  /**
-   * The profile manager mocked server.
-   */
-  protected static WeNetProfileManagerMocker profileManagerMocker;
-
-  /**
-   * The task manager mocked server.
-   */
-  protected static WeNetTaskManagerMocker taskManagerMocker;
-
-  /**
-   * The service mocked server.
-   */
-  protected static WeNetServiceSimulatorMocker serviceMocker;
-
-  /**
-   * Start the mocker server.
-   */
-  @BeforeAll
-  public static void startMockers() {
-
-    profileManagerMocker = WeNetProfileManagerMocker.start();
-    taskManagerMocker = WeNetTaskManagerMocker.start();
-    serviceMocker = WeNetServiceSimulatorMocker.start();
-  }
-
-  /**
-   * Register the necessary services before to test.
-   *
-   * @param vertx event bus to register the necessary services.
-   */
-  @BeforeEach
-  public void registerServices(final Vertx vertx) {
-
-    final var client = createClientWithDefaultSession(vertx);
-    final var profileConf = profileManagerMocker.getComponentConfiguration();
-    WeNetProfileManager.register(vertx, client, profileConf);
-
-    final var taskConf = taskManagerMocker.getComponentConfiguration();
-    WeNetTaskManager.register(vertx, client, taskConf);
-
-    final var conf = serviceMocker.getComponentConfiguration();
-    WeNetService.register(vertx, client, conf);
-    WeNetServiceSimulator.register(vertx, client, conf);
-
-  }
 
   /**
    * {@inheritDoc}

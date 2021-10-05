@@ -20,8 +20,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
-import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.model.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -807,6 +807,32 @@ public interface Profiles {
   void updateProfileRelationship(
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index,
+      @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) ServiceRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
+
+  /**
+   * Called when want to add or update a relationship from a user and type.
+   *
+   * @param userId        identifier of the user for the profile where the
+   *                      relationship is defined.
+   * @param body          the new values for the relationship.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
+   */
+  @PUT
+  @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Add or update a relationship from a profile", description = "Allow to modify a relationship defined into a profile or add if not exist yet")
+  @RequestBody(description = "The new values to update the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/7af902b41c0d088f33ba35efd095624aa8aa6a6a/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "200", description = "The updated relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/7af902b41c0d088f33ba35efd095624aa8aa6a6a/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "201", description = "The created relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/7af902b41c0d088f33ba35efd095624aa8aa6a6a/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  @Tag(name = "Relationships")
+  void addOrUpdateProfileRelationship(
+      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);

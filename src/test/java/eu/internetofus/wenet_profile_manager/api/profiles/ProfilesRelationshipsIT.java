@@ -20,6 +20,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
+import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
@@ -27,10 +29,16 @@ import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
+import eu.internetofus.common.model.ErrorMessage;
+import eu.internetofus.common.model.Model;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxTestContext;
 import java.util.List;
+import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
 
 /**
  * Check the manipulation of the personal behaviors
@@ -123,6 +131,182 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
 
     }
 
+  }
+
+  /**
+   * Should not add or update an element if the profile is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldNotAddOrUpdateRelationshipBecauseProfileIsUndefined(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.createValidModelFieldElementExample(1, vertx, testContext)).onSuccess(source -> {
+
+      final var path = this.modelPath() + this.undefinedModelIdPath() + this.fieldPath();
+      testRequest(client, HttpMethod.PUT, path).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(source.toJsonObject(), testContext);
+
+    });
+  }
+
+  /**
+   * Should not add or update a bad JSON element.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldNotAddOrUpdateWithBadJsonRelationship(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
+
+      final var modelId = this.idOfModel(model, testContext);
+      final var path = this.modelPath() + "/" + modelId + this.fieldPath();
+      testRequest(client, HttpMethod.PUT, path).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(this.createBadJsonObjectModelFieldElement(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Should add element when relationships are {@code null}.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddOrUpdateElementOverNullField(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithNullField(4, vertx, testContext)).onSuccess(model -> {
+
+      testContext.assertComplete(this.createValidModelFieldElementExample(4, vertx, testContext)).onSuccess(element -> {
+
+        final var checkpoint = testContext.checkpoint(2);
+        final var path = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+        testRequest(client, HttpMethod.PUT, path).expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+          final var created = assertThatBodyIs(element.getClass(), res);
+          this.assertEqualsAdded(element, created);
+
+          final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+          testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+            assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+            final var updatedField = this.fieldOf(updatedModel);
+            assertThat(updatedField).isNotEmpty().contains(created);
+
+          }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      });
+
+    });
+
+  }
+
+  /**
+   * Should update an existing relation.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddOrUpdateRelationWhenRelationExist(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
+
+      final var modelId = this.idOfModel(model, testContext);
+      final var field = this.fieldOf(model, testContext);
+      final var elementId = this.idOfElementIn(model, field.get(field.size() - 1));
+      final var element = Model.fromJsonObject(field.get(elementId).toJsonObject(), SocialNetworkRelationship.class);
+      element.weight += 0.02;
+      final var checkpoint = testContext.checkpoint(2);
+      final var path = this.modelPath() + "/" + modelId + this.fieldPath();
+      testRequest(client, HttpMethod.PUT, path).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var merged = assertThatBodyIs(element.getClass(), res);
+        this.assertEqualsAdded(element, merged);
+        final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+        testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+          assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var mergedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+          final var mergedField = this.fieldOf(mergedModel);
+          assertThat(mergedField).isNotEmpty().contains(merged);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+    });
+  }
+
+  /**
+   * Should add an existing relation.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddOrUpdateRelationWhenRelationNotExist(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(2, vertx, testContext)).onSuccess(model -> {
+
+      testContext.assertComplete(this.createValidModelFieldElementExample(200, vertx, testContext))
+          .onSuccess(element -> {
+
+            final var checkpoint = testContext.checkpoint(2);
+            final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+            testRequest(client, HttpMethod.PUT, postPath).expect(res -> {
+
+              assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+              final var created = assertThatBodyIs(element.getClass(), res);
+              this.assertEqualsAdded(element, created);
+
+              final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+              testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+                assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+                final var updatedField = this.fieldOf(updatedModel);
+                assertThat(updatedField).isNotEmpty().contains(created);
+
+              }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+            }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+          });
+
+    });
   }
 
 }
