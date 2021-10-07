@@ -26,8 +26,8 @@ import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
-import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.model.ErrorMessage;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepositoryIT;
 import io.vertx.core.Handler;
@@ -94,7 +94,7 @@ public class TrustsIT {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
       final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty().endsWith(".sourceId");
+      assertThat(error.code).isNotEmpty().endsWith(".communityId");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
     }).sendJson(event.toJsonObject(), testContext);

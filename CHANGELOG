@@ -9,6 +9,7 @@ All notable changes to `wenet-profile-manager` will be documented in this file
  * Modify initilaization of the social context builder social relations
    for a created user.
  * Allow to add or update social network relationship.
+ * Update common API models references.
 
 
 ## Version 0.20.0 (2021-08-23)

@@ -31,6 +31,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.UpdateOptions;
 
 /**
  * Implementation of the {@link ProfilesRepository}.
@@ -158,8 +159,9 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    */
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
-    return this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class)
-        .compose(map -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
+    return this.fixDuplicatedRelationships()
+        .compose(empty -> this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class))
+        .compose(empty -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
 
   }
 
@@ -208,6 +210,24 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
     options.setLimit(limit);
     this.searchPageObject(PROFILES_COLLECTION, new JsonObject(), options, "profiles",
         profile -> profile.put("id", profile.remove("_id"))).onComplete(searchHandler);
+
+  }
+
+  /**
+   * Fix the duplicated social relationships.
+   *
+   * @return the future with the update result.
+   */
+  protected Future<Void> fixDuplicatedRelationships() {
+
+    final var query = new JsonObject().put("$and", new JsonArray().add(new JsonObject(
+        "{\"$nor\":[{\"relationships\":{\"$exists\":false}},{\"relationships\":{\"$size\":0}},{\"relationships\":{\"$size\":1}}]}"))
+        .add(this.createQueryToReturnDocumentsWithAVersionLessThan("0.7.0")));
+    final var update = new JsonArray(
+        "[{\"$set\":{\"relationships\":{\"$reduce\":{\"input\":{\"$filter\":{\"input\":\"$relationships\",\"as\":\"relation\",\"cond\":{\"$and\":[{\"$ne\":[\"$$relation.appId\",null]},{\"$ne\":[{\"$type\":\"$$relation.appId\"},\"missing\"]}]}}},\"initialValue\":[],\"in\":{\"$concatArrays\":[\"$$value\",{\"$cond\":[{\"$and\":[{\"$in\":[\"$$this.appId\",\"$$value.appId\"]},{\"$in\":[\"$$this.userId\",\"$$value.userId\"]},{\"$in\":[\"$$this.type\",\"$$value.type\"]}]},[],[\"$$this\"]]}]}}}}}]");
+    final var options = new UpdateOptions();
+    options.setMulti(true);
+    return this.pool.updateCollectionWithOptions(PROFILES_COLLECTION, query, update, options).map(any -> null);
 
   }
 

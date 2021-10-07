@@ -124,55 +124,6 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
     } else {
 
-      future = future.compose(mapper -> {
-
-        final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
-        WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
-
-          if (search.failed()) {
-
-            verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
-                "The '" + this.sourceId + "' is not defined.", search.cause()));
-
-          } else {
-
-            final var profile = search.result();
-            var validRelationship = true;
-            if (this.relationship != null) {
-
-              validRelationship = false;
-              if (profile.relationships != null) {
-
-                for (final SocialNetworkRelationship relation : profile.relationships) {
-
-                  if (relation.type == this.relationship && relation.userId.equals(this.targetId)) {
-                    // exist relation between them
-                    validRelationship = true;
-                    break;
-                  }
-                }
-              }
-            }
-            if (!validRelationship) {
-
-              verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".relationship",
-                  "The '" + this.relationship + "' is not defined by the source user '" + this.sourceId
-                      + "' with the target user '" + this.targetId + "'.",
-                  search.cause()));
-
-            } else {
-
-              verifyRequesterIdExistPromise.complete();
-            }
-
-          }
-        });
-        return verifyRequesterIdExistPromise.future();
-      });
-
-      future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
-          WeNetProfileManager.createProxy(vertx)::retrieveProfile);
-
       if (this.appId != null) {
 
         future = Validations.composeValidateId(future, codePrefix, "appId", this.appId, true,
@@ -231,6 +182,56 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
         });
 
       }
+
+      future = future.compose(mapper -> {
+
+        final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
+        WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
+
+          if (search.failed()) {
+
+            verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
+                "The '" + this.sourceId + "' is not defined.", search.cause()));
+
+          } else {
+
+            final var profile = search.result();
+            var validRelationship = true;
+            if (this.relationship != null) {
+
+              validRelationship = false;
+              if (profile.relationships != null) {
+
+                for (final SocialNetworkRelationship relation : profile.relationships) {
+
+                  if (relation.type == this.relationship && relation.userId.equals(this.targetId)
+                      && relation.appId.equals(this.appId)) {
+                    // exist relation between them
+                    validRelationship = true;
+                    break;
+                  }
+                }
+              }
+            }
+            if (!validRelationship) {
+
+              verifyRequesterIdExistPromise.fail(new ValidationErrorException(
+                  codePrefix + ".relationship", "The '" + this.relationship + "' is not defined on the '" + this.appId
+                      + "' by the source user '" + this.sourceId + "' with the target user '" + this.targetId + "'.",
+                  search.cause()));
+
+            } else {
+
+              verifyRequesterIdExistPromise.complete();
+            }
+
+          }
+        });
+        return verifyRequesterIdExistPromise.future();
+      });
+
+      future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
+          WeNetProfileManager.createProxy(vertx)::retrieveProfile);
 
       promise.complete();
 

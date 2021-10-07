@@ -25,7 +25,7 @@ import static eu.internetofus.common.model.ValidableAsserts.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
-import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.Task;
 import eu.internetofus.common.components.models.WeNetUserProfile;
@@ -85,17 +85,15 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
           final var profile = new WeNetUserProfile();
           profile.relationships = new ArrayList<>();
-          profile.relationships.add(new SocialNetworkRelationship());
+          profile.relationships.add(new SocialNetworkRelationshipTest().createModelExample(index));
+          profile.relationships.get(0).appId = task.appId;
           profile.relationships.get(0).userId = task.requesterId;
-          final var relationship = SocialNetworkRelationshipType.values()[index
-              % SocialNetworkRelationshipType.values().length];
-          profile.relationships.get(0).type = relationship;
           return StoreServices.storeProfile(profile, vertx, testContext).compose(stored -> {
 
             final var model = new UserPerformanceRatingEvent();
             model.sourceId = stored.id;
             model.targetId = task.requesterId;
-            model.relationship = relationship;
+            model.relationship = profile.relationships.get(0).type;
             model.appId = task.appId;
             model.communityId = task.communityId;
             model.taskTypeId = task.taskTypeId;
@@ -133,10 +131,10 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @see Task#validate(String, Vertx)
    */
   @Test
-  public void shouldBasicExampleBeValid(final Vertx vertx, final VertxTestContext testContext) {
+  public void shouldBasicExampleNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
     final var event = this.createModelExample(1);
-    assertIsNotValid(event, "sourceId", vertx, testContext);
+    assertIsNotValid(event, "communityId", vertx, testContext);
 
   }
 
@@ -324,6 +322,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.targetId = created.targetId;
       model.rating = created.rating;
       model.relationship = created.relationship;
+      model.appId = created.appId;
       assertIsValid(model, vertx, testContext);
 
     });
