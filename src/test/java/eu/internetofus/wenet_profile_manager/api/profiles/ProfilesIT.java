@@ -27,9 +27,6 @@ import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
-import eu.internetofus.common.model.TimeManager;
-import eu.internetofus.common.model.ErrorMessage;
-import eu.internetofus.common.model.Model;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.AliveBirthDate;
 import eu.internetofus.common.components.models.PlannedActivity;
@@ -42,6 +39,10 @@ import eu.internetofus.common.components.models.UserName;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
+import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderSimulator;
+import eu.internetofus.common.model.ErrorMessage;
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
@@ -267,18 +268,30 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   newProfile.relationships = updated.relationships;
                   assertThat(updated).isEqualTo(newProfile);
 
-                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                      .expect(resPage -> {
+                  testContext
+                      .assertComplete(
+                          WeNetSocialContextBuilderSimulator.createProxy(vertx).getSocialNotificationProfileUpdate())
+                      .onSuccess(notifiedIds -> {
 
-                        assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                        final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+                        testContext.verify(() -> {
 
-                        assertThat(page.profiles).hasSize(1);
-                        assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                        assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
-                        assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+                          assertThat(notifiedIds).isNotNull().contains(storedProfile.id);
+                        });
 
-                      }).send(testContext, checkpoint);
+                        testRequest(client, HttpMethod.GET,
+                            Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+                              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+                              assertThat(page.profiles).hasSize(1);
+                              assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+                              assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
+                              assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+                            }).send(testContext, checkpoint);
+
+                      });
 
                 })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
 
@@ -358,18 +371,31 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             newProfile.personalBehaviors = storedProfile.personalBehaviors;
             assertThat(merged).isEqualTo(newProfile);
 
-            testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                .expect(resPage -> {
+            testContext
+                .assertComplete(
+                    WeNetSocialContextBuilderSimulator.createProxy(vertx).getSocialNotificationProfileUpdate())
+                .onSuccess(notifiedIds -> {
 
-                  assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                  final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+                  testContext.verify(() -> {
 
-                  assertThat(page.profiles).hasSize(1);
-                  assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                  assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset((Long) 1L));
-                  assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+                    assertThat(notifiedIds).isNotNull().contains(storedProfile.id);
+                  });
 
-                }).send(testContext, checkpoint);
+                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+                      .expect(resPage -> {
+
+                        assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                        final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+                        assertThat(page.profiles).hasSize(1);
+                        assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+                        assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
+                            offset((Long) 1L));
+                        assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+                      }).send(testContext, checkpoint);
+
+                });
 
           })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
     });

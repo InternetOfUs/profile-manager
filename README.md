@@ -170,7 +170,8 @@ This software is under the [Apache V2 license](LICENSE)
 
 ### Social context builder
 
- - Inform every time a new user profile is created. (POST {{social_context_builder_api}}/social/relations/initialize/{{userId}})
+ - notify every time a new user profile is created. (POST {{social_context_builder_api}}/social/relations/initialize/{{userId}})
+ - Notify every time a user profile is updated. (POST {{social_context_builder_api}}/social/notification/profileUpdate/{{userId}})
 
 ### [Task manager](https://hub.docker.com/r/internetofus/task-manager)
 

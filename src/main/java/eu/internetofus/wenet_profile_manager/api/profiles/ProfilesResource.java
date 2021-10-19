@@ -183,6 +183,23 @@ public class ProfilesResource implements Profiles {
 
     return () -> {
 
+      // notify the social context builder
+      final var profileId = model.target.id;
+      WeNetSocialContextBuilder.createProxy(this.vertx).socialNotificationProfileUpdate(profileId)
+          .onComplete(retrieve -> {
+
+            if (retrieve.failed()) {
+
+              Logger.trace(retrieve.cause(),
+                  "Cannot to the social context builder that the profile of the user {} has updated.", profileId);
+
+            } else {
+
+              Logger.trace("Notified to the social context builder that the profile of the user {} has updated.",
+                  profileId);
+            }
+          });
+
       final var historic = new HistoricWeNetUserProfile();
       historic.from = model.target._lastUpdateTs;
       historic.to = TimeManager.now();
