@@ -17,10 +17,30 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.ModelTestCase;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Test the {@link SimilarityData}.
+ *
+ * @see SimilarityData
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+public class SimilarityDataTest extends ModelTestCase<SimilarityData> {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public SimilarityData createModelExample(final int index) {
+
+    final var model = new SimilarityData();
+    model.source = "Source of " + index;
+    model.userIds = "User of " + index;
+    return model;
+
+  }
+
+}

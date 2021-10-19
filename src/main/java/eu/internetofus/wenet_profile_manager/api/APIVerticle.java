@@ -28,6 +28,8 @@ import eu.internetofus.wenet_profile_manager.api.communities.Communities;
 import eu.internetofus.wenet_profile_manager.api.communities.CommunitiesResource;
 import eu.internetofus.wenet_profile_manager.api.help.Help;
 import eu.internetofus.wenet_profile_manager.api.help.HelpResource;
+import eu.internetofus.wenet_profile_manager.api.operations.Operations;
+import eu.internetofus.wenet_profile_manager.api.operations.OperationsResource;
 import eu.internetofus.wenet_profile_manager.api.profiles.Profiles;
 import eu.internetofus.wenet_profile_manager.api.profiles.ProfilesResource;
 import eu.internetofus.wenet_profile_manager.api.trusts.Trusts;
@@ -77,6 +79,10 @@ public class APIVerticle extends AbstractAPIVerticle {
     routerFactory.mountServiceInterface(UserIdentifiers.class, UserIdentifiers.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(UserIdentifiers.ADDRESS).register(UserIdentifiers.class,
         new UserIdentifiersResource(this.vertx));
+
+    routerFactory.mountServiceInterface(Operations.class, Operations.ADDRESS);
+    new ServiceBinder(this.vertx).setAddress(Operations.ADDRESS).register(Operations.class,
+        new OperationsResource(this.vertx));
 
   }
 

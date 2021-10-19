@@ -19,8 +19,8 @@
  */
 
 /**
- * The web services to manage the WeNet user profiles.
+ * The web services to manage the diversity between profiles.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+package eu.internetofus.wenet_profile_manager.api.operations;

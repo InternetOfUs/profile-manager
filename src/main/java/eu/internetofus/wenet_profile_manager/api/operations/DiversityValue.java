@@ -17,10 +17,24 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.ReflectionModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Contains the calculated diversity for a set of users.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+@Schema(description = "The value of the diversity for a set of users.")
+public class DiversityValue extends ReflectionModel implements Model {
+
+  /**
+   * The calculate diversity value for a set of users.
+   */
+  @Schema(description = "The diversity between the set of users. It is in the range [0,1].", example = "0.1571664406")
+  public double diversity;
+
+}

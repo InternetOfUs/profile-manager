@@ -17,10 +17,25 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.ReflectionModel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.Map;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Contains the calculated similarity for the attributes of a user profile.
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+@Schema(description = "The similarity of the user attributes to a text.")
+public class SimilarityResult extends ReflectionModel implements Model {
+
+  /**
+   * The calculate similarity for a profile attributes.
+   */
+  @Schema(description = "The similarity between the profile attributes and a text. The key is the name of teh attribute and the value is the similarity on the range [0,1].", example = "{\"gender\":0.4}")
+  public Map<String, Double> attributes;
+
+}

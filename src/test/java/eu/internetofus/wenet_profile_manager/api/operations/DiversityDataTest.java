@@ -17,10 +17,37 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.ModelTestCase;
+import java.util.ArrayList;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Test the {@link DiversityData}.
+ *
+ * @see DiversityData
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+public class DiversityDataTest extends ModelTestCase<DiversityData> {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DiversityData createModelExample(final int index) {
+
+    final var model = new DiversityData();
+    model.attributes = new ArrayList<>();
+    model.attributes.add("gender");
+    model.attributes.add("occupation");
+    model.attributes.add("index of " + index);
+    model.userIds = new ArrayList<>();
+    model.userIds.add("User of " + index);
+    model.userIds.add("User of " + index + 1);
+    model.userIds.add("User of " + index + 2);
+    return model;
+
+  }
+
+}

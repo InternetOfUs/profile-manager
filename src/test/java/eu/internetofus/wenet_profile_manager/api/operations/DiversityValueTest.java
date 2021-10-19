@@ -17,10 +17,29 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.ModelTestCase;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Test the {@link DiversityValue}.
+ *
+ * @see DiversityValue
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+public class DiversityValueTest extends ModelTestCase<DiversityValue> {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public DiversityValue createModelExample(final int index) {
+
+    final var model = new DiversityValue();
+    model.diversity = index / 1000.0d;
+    return model;
+
+  }
+
+}

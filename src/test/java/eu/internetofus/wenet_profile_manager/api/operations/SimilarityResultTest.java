@@ -17,10 +17,33 @@
  *
  * -----------------------------------------------------------------------------
  */
+package eu.internetofus.wenet_profile_manager.api.operations;
+
+import eu.internetofus.common.model.ModelTestCase;
+import java.util.HashMap;
 
 /**
- * The web services to manage the WeNet user profiles.
+ * Test the {@link SimilarityResult}.
+ *
+ * @see SimilarityResult
  *
  * @author UDT-IA, IIIA-CSIC
  */
-package eu.internetofus.wenet_profile_manager.api.profiles;
+public class SimilarityResultTest extends ModelTestCase<SimilarityResult> {
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public SimilarityResult createModelExample(final int index) {
+
+    final var model = new SimilarityResult();
+    model.attributes = new HashMap<>();
+    model.attributes.put("index", (double) index);
+    model.attributes.put("prev", index - 1.0d);
+    model.attributes.put("next", index + 1.0d);
+    return model;
+
+  }
+
+}
