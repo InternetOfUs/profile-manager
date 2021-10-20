@@ -77,7 +77,6 @@ public interface Operations {
   @RequestBody(description = "The information to calculate the diversity", required = true, content = @Content(schema = @Schema(implementation = DiversityData.class)))
   @ApiResponse(responseCode = "200", description = "The diversity between the users", content = @Content(schema = @Schema(implementation = DiversityValue.class)))
   @ApiResponse(responseCode = "400", description = "Bad diversity data", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void diversity(@Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
@@ -97,7 +96,6 @@ public interface Operations {
   @RequestBody(description = "The information to similarity between the text and the profile", required = true, content = @Content(schema = @Schema(implementation = SimilarityData.class)))
   @ApiResponse(responseCode = "200", description = "The similarity between the profile attributes and a text", content = @Content(schema = @Schema(implementation = SimilarityResult.class)))
   @ApiResponse(responseCode = "400", description = "Bad similarity data", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void similarity(@Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);

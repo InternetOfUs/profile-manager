@@ -23,7 +23,7 @@ import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.ReflectionModel;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
+import java.util.Set;
 
 /**
  * The data necessary to calculate the diversity.
@@ -37,12 +37,12 @@ public class DiversityData extends ReflectionModel implements Model {
    * The identifiers of the users to calculate the diversity.
    */
   @ArraySchema(schema = @Schema(implementation = String.class, example = "[\"1\",\"2\"]"), arraySchema = @Schema(description = "The user profile identifiers of calculate the diversity"))
-  public List<String> userIds;
+  public Set<String> userIds;
 
   /**
    * The name of the attributes of the profile to calculate the diversity.
    */
   @ArraySchema(schema = @Schema(implementation = String.class, example = "[\"gender\",\"nationality\"]"), arraySchema = @Schema(description = "The name of the profile attributes to calculate the diversity"))
-  public List<String> attributes;
+  public Set<String> attributes;
 
 }
