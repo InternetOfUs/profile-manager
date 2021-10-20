@@ -50,7 +50,7 @@
   <gmavenplus-plugin-version>1.12.1</gmavenplus-plugin-version>
   <groovy-version>3.0.8</groovy-version>
   <!-- Library versions -->
-  <eu.internetofus.common-version>0.14.0</eu.internetofus.common-version>
+  <eu.internetofus.common-version>0.15.0</eu.internetofus.common-version>
  </properties>
  <repositories>
   <repository>
@@ -205,48 +205,48 @@
      <configurationFilePath>${basedir}/src/main/swagger/wenet-profile-manager-configuration.yaml</configurationFilePath>
     </configuration>
    </plugin>
-   <plugin>
-    <groupId>org.codehaus.gmavenplus</groupId>
-    <artifactId>gmavenplus-plugin</artifactId>
-    <version>${gmavenplus-plugin-version}</version>
-    <executions>
-     <execution>
-      <phase>compile</phase>
-      <goals>
-       <goal>execute</goal>
-      </goals>
-     </execution>
-    </executions>
-    <configuration>
-     <properties>
-      <property>
-       <name>generatedOpenApi</name>
-       <value>${project.build.directory}/wenet-profile_manager-openapi.yaml</value>
-      </property>
-      <property>
-       <name>staticOpenApi</name>
-       <value>${project.build.directory}/classes/wenet-profile_manager-openapi.yaml</value>
-      </property>
-     </properties>
-     <scripts>
-      <script>${project.basedir}/src/main/script/createStaticOpenapi.groovy</script>
-     </scripts>
-    </configuration>
-    <dependencies>
-     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-      <version>${groovy-version}</version>
-      <scope>runtime</scope>
-     </dependency>
-     <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy-yaml</artifactId>
-      <version>${groovy-version}</version>
-      <scope>runtime</scope>
-     </dependency>
-    </dependencies>
-   </plugin>
+<!--    <plugin> -->
+<!--     <groupId>org.codehaus.gmavenplus</groupId> -->
+<!--     <artifactId>gmavenplus-plugin</artifactId> -->
+<!--     <version>${gmavenplus-plugin-version}</version> -->
+<!--     <executions> -->
+<!--      <execution> -->
+<!--       <phase>compile</phase> -->
+<!--       <goals> -->
+<!--        <goal>execute</goal> -->
+<!--       </goals> -->
+<!--      </execution> -->
+<!--     </executions> -->
+<!--     <configuration> -->
+<!--      <properties> -->
+<!--       <property> -->
+<!--        <name>generatedOpenApi</name> -->
+<!--        <value>${project.build.directory}/wenet-profile_manager-openapi.yaml</value> -->
+<!--       </property> -->
+<!--       <property> -->
+<!--        <name>staticOpenApi</name> -->
+<!--        <value>${project.build.directory}/classes/wenet-profile_manager-openapi.yaml</value> -->
+<!--       </property> -->
+<!--      </properties> -->
+<!--      <scripts> -->
+<!--       <script>${project.basedir}/src/main/script/createStaticOpenapi.groovy</script> -->
+<!--      </scripts> -->
+<!--     </configuration> -->
+<!--     <dependencies> -->
+<!--      <dependency> -->
+<!--       <groupId>org.codehaus.groovy</groupId> -->
+<!--       <artifactId>groovy</artifactId> -->
+<!--       <version>${groovy-version}</version> -->
+<!--       <scope>runtime</scope> -->
+<!--      </dependency> -->
+<!--      <dependency> -->
+<!--       <groupId>org.codehaus.groovy</groupId> -->
+<!--       <artifactId>groovy-yaml</artifactId> -->
+<!--       <version>${groovy-version}</version> -->
+<!--       <scope>runtime</scope> -->
+<!--      </dependency> -->
+<!--     </dependencies> -->
+<!--    </plugin> -->
    <plugin>
     <artifactId>maven-pmd-plugin</artifactId>
     <version>${maven-pmd-plugin-version}</version>
