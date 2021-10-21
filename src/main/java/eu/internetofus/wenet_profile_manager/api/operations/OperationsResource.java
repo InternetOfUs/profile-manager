@@ -181,6 +181,7 @@ public class OperationsResource implements Operations {
           agent.id = profileId;
           agent.qualitativeAttributes = new HashMap<>();
           agent.qualitativeAttributes = new HashMap<>();
+          data.agents.add(agent);
           for (final var attributeName : attributes) {
 
             final var value = profile.getValue(attributeName);

@@ -20,6 +20,7 @@
 
 package eu.internetofus.wenet_profile_manager.services;
 
+import eu.internetofus.common.components.profile_diversity_manager.WeNetProfileDiversityManager;
 import eu.internetofus.common.components.service.WeNetService;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.components.task_manager.WeNetTaskManager;
@@ -40,14 +41,10 @@ public class ServicesVerticle extends AbstractServicesVerticle {
   @Override
   protected void registerServices(final JsonObject serviceConf) throws Exception {
 
-    // register the task manager
     WeNetTaskManager.register(this.vertx, this.client, serviceConf);
-
-    // register the service
     WeNetService.register(this.vertx, this.client, serviceConf);
-
-    // register the social context builder
     WeNetSocialContextBuilder.register(this.vertx, this.client, serviceConf);
+    WeNetProfileDiversityManager.register(this.vertx, this.client, serviceConf);
 
   }
 

@@ -43,8 +43,8 @@ public class WeNetProfileManagerIntegrationExtension extends AbstractWeNetCompon
   @Override
   protected String[] createMainStartArguments() {
 
-    final var containers = Containers.status().startBasic().startTaskManagerContainer()
-        .startInteractionProtocolEngineContainer();
+    final var containers = Containers.status().startBasic().startProfileDiversityManagerContainer()
+        .startTaskManagerContainer().startInteractionProtocolEngineContainer();
 
     return new MainArgumentBuilder().withApiPort(containers.profileManagerApiPort).withComponents(containers).build();
 
