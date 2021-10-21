@@ -5,7 +5,6 @@ All notable changes to `wenet-profile-manager` will be documented in this file
 
 ## Version 0.21.0 (2021-10-21)
 
- * Add web services to obtain a diversity team.
  * Modify initilaization of the social context builder social relations
    for a created user.
  * Allow to add or update social network relationship.
