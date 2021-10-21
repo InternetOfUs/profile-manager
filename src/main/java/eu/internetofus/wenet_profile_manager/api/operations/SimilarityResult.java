@@ -35,7 +35,7 @@ public class SimilarityResult extends ReflectionModel implements Model {
   /**
    * The calculate similarity for a profile attributes.
    */
-  @Schema(description = "The similarity between the profile attributes and a text. The key is the name of teh attribute and the value is the similarity on the range [0,1].", example = "{\"gender\":0.4}")
+  @Schema(description = "The similarity between the profile attributes and a text. The key is the name of the attribute and the value is the similarity on the range [0,1].", example = "{\"gender\":0.4}")
   public Map<String, Double> attributes;
 
 }

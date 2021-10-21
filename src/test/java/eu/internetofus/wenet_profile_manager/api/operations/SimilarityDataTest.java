@@ -38,7 +38,7 @@ public class SimilarityDataTest extends ModelTestCase<SimilarityData> {
 
     final var model = new SimilarityData();
     model.source = "Source of " + index;
-    model.userIds = "User of " + index;
+    model.userId = "User of " + index;
     return model;
 
   }
