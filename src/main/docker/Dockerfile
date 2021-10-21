@@ -9,7 +9,7 @@ RUN mkdir -p /build
 WORKDIR /build
 COPY pom.xml .
 COPY src/ /build/src/
-RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn -P ${DEFAULT_PROFILE} -DskipTests -DfinalName=wenet-profile-manager clean install
+RUN --mount=type=cache,id=mvn-cache,target=/root/.m2 mvn -P ${DEFAULT_PROFILE} -DskipTests -DfinalName=wenet-profile-manager clean install -U
 
 # --- Run the code
 FROM openjdk:11.0.5-jre
