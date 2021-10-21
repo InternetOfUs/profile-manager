@@ -2,6 +2,10 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 0.22.0 (2021-10-)
+
+ * Add wen service to calculate similarity.
+
 
 ## Version 0.21.0 (2021-10-21)
 
