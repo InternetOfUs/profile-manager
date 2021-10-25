@@ -268,14 +268,16 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   newProfile.relationships = updated.relationships;
                   assertThat(updated).isEqualTo(newProfile);
 
-                  testContext
-                      .assertComplete(
-                          WeNetSocialContextBuilderSimulator.createProxy(vertx).getSocialNotificationProfileUpdate())
-                      .onSuccess(notifiedIds -> {
+                  testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
+                      .getSocialNotificationProfileUpdate(storedProfile.id)).onSuccess(notification -> {
 
                         testContext.verify(() -> {
 
-                          assertThat(notifiedIds).isNotNull().contains(storedProfile.id);
+                          assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth",
+                              "gender", "email", "phoneNumber", "locale", "avatar", "nationality", "occupation",
+                              "norms", "plannedActivities", "relevantLocations", "relationships", "personalBehaviors",
+                              "materials", "competences", "meanings");
+
                         });
 
                         testRequest(client, HttpMethod.GET,
@@ -371,14 +373,14 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             newProfile.personalBehaviors = storedProfile.personalBehaviors;
             assertThat(merged).isEqualTo(newProfile);
 
-            testContext
-                .assertComplete(
-                    WeNetSocialContextBuilderSimulator.createProxy(vertx).getSocialNotificationProfileUpdate())
-                .onSuccess(notifiedIds -> {
+            testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
+                .getSocialNotificationProfileUpdate(storedProfile.id)).onSuccess(notification -> {
 
                   testContext.verify(() -> {
 
-                    assertThat(notifiedIds).isNotNull().contains(storedProfile.id);
+                    assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth", "gender",
+                        "email", "phoneNumber", "locale", "avatar", "nationality", "norms", "occupation",
+                        "plannedActivities", "relevantLocations", "materials", "competences", "meanings");
                   });
 
                   testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)

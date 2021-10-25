@@ -22,6 +22,7 @@ package eu.internetofus.wenet_profile_manager.api.operations;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.profile_diversity_manager.AgentData;
 import eu.internetofus.common.components.profile_diversity_manager.AgentsData;
+import eu.internetofus.common.components.profile_diversity_manager.AttributesData;
 import eu.internetofus.common.components.profile_diversity_manager.WeNetProfileDiversityManager;
 import eu.internetofus.common.model.ValidationErrorException;
 import eu.internetofus.common.vertx.ModelContext;
@@ -258,6 +259,84 @@ public class OperationsResource implements Operations {
     model.type = SimilarityData.class;
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.toModel(body, model, context, () -> {
+
+      if (model.source.source == null || model.source.source.trim().length() == 0) {
+
+        ServiceResponseHandlers.responseWithErrorMessage(context.resultHandler, Status.BAD_REQUEST, "bad_" + model.name,
+            "You must define at least a source text to calculate the similarity");
+
+      } else if (model.source.userId == null || model.source.userId.length() == 0) {
+
+        ServiceResponseHandlers.responseWithErrorMessage(context.resultHandler, Status.BAD_REQUEST, "bad_" + model.name,
+            "You must define at least an user identifier to calculate the similarity");
+
+      } else {
+
+        ProfilesRepository.createProxy(this.vertx).searchProfile(model.source.userId, search -> {
+
+          final var profile = search.result();
+          if (search.failed() || profile == null) {
+
+            final var cause = search.cause();
+            Logger.trace(cause, "Not found profile to calculate similarity");
+            ServiceResponseHandlers.responseFailedWith(context.resultHandler, Status.NOT_FOUND, cause);
+
+          } else {
+
+            final var data = new AttributesData();
+            data.source = model.source.source;
+            data.attributes = new HashSet<>();
+            for (final var attributeName : profile.fieldNames()) {
+
+              final var value = profile.getValue(attributeName);
+              if (value instanceof String) {
+
+                data.attributes.add(attributeName);
+
+              } else if (value instanceof Number) {
+
+                final var number = ((Number) value).doubleValue();
+                if (number >= 0.0d && number <= 1.0d) {
+
+                  data.attributes.add(attributeName);
+                }
+
+              }
+            }
+            data.attributes.remove("id");
+            WeNetProfileDiversityManager.createProxy(this.vertx).calculateSimilarityOf(data).onComplete(calculus -> {
+
+              final var result = new SimilarityResult();
+              result.attributes = new HashMap<>();
+              if (calculus.failed()) {
+
+                Logger.trace(calculus.cause(), "Cannot calculate similarity");
+
+              } else {
+
+                final var calculusResult = calculus.result();
+                if (calculusResult != null && calculusResult.similarities != null) {
+
+                  for (final var attibuteSimilarity : calculusResult.similarities) {
+
+                    if (attibuteSimilarity.similarity > 0d) {
+
+                      result.attributes.put(attibuteSimilarity.attribute, attibuteSimilarity.similarity);
+                    }
+                  }
+
+                }
+
+              }
+
+              ServiceResponseHandlers.responseOk(resultHandler, result);
+
+            });
+          }
+
+        });
+
+      }
 
     });
 

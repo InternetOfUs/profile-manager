@@ -29,6 +29,7 @@ import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.Routine;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.social_context_builder.ProfileUpdateNotification;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
@@ -44,6 +45,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import javax.ws.rs.core.Response.Status;
@@ -185,7 +187,36 @@ public class ProfilesResource implements Profiles {
 
       // notify the social context builder
       final var profileId = model.target.id;
-      WeNetSocialContextBuilder.createProxy(this.vertx).socialNotificationProfileUpdate(profileId)
+      final var notification = new ProfileUpdateNotification();
+      notification.updatedFieldNames = new HashSet<>();
+      final var original = model.target.toJsonObject();
+      if (model.value != null) {
+
+        final var updated = model.value.toJsonObject();
+        final var keys = new HashSet<String>();
+        keys.addAll(updated.fieldNames());
+        keys.addAll(original.fieldNames());
+        for (final var key : keys) {
+
+          final var originalValue = original.getValue(key);
+          final var updatedValue = updated.getValue(key);
+          if (originalValue != updatedValue && (originalValue == null || !originalValue.equals(updatedValue))) {
+
+            notification.updatedFieldNames.add(key);
+
+          }
+
+        }
+
+      } else {
+
+        notification.updatedFieldNames.addAll(original.fieldNames());
+      }
+
+      notification.updatedFieldNames.remove("_creationTs");
+      notification.updatedFieldNames.remove("_lastUpdateTs");
+
+      WeNetSocialContextBuilder.createProxy(this.vertx).socialNotificationProfileUpdate(profileId, notification)
           .onComplete(retrieve -> {
 
             if (retrieve.failed()) {

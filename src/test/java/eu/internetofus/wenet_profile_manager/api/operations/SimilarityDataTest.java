@@ -19,7 +19,11 @@
  */
 package eu.internetofus.wenet_profile_manager.api.operations;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.model.ModelTestCase;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.junit5.VertxTestContext;
 
 /**
  * Test the {@link SimilarityData}.
@@ -41,6 +45,28 @@ public class SimilarityDataTest extends ModelTestCase<SimilarityData> {
     model.userId = "User of " + index;
     return model;
 
+  }
+
+  /**
+   * Create a valid similarity data.
+   *
+   * @param index       of the example to create.
+   * @param vertx       event bus to use.
+   * @param testContext context to test.
+   *
+   * @return the valid model.
+   */
+  public Future<SimilarityData> createModelExample(final int index, final Vertx vertx,
+      final VertxTestContext testContext) {
+
+    return StoreServices.storeProfileExample(index, vertx, testContext).map(profile -> {
+
+      final var model = new SimilarityData();
+      model.userId = profile.id;
+      model.source = "Witch is the best nationality flag?";
+      return model;
+
+    });
   }
 
 }

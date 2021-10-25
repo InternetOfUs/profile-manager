@@ -380,4 +380,174 @@ public class OperationsIT {
 
   }
 
+  /**
+   * Verify that fail calculate similarity without source.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailSimilarityWithoutSource(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    new SimilarityDataTest().createModelExample(0, vertx, testContext).onSuccess(data -> {
+
+      data.source = null;
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Verify that fail calculate similarity with empty source.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailSimilarityWithEmptySource(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    new SimilarityDataTest().createModelExample(0, vertx, testContext).onSuccess(data -> {
+
+      data.source = "    ";
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Verify that fail calculate similarity without userId.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailSimilarityWithoutUserId(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var data = new SimilarityData();
+    data.source = "Who is the best bond?";
+    data.userId = null;
+    testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+    }).sendJson(data.toJsonObject(), testContext);
+
+  }
+
+  /**
+   * Verify that fail calculate similarity with empty userId.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailSimilarityWithEmptyUserId(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var data = new SimilarityData();
+    data.source = "Who is the best bond?";
+    data.userId = "";
+    testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+    }).sendJson(data.toJsonObject(), testContext);
+
+  }
+
+  /**
+   * Verify that fail calculate similarity with undefined userId.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailSimilarityWithUndefinedUserId(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var data = new SimilarityData();
+    data.source = "Who is the best bond?";
+    data.userId = UUID.randomUUID().toString();
+    testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+      final var error = assertThatBodyIs(ErrorMessage.class, res);
+      assertThat(error.code).isNotEmpty();
+      assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+    }).sendJson(data.toJsonObject(), testContext);
+
+  }
+
+  /**
+   * Verify that calculate similarity.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#similarity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldCalculateSimilarity(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    new SimilarityDataTest().createModelExample(0, vertx, testContext).onSuccess(data -> {
+
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/similarity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var result = assertThatBodyIs(SimilarityResult.class, res);
+        assertThat(result.attributes).isNotNull().isNotEmpty();
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
 }

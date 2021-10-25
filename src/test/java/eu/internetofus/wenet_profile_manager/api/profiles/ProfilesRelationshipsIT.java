@@ -309,4 +309,34 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
     });
   }
 
+  /**
+   * Should update an existing relation.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldFailAddOrUpdateRelationWhenRelationExistAndUpdateIsTheSame(final Vertx vertx,
+      final WebClient client, final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
+
+      final var modelId = this.idOfModel(model, testContext);
+      final var field = this.fieldOf(model, testContext);
+      final var elementId = this.idOfElementIn(model, field.get(field.size() - 1));
+      final var element = Model.fromJsonObject(field.get(elementId).toJsonObject(), SocialNetworkRelationship.class);
+      final var path = this.modelPath() + "/" + modelId + this.fieldPath();
+      testRequest(client, HttpMethod.PUT, path).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(element.toJsonObject(), testContext);
+
+    });
+  }
+
 }
