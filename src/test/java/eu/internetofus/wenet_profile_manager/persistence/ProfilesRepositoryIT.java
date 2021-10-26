@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
+import eu.internetofus.common.components.profile_manager.UserIdentifiersPage;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
@@ -32,7 +33,6 @@ import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfi
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfilesPage;
-import eu.internetofus.wenet_profile_manager.api.user_identifiers.UserIdentifiersPage;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
