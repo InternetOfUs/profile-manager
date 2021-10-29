@@ -19,7 +19,6 @@
  */
 package eu.internetofus.wenet_profile_manager.api.operations;
 
-import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.profile_diversity_manager.AgentData;
 import eu.internetofus.common.components.profile_diversity_manager.AgentsData;
 import eu.internetofus.common.components.profile_diversity_manager.AttributesData;
@@ -36,11 +35,11 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -185,30 +184,18 @@ public class OperationsResource implements Operations {
           data.agents.add(agent);
           for (final var attributeName : attributes) {
 
-            final var value = profile.getValue(attributeName);
-            if (value instanceof String) {
+            final var value = this.getProfileAttributeValue(attributeName, profile);
+            if (value instanceof String || value instanceof Integer) {
 
-              final var option = (String) value;
+              final var option = String.valueOf(value);
               agent.qualitativeAttributes.put(attributeName, option);
-
               var options = data.qualitativeAttributes.get(attributeName);
-              if ("gender".equals(attributeName)) {
+              if (options == null) {
 
-                if (options == null) {
-
-                  options = new HashSet<>(Arrays.asList(WeNetUserProfile.GENDERS));
-                  data.qualitativeAttributes.put(attributeName, options);
-                }
-
-              } else {
-
-                if (options == null) {
-
-                  options = new HashSet<>();
-                  data.qualitativeAttributes.put(attributeName, options);
-                }
-                options.add(option);
+                options = new HashSet<>();
+                data.qualitativeAttributes.put(attributeName, options);
               }
+              options.add(option);
 
             } else if (value instanceof Number) {
 
@@ -219,8 +206,12 @@ public class OperationsResource implements Operations {
                     new ValidationErrorException("bad_quantitative_profile_attribute_value", "The quantitative value '"
                         + attributeName + "' of the profile '" + profileId + "'is not on the range [0,1]."));
                 return;
+
+              } else {
+
+                agent.quantitativeAttributes.put(attributeName, quantitativeValue);
+
               }
-              agent.quantitativeAttributes.put(attributeName, quantitativeValue);
 
             } else if (value == null) {
 
@@ -245,6 +236,82 @@ public class OperationsResource implements Operations {
 
       return promise.future();
     };
+  }
+
+  /**
+   * Obtain the value associated to the specified attribute.
+   *
+   * @param attributeName name of the attribute to add.
+   * @param profile       to get the value.
+   *
+   * @return the value of the profile attribute.
+   */
+  protected Object getProfileAttributeValue(final String attributeName, final JsonObject profile) {
+
+    try {
+
+      if (attributeName.startsWith("dateOfBirth.")) {
+
+        return profile.getJsonObject("dateOfBirth", new JsonObject()).getInteger(attributeName.substring(12));
+
+      } else if (attributeName.startsWith("materials.")) {
+
+        final var name = attributeName.substring(10);
+        final var materials = profile.getJsonArray("materials");
+        final var max = materials.size();
+        for (var i = 0; i < max; i++) {
+
+          final var material = materials.getJsonObject(i);
+          if (name.equals(material.getString("name"))) {
+
+            return material.getString("description");
+          }
+
+        }
+
+      } else if (attributeName.startsWith("competences.")) {
+
+        final var name = attributeName.substring(12);
+        final var competences = profile.getJsonArray("competences");
+        final var max = competences.size();
+        for (var i = 0; i < max; i++) {
+
+          final var competence = competences.getJsonObject(i);
+          if (name.equals(competence.getString("name"))) {
+
+            return competence.getDouble("level");
+          }
+
+        }
+
+      } else if (attributeName.startsWith("meanings.")) {
+
+        final var name = attributeName.substring(9);
+        final var meanings = profile.getJsonArray("meanings");
+        final var max = meanings.size();
+        for (var i = 0; i < max; i++) {
+
+          final var meaning = meanings.getJsonObject(i);
+          if (name.equals(meaning.getString("name"))) {
+
+            return meaning.getDouble("level");
+          }
+
+        }
+
+      } else {
+
+        return profile.getValue(attributeName);
+      }
+
+      // not found
+      return null;
+
+    } catch (final Throwable ignored) {
+
+      return profile;
+    }
+
   }
 
   /**
@@ -286,10 +353,13 @@ public class OperationsResource implements Operations {
             final var data = new AttributesData();
             data.source = model.source.source;
             data.attributes = new HashSet<>();
+            data.attributes.add("dateOfBirth.year");
+            data.attributes.add("dateOfBirth.month");
+            data.attributes.add("dateOfBirth.day");
             for (final var attributeName : profile.fieldNames()) {
 
               final var value = profile.getValue(attributeName);
-              if (value instanceof String) {
+              if (value instanceof String || value instanceof Integer) {
 
                 data.attributes.add(attributeName);
 
@@ -299,6 +369,17 @@ public class OperationsResource implements Operations {
                 if (number >= 0.0d && number <= 1.0d) {
 
                   data.attributes.add(attributeName);
+                }
+
+              } else if (value instanceof JsonArray) {
+
+                final var array = (JsonArray) value;
+                final var max = array.size();
+                for (var i = 0; i < max; i++) {
+
+                  final var element = array.getJsonObject(i);
+                  final var name = element.getString("name");
+                  data.attributes.add(attributeName + "." + name);
                 }
 
               }
