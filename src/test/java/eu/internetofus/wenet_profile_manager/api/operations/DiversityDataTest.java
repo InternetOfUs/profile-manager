@@ -68,10 +68,24 @@ public class DiversityDataTest extends ModelTestCase<DiversityData> {
 
     final var model = new DiversityData();
     model.attributes = new HashSet<>();
+    model.attributes.add("dateOfBirth.day");
+    model.attributes.add("dateOfBirth.month");
+    model.attributes.add("dateOfBirth.year");
     model.attributes.add("gender");
     model.attributes.add("locale");
     model.attributes.add("nationality");
     model.attributes.add("occupation");
+    model.attributes.add("materials.department");
+    model.attributes.add("materials.degree_programme");
+    model.attributes.add("materials.accommodation");
+    model.attributes.add("competences.c_food");
+    model.attributes.add("competences.c_eating");
+    model.attributes.add("competences.u_active");
+    model.attributes.add("competences.u_essay");
+    model.attributes.add("meanings.excitement");
+    model.attributes.add("meanings.promotion");
+    model.attributes.add("meanings.extraversion");
+    model.attributes.add("meanings.agreeableness");
     model.userIds = new HashSet<>();
     var future = Future.succeededFuture(model);
     for (var i = 0; i < 3; i++) {

@@ -180,7 +180,7 @@ public class OperationsResource implements Operations {
           final var agent = new AgentData();
           agent.id = profileId;
           agent.qualitativeAttributes = new HashMap<>();
-          agent.qualitativeAttributes = new HashMap<>();
+          agent.quantitativeAttributes = new HashMap<>();
           data.agents.add(agent);
           for (final var attributeName : attributes) {
 
@@ -304,13 +304,11 @@ public class OperationsResource implements Operations {
         return profile.getValue(attributeName);
       }
 
-      // not found
-      return null;
-
     } catch (final Throwable ignored) {
-
-      return profile;
     }
+
+    // not found
+    return null;
 
   }
 
