@@ -23,10 +23,12 @@ package eu.internetofus.wenet_profile_manager.api.operations;
 import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Offset.offset;
 
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -550,4 +552,58 @@ public class OperationsIT {
     });
 
   }
+
+  /**
+   * Verify that calculate diversity for the domain studying career.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#diversity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldCalculateDiversityForDomainStudyingCareer(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var model = new DiversityData();
+    model.attributes = new HashSet<>();
+    model.attributes.add("competences.u_active");
+    model.attributes.add("competences.u_read");
+    model.attributes.add("competences.u_essay");
+    model.attributes.add("competences.u_org");
+    model.attributes.add("competences.u_balance");
+    model.attributes.add("competences.u_assess");
+    model.attributes.add("competences.u_theory");
+    model.attributes.add("competences.u_pract");
+    model.userIds = new HashSet<>();
+
+    var future = Future.succeededFuture(model);
+    for (var i = 0; i < 3; i += 2) {
+
+      final var profileIndex = i;
+      future = future
+          .compose(chainModel -> StoreServices.storeProfileExample(profileIndex, vertx, testContext).map(profile -> {
+
+            chainModel.userIds.add(profile.id);
+            return chainModel;
+
+          }));
+    }
+
+    testContext.assertComplete(future).onSuccess(data -> {
+
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/diversity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var diversityValue = assertThatBodyIs(DiversityValue.class, res);
+        assertThat(diversityValue.diversity).isEqualTo(0.2d, offset(0.000000001));
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
 }

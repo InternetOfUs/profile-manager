@@ -210,7 +210,7 @@ public class OperationsResource implements Operations {
               } else {
 
                 agent.quantitativeAttributes.put(attributeName, quantitativeValue);
-
+                data.quantitativeAttributes.add(attributeName);
               }
 
             } else if (value == null) {
