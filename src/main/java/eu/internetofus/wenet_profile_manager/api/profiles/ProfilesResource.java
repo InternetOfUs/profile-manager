@@ -1328,7 +1328,7 @@ public class ProfilesResource implements Profiles {
           for (var index = 0; index < max; index++) {
 
             final var relationship = profile.relationships.get(index);
-            if (relationship.equalsByUserAndType(newRelationship)) {
+            if (relationship.equalsByAppUserAndType(newRelationship)) {
 
               this.mergeProfileRelationship(userId, index, body, request, resultHandler);
               return;

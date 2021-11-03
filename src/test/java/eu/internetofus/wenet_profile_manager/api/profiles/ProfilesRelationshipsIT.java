@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import eu.internetofus.common.model.ErrorMessage;
@@ -337,6 +338,172 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
       }).sendJson(element.toJsonObject(), testContext);
 
     });
+  }
+
+  /**
+   * Should add or update existing relation with different application identifier.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddOrUpdateRelationWhenRelationWithDiferentApp(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(2, vertx, testContext)).onSuccess(model -> {
+
+      StoreServices.storeAppExample(2, vertx, testContext).onSuccess(app -> {
+
+        final var element = Model.fromJsonObject(model.relationships.get(0).toJsonObject(),
+            SocialNetworkRelationship.class);
+        element.appId = app.appId;
+        final var checkpoint = testContext.checkpoint(2);
+        final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+        testRequest(client, HttpMethod.PUT, postPath).expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+          final var created = assertThatBodyIs(element.getClass(), res);
+          this.assertEqualsAdded(element, created);
+
+          final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+          testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+            assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+            final var updatedField = this.fieldOf(updatedModel);
+            assertThat(updatedField).isNotEmpty().contains(created);
+
+          }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      });
+
+    });
+  }
+
+  /**
+   * Should add an existing relation with different application identifier.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddRelationWhenRelationWithDiferentApp(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(2, vertx, testContext)).onSuccess(model -> {
+
+      StoreServices.storeAppExample(2, vertx, testContext).onSuccess(app -> {
+
+        final var element = Model.fromJsonObject(model.relationships.get(0).toJsonObject(),
+            SocialNetworkRelationship.class);
+        element.appId = app.appId;
+        final var checkpoint = testContext.checkpoint(2);
+        final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+        testRequest(client, HttpMethod.POST, postPath).expect(res -> {
+
+          assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var created = assertThatBodyIs(element.getClass(), res);
+          this.assertEqualsAdded(element, created);
+
+          final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+          testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+            assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+            final var updatedField = this.fieldOf(updatedModel);
+            assertThat(updatedField).isNotEmpty().contains(created);
+
+          }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      });
+
+    });
+  }
+
+  /**
+   * Should add or update existing relation with different type.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddOrUpdateRelationWhenRelationWithDiferentType(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(2, vertx, testContext)).onSuccess(model -> {
+
+      final var element = Model.fromJsonObject(model.relationships.get(0).toJsonObject(),
+          SocialNetworkRelationship.class);
+      element.type = SocialNetworkRelationshipType.values()[0];
+      final var checkpoint = testContext.checkpoint(2);
+      final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+      testRequest(client, HttpMethod.PUT, postPath).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.CREATED.getStatusCode());
+        final var created = assertThatBodyIs(element.getClass(), res);
+        this.assertEqualsAdded(element, created);
+
+        final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+        testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+          assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+          final var updatedField = this.fieldOf(updatedModel);
+          assertThat(updatedField).isNotEmpty().contains(created);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+    });
+
+  }
+
+  /**
+   * Should add an existing relation with different type.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldAddRelationWhenRelationWithDiferentType(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(2, vertx, testContext)).onSuccess(model -> {
+
+      final var element = Model.fromJsonObject(model.relationships.get(0).toJsonObject(),
+          SocialNetworkRelationship.class);
+      element.type = SocialNetworkRelationshipType.values()[0];
+      final var checkpoint = testContext.checkpoint(2);
+      final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+      testRequest(client, HttpMethod.POST, postPath).expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var created = assertThatBodyIs(element.getClass(), res);
+        this.assertEqualsAdded(element, created);
+
+        final var getPath = this.modelPath() + "/" + this.idOfModel(model, testContext);
+        testRequest(client, HttpMethod.GET, getPath).expect(resRetrieve -> {
+
+          assertThat(resRetrieve.statusCode()).isEqualTo(Status.OK.getStatusCode());
+          final var updatedModel = assertThatBodyIs(model.getClass(), resRetrieve);
+          final var updatedField = this.fieldOf(updatedModel);
+          assertThat(updatedField).isNotEmpty().contains(created);
+
+        }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+      }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+    });
+
   }
 
 }
