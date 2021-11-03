@@ -26,6 +26,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
 import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.profile_manager.DiversityData;
+import eu.internetofus.common.components.profile_manager.DiversityDataTest;
+import eu.internetofus.common.components.profile_manager.DiversityValue;
+import eu.internetofus.common.components.profile_manager.SimilarityData;
+import eu.internetofus.common.components.profile_manager.SimilarityDataTest;
+import eu.internetofus.common.components.profile_manager.SimilarityResult;
 import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Future;

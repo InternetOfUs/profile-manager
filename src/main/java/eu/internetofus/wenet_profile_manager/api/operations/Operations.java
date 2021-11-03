@@ -21,6 +21,10 @@
 package eu.internetofus.wenet_profile_manager.api.operations;
 
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.DiversityData;
+import eu.internetofus.common.components.profile_manager.DiversityValue;
+import eu.internetofus.common.components.profile_manager.SimilarityData;
+import eu.internetofus.common.components.profile_manager.SimilarityResult;
 import eu.internetofus.common.model.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
