@@ -604,7 +604,7 @@ public class OperationsIT {
 
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
         final var diversityValue = assertThatBodyIs(DiversityValue.class, res);
-        assertThat(diversityValue.diversity).isEqualTo(0.2d, offset(0.000000001));
+        assertThat(diversityValue.diversity).isEqualTo(0.25d, offset(0.000000001));
 
       }).sendJson(data.toJsonObject(), testContext);
 
