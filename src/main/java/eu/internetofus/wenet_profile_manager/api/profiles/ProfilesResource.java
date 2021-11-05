@@ -185,52 +185,6 @@ public class ProfilesResource implements Profiles {
 
     return () -> {
 
-      // notify the social context builder
-      final var profileId = model.target.id;
-      final var notification = new ProfileUpdateNotification();
-      notification.updatedFieldNames = new HashSet<>();
-      final var original = model.target.toJsonObject();
-      if (model.value != null) {
-
-        final var updated = model.value.toJsonObject();
-        final var keys = new HashSet<String>();
-        keys.addAll(updated.fieldNames());
-        keys.addAll(original.fieldNames());
-        for (final var key : keys) {
-
-          final var originalValue = original.getValue(key);
-          final var updatedValue = updated.getValue(key);
-          if (originalValue != updatedValue && (originalValue == null || !originalValue.equals(updatedValue))) {
-
-            notification.updatedFieldNames.add(key);
-
-          }
-
-        }
-
-      } else {
-
-        notification.updatedFieldNames.addAll(original.fieldNames());
-      }
-
-      notification.updatedFieldNames.remove("_creationTs");
-      notification.updatedFieldNames.remove("_lastUpdateTs");
-
-      WeNetSocialContextBuilder.createProxy(this.vertx).socialNotificationProfileUpdate(profileId, notification)
-          .onComplete(retrieve -> {
-
-            if (retrieve.failed()) {
-
-              Logger.trace(retrieve.cause(),
-                  "Cannot to the social context builder that the profile of the user {} has updated.", profileId);
-
-            } else {
-
-              Logger.trace("Notified to the social context builder that the profile of the user {} has updated.",
-                  profileId);
-            }
-          });
-
       final var historic = new HistoricWeNetUserProfile();
       historic.from = model.target._lastUpdateTs;
       historic.to = TimeManager.now();
@@ -246,6 +200,54 @@ public class ProfilesResource implements Profiles {
           model.value._lastUpdateTs = historic.to;
         }
         success.run();
+
+        // notify the social context builder
+        final var profileId = model.target.id;
+        final var notification = new ProfileUpdateNotification();
+        notification.updatedFieldNames = new HashSet<>();
+        final var original = model.target.toJsonObject();
+        if (model.value != null) {
+
+          final var updated = model.value.toJsonObject();
+          final var keys = new HashSet<String>();
+          keys.addAll(updated.fieldNames());
+          keys.addAll(original.fieldNames());
+          for (final var key : keys) {
+
+            final var originalValue = original.getValue(key);
+            final var updatedValue = updated.getValue(key);
+            if (originalValue != updatedValue && (originalValue == null || !originalValue.equals(updatedValue))) {
+
+              notification.updatedFieldNames.add(key);
+
+            }
+
+          }
+
+        } else {
+
+          notification.updatedFieldNames.addAll(original.fieldNames());
+        }
+
+        notification.updatedFieldNames.remove("_id");
+        notification.updatedFieldNames.remove("id");
+        notification.updatedFieldNames.remove("_creationTs");
+        notification.updatedFieldNames.remove("_lastUpdateTs");
+
+        WeNetSocialContextBuilder.createProxy(this.vertx).socialNotificationProfileUpdate(profileId, notification)
+            .onComplete(retrieve -> {
+
+              if (retrieve.failed()) {
+
+                Logger.trace(retrieve.cause(),
+                    "Cannot to the social context builder that the profile of the user {} has updated.", profileId);
+
+              } else {
+
+                Logger.trace("Notified to the social context builder that the profile of the user {} has updated.",
+                    profileId);
+              }
+            });
       });
     };
   }
