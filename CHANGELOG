@@ -2,7 +2,7 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
-## Version 0.22.0 (2021-10-)
+## Version 0.22.0 (2021-11-9)
 
  * Add service to calculate similarity.
  * Add a new field to the profile to mark is the platform has localizations
