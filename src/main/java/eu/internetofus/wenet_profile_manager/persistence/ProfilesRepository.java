@@ -311,4 +311,28 @@ public interface ProfilesRepository {
    */
   void retrieveProfilesPageObject(int offset, int limit, Handler<AsyncResult<JsonObject>> searchHandler);
 
+  /**
+   * Search for the profile with the specified identifier.
+   *
+   * @param id identifier of the user to search.
+   *
+   * @return the future found profile.
+   */
+  @GenIgnore
+  default Future<Boolean> isProfileDefined(final String id) {
+
+    final Promise<Boolean> promise = Promise.promise();
+    this.isProfileDefined(id, promise);
+    return promise.future();
+
+  }
+
+  /**
+   * Search for the profile with the specified identifier.
+   *
+   * @param id            identifier of the user to search.
+   * @param searchHandler handler to manage the search.
+   */
+  void isProfileDefined(String id, Handler<AsyncResult<Boolean>> searchHandler);
+
 }

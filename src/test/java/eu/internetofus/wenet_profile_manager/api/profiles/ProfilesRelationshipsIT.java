@@ -36,8 +36,11 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.ext.web.client.WebClient;
+import io.vertx.junit5.Timeout;
 import io.vertx.junit5.VertxTestContext;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 
@@ -501,6 +504,81 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
         }).sendJson(element.toJsonObject(), testContext, checkpoint);
 
       }).sendJson(element.toJsonObject(), testContext, checkpoint);
+
+    });
+
+  }
+
+  /**
+   * Test large relationships.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  @Timeout(value = 45, timeUnit = TimeUnit.MINUTES)
+  // 2,084.53
+  public void shouldUpdateLargeNumberOfRelationships(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
+
+      var future = Future.succeededFuture(new ArrayList<String>());
+      for (var i = 0; i < 5; i++) {
+
+        final var index = i;
+        future = future.compose(ids -> StoreServices.storeAppExample(index, vertx, testContext).map(app -> {
+
+          ids.add(app.appId);
+          return ids;
+
+        }));
+
+      }
+
+      for (var i = 0; i < 1000; i++) {
+
+        final var index = i;
+        future = future
+            .compose(ids -> StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext).map(profile -> {
+
+              ids.add(profile.id);
+              final var relation = new SocialNetworkRelationship();
+              relation.appId = ids.get(index % 5);
+              relation.userId = profile.id;
+              relation.type = SocialNetworkRelationshipType.values()[index
+                  % SocialNetworkRelationshipType.values().length];
+              relation.weight = 0d;
+              model.relationships.add(relation);
+              return ids;
+            }));
+      }
+
+      testContext.assertComplete(future).onSuccess(ids -> {
+
+        final var checkpoint = testContext.checkpoint(1001);
+        testRequest(client, HttpMethod.PATCH, this.modelPath() + "/" + this.idOfModel(model, testContext))
+            .expect(res -> {
+
+              assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+              final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+              for (var i = 0; i < 1000; i++) {
+
+                final var index = i;
+                final var relation = model.relationships.get(i);
+                relation.weight = 1.0d;
+                testRequest(client, HttpMethod.PUT, postPath).expect(resUpdate -> {
+
+                  assertThat(resUpdate.statusCode()).isEqualTo(Status.OK.getStatusCode()).as(String.valueOf(index));
+
+                }).sendJson(relation.toJsonObject(), testContext, checkpoint);
+
+              }
+
+            }).sendJson(model.toJsonObject(), testContext, checkpoint);
+
+      });
 
     });
 

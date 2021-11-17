@@ -2,6 +2,12 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 0.23.0 (2021-11-)
+
+ * Allow Update/merge models with no changes.
+ * Add cache when validate the same model.
+ 
+
 ## Version 0.22.0 (2021-11-9)
 
  * Add service to calculate similarity.

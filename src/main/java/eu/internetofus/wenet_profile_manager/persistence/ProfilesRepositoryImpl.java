@@ -231,4 +231,14 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void isProfileDefined(final String id, final Handler<AsyncResult<Boolean>> searchHandler) {
+
+    this.searchProfile(id).onComplete(search -> searchHandler.handle(Future.succeededFuture(search.result() != null)));
+
+  }
+
 }

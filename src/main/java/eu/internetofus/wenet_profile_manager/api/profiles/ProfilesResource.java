@@ -20,6 +20,8 @@
 
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
+import eu.internetofus.common.components.WeNetModelContext;
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.Competence;
 import eu.internetofus.common.components.models.Material;
 import eu.internetofus.common.components.models.Meaning;
@@ -85,12 +87,9 @@ public class ProfilesResource implements Profiles {
    *
    * @return the context of the {@link WeNetUserProfile}.
    */
-  protected ModelContext<WeNetUserProfile, String> createProfileContext() {
+  protected WeNetModelContext<WeNetUserProfile, String> createProfileContext() {
 
-    final var context = new ModelContext<WeNetUserProfile, String>();
-    context.name = "profile";
-    context.type = WeNetUserProfile.class;
-    return context;
+    return WeNetModelContext.creteWeNetContext("profile", WeNetUserProfile.class, this.vertx);
 
   }
 
@@ -117,7 +116,7 @@ public class ProfilesResource implements Profiles {
 
     final var model = this.createProfileContext();
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.createModelChain(this.vertx, body, model,
+    ModelResources.createModelChain(body, model,
         (profile, handler) -> this.repository.storeProfile(profile).onComplete(handler), context, () -> {
 
           ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
@@ -149,7 +148,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.updateModelChain(this.vertx, body, model,
+    ModelResources.updateModelChain(body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
         this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
@@ -166,9 +165,9 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.mergeModelChain(this.vertx, body, model,
+    ModelResources.mergeModelChain(body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
+        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(model, () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
   }
 
@@ -180,7 +179,7 @@ public class ProfilesResource implements Profiles {
    *
    * @return the function to call to store the profile into the historic.
    */
-  protected Runnable addProfileToHistoricChain(final ModelContext<WeNetUserProfile, String> model,
+  protected Runnable addProfileToHistoricChain(final ModelContext<WeNetUserProfile, String, WeNetValidateContext> model,
       final Runnable success) {
 
     return () -> {
@@ -312,10 +311,11 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, String>(),
-        "norm", ProtocolNorm.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, String, WeNetValidateContext>(), "norm",
+        ProtocolNorm.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
         (profile, norms) -> profile.norms = norms,
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -349,7 +349,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer, WeNetValidateContext>(), "norms",
+        ProtocolNorm.class);
     element.model.id = userId;
     element.id = index;
     ModelResources.retrieveModelFieldElement(element,
@@ -367,10 +368,11 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer, WeNetValidateContext>(), "norms",
+        ProtocolNorm.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
         ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -388,10 +390,11 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer, WeNetValidateContext>(), "norms",
+        ProtocolNorm.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
         ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -409,7 +412,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer>(), "norms", ProtocolNorm.class);
+        new ModelFieldContext<WeNetUserProfile, String, ProtocolNorm, Integer, WeNetValidateContext>(), "norms",
+        ProtocolNorm.class);
     element.model.id = userId;
     element.id = index;
     ModelResources.deleteModelFieldElementChain(element,
@@ -432,12 +436,14 @@ public class ProfilesResource implements Profiles {
    *
    * @return the filled element.
    */
-  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I> fillElementContext(
-      final ModelFieldContext<WeNetUserProfile, String, T, I> element, final String name, final Class<T> type) {
+  protected <T extends Model, I> ModelFieldContext<WeNetUserProfile, String, T, I, WeNetValidateContext> fillElementContext(
+      final ModelFieldContext<WeNetUserProfile, String, T, I, WeNetValidateContext> element, final String name,
+      final Class<T> type) {
 
     element.model = this.createProfileContext();
     element.name = name;
     element.type = type;
+    element.validateContext = element.model.validateContext;
     return element;
   }
 
@@ -450,10 +456,10 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
-        PlannedActivity.class);
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String, WeNetValidateContext>(),
+        "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities,
         (profile, plannedActivities) -> profile.plannedActivities = plannedActivities,
@@ -488,8 +494,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
-        PlannedActivity.class);
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String, WeNetValidateContext>(),
+        "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
     ModelResources.retrieveModelFieldElement(element,
@@ -518,12 +524,12 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
-        PlannedActivity.class);
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String, WeNetValidateContext>(),
+        "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
 
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -541,12 +547,12 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
-        PlannedActivity.class);
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String, WeNetValidateContext>(),
+        "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
 
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -564,8 +570,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String>(), "plannedActivities",
-        PlannedActivity.class);
+        new ModelFieldContext<WeNetUserProfile, String, PlannedActivity, String, WeNetValidateContext>(),
+        "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
     element.id = plannedActivityId;
     ModelResources.deleteModelFieldElementChain(element,
@@ -585,10 +591,10 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevant_location",
-        RelevantLocation.class);
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String, WeNetValidateContext>(),
+        "relevant_location", RelevantLocation.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations,
         (profile, relevantLocations) -> profile.relevantLocations = relevantLocations,
@@ -623,8 +629,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
-        RelevantLocation.class);
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String, WeNetValidateContext>(),
+        "relevantLocations", RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
     ModelResources.retrieveModelFieldElement(element,
@@ -653,12 +659,12 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
-        RelevantLocation.class);
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String, WeNetValidateContext>(),
+        "relevantLocations", RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -676,12 +682,12 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
-        RelevantLocation.class);
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String, WeNetValidateContext>(),
+        "relevantLocations", RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -699,8 +705,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String>(), "relevantLocations",
-        RelevantLocation.class);
+        new ModelFieldContext<WeNetUserProfile, String, RelevantLocation, String, WeNetValidateContext>(),
+        "relevantLocations", RelevantLocation.class);
     element.model.id = userId;
     element.id = relevantLocationId;
 
@@ -721,10 +727,10 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship",
-        SocialNetworkRelationship.class);
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String, WeNetValidateContext>(),
+        "relationship", SocialNetworkRelationship.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships,
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -758,8 +764,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
-        SocialNetworkRelationship.class);
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
+        "relationships", SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
     ModelResources.retrieveModelFieldElement(element,
@@ -777,11 +783,11 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
-        SocialNetworkRelationship.class);
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
+        "relationships", SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relationships, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -799,11 +805,11 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
-        SocialNetworkRelationship.class);
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
+        "relationships", SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relationships, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -821,8 +827,8 @@ public class ProfilesResource implements Profiles {
 
     final var context = new ServiceContext(request, resultHandler);
     final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer>(), "relationships",
-        SocialNetworkRelationship.class);
+        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
+        "relationships", SocialNetworkRelationship.class);
     element.model.id = userId;
     element.id = index;
     ModelResources.deleteModelFieldElementChain(element,
@@ -841,10 +847,11 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
-        "personalBehaviors", Routine.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Routine, Integer, WeNetValidateContext>(), "personalBehaviors",
+        Routine.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors,
         (profile, personalBehaviours) -> profile.personalBehaviors = personalBehaviours,
@@ -878,8 +885,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
-        "personalBehaviors", Routine.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Routine, Integer, WeNetValidateContext>(), "personalBehaviors",
+        Routine.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
@@ -896,11 +904,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
-        "personalBehaviors", Routine.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Routine, Integer, WeNetValidateContext>(), "personalBehaviors",
+        Routine.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -917,11 +926,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
-        "personalBehaviors", Routine.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Routine, Integer, WeNetValidateContext>(), "personalBehaviors",
+        Routine.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -938,8 +948,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Routine, Integer>(),
-        "personalBehaviors", Routine.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Routine, Integer, WeNetValidateContext>(), "personalBehaviors",
+        Routine.class);
     element.id = index;
     element.model.id = userId;
 
@@ -959,10 +970,11 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
-        "materials", Material.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Material, Integer, WeNetValidateContext>(), "materials",
+        Material.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, (profile, materials) -> profile.materials = materials,
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -995,8 +1007,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
-        "materials", Material.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Material, Integer, WeNetValidateContext>(), "materials",
+        Material.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
@@ -1013,11 +1026,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
-        "materials", Material.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Material, Integer, WeNetValidateContext>(), "materials",
+        Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1034,11 +1048,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
-        "materials", Material.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Material, Integer, WeNetValidateContext>(), "materials",
+        Material.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1055,8 +1070,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Material, Integer>(),
-        "materials", Material.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Material, Integer, WeNetValidateContext>(), "materials",
+        Material.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
@@ -1075,10 +1091,11 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
-        "competences", Competence.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Competence, Integer, WeNetValidateContext>(), "competences",
+        Competence.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, (profile, competences) -> profile.competences = competences,
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1111,8 +1128,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
-        "competences", Competence.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Competence, Integer, WeNetValidateContext>(), "competences",
+        Competence.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
@@ -1129,11 +1147,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
-        "competences", Competence.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Competence, Integer, WeNetValidateContext>(), "competences",
+        Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1150,11 +1169,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
-        "competences", Competence.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Competence, Integer, WeNetValidateContext>(), "competences",
+        Competence.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1171,8 +1191,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Competence, Integer>(),
-        "competences", Competence.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Competence, Integer, WeNetValidateContext>(), "competences",
+        Competence.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
@@ -1191,10 +1212,11 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
-        "meanings", Meaning.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer, WeNetValidateContext>(), "meanings",
+        Meaning.class);
     element.model.id = userId;
-    ModelResources.createModelFieldElementChain(this.vertx, body, element,
+    ModelResources.createModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings,
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1227,8 +1249,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
-        "meanings", Meaning.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer, WeNetValidateContext>(), "meanings",
+        Meaning.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
@@ -1245,11 +1268,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
-        "meanings", Meaning.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer, WeNetValidateContext>(), "meanings",
+        Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.updateModelFieldElementChain(this.vertx, body, element,
+    ModelResources.updateModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1266,11 +1290,12 @@ public class ProfilesResource implements Profiles {
       final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
-        "meanings", Meaning.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer, WeNetValidateContext>(), "meanings",
+        Meaning.class);
     element.id = index;
     element.model.id = userId;
-    ModelResources.mergeModelFieldElementChain(this.vertx, body, element,
+    ModelResources.mergeModelFieldElementChain(body, element,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
@@ -1287,8 +1312,9 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer>(),
-        "meanings", Meaning.class);
+    final var element = this.fillElementContext(
+        new ModelFieldContext<WeNetUserProfile, String, Meaning, Integer, WeNetValidateContext>(), "meanings",
+        Meaning.class);
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
@@ -1330,7 +1356,7 @@ public class ProfilesResource implements Profiles {
           for (var index = 0; index < max; index++) {
 
             final var relationship = profile.relationships.get(index);
-            if (relationship.equalsByAppUserAndType(newRelationship)) {
+            if (SocialNetworkRelationship.compareIds(relationship, newRelationship)) {
 
               this.mergeProfileRelationship(userId, index, body, request, resultHandler);
               return;
@@ -1342,16 +1368,31 @@ public class ProfilesResource implements Profiles {
       // not defined => add
       final var context = new ServiceContext(request, resultHandler);
       final var element = this.fillElementContext(
-          new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String>(), "relationship",
-          SocialNetworkRelationship.class);
+          new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String, WeNetValidateContext>(),
+          "relationship", SocialNetworkRelationship.class);
       element.model.id = userId;
-      ModelResources.createModelFieldElementChain(this.vertx, body, element, (any, handler) -> handler.handle(search),
+      ModelResources.createModelFieldElementChain(body, element, (any, handler) -> handler.handle(search),
           model -> model.relationships, (model, relationships) -> model.relationships = relationships,
           (model, handler) -> this.repository.updateProfile(model).onComplete(handler), context,
           this.addProfileToHistoricChain(element.model,
               () -> ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, element.value)));
 
     });
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void isProfileDefined(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+
+    final var model = this.createProfileContext();
+    model.id = userId;
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.checkModelExist(model,
+        (modelId, handler) -> this.repository.searchProfile(modelId).onComplete(handler), context);
 
   }
 

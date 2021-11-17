@@ -20,8 +20,9 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
-import eu.internetofus.common.model.TimeManager;
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.model.Model;
+import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.QueryBuilder;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
@@ -81,7 +82,7 @@ public class TrustsResource implements Trusts {
 
     } else {
 
-      event.validate("bad_event", this.vertx).onComplete(validation -> {
+      event.validate(new WeNetValidateContext("bad_event", this.vertx)).onComplete(validation -> {
 
         if (validation.failed()) {
 

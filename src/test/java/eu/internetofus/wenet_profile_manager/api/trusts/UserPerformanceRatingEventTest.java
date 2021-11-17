@@ -25,6 +25,7 @@ import static eu.internetofus.common.model.ValidableAsserts.assertIsValid;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.Task;
@@ -113,12 +114,13 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEmptyEventNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    assertIsNotValid(new UserPerformanceRatingEvent(), "rating", vertx, testContext);
+    assertIsNotValid(new UserPerformanceRatingEvent(), "rating", new WeNetValidateContext("codePrefix", vertx),
+        testContext);
 
   }
 
@@ -128,13 +130,13 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldBasicExampleNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
     final var event = this.createModelExample(1);
-    assertIsNotValid(event, "communityId", vertx, testContext);
+    assertIsNotValid(event, "communityId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
   }
 
@@ -144,7 +146,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetAndRatingBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -155,7 +157,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.sourceId = created.sourceId;
       model.targetId = created.targetId;
       model.rating = created.rating;
-      assertIsValid(model, vertx, testContext, () -> {
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
         assertThat(model.sourceId).isEqualTo(created.sourceId);
         assertThat(model.targetId).isEqualTo(created.targetId);
@@ -172,7 +174,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceEqualsToTargetNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -180,7 +182,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.targetId = model.sourceId;
-      assertIsNotValid(model, "targetId", vertx, testContext);
+      assertIsNotValid(model, "targetId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -193,7 +195,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndAppBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -205,7 +207,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.targetId = created.targetId;
       model.rating = created.rating;
       model.appId = created.appId;
-      assertIsValid(model, vertx, testContext, () -> {
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
         assertThat(model.appId).isEqualTo(created.appId);
 
@@ -222,7 +224,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndCommunityBeValid(final Vertx vertx,
@@ -235,7 +237,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.targetId = created.targetId;
       model.rating = created.rating;
       model.communityId = created.communityId;
-      assertIsValid(model, vertx, testContext, () -> {
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
         assertThat(model.communityId).isEqualTo(created.communityId);
 
@@ -252,7 +254,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndTaskTypeBeValid(final Vertx vertx,
@@ -265,7 +267,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.targetId = created.targetId;
       model.rating = created.rating;
       model.taskTypeId = created.taskTypeId;
-      assertIsValid(model, vertx, testContext, () -> {
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
         assertThat(model.taskTypeId).isEqualTo(created.taskTypeId);
 
@@ -281,7 +283,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndTaskBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -293,7 +295,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.targetId = created.targetId;
       model.rating = created.rating;
       model.taskId = created.taskId;
-      assertIsValid(model, vertx, testContext, () -> {
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
         assertThat(model.taskId).isEqualTo(created.taskId);
 
@@ -309,7 +311,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndRelationshipBeValid(final Vertx vertx,
@@ -323,7 +325,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       model.rating = created.rating;
       model.relationship = created.relationship;
       model.appId = created.appId;
-      assertIsValid(model, vertx, testContext);
+      assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -338,13 +340,14 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The model example {0} has to be valid")
   @ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
   public void shouldExampleBeValid(final int index, final Vertx vertx, final VertxTestContext testContext) {
 
-    this.createModelExample(index, vertx, testContext).onSuccess(model -> assertIsValid(model, vertx, testContext));
+    this.createModelExample(index, vertx, testContext)
+        .onSuccess(model -> assertIsValid(model, new WeNetValidateContext("codePrefix", vertx), testContext));
 
   }
 
@@ -356,7 +359,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with a rating {0} has not to be valid")
   @ValueSource(doubles = { -0.0001, -0.1, 1.1, 1.000001 })
@@ -366,7 +369,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.rating = rating;
-      assertIsNotValid(model, "rating", vertx, testContext);
+      assertIsNotValid(model, "rating", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -379,7 +382,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the sourceId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -393,7 +396,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
           model.sourceId = sourceId;
           model.targetId = stored.id;
           model.rating = Math.random();
-          assertIsNotValid(model, "sourceId", vertx, testContext);
+          assertIsNotValid(model, "sourceId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
         });
 
@@ -406,7 +409,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the targetId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -420,7 +423,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
           model.sourceId = stored.id;
           model.targetId = targetId;
           model.rating = Math.random();
-          assertIsNotValid(model, "targetId", vertx, testContext);
+          assertIsNotValid(model, "targetId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
         });
 
@@ -433,7 +436,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the appId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -443,7 +446,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.appId = appId;
-      assertIsNotValid(model, "appId", vertx, testContext);
+      assertIsNotValid(model, "appId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -455,7 +458,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithAppIdDiferentTotehAppIdOfTheTaskNotBeValid(final Vertx vertx,
@@ -466,7 +469,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       testContext.assertComplete(this.createModelExample(1, vertx, testContext)).onSuccess(model -> {
 
         model.appId = stored.appId;
-        assertIsNotValid(model, "appId", vertx, testContext);
+        assertIsNotValid(model, "appId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
       });
     });
@@ -480,7 +483,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the communityId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -490,7 +493,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.communityId = communityId;
-      assertIsNotValid(model, "communityId", vertx, testContext);
+      assertIsNotValid(model, "communityId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -503,7 +506,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the taskTypeId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -513,7 +516,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.taskTypeId = taskTypeId;
-      assertIsNotValid(model, "taskTypeId", vertx, testContext);
+      assertIsNotValid(model, "taskTypeId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -526,7 +529,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithTaskTypeIdDiferentTotehTaskTypeIdOfTheTaskNotBeValid(final Vertx vertx,
@@ -536,7 +539,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
       this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
         model.taskTypeId = stored.id;
-        assertIsNotValid(model, "taskTypeId", vertx, testContext);
+        assertIsNotValid(model, "taskTypeId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
       });
     });
@@ -550,7 +553,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the taskId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -560,7 +563,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.taskId = taskId;
-      assertIsNotValid(model, "taskId", vertx, testContext);
+      assertIsNotValid(model, "taskId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 
@@ -572,7 +575,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(String, Vertx)
+   * @see Task#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithBadRelationshipNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -580,7 +583,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
     this.createModelExample(1, vertx, testContext).onSuccess(model -> {
 
       model.relationship = SocialNetworkRelationshipType.acquaintance;
-      assertIsNotValid(model, "relationship", vertx, testContext);
+      assertIsNotValid(model, "relationship", new WeNetValidateContext("codePrefix", vertx), testContext);
 
     });
 

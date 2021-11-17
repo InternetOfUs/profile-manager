@@ -20,20 +20,15 @@
 
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
-import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
-import eu.internetofus.common.components.service.WeNetService;
-import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.ReflectionModel;
 import eu.internetofus.common.model.Validable;
-import eu.internetofus.common.model.ValidationErrorException;
-import eu.internetofus.common.model.Validations;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 
 /**
  * Contains information that rates the performance of an user over a task that
@@ -42,7 +37,7 @@ import io.vertx.core.Vertx;
  * @author UDT-IA, IIIA-CSIC
  */
 @Schema(description = "The event is used to rate the performance of an user over a task that it has done in WeNet.")
-public class UserPerformanceRatingEvent extends ReflectionModel implements Model, Validable {
+public class UserPerformanceRatingEvent extends ReflectionModel implements Model, Validable<WeNetValidateContext> {
 
   /**
    * The identifier of the user that provide the performance.
@@ -104,94 +99,22 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
    * {@inheritDoc}
    */
   @Override
-  public Future<Void> validate(final String codePrefix, final Vertx vertx) {
+  public Future<Void> validate(final WeNetValidateContext context) {
 
     final Promise<Void> promise = Promise.promise();
     var future = promise.future();
-    if (this.rating == null) {
+    context.validateNumberOnRangeField("rating", this.rating, 0.0d, 1.0d, promise);
+    this.sourceId = context.normalizeString(this.sourceId);
+    if (this.sourceId == null) {
 
-      promise.fail(new ValidationErrorException(codePrefix + ".rating", "You must define the rating value."));
-
-    } else if (this.rating < 0d || this.rating > 1d) {
-
-      promise
-          .fail(new ValidationErrorException(codePrefix + ".rating", "The rating value has to be in the range [0,1]."));
-
-    } else if (this.sourceId.equals(this.targetId)) {
-
-      promise.fail(new ValidationErrorException(codePrefix + ".targetId",
-          "The 'targetId' can not be the same as the 'sourceId'."));
-
-    } else {
-
-      if (this.appId != null) {
-
-        future = Validations.composeValidateId(future, codePrefix, "appId", this.appId, true,
-            WeNetService.createProxy(vertx)::retrieveApp);
-
-      }
-
-      if (this.communityId != null) {
-
-        future = Validations.composeValidateId(future, codePrefix, "communityId", this.communityId, true,
-            WeNetProfileManager.createProxy(vertx)::retrieveCommunity);
-
-      }
-
-      if (this.taskTypeId != null) {
-
-        future = Validations.composeValidateId(future, codePrefix, "taskTypeId", this.taskTypeId, true,
-            WeNetTaskManager.createProxy(vertx)::retrieveTaskType);
-
-      }
-
-      if (this.taskId != null) {
-
-        future = future.compose(mapper -> {
-
-          final Promise<Void> verifyNotRepeatedIdPromise = Promise.promise();
-          WeNetTaskManager.createProxy(vertx).retrieveTask(this.taskId).onComplete(retrieve -> {
-
-            if (retrieve.failed()) {
-
-              verifyNotRepeatedIdPromise.fail(
-                  new ValidationErrorException(codePrefix + ".taskId", "The '" + this.taskId + "' is not defined."));
-
-            } else {
-
-              final var task = retrieve.result();
-              if (this.appId != null && !this.appId.equals(task.appId)) {
-
-                verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".appId",
-                    "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'."));
-
-              } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
-
-                verifyNotRepeatedIdPromise.fail(new ValidationErrorException(codePrefix + ".taskTypeId",
-                    "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'."));
-
-              } else {
-
-                verifyNotRepeatedIdPromise.complete();
-
-              }
-            }
-
-          });
-          return verifyNotRepeatedIdPromise.future();
-        });
-
-      }
-
-      future = future.compose(mapper -> {
-
-        final Promise<Void> verifyRequesterIdExistPromise = Promise.promise();
-        WeNetProfileManager.createProxy(vertx).retrieveProfile(this.sourceId).onComplete(search -> {
+      return context.failField("sourceId", "You must define the identifier of teh user that provide the rating");
+    }
+    future = future
+        .compose(empty -> context.validateDefinedProfileByIdField("sourceId", this.sourceId).transform(search -> {
 
           if (search.failed()) {
 
-            verifyRequesterIdExistPromise.fail(new ValidationErrorException(codePrefix + ".sourceId",
-                "The '" + this.sourceId + "' is not defined.", search.cause()));
+            return context.failField("sourceId", "The '" + this.sourceId + "' is not defined.", search.cause());
 
           } else {
 
@@ -215,27 +138,75 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
             }
             if (!validRelationship) {
 
-              verifyRequesterIdExistPromise.fail(new ValidationErrorException(
-                  codePrefix + ".relationship", "The '" + this.relationship + "' is not defined on the '" + this.appId
-                      + "' by the source user '" + this.sourceId + "' with the target user '" + this.targetId + "'.",
-                  search.cause()));
+              return context.failField("relationship",
+                  "The '" + this.relationship + "' is not defined on the '" + this.appId + "' by the source user '"
+                      + this.sourceId + "' with the target user '" + this.targetId + "'.");
 
             } else {
 
-              verifyRequesterIdExistPromise.complete();
+              return Future.succeededFuture();
             }
 
           }
-        });
-        return verifyRequesterIdExistPromise.future();
-      });
 
-      future = Validations.composeValidateId(future, codePrefix, "targetId", this.targetId, true,
-          WeNetProfileManager.createProxy(vertx)::retrieveProfile);
+        }));
 
-      promise.complete();
+    this.targetId = context.normalizeString(this.targetId);
+    if (this.targetId == null) {
 
+      return context.failField("targetId", "You must define the identifier of the user that provide the rating");
+
+    } else if (this.sourceId.equals(this.targetId)) {
+
+      return context.failField("targetId", "The 'targetId' can not be the same as the 'sourceId'.");
     }
+    future = context.validateDefinedProfileIdField("targetId", this.targetId, future);
+
+    if (this.appId != null) {
+
+      future = context.validateDefinedAppIdField("appId", this.appId, future);
+    }
+    if (this.communityId != null) {
+
+      future = context.validateDefinedCommunityIdField("communityId", this.communityId, future);
+    }
+    if (this.taskTypeId != null) {
+
+      future = context.validateDefinedTaskTypeIdField("taskTypeId", this.taskTypeId, future);
+    }
+    if (this.taskId != null) {
+      future = future.compose(empty -> context.validateDefinedTaskByIdField("taskId", this.taskId).transform(search -> {
+
+        if (search.failed()) {
+
+          return context.failField("taskId", "The '" + this.taskId + "' is not defined.", search.cause());
+
+        } else {
+
+          final var task = search.result();
+          if (this.appId != null && !this.appId.equals(task.appId)) {
+
+            return context.failField("appId",
+                "The '" + this.appId + "' is not associated to the task '" + this.taskId + "'.");
+
+          } else if (this.taskTypeId != null && !this.taskTypeId.equals(task.taskTypeId)) {
+
+            return context.failField("taskTypeId",
+                "The '" + this.taskTypeId + "' is not associated to the task '" + this.taskId + "'.");
+
+          } else {
+
+            return Future.succeededFuture();
+
+          }
+
+        }
+
+      }));
+    }
+
+    promise.tryComplete();
+
     return future;
 
   }

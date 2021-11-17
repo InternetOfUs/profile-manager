@@ -19,6 +19,7 @@
  */
 package eu.internetofus.wenet_profile_manager.api.operations;
 
+import eu.internetofus.common.components.WeNetModelContext;
 import eu.internetofus.common.components.profile_diversity_manager.AgentData;
 import eu.internetofus.common.components.profile_diversity_manager.AgentsData;
 import eu.internetofus.common.components.profile_diversity_manager.AttributesData;
@@ -28,7 +29,6 @@ import eu.internetofus.common.components.profile_manager.DiversityValue;
 import eu.internetofus.common.components.profile_manager.SimilarityData;
 import eu.internetofus.common.components.profile_manager.SimilarityResult;
 import eu.internetofus.common.model.ValidationErrorException;
-import eu.internetofus.common.vertx.ModelContext;
 import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.ServiceContext;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
@@ -81,9 +81,7 @@ public class OperationsResource implements Operations {
   public void diversity(final JsonObject body, final ServiceRequest request,
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var model = new ModelContext<DiversityData, Void>();
-    model.name = "diversityData";
-    model.type = DiversityData.class;
+    final var model = WeNetModelContext.creteWeNetContext("diversityData", DiversityData.class, this.vertx);
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.toModel(body, model, context, () -> {
 
@@ -323,9 +321,7 @@ public class OperationsResource implements Operations {
   public void similarity(final JsonObject body, final ServiceRequest request,
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var model = new ModelContext<SimilarityData, Void>();
-    model.name = "similarityData";
-    model.type = SimilarityData.class;
+    final var model = WeNetModelContext.creteWeNetContext("similarityData", SimilarityData.class, this.vertx);
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.toModel(body, model, context, () -> {
 

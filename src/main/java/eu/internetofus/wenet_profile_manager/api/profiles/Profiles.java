@@ -41,6 +41,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -1450,6 +1451,24 @@ public interface Profiles {
   void deleteProfileMeaning(
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to delete", example = "1") int index,
+      @Parameter(hidden = true, required = false) ServiceRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
+
+  /**
+   * Called when want to check if a profile exist.
+   *
+   * @param userId        identifier of the user to get.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
+   */
+  @HEAD
+  @Path(USER_ID_PATH)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Check if exist a profile with an identifier", description = "Allow to check if an  identifier is associated to a profile")
+  @ApiResponse(responseCode = "204", description = "The profile exist")
+  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void isProfileDefined(
+      @PathParam("userId") @Parameter(description = "The identifier of the user to check if exist", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 

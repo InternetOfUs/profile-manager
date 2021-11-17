@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
 import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.AliveBirthDate;
 import eu.internetofus.common.components.models.PlannedActivity;
 import eu.internetofus.common.components.models.ProtocolNorm;
@@ -57,7 +58,6 @@ import io.vertx.junit5.VertxTestContext;
 import java.util.ArrayList;
 import java.util.UUID;
 import javax.ws.rs.core.Response.Status;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -542,7 +542,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(1, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -604,7 +604,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(1, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -726,7 +726,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -821,7 +821,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -924,7 +924,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -1029,7 +1029,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -1098,7 +1098,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
     testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
         .onSuccess(created -> {
 
-          assertIsValid(created, vertx, testContext, () -> {
+          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
 
             final var repository = ProfilesRepository.createProxy(vertx);
 
@@ -1272,26 +1272,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
           }).send(testContext, checkpoint);
 
     }).send(testContext, checkpoint);
-
-  }
-
-  /**
-   * Ignored because allow to merge equals models. {@inheritDoc}
-   */
-  @Ignore
-  @Override
-  public void shouldNotMergeWithSameModel(final Vertx vertx, final WebClient client,
-      final VertxTestContext testContext) {
-
-  }
-
-  /**
-   * Ignored because allow to merge equals models. {@inheritDoc}
-   */
-  @Ignore
-  @Override
-  public void shouldNotUpdateWithSameModel(final Vertx vertx, final WebClient client,
-      final VertxTestContext testContext) {
 
   }
 
