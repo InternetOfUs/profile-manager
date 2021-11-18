@@ -119,7 +119,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   @Test
   public void shouldEmptyEventNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
-    assertIsNotValid(new UserPerformanceRatingEvent(), "rating", new WeNetValidateContext("codePrefix", vertx),
+    assertIsNotValid(new UserPerformanceRatingEvent(), "sourceId", new WeNetValidateContext("codePrefix", vertx),
         testContext);
 
   }
