@@ -547,4 +547,19 @@ public class CommunitiesResource implements Communities {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void isCommunityDefined(final String communityId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+
+    final var model = this.createCommunityContext();
+    model.id = communityId;
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.checkModelExist(model,
+        (modelId, handler) -> this.repository.searchCommunity(modelId).onComplete(handler), context);
+
+  }
+
 }

@@ -20,9 +20,9 @@
 
 package eu.internetofus.wenet_profile_manager.api.communities;
 
-import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.components.models.CommunityProfile;
 import eu.internetofus.common.components.profile_manager.CommunityProfilesPage;
+import eu.internetofus.common.model.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
@@ -43,6 +43,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -638,6 +639,24 @@ public interface Communities {
       @PathParam("id") @Parameter(description = "The identifier of the community where the community member is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String id,
       @PathParam("userId") @Parameter(description = "The identifier of the community member to merge", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
+      @Parameter(hidden = true, required = false) ServiceRequest request,
+      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
+
+  /**
+   * Called when want to check if a community exist.
+   *
+   * @param communityId   identifier of the community to get.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
+   */
+  @HEAD
+  @Path("/{communityId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Check if exist a community with an identifier", description = "Allow to check if an  identifier is associated to a community")
+  @ApiResponse(responseCode = "204", description = "The community exist")
+  @ApiResponse(responseCode = "404", description = "Not found community", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
+  void isCommunityDefined(
+      @PathParam("communityId") @Parameter(description = "The identifier of the community to check if exist", example = "15837028-645a-4a55-9aaf-ceb846439eba") String communityId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
