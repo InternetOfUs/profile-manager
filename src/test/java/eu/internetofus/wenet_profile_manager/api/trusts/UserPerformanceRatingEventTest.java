@@ -28,7 +28,6 @@ import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
-import eu.internetofus.common.components.models.Task;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.model.ModelTestCase;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
@@ -114,7 +113,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEmptyEventNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -130,13 +129,13 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldBasicExampleNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
     final var event = this.createModelExample(1);
-    assertIsNotValid(event, "communityId", new WeNetValidateContext("codePrefix", vertx), testContext);
+    assertIsNotValid(event, "targetId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
   }
 
@@ -146,7 +145,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetAndRatingBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -174,7 +173,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceEqualsToTargetNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -195,7 +194,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndAppBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -224,7 +223,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndCommunityBeValid(final Vertx vertx,
@@ -254,7 +253,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndTaskTypeBeValid(final Vertx vertx,
@@ -283,7 +282,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndTaskBeValid(final Vertx vertx, final VertxTestContext testContext) {
@@ -311,7 +310,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithSourceTargetRatingAndRelationshipBeValid(final Vertx vertx,
@@ -340,7 +339,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The model example {0} has to be valid")
   @ValueSource(ints = { 0, 1, 2, 3, 4, 5 })
@@ -359,7 +358,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with a rating {0} has not to be valid")
   @ValueSource(doubles = { -0.0001, -0.1, 1.1, 1.000001 })
@@ -382,7 +381,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the sourceId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -409,7 +408,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the targetId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -436,7 +435,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the appId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -458,7 +457,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithAppIdDiferentTotehAppIdOfTheTaskNotBeValid(final Vertx vertx,
@@ -483,7 +482,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the communityId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -506,7 +505,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the taskTypeId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -529,7 +528,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithTaskTypeIdDiferentTotehTaskTypeIdOfTheTaskNotBeValid(final Vertx vertx,
@@ -553,7 +552,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @ParameterizedTest(name = "The event with the taskId {0} has not to be valid")
   @ValueSource(strings = { "a", "jbdfy17yt879o", "550e8400-e29b-41d4-a716-446655440000" })
@@ -575,7 +574,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
    * @param vertx       event bus to use.
    * @param testContext test context to use.
    *
-   * @see Task#validate(WeNetValidateContext)
+   * @see UserPerformanceRatingEvent#validate(WeNetValidateContext)
    */
   @Test
   public void shouldEventWithBadRelationshipNotBeValid(final Vertx vertx, final VertxTestContext testContext) {

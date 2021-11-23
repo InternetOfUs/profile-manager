@@ -94,7 +94,7 @@ public class TrustsIT {
 
       assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
       final var error = assertThatBodyIs(ErrorMessage.class, res);
-      assertThat(error.code).isNotEmpty().endsWith(".sourceId");
+      assertThat(error.code).isNotEmpty().endsWith(".targetId");
       assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
     }).sendJson(event.toJsonObject(), testContext);

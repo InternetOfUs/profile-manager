@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -321,8 +322,8 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
    * @param testContext context to test.
    */
   @Test
-  public void shouldFailAddOrUpdateRelationWhenRelationExistAndUpdateIsTheSame(final Vertx vertx,
-      final WebClient client, final VertxTestContext testContext) {
+  public void shouldAddOrUpdateRelationWhenRelationExistAndUpdateIsTheSame(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
 
     testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
 
@@ -333,10 +334,9 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
       final var path = this.modelPath() + "/" + modelId + this.fieldPath();
       testRequest(client, HttpMethod.PUT, path).expect(res -> {
 
-        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
-        final var error = assertThatBodyIs(ErrorMessage.class, res);
-        assertThat(error.code).isNotEmpty();
-        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var updatedElement = assertThatBodyIs(element.getClass(), res);
+        assertThat(updatedElement).isNotNull().isEqualTo(element);
 
       }).sendJson(element.toJsonObject(), testContext);
 
@@ -516,6 +516,7 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
    * @param client      to connect to the server.
    * @param testContext context to test.
    */
+  @Disabled
   @Test
   @Timeout(value = 45, timeUnit = TimeUnit.MINUTES)
   // 2,084.53
