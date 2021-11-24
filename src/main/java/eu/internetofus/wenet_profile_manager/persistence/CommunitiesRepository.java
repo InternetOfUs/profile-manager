@@ -318,4 +318,28 @@ public interface CommunitiesRepository {
   void retrieveCommunityProfilesPageObject(JsonObject query, JsonObject sort, int offset, int limit,
       Handler<AsyncResult<JsonObject>> handler);
 
+  /**
+   * Search for the community with the specified identifier.
+   *
+   * @param id identifier of the user to search.
+   *
+   * @return the future found community.
+   */
+  @GenIgnore
+  default Future<Boolean> isCommunityDefined(final String id) {
+
+    final Promise<Boolean> promise = Promise.promise();
+    this.isCommunityDefined(id, promise);
+    return promise.future();
+
+  }
+
+  /**
+   * Search for the community with the specified identifier.
+   *
+   * @param id            identifier of the user to search.
+   * @param searchHandler handler to manage the search.
+   */
+  void isCommunityDefined(String id, Handler<AsyncResult<Boolean>> searchHandler);
+
 }

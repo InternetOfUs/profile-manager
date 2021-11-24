@@ -182,4 +182,15 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
     return new JsonArray().add(norm.toJsonObject());
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void isCommunityDefined(final String id, final Handler<AsyncResult<Boolean>> searchHandler) {
+
+    this.searchCommunity(id)
+        .onComplete(search -> searchHandler.handle(Future.succeededFuture(search.result() != null)));
+
+  }
+
 }

@@ -32,6 +32,7 @@ import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
 import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.model.Model;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.Response.Status;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -516,16 +516,14 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
    * @param client      to connect to the server.
    * @param testContext context to test.
    */
-  @Disabled
   @Test
-  @Timeout(value = 45, timeUnit = TimeUnit.MINUTES)
-  // 2,084.53
+  @Timeout(value = 5, timeUnit = TimeUnit.MINUTES)
   public void shouldUpdateLargeNumberOfRelationships(final Vertx vertx, final WebClient client,
       final VertxTestContext testContext) {
 
     testContext.assertComplete(this.storeValidExampleModelWithFieldElements(4, vertx, testContext)).onSuccess(model -> {
 
-      var future = Future.succeededFuture(new ArrayList<String>());
+      Future<List<String>> future = Future.succeededFuture(new ArrayList<String>());
       for (var i = 0; i < 5; i++) {
 
         final var index = i;
@@ -538,46 +536,51 @@ public class ProfilesRelationshipsIT extends AbstractProfileFieldResourcesIT<Soc
 
       }
 
-      for (var i = 0; i < 1000; i++) {
-
-        final var index = i;
-        future = future
-            .compose(ids -> StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext).map(profile -> {
-
-              ids.add(profile.id);
-              final var relation = new SocialNetworkRelationship();
-              relation.appId = ids.get(index % 5);
-              relation.userId = profile.id;
-              relation.type = SocialNetworkRelationshipType.values()[index
-                  % SocialNetworkRelationshipType.values().length];
-              relation.weight = 0d;
-              model.relationships.add(relation);
-              return ids;
-            }));
-      }
-
       testContext.assertComplete(future).onSuccess(ids -> {
 
-        final var checkpoint = testContext.checkpoint(1001);
-        testRequest(client, HttpMethod.PATCH, this.modelPath() + "/" + this.idOfModel(model, testContext))
-            .expect(res -> {
+        @SuppressWarnings("rawtypes")
+        final List<Future> futures = new ArrayList<>();
+        for (var i = 0; i < 1000; i++) {
 
-              assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-              final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
-              for (var i = 0; i < 1000; i++) {
+          final var index = i;
+          futures.add(StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext).map(profile -> {
 
-                final var index = i;
-                final var relation = model.relationships.get(i);
-                relation.weight = 1.0d;
-                testRequest(client, HttpMethod.PUT, postPath).expect(resUpdate -> {
+            ids.add(profile.id);
+            final var relation = new SocialNetworkRelationship();
+            relation.appId = ids.get(index % 5);
+            relation.userId = profile.id;
+            relation.type = SocialNetworkRelationshipType.values()[index
+                % SocialNetworkRelationshipType.values().length];
+            relation.weight = 0d;
+            model.relationships.add(relation);
+            return null;
+          }));
+        }
 
-                  assertThat(resUpdate.statusCode()).isEqualTo(Status.OK.getStatusCode()).as(String.valueOf(index));
+        testContext.assertComplete(CompositeFuture.all(futures)).onSuccess(any -> {
 
-                }).sendJson(relation.toJsonObject(), testContext, checkpoint);
+          final var checkpoint = testContext.checkpoint(1001);
+          testRequest(client, HttpMethod.PATCH, this.modelPath() + "/" + this.idOfModel(model, testContext))
+              .expect(res -> {
 
-              }
+                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                final var postPath = this.modelPath() + "/" + this.idOfModel(model, testContext) + this.fieldPath();
+                for (var i = 0; i < 1000; i++) {
 
-            }).sendJson(model.toJsonObject(), testContext, checkpoint);
+                  final var index = i;
+                  final var relation = model.relationships.get(i);
+                  relation.weight = 1.0d;
+                  testRequest(client, HttpMethod.PUT, postPath).expect(resUpdate -> {
+
+                    assertThat(resUpdate.statusCode()).isEqualTo(Status.OK.getStatusCode()).as(String.valueOf(index));
+
+                  }).sendJson(relation.toJsonObject(), testContext, checkpoint);
+
+                }
+
+              }).sendJson(model.toJsonObject(), testContext, checkpoint);
+
+        });
 
       });
 

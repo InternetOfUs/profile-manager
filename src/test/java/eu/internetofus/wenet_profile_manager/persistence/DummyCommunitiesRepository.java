@@ -72,4 +72,11 @@ public class DummyCommunitiesRepository implements CommunitiesRepository {
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void isCommunityDefined(final String id, final Handler<AsyncResult<Boolean>> searchHandler) {
+  }
+
 }
