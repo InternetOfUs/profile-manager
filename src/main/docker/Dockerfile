@@ -25,6 +25,8 @@ ARG DEFAULT_WENET_TASK_MANAGER_API="https://wenet.u-hopper.com/prod/task_manager
 ARG DEFAULT_WENET_SERVICE_API="https://wenet.u-hopper.com/prod/service"
 ARG DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API="https://wenet.u-hopper.com/prod/social_context_builder"
 ARG DEFAULT_COMP_AUTH_KEY=""
+ARG DEFAULT_CACHE_TIMEOUT=300
+ARG DEFAULT_CACHE_SIZE=10000
 ENV API_HOST=${DEFAULT_API_HOST}
 ENV API_PORT=${DEFAULT_API_PORT}
 ENV DB_HOST=${DEFAULT_DB_HOST}
@@ -37,6 +39,8 @@ ENV WENET_TASK_MANAGER_API=${DEFAULT_WENET_TASK_MANAGER_API}
 ENV WENET_SOCIAL_CONTEXT_BUILDER_API=${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}
 ENV RUN_ARGS=""
 ENV COMP_AUTH_KEY=${DEFAULT_COMP_AUTH_KEY}
+ENV CACHE_TIMEOUT=${DEFAULT_CACHE_TIMEOUT}
+ENV CACHE_SIZE=${DEFAULT_CACHE_SIZE}
 
 # Create running dierectories
 RUN mkdir -p /usr/wenet/profile-manager/lib
@@ -61,6 +65,9 @@ RUN echo "{\"wenetComponents\":{\"service\":\"${DEFAULT_WENET_SERVICE_API}\"}}" 
 # Create configuration for social context builder component
 RUN echo "{\"wenetComponents\":{\"socialContextBuilder\":\"${DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API}\"}}" > /usr/wenet/profile-manager/etc/socialContextBuilder.json
 
+# Create configuration for the cache
+RUN echo "{\"wenetComponents\":{\"cache\":{\"timeout\":\"${DEFAULT_CACHE_TIMEOUT}\",\"size\":\"${DEFAULT_CACHE_SIZE}\"}}}" > /usr/wenet/profile-manager/etc/cache.json
+
 WORKDIR /usr/wenet/profile-manager
 COPY --from=build /build/target/wenet-profile-manager.jar /usr/wenet/profile-manager/wenet-profile-manager.jar
 COPY --from=build /build/target/lib/ /usr/wenet/profile-manager/lib/
@@ -79,4 +86,6 @@ CMD /wait && java -jar wenet-profile-manager.jar -c etc \
 	-pwenetComponents.service=${WENET_SERVICE_API}\
 	-pwenetComponents.socialContextBuilder=${WENET_SOCIAL_CONTEXT_BUILDER_API}\
 	-pwebClient.wenetComponentApikey=${COMP_AUTH_KEY}\
+	-pwenetComponents.cache.timeout=${CACHE_TIMEOUT}\
+	-pwenetComponents.cache.size=${CACHE_SIZE}\
 	${RUN_ARGS}
