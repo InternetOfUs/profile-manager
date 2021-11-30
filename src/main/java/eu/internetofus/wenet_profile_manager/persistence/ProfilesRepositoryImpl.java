@@ -21,9 +21,11 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.vertx.Repository;
 import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -32,6 +34,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.mongo.UpdateOptions;
+import org.tinylog.Logger;
 
 /**
  * Implementation of the {@link ProfilesRepository}.
@@ -159,9 +162,45 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
    */
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
-    return this.fixDuplicatedRelationships()
-        .compose(empty -> this.migrateCollection(PROFILES_COLLECTION, WeNetUserProfile.class))
-        .compose(empty -> this.migrateCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class));
+    return CompositeFuture.all(this.fixDuplicatedRelationships(),
+        this.migrateLargeCollection(PROFILES_COLLECTION, WeNetUserProfile.class),
+        this.migrateLargeCollection(HISTORIC_PROFILES_COLLECTION, HistoricWeNetUserProfile.class)).map(any -> null);
+
+  }
+
+  /**
+   * Migrate a large collection.
+   *
+   * @param collectionName name of the collection to migrate.
+   * @param type           of the documents on the collection. {@code null} use
+   *                       the found element.
+   *
+   * @return the future with the migration result.
+   */
+  protected <T extends Model> Future<Void> migrateLargeCollection(final String collectionName, final Class<T> type) {
+
+    final var query = this.createQueryToReturnDocumentsWithAVersionLessThan(this.schemaVersion);
+    return this.pool.count(collectionName, query).compose(count -> {
+
+      final var future = this.migrateCollection(collectionName, type);
+      if (count > 1000) {
+
+        future.onComplete(migrate -> {
+
+          if (migrate.failed()) {
+
+            Logger.error(migrate.cause(), "Cannot migrate the documents at {}.", collectionName);
+          }
+
+        });
+        return Future.succeededFuture();
+
+      } else {
+
+        return future;
+      }
+
+    });
 
   }
 
