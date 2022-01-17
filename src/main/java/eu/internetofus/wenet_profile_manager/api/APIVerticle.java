@@ -48,6 +48,17 @@ import io.vertx.serviceproxy.ServiceBinder;
 public class APIVerticle extends AbstractAPIVerticle {
 
   /**
+   * The configuration key with the parameters for the profile manager.
+   */
+  public static final String PROFILE_MANAGER_CONG_KEY = "profileManager";
+
+  /**
+   * The configuration property that contains the path where the OpenAPI has to be
+   * stored.
+   */
+  public static final String AUTO_STORE_PROFILE_CHANGES_IN_HISTORY_KEY = "autoStoreProfileChangesInHistory";
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -65,9 +76,12 @@ public class APIVerticle extends AbstractAPIVerticle {
     routerFactory.mountServiceInterface(Help.class, Help.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Help.ADDRESS).register(Help.class, new HelpResource(this));
 
+    final boolean autoStoreProfileChangesInHistory = this.config()
+        .getJsonObject(PROFILE_MANAGER_CONG_KEY, new JsonObject())
+        .getBoolean(AUTO_STORE_PROFILE_CHANGES_IN_HISTORY_KEY, false);
     routerFactory.mountServiceInterface(Profiles.class, Profiles.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Profiles.ADDRESS).register(Profiles.class,
-        new ProfilesResource(this.vertx));
+        new ProfilesResource(this.vertx, autoStoreProfileChangesInHistory));
 
     routerFactory.mountServiceInterface(Trusts.class, Trusts.ADDRESS);
     new ServiceBinder(this.vertx).setAddress(Trusts.ADDRESS).register(Trusts.class, new TrustsResource(this.vertx));

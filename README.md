@@ -83,6 +83,7 @@ This creates the generic docker image, but you can create a different wit the **
  - **DEFAULT_WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
  - **DEFAULT_CACHE_TIMEOUT** to define the time in seconds that a value can be on the cache. By default is **300**.
  - **DEFAULT_CACHE_SIZE** to define the maximum number of entries that can be on the cache. By default is **10000**.
+ - **DEFAULT_AUTOSTORE_PROFILE_CHANGES_IN_HISTORY** this is **true** if every change on the profile has to provoke that the history is updated. By default is **false**.
 
 Also, you can define your configuration that modifies these properties and mount to  **/usr/wenet/profile-manager/etc**.
 
@@ -111,7 +112,8 @@ On this container, you can use the next environment variables:
  - **COMP_AUTH_KEY** to define the authentication key that the component has to use to interact with the other WeNet components.
  - **CACHE_TIMEOUT** to define the time in seconds that a value can be on the cache. By default is **300**.
  - **CACHE_SIZE** to define the maximum number of entries that can be on the cache. By default is **10000**.
-
+ - **AUTOSTORE_PROFILE_CHANGES_IN_HISTORY** this is **true** if every change on the profile has to provoke that the history is updated. By default is **false**.
+ 
 When the container is started, it stores the log messages at **/usr/wenet/profile-manager/var/log/profile-manager.log**. This file is limited
 to 10 MB and rolled every day using the pattern **profile-manager.log.X** (where X is a number between 1 and 99).
 
@@ -132,6 +134,7 @@ This docker compose has the next variables:
  - **WENET_SOCIAL_CONTEXT_BUILDER_API** to define the path to the social context builder component to use. By default is **https://wenet.u-hopper.com/prod/social_context_builder**.
  - **CACHE_TIMEOUT** to define the time in seconds that a value can be on the cache. By default is **300**.
  - **CACHE_SIZE** to define the maximum number of entries that can be on the cache. By default is **10000**.
+ - **AUTOSTORE_PROFILE_CHANGES_IN_HISTORY** this is **true** if every change on the profile has to provoke that the history is updated. By default is **false**.
 
 ### Show running logs
 

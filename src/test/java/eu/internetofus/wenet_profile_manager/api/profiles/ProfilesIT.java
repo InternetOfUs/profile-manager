@@ -254,7 +254,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
             final var checkpoint = testContext.checkpoint(2);
             testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-                .expect(res -> testContext.verify(() -> {
+                .with(queryParam("storeProfileChangesInHistory", "true")).expect(res -> testContext.verify(() -> {
 
                   assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
                   final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
@@ -290,6 +290,70 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                               assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
                               assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
                               assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+                            }).send(testContext, checkpoint);
+
+                      });
+
+                })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+          });
+
+    });
+
+  }
+
+  /**
+   * Verify that can update a profile with another.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#retrieveProfile(String,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldUpdateProfileNoAddingHistory(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(StoreServices.storeProfileExample(1, vertx, testContext)).onSuccess(storedProfile -> {
+
+      testContext.assertComplete(new WeNetUserProfileTest().createModelExample(2, vertx, testContext))
+          .onSuccess(newProfile -> {
+
+            final var checkpoint = testContext.checkpoint(2);
+            testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+                .expect(res -> testContext.verify(() -> {
+
+                  assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                  final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
+                  assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+                  newProfile.id = storedProfile.id;
+                  newProfile._creationTs = storedProfile._creationTs;
+                  newProfile._lastUpdateTs = updated._lastUpdateTs;
+                  newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
+                  newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
+                  newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
+                  newProfile.relationships = updated.relationships;
+                  assertThat(updated).isEqualTo(newProfile);
+
+                  testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
+                      .getSocialNotificationProfileUpdate(storedProfile.id)).onSuccess(notification -> {
+
+                        testContext.verify(() -> {
+
+                          assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth",
+                              "gender", "email", "phoneNumber", "locale", "avatar", "nationality", "occupation",
+                              "norms", "plannedActivities", "relevantLocations", "relationships", "personalBehaviors",
+                              "materials", "competences", "meanings");
+
+                        });
+
+                        testRequest(client, HttpMethod.GET,
+                            Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+                              assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
                             }).send(testContext, checkpoint);
 
@@ -359,7 +423,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       newProfile.id = UUID.randomUUID().toString();
       final var checkpoint = testContext.checkpoint(2);
       testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id)
-          .expect(res -> testContext.verify(() -> {
+          .with(queryParam("storeProfileChangesInHistory", "true")).expect(res -> testContext.verify(() -> {
 
             assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
             final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
@@ -394,6 +458,64 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
                             offset((Long) 1L));
                         assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+                      }).send(testContext, checkpoint);
+
+                });
+
+          })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+    });
+
+  }
+
+  /**
+   * Verify that can merge a complex profile with another.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#retrieveProfile(String,
+   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   */
+  @Test
+  public void shouldMergeProfileNoAddingHistoric(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    testContext.assertComplete(StoreServices.storeProfileExample(1, vertx, testContext)).onSuccess(storedProfile -> {
+
+      final var newProfile = new WeNetUserProfileTest().createModelExample(2);
+      newProfile.id = UUID.randomUUID().toString();
+      final var checkpoint = testContext.checkpoint(2);
+      testRequest(client, HttpMethod.PATCH, Profiles.PATH + "/" + storedProfile.id)
+          .expect(res -> testContext.verify(() -> {
+
+            assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+            final var merged = assertThatBodyIs(WeNetUserProfile.class, res);
+            assertThat(merged).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
+            newProfile.id = storedProfile.id;
+            newProfile._creationTs = storedProfile._creationTs;
+            newProfile._lastUpdateTs = merged._lastUpdateTs;
+            newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
+            newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
+            newProfile.relationships = merged.relationships;
+            newProfile.personalBehaviors = storedProfile.personalBehaviors;
+            assertThat(merged).isEqualTo(newProfile);
+
+            testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
+                .getSocialNotificationProfileUpdate(storedProfile.id)).onSuccess(notification -> {
+
+                  testContext.verify(() -> {
+
+                    assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth", "gender",
+                        "email", "phoneNumber", "locale", "avatar", "nationality", "norms", "occupation",
+                        "plannedActivities", "relevantLocations", "materials", "competences", "meanings");
+                  });
+
+                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+                      .expect(resPage -> {
+
+                        assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
                       }).send(testContext, checkpoint);
 
@@ -654,8 +776,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#retrieveProfile(String,
-   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
+   * @see Profiles#updateProfile(Boolean, String, JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test
   public void shouldUpdateOnlyProfileGender(final Vertx vertx, final WebClient client,
@@ -686,19 +808,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
                       .expect(resPage -> {
 
-                        assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                        final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
-
-                        assertThat(page.profiles).hasSize(2);
-                        final var historic0 = page.profiles.get(0);
-                        assertThat(historic0.from).isEqualTo(storedProfile._creationTs);
-                        assertThat(historic0.to).isEqualTo(updatedProfile._lastUpdateTs);
-                        assertThat(historic0.profile.gender).isNull();
-
-                        final var historic1 = page.profiles.get(1);
-                        assertThat(historic1.from).isEqualTo(updatedProfile._lastUpdateTs);
-                        assertThat(historic1.to).isEqualTo(updatedProfile2._lastUpdateTs);
-                        assertThat(historic1.profile.gender).isEqualTo(WeNetUserProfile.OTHER);
+                        assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
                       }).send(testContext);
 
@@ -711,13 +821,82 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
+   * Verify that only update the gender of an user.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Profiles#updateProfile(Boolean, String, JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldUpdateOnlyProfileGenderStoreChanges(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    StoreServices.storeProfile(new WeNetUserProfile(), vertx, testContext).onSuccess(storedProfile -> {
+
+      final var newProfile = new WeNetUserProfile();
+      newProfile.gender = WeNetUserProfile.OTHER;
+      final var checkpoint = testContext.checkpoint(3);
+      testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+          .with(queryParam("storeProfileChangesInHistory", "true")).expect(updated1 -> {
+
+            WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id)
+                .onSuccess(updatedProfile -> testContext.verify(() -> {
+
+                  storedProfile._lastUpdateTs = updatedProfile._lastUpdateTs;
+                  storedProfile.gender = WeNetUserProfile.OTHER;
+                  assertThat(updatedProfile).isEqualTo(storedProfile);
+
+                  testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
+                      .with(queryParam("storeProfileChangesInHistory", "true")).expect(updated2 -> {
+
+                        WeNetProfileManager.createProxy(vertx).retrieveProfile(storedProfile.id)
+                            .onSuccess(updatedProfile2 -> testContext.verify(() -> {
+
+                              storedProfile._lastUpdateTs = updatedProfile2._lastUpdateTs;
+                              storedProfile.gender = null;
+                              assertThat(updatedProfile2).isEqualTo(storedProfile);
+                              testRequest(client, HttpMethod.GET,
+                                  Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+
+                                    assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                                    final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+
+                                    assertThat(page.profiles).hasSize(2);
+                                    final var historic0 = page.profiles.get(0);
+                                    assertThat(historic0.from).isEqualTo(storedProfile._creationTs);
+                                    assertThat(historic0.to).isEqualTo(updatedProfile._lastUpdateTs);
+                                    assertThat(historic0.profile.gender).isNull();
+
+                                    final var historic1 = page.profiles.get(1);
+                                    assertThat(historic1.from).isEqualTo(updatedProfile._lastUpdateTs);
+                                    assertThat(historic1.to).isEqualTo(updatedProfile2._lastUpdateTs);
+                                    assertThat(historic1.profile.gender).isEqualTo(WeNetUserProfile.OTHER);
+
+                                  }).send(testContext, checkpoint);
+
+                            }));
+
+                      }).sendJson(new WeNetUserProfile().toJsonObject(), testContext, checkpoint);
+
+                }));
+
+          }).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
+
+    });
+
+  }
+
+  /**
    * Verify that can update the norms of an user.
    *
    * @param vertx       event bus to use.
    * @param client      to connect to the server.
    * @param testContext context to test.
    *
-   * @see Profiles#updateProfile(String, JsonObject,
+   * @see Profiles#updateProfile(Boolean, String, JsonObject,
    *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
    */
   @Test

@@ -197,10 +197,12 @@ public interface Profiles {
   /**
    * Called when want to modify a profile.
    *
-   * @param userId        identifier of the user to modify.
-   * @param body          the new profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user to modify.
+   * @param body                         the new profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH)
@@ -214,6 +216,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void updateProfile(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -222,10 +225,12 @@ public interface Profiles {
   /**
    * Called when want to modify partially a profile.
    *
-   * @param userId        identifier of the user to modify.
-   * @param body          the new profile attributes.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user to modify.
+   * @param body                         the new profile attributes.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH)
@@ -239,6 +244,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void mergeProfile(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to update", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -247,9 +253,11 @@ public interface Profiles {
   /**
    * Called when want to delete a profile.
    *
-   * @param userId        identifier of the user to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH)
@@ -258,6 +266,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void deleteProfile(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
@@ -297,10 +306,13 @@ public interface Profiles {
   /**
    * Called when want to add a norm into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the norm.
-   * @param body          norm to add to the user profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the norm.
+   * @param body                         norm to add to the user profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + NORMS_PATH)
@@ -313,6 +325,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found user profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void addProfileNorm(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user profile to add the norm", example = "ceb846439eba-645a-4a55-9aaf-15837028") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -362,12 +375,14 @@ public interface Profiles {
   /**
    * Called when want to update a norm from a profile.
    *
-   * @param userId        identifier of the user for the profile where the norm is
-   *                      defined.
-   * @param index         identifier of the norm to update.
-   * @param body          the new values for the norm.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the norm is defined.
+   * @param index                        identifier of the norm to update.
+   * @param body                         the new values for the norm.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + NORMS_PATH + "/{index}")
@@ -380,6 +395,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void updateProfileNorm(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the norm to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -389,12 +405,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a norm from a profile.
    *
-   * @param userId        identifier of the user for the profile where the norm is
-   *                      defined.
-   * @param index         identifier of the norm to merge.
-   * @param body          the new values for the norm.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the norm is defined.
+   * @param index                        identifier of the norm to merge.
+   * @param body                         the new values for the norm.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + NORMS_PATH + "/{index}")
@@ -407,6 +425,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void mergeProfileNorm(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the norm to get", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -416,11 +435,13 @@ public interface Profiles {
   /**
    * Called when want to delete a norm from a profile.
    *
-   * @param userId        identifier of the user for the profile where the norm is
-   *                      defined.
-   * @param index         identifier of the norm to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the norm is defined.
+   * @param index                        identifier of the norm to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + NORMS_PATH + "/{index}")
@@ -429,6 +450,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void deleteProfileNorm(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the norm is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the norm to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -437,11 +459,13 @@ public interface Profiles {
   /**
    * Called when want to add a planned activity into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      plannedActivity.
-   * @param body          planned activity to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the planned activity.
+   * @param body                         planned activity to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH)
@@ -454,6 +478,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void addProfilePlannedActivity(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the planned activity", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -504,12 +529,15 @@ public interface Profiles {
   /**
    * Called when want to update a planned activity from a profile.
    *
-   * @param userId            identifier of the user for the profile where the
-   *                          planned activity is defined.
-   * @param plannedActivityId identifier of the planned activity to update.
-   * @param body              the new values for the planned activity.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the planned activity is defined.
+   * @param plannedActivityId            identifier of the planned activity to
+   *                                     update.
+   * @param body                         the new values for the planned activity.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
@@ -522,6 +550,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void updateProfilePlannedActivity(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -531,12 +560,15 @@ public interface Profiles {
   /**
    * Called when want to partially modify a planned activity from a profile.
    *
-   * @param userId            identifier of the user for the profile where the
-   *                          planned activity is defined.
-   * @param plannedActivityId identifier of the planned activity to merge.
-   * @param body              the new values for the planned activity.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the planned activity is defined.
+   * @param plannedActivityId            identifier of the planned activity to
+   *                                     merge.
+   * @param body                         the new values for the planned activity.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
@@ -549,6 +581,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void mergeProfilePlannedActivity(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -558,11 +591,14 @@ public interface Profiles {
   /**
    * Called when want to delete a planned activity from a profile.
    *
-   * @param userId            identifier of the user for the profile where the
-   *                          planned activity is defined.
-   * @param plannedActivityId identifier of the planned activity to delete.
-   * @param request           of the operation.
-   * @param resultHandler     to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the planned activity is defined.
+   * @param plannedActivityId            identifier of the planned activity to
+   *                                     delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
@@ -571,6 +607,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void deleteProfilePlannedActivity(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -579,11 +616,13 @@ public interface Profiles {
   /**
    * Called when want to add a relevant location into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      relevantLocation.
-   * @param body          relevant location to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the relevantLocation.
+   * @param body                         relevant location to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH)
@@ -596,6 +635,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void addProfileRelevantLocation(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relevant location", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -646,12 +686,15 @@ public interface Profiles {
   /**
    * Called when want to update a relevant location from a profile.
    *
-   * @param userId             identifier of the user for the profile where the
-   *                           relevant location is defined.
-   * @param relevantLocationId identifier of the relevant location to update.
-   * @param body               the new values for the relevant location.
-   * @param request            of the operation.
-   * @param resultHandler      to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relevant location is defined.
+   * @param relevantLocationId           identifier of the relevant location to
+   *                                     update.
+   * @param body                         the new values for the relevant location.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
@@ -664,6 +707,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void updateProfileRelevantLocation(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -673,12 +717,15 @@ public interface Profiles {
   /**
    * Called when want to partially modify a relevant location from a profile.
    *
-   * @param userId             identifier of the user for the profile where the
-   *                           relevant location is defined.
-   * @param relevantLocationId identifier of the relevant location to merge.
-   * @param body               the new values for the relevant location.
-   * @param request            of the operation.
-   * @param resultHandler      to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relevant location is defined.
+   * @param relevantLocationId           identifier of the relevant location to
+   *                                     merge.
+   * @param body                         the new values for the relevant location.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
@@ -691,6 +738,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void mergeProfileRelevantLocation(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -700,11 +748,14 @@ public interface Profiles {
   /**
    * Called when want to delete a relevant location from a profile.
    *
-   * @param userId             identifier of the user for the profile where the
-   *                           relevant location is defined.
-   * @param relevantLocationId identifier of the relevant location to delete.
-   * @param request            of the operation.
-   * @param resultHandler      to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relevant location is defined.
+   * @param relevantLocationId           identifier of the relevant location to
+   *                                     delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
@@ -713,6 +764,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void deleteProfileRelevantLocation(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to delete", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -721,11 +773,13 @@ public interface Profiles {
   /**
    * Called when want to add a relationship into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      relationship.
-   * @param body          relationship to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the relationship.
+   * @param body                         relationship to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
@@ -738,6 +792,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void addProfileRelationship(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -788,12 +843,14 @@ public interface Profiles {
   /**
    * Called when want to update a relationship from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      relationship is defined.
-   * @param index         of the relationship to update.
-   * @param body          the new values for the relationship.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relationship is defined.
+   * @param index                        of the relationship to update.
+   * @param body                         the new values for the relationship.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
@@ -806,6 +863,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void updateProfileRelationship(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -815,11 +873,13 @@ public interface Profiles {
   /**
    * Called when want to add or update a relationship from a user and type.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      relationship is defined.
-   * @param body          the new values for the relationship.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relationship is defined.
+   * @param body                         the new values for the relationship.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
@@ -833,6 +893,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void addOrUpdateProfileRelationship(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -841,12 +902,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a relationship from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      relationship is defined.
-   * @param index         of the relationship to merge.
-   * @param body          the new values for the relationship.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relationship is defined.
+   * @param index                        of the relationship to merge.
+   * @param body                         the new values for the relationship.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
@@ -859,6 +922,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void mergeProfileRelationship(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The identifier of the relationship to merge", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -868,11 +932,13 @@ public interface Profiles {
   /**
    * Called when want to delete a relationship from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      relationship is defined.
-   * @param index         of the relationship to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the relationship is defined.
+   * @param index                        of the relationship to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
@@ -881,6 +947,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relationships")
   void deleteProfileRelationship(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -889,11 +956,13 @@ public interface Profiles {
   /**
    * Called when want to add a personal behavior into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      personalBehavior.
-   * @param body          personal behavior to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the personalBehavior.
+   * @param body                         personal behavior to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH)
@@ -906,6 +975,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void addProfilePersonalBehavior(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the personal behavior", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -956,12 +1026,14 @@ public interface Profiles {
   /**
    * Called when want to update a personal behavior from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      personal behavior is defined.
-   * @param index         of the personal behavior to update.
-   * @param body          the new values for the personal behavior.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the personal behavior is defined.
+   * @param index                        of the personal behavior to update.
+   * @param body                         the new values for the personal behavior.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
@@ -974,6 +1046,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void updateProfilePersonalBehavior(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -983,12 +1056,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a personal behavior from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      personal behavior is defined.
-   * @param index         of the personal behavior to merge.
-   * @param body          the new values for the personal behavior.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the personal behavior is defined.
+   * @param index                        of the personal behavior to merge.
+   * @param body                         the new values for the personal behavior.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
@@ -1001,6 +1076,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void mergeProfilePersonalBehavior(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to merge", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1010,11 +1086,13 @@ public interface Profiles {
   /**
    * Called when want to delete a personal behavior from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      personal behavior is defined.
-   * @param index         of the personal behavior to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the personal behavior is defined.
+   * @param index                        of the personal behavior to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
@@ -1023,6 +1101,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void deleteProfilePersonalBehavior(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the personal behavior is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the personal behavior on the profile to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1031,11 +1110,13 @@ public interface Profiles {
   /**
    * Called when want to add a material into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      material.
-   * @param body          material to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the material.
+   * @param body                         material to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + MATERIALS_PATH)
@@ -1048,6 +1129,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void addProfileMaterial(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the material", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1098,12 +1180,14 @@ public interface Profiles {
   /**
    * Called when want to update a material from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      material is defined.
-   * @param index         of the material to update.
-   * @param body          the new values for the material.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the material is defined.
+   * @param index                        of the material to update.
+   * @param body                         the new values for the material.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + MATERIALS_PATH + "/{index:0-9}")
@@ -1116,6 +1200,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void updateProfileMaterial(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1125,12 +1210,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a material from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      material is defined.
-   * @param index         of the material to merge.
-   * @param body          the new values for the material.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the material is defined.
+   * @param index                        of the material to merge.
+   * @param body                         the new values for the material.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + MATERIALS_PATH + "/{index:0-9}")
@@ -1143,6 +1230,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void mergeProfileMaterial(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material on the profile to merge", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1152,11 +1240,13 @@ public interface Profiles {
   /**
    * Called when want to delete a material from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      material is defined.
-   * @param index         of the material to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the material is defined.
+   * @param index                        of the material to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + MATERIALS_PATH + "/{index:0-9}")
@@ -1165,6 +1255,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void deleteProfileMaterial(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the material is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the material on the profile to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1173,11 +1264,13 @@ public interface Profiles {
   /**
    * Called when want to add a competence into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      competence.
-   * @param body          competence to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the competence.
+   * @param body                         competence to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + COMPETENCES_PATH)
@@ -1190,6 +1283,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void addProfileCompetence(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the competence", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1240,12 +1334,14 @@ public interface Profiles {
   /**
    * Called when want to update a competence from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      competence is defined.
-   * @param index         of the competence to update.
-   * @param body          the new values for the competence.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the competence is defined.
+   * @param index                        of the competence to update.
+   * @param body                         the new values for the competence.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + COMPETENCES_PATH + "/{index:0-9}")
@@ -1258,6 +1354,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void updateProfileCompetence(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1267,12 +1364,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a competence from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      competence is defined.
-   * @param index         of the competence to merge.
-   * @param body          the new values for the competence.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the competence is defined.
+   * @param index                        of the competence to merge.
+   * @param body                         the new values for the competence.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + COMPETENCES_PATH + "/{index:0-9}")
@@ -1285,6 +1384,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void mergeProfileCompetence(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to merge", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1294,11 +1394,13 @@ public interface Profiles {
   /**
    * Called when want to delete a competence from a profile.
    *
-   * @param userId        identifier of the user for the profile where the
-   *                      competence is defined.
-   * @param index         of the competence to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the competence is defined.
+   * @param index                        of the competence to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + COMPETENCES_PATH + "/{index:0-9}")
@@ -1307,6 +1409,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void deleteProfileCompetence(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the competence is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the competence on the profile to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1315,11 +1418,13 @@ public interface Profiles {
   /**
    * Called when want to add a meaning into a profile.
    *
-   * @param userId        identifier of the user for the profile to add the
-   *                      meaning.
-   * @param body          meaning to add to the profile.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile to
+   *                                     add the meaning.
+   * @param body                         meaning to add to the profile.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @POST
   @Path(USER_ID_PATH + MEANINGS_PATH)
@@ -1332,6 +1437,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void addProfileMeaning(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the meaning", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -1382,12 +1488,14 @@ public interface Profiles {
   /**
    * Called when want to update a meaning from a profile.
    *
-   * @param userId        identifier of the user for the profile where the meaning
-   *                      is defined.
-   * @param index         of the meaning to update.
-   * @param body          the new values for the meaning.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the meaning is defined.
+   * @param index                        of the meaning to update.
+   * @param body                         the new values for the meaning.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PUT
   @Path(USER_ID_PATH + MEANINGS_PATH + "/{index:0-9}")
@@ -1400,6 +1508,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void updateProfileMeaning(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning to update", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1409,12 +1518,14 @@ public interface Profiles {
   /**
    * Called when want to partially modify a meaning from a profile.
    *
-   * @param userId        identifier of the user for the profile where the meaning
-   *                      is defined.
-   * @param index         of the meaning to merge.
-   * @param body          the new values for the meaning.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the meaning is defined.
+   * @param index                        of the meaning to merge.
+   * @param body                         the new values for the meaning.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @PATCH
   @Path(USER_ID_PATH + MEANINGS_PATH + "/{index:0-9}")
@@ -1427,6 +1538,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void mergeProfileMeaning(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to merge", example = "1") int index,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -1436,11 +1548,13 @@ public interface Profiles {
   /**
    * Called when want to delete a meaning from a profile.
    *
-   * @param userId        identifier of the user for the profile where the meaning
-   *                      is defined.
-   * @param index         of the meaning to delete.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
+   * @param storeProfileChangesInHistory is {@code true} if has to store the
+   *                                     changes in the history.
+   * @param userId                       identifier of the user for the profile
+   *                                     where the meaning is defined.
+   * @param index                        of the meaning to delete.
+   * @param request                      of the operation.
+   * @param resultHandler                to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH + MEANINGS_PATH + "/{index:0-9}")
@@ -1449,6 +1563,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void deleteProfileMeaning(
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the meaning is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("index") @Parameter(description = "The index of the meaning on the profile to delete", example = "1") int index,
       @Parameter(hidden = true, required = false) ServiceRequest request,

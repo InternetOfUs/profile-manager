@@ -2,6 +2,10 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 0.24.0 (2022-01-17)
+
+ * Add configuration parameter to define if the profiles chnages has to be stored on the historic. 
+
 
 ## Version 0.23.1 (2021-11-30)
 
