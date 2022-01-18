@@ -142,7 +142,7 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
     return this.migrateComunitiesWithoutNorms_with_API_0_16_0_OR_LESS()
-        .compose(empty -> this.migrateCollection(COMMUNITIES_COLLECTION, CommunityProfile.class));
+        .compose(empty -> this.migrateSchemaVersionOnCollectionTo(this.schemaVersion, COMMUNITIES_COLLECTION));
   }
 
   /**

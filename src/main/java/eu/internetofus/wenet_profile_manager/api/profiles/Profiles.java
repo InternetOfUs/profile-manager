@@ -581,7 +581,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void mergeProfilePlannedActivity(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true when the merged provokes a change it is stored in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the planned activity is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("plannedActivityId") @Parameter(description = "The identifier of the planned activity to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String plannedActivityId,
       @Parameter(hidden = true, required = false) JsonObject body,
@@ -738,7 +738,7 @@ public interface Profiles {
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void mergeProfileRelevantLocation(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
+      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "If this is true and the merged profile is different to the original the changes are stored in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relevant location is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
       @PathParam("relevantLocationId") @Parameter(description = "The identifier of the relevant location to get", example = "15837028-645a-4a55-9aaf-ceb846439eba") String relevantLocationId,
       @Parameter(hidden = true, required = false) JsonObject body,

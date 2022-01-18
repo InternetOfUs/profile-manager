@@ -280,18 +280,22 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                         });
 
-                        testRequest(client, HttpMethod.GET,
-                            Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+                        vertx.setTimer(1000, any -> {
 
-                              assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                              final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+                          testRequest(client, HttpMethod.GET,
+                              Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
-                              assertThat(page.profiles).hasSize(1);
-                              assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                              assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
-                              assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+                                assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                                final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
-                            }).send(testContext, checkpoint);
+                                assertThat(page.profiles).hasSize(1);
+                                assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+                                assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
+                                assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+
+                              }).send(testContext, checkpoint);
+
+                        });
 
                       });
 
@@ -350,12 +354,16 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                         });
 
-                        testRequest(client, HttpMethod.GET,
-                            Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
+                        vertx.setTimer(1000, any -> {
 
-                              assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+                          testRequest(client, HttpMethod.GET,
+                              Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH).expect(resPage -> {
 
-                            }).send(testContext, checkpoint);
+                                assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+
+                              }).send(testContext, checkpoint);
+
+                        });
 
                       });
 
@@ -447,19 +455,22 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         "plannedActivities", "relevantLocations", "materials", "competences", "meanings");
                   });
 
-                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                      .expect(resPage -> {
+                  vertx.setTimer(1000, any -> {
+                    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+                        .expect(resPage -> {
 
-                        assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                        final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
+                          assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
+                          final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
 
-                        assertThat(page.profiles).hasSize(1);
-                        assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                        assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
-                            offset((Long) 1L));
-                        assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
+                          assertThat(page.profiles).hasSize(1);
+                          assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
+                          assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
+                              offset((Long) 1L));
+                          assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
-                      }).send(testContext, checkpoint);
+                        }).send(testContext, checkpoint);
+
+                  });
 
                 });
 
@@ -512,12 +523,15 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                         "plannedActivities", "relevantLocations", "materials", "competences", "meanings");
                   });
 
-                  testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                      .expect(resPage -> {
+                  vertx.setTimer(1000, any -> {
+                    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
+                        .expect(resPage -> {
 
-                        assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+                          assertThat(resPage.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
 
-                      }).send(testContext, checkpoint);
+                        }).send(testContext, checkpoint);
+
+                  });
 
                 });
 

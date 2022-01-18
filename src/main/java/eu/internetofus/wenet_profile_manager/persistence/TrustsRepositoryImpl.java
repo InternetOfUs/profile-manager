@@ -259,7 +259,7 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
     // No changes => only update schema information
-    return this.updateSchemaVersionOnCollection(TRUSTS_COLLECTION);
+    return this.migrateSchemaVersionOnCollectionTo(this.schemaVersion, TRUSTS_COLLECTION);
   }
 
 }
