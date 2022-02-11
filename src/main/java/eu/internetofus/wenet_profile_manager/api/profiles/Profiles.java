@@ -107,11 +107,6 @@ public interface Profiles {
   String RELEVANT_LOCATIONS_PATH = "/relevantLocations";
 
   /**
-   * The path to the relationships of a profile.
-   */
-  String RELATIONSHIPS_PATH = "/relationships";
-
-  /**
    * The path to the personal behaviors of a profile.
    */
   String PERSONAL_BEHAVIORS_PATH = "/personalBehaviors";
@@ -166,9 +161,9 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Create a profile", description = "Create a new WeNet user profile")
-  @RequestBody(description = "The new profile to create", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @RequestBody(description = "The new profile to create", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(value = PROFILE_TO_CREATE_EXAMPLE) }))
-  @ApiResponse(responseCode = "201", description = "The created profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @ApiResponse(responseCode = "201", description = "The created profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "CreatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void createProfile(@Parameter(hidden = true, required = false) JsonObject body,
@@ -186,7 +181,7 @@ public interface Profiles {
   @Path(USER_ID_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a profile", description = "Allow to get the profile with the specified identifier")
-  @ApiResponse(responseCode = "200", description = "The profile associated to the identifier", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @ApiResponse(responseCode = "200", description = "The profile associated to the identifier", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "FoundProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void retrieveProfile(
@@ -209,9 +204,9 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify a profile", description = "Change a profile")
-  @RequestBody(description = "The new profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @RequestBody(description = "The new profile", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
-  @ApiResponse(responseCode = "200", description = "The updated profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @ApiResponse(responseCode = "200", description = "The updated profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -237,9 +232,9 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Modify partially a profile", description = "Change some attributes of a profile")
-  @RequestBody(description = "The new values for the profile", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @RequestBody(description = "The new values for the profile", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(value = PROFILE_TO_UPDATE_EXAMPLE) }))
-  @ApiResponse(responseCode = "200", description = "The merged profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
+  @ApiResponse(responseCode = "200", description = "The merged profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/WeNetUserProfile"), examples = {
       @ExampleObject(name = "UpdatedProfile", value = PROFILE_EXAMPLE) }))
   @ApiResponse(responseCode = "400", description = "Bad profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
@@ -319,8 +314,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a norm into an user profile", description = "Insert a new norm into an user profile")
-  @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
-  @ApiResponse(responseCode = "201", description = "The added norm into the user profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @RequestBody(description = "The new norm", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "201", description = "The added norm into the user profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found user profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -342,7 +337,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + NORMS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the norms from a profile", description = "Allow to get all the norms defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The norms defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm"))))
+  @ApiResponse(responseCode = "200", description = "The norms defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveProfileNorms(
@@ -363,7 +358,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + NORMS_PATH + "/{index}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a norm from a profile", description = "Allow to get a norm defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The norm defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "200", description = "The norm defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
   void retrieveProfileNorm(
@@ -389,8 +384,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a norm from a profile", description = "Allow to modify a norm defined into a profile")
-  @RequestBody(description = "The new values to update the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
-  @ApiResponse(responseCode = "200", description = "The updated norm", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @RequestBody(description = "The new values to update the norm", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "200", description = "The updated norm", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -419,8 +414,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a norm from a profile", description = "Allow to modify parts of a norm defined into a profile")
-  @RequestBody(description = "The new values to merge the norm", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
-  @ApiResponse(responseCode = "200", description = "The current values of the norm after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @RequestBody(description = "The new values to merge the norm", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
+  @ApiResponse(responseCode = "200", description = "The current values of the norm after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/ProtocolNorm")))
   @ApiResponse(responseCode = "400", description = "Bad norm to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or norm", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Norms")
@@ -472,8 +467,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a planned activity into a profile", description = "Insert a new planned activity into a profile")
-  @RequestBody(description = "The new planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
-  @ApiResponse(responseCode = "201", description = "The added planned activity into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @RequestBody(description = "The new planned activity", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "201", description = "The added planned activity into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
   @ApiResponse(responseCode = "400", description = "Bad planned activity to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
@@ -496,7 +491,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the planned activities from a profile", description = "Allow to get all the planned activities defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The planned activities defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity"))))
+  @ApiResponse(responseCode = "200", description = "The planned activities defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void retrieveProfilePlannedActivities(
@@ -517,7 +512,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + PLANNED_ACTIVITIES_PATH + "/{plannedActivityId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a planned activity from a profile", description = "Allow to get a planned activity defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The planned activity defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "200", description = "The planned activity defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
   void retrieveProfilePlannedActivity(
@@ -544,8 +539,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a planned activity from a profile", description = "Allow to modify a planned activity defined into a profile")
-  @RequestBody(description = "The new values to update the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
-  @ApiResponse(responseCode = "200", description = "The updated planned activity", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @RequestBody(description = "The new values to update the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "200", description = "The updated planned activity", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
   @ApiResponse(responseCode = "400", description = "Bad planned activity to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
@@ -575,8 +570,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a planned activity from a profile", description = "Allow to modify parts of a planned activity defined into a profile")
-  @RequestBody(description = "The new values to merge the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
-  @ApiResponse(responseCode = "200", description = "The current values of the planned activity after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @RequestBody(description = "The new values to merge the planned activity", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
+  @ApiResponse(responseCode = "200", description = "The current values of the planned activity after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/PlannedActivity")))
   @ApiResponse(responseCode = "400", description = "Bad planned activity to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or planned activity", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Planned activities")
@@ -629,8 +624,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a relevant location into a profile", description = "Insert a new relevant location into a profile")
-  @RequestBody(description = "The new relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
-  @ApiResponse(responseCode = "201", description = "The added relevant location into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @RequestBody(description = "The new relevant location", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "201", description = "The added relevant location into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
   @ApiResponse(responseCode = "400", description = "Bad relevant location to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
@@ -653,7 +648,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the relevant locations from a profile", description = "Allow to get all the relevant locations defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The relevant locations defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation"))))
+  @ApiResponse(responseCode = "200", description = "The relevant locations defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void retrieveProfileRelevantLocations(
@@ -674,7 +669,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + RELEVANT_LOCATIONS_PATH + "/{relevantLocationId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a relevant location from a profile", description = "Allow to get a relevant location defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The relevant location defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "200", description = "The relevant location defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
   void retrieveProfileRelevantLocation(
@@ -701,8 +696,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a relevant location from a profile", description = "Allow to modify a relevant location defined into a profile")
-  @RequestBody(description = "The new values to update the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
-  @ApiResponse(responseCode = "200", description = "The updated relevant location", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @RequestBody(description = "The new values to update the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "200", description = "The updated relevant location", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
   @ApiResponse(responseCode = "400", description = "Bad relevant location to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
@@ -732,8 +727,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a relevant location from a profile", description = "Allow to modify parts of a relevant location defined into a profile")
-  @RequestBody(description = "The new values to merge the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
-  @ApiResponse(responseCode = "200", description = "The current values of the relevant location after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @RequestBody(description = "The new values to merge the relevant location", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
+  @ApiResponse(responseCode = "200", description = "The current values of the relevant location after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/RelevantLocation")))
   @ApiResponse(responseCode = "400", description = "Bad relevant location to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or relevant location", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Relevant locations")
@@ -771,189 +766,6 @@ public interface Profiles {
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 
   /**
-   * Called when want to add a relationship into a profile.
-   *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user for the profile to
-   *                                     add the relationship.
-   * @param body                         relationship to add to the profile.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
-   */
-  @POST
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Add a relationship into a profile", description = "Insert a new relationship into a profile")
-  @RequestBody(description = "The new relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "201", description = "The added relationship into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "400", description = "Bad relationship to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void addProfileRelationship(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
-      @PathParam("userId") @Parameter(description = "The identifier of the user to the profile to add the relationship", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to get all the relationship from a profile.
-   *
-   * @param userId        identifier of the user for the profile to get all
-   *                      relationships.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
-   */
-  @GET
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return the relationships from a profile", description = "Allow to get all the relationships defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void retrieveProfileRelationships(
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to get a relationship from a profile.
-   *
-   * @param userId        identifier of the user for the profile where the
-   *                      relationship is defined.
-   * @param index         of the relationship to get.
-   * @param request       of the operation.
-   * @param resultHandler to inform of the response.
-   */
-  @GET
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Return a relationship from a profile", description = "Allow to get a relationship defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The relationship defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void retrieveProfileRelationship(
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the relationship to get", example = "1") int index,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to update a relationship from a profile.
-   *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user for the profile
-   *                                     where the relationship is defined.
-   * @param index                        of the relationship to update.
-   * @param body                         the new values for the relationship.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
-   */
-  @PUT
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Update a relationship from a profile", description = "Allow to modify a relationship defined into a profile")
-  @RequestBody(description = "The new values to update the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "200", description = "The updated relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void updateProfileRelationship(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the relationship to update", example = "1") int index,
-      @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to add or update a relationship from a user and type.
-   *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user for the profile
-   *                                     where the relationship is defined.
-   * @param body                         the new values for the relationship.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
-   */
-  @PUT
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH)
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Add or update a relationship from a profile", description = "Allow to modify a relationship defined into a profile or add if not exist yet")
-  @RequestBody(description = "The new values to update the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "200", description = "The updated relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "201", description = "The created relationship", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void addOrUpdateProfileRelationship(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to partially modify a relationship from a profile.
-   *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user for the profile
-   *                                     where the relationship is defined.
-   * @param index                        of the relationship to merge.
-   * @param body                         the new values for the relationship.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
-   */
-  @PATCH
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Operation(summary = "Change a relationship from a profile", description = "Allow to modify parts of a relationship defined into a profile")
-  @RequestBody(description = "The new values to merge the relationship", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "200", description = "The current values of the relationship after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "400", description = "Bad relationship to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void mergeProfileRelationship(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The identifier of the relationship to merge", example = "1") int index,
-      @Parameter(hidden = true, required = false) JsonObject body,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
-   * Called when want to delete a relationship from a profile.
-   *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user for the profile
-   *                                     where the relationship is defined.
-   * @param index                        of the relationship to delete.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
-   */
-  @DELETE
-  @Path(USER_ID_PATH + RELATIONSHIPS_PATH + "/{index:0-9}")
-  @Operation(summary = "Delete a relationship from a profile", description = "Allow to delete a defined relationship from a profile")
-  @ApiResponse(responseCode = "204", description = "The relationship defined into the profile")
-  @ApiResponse(responseCode = "404", description = "Not found profile or relationship", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
-  @Tag(name = "Relationships")
-  void deleteProfileRelationship(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
-      @PathParam("userId") @Parameter(description = "The identifier of the user for the profile where the relationship is defined", example = "15837028-645a-4a55-9aaf-ceb846439eba") String userId,
-      @PathParam("index") @Parameter(description = "The index of the relationship to delete", example = "1") int index,
-      @Parameter(hidden = true, required = false) ServiceRequest request,
-      @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
-
-  /**
    * Called when want to add a personal behavior into a profile.
    *
    * @param storeProfileChangesInHistory is {@code true} if has to store the
@@ -969,8 +781,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a personal behavior into a profile", description = "Insert a new personal behavior into a profile")
-  @RequestBody(description = "The new personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
-  @ApiResponse(responseCode = "201", description = "The added personal behavior into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @RequestBody(description = "The new personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @ApiResponse(responseCode = "201", description = "The added personal behavior into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
@@ -993,7 +805,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the personal behaviors from a profile", description = "Allow to get all the personal behaviors defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The personal behaviors defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine"))))
+  @ApiResponse(responseCode = "200", description = "The personal behaviors defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void retrieveProfilePersonalBehaviors(
@@ -1014,7 +826,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + PERSONAL_BEHAVIORS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a personal behavior from a profile", description = "Allow to get a personal behavior defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The personal behavior defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @ApiResponse(responseCode = "200", description = "The personal behavior defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
   void retrieveProfilePersonalBehavior(
@@ -1040,8 +852,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a personal behavior from a profile", description = "Allow to modify a personal behavior defined into a profile")
-  @RequestBody(description = "The new values to update the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
-  @ApiResponse(responseCode = "200", description = "The updated personal behavior", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @RequestBody(description = "The new values to update the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @ApiResponse(responseCode = "200", description = "The updated personal behavior", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
@@ -1070,8 +882,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a personal behavior from a profile", description = "Allow to modify parts of a personal behavior defined into a profile")
-  @RequestBody(description = "The new values to merge the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
-  @ApiResponse(responseCode = "200", description = "The current values of the personal behavior after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @RequestBody(description = "The new values to merge the personal behavior", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
+  @ApiResponse(responseCode = "200", description = "The current values of the personal behavior after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Routine")))
   @ApiResponse(responseCode = "400", description = "Bad personal behavior to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or personal behavior", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Personal behaviors")
@@ -1123,8 +935,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a material into a profile", description = "Insert a new material into a profile")
-  @RequestBody(description = "The new material", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
-  @ApiResponse(responseCode = "201", description = "The added material into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @RequestBody(description = "The new material", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @ApiResponse(responseCode = "201", description = "The added material into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
   @ApiResponse(responseCode = "400", description = "Bad material to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
@@ -1147,7 +959,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + MATERIALS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the materials from a profile", description = "Allow to get all the materials defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The materials defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material"))))
+  @ApiResponse(responseCode = "200", description = "The materials defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void retrieveProfileMaterials(
@@ -1168,7 +980,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + MATERIALS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a material from a profile", description = "Allow to get a material defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The material defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @ApiResponse(responseCode = "200", description = "The material defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
   void retrieveProfileMaterial(
@@ -1194,8 +1006,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a material from a profile", description = "Allow to modify a material defined into a profile")
-  @RequestBody(description = "The new values to update the material", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
-  @ApiResponse(responseCode = "200", description = "The updated material", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @RequestBody(description = "The new values to update the material", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @ApiResponse(responseCode = "200", description = "The updated material", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
   @ApiResponse(responseCode = "400", description = "Bad material to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
@@ -1224,8 +1036,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a material from a profile", description = "Allow to modify parts of a material defined into a profile")
-  @RequestBody(description = "The new values to merge the material", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
-  @ApiResponse(responseCode = "200", description = "The current values of the material after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @RequestBody(description = "The new values to merge the material", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
+  @ApiResponse(responseCode = "200", description = "The current values of the material after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Material")))
   @ApiResponse(responseCode = "400", description = "Bad material to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or material", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Materials")
@@ -1277,8 +1089,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a competence into a profile", description = "Insert a new competence into a profile")
-  @RequestBody(description = "The new competence", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
-  @ApiResponse(responseCode = "201", description = "The added competence into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @RequestBody(description = "The new competence", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @ApiResponse(responseCode = "201", description = "The added competence into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
   @ApiResponse(responseCode = "400", description = "Bad competence to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
@@ -1301,7 +1113,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + COMPETENCES_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the competences from a profile", description = "Allow to get all the competences defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The competences defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence"))))
+  @ApiResponse(responseCode = "200", description = "The competences defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void retrieveProfileCompetences(
@@ -1322,7 +1134,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + COMPETENCES_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a competence from a profile", description = "Allow to get a competence defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The competence defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @ApiResponse(responseCode = "200", description = "The competence defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
   void retrieveProfileCompetence(
@@ -1348,8 +1160,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a competence from a profile", description = "Allow to modify a competence defined into a profile")
-  @RequestBody(description = "The new values to update the competence", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
-  @ApiResponse(responseCode = "200", description = "The updated competence", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @RequestBody(description = "The new values to update the competence", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @ApiResponse(responseCode = "200", description = "The updated competence", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
   @ApiResponse(responseCode = "400", description = "Bad competence to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
@@ -1378,8 +1190,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a competence from a profile", description = "Allow to modify parts of a competence defined into a profile")
-  @RequestBody(description = "The new values to merge the competence", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
-  @ApiResponse(responseCode = "200", description = "The current values of the competence after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @RequestBody(description = "The new values to merge the competence", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
+  @ApiResponse(responseCode = "200", description = "The current values of the competence after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Competence")))
   @ApiResponse(responseCode = "400", description = "Bad competence to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or competence", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Competences")
@@ -1431,8 +1243,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add a meaning into a profile", description = "Insert a new meaning into a profile")
-  @RequestBody(description = "The new meaning", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
-  @ApiResponse(responseCode = "201", description = "The added meaning into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @RequestBody(description = "The new meaning", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @ApiResponse(responseCode = "201", description = "The added meaning into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
   @ApiResponse(responseCode = "400", description = "Bad meaning to add", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
@@ -1455,7 +1267,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + MEANINGS_PATH)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the meanings from a profile", description = "Allow to get all the meanings defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The meanings defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
+  @ApiResponse(responseCode = "200", description = "The meanings defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning"))))
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void retrieveProfileMeanings(
@@ -1476,7 +1288,7 @@ public interface Profiles {
   @Path(USER_ID_PATH + MEANINGS_PATH + "/{index:0-9}")
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return a meaning from a profile", description = "Allow to get a meaning defined into a profile")
-  @ApiResponse(responseCode = "200", description = "The meaning defined into the profile", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @ApiResponse(responseCode = "200", description = "The meaning defined into the profile", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
   void retrieveProfileMeaning(
@@ -1502,8 +1314,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update a meaning from a profile", description = "Allow to modify a meaning defined into a profile")
-  @RequestBody(description = "The new values to update the meaning", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
-  @ApiResponse(responseCode = "200", description = "The updated meaning", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @RequestBody(description = "The new values to update the meaning", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @ApiResponse(responseCode = "200", description = "The updated meaning", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
   @ApiResponse(responseCode = "400", description = "Bad meaning to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")
@@ -1532,8 +1344,8 @@ public interface Profiles {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Change a meaning from a profile", description = "Allow to modify parts of a meaning defined into a profile")
-  @RequestBody(description = "The new values to merge the meaning", required = true, content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
-  @ApiResponse(responseCode = "200", description = "The current values of the meaning after it has been merged", content = @Content(schema = @Schema(ref = "https://bitbucket.org/wenet/wenet-components-documentation/raw/940e9403246417419c8dcce9f3b19c5bb754028b/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @RequestBody(description = "The new values to merge the meaning", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
+  @ApiResponse(responseCode = "200", description = "The current values of the meaning after it has been merged", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.1.0/sources/wenet-models-openapi.yaml#/components/schemas/Meaning")))
   @ApiResponse(responseCode = "400", description = "Bad meaning to merge", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @ApiResponse(responseCode = "404", description = "Not found profile or meaning", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   @Tag(name = "Meanings")

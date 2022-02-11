@@ -11,10 +11,10 @@ else
 	DOCKER_ARGS=""
 	if [ "no-cache" = "$1" ];
 	then
-		PROFILE=${2:-"gitlab"}
+		PROFILE=${2:-"github"}
 		DOCKER_ARGS="$DOCKER_ARGS --no-cache"
 	else
-		PROFILE=${1:-"gitlab"}
+		PROFILE=${1:-"github"}
 	fi
 	DOCKER_ARGS="$DOCKER_ARGS --build-arg DEFAULT_PROFILE=$PROFILE"
 	DOCKER_BUILDKIT=1 docker build $DOCKER_ARGS -f src/main/docker/Dockerfile -t $DOCKER_TAG .

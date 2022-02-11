@@ -2,7 +2,7 @@
 
 # --- Build the code
 FROM maven:3.6.3-jdk-11-slim AS build
-ARG DEFAULT_PROFILE="gitlab"
+ARG DEFAULT_PROFILE="github"
 LABEL stage=build
 ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
 RUN mkdir -p /build

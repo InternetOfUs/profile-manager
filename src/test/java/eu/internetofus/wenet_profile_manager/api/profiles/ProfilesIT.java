@@ -34,8 +34,6 @@ import eu.internetofus.common.components.models.PlannedActivity;
 import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.RoutineTest;
-import eu.internetofus.common.components.models.SocialNetworkRelationship;
-import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.UserName;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
@@ -265,7 +263,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
                   newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
                   newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
-                  newProfile.relationships = updated.relationships;
                   assertThat(updated).isEqualTo(newProfile);
 
                   testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
@@ -275,8 +272,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                           assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth",
                               "gender", "email", "phoneNumber", "locale", "avatar", "nationality", "occupation",
-                              "norms", "plannedActivities", "relevantLocations", "relationships", "personalBehaviors",
-                              "materials", "competences", "meanings");
+                              "norms", "plannedActivities", "relevantLocations", "personalBehaviors", "materials",
+                              "competences", "meanings");
 
                         });
 
@@ -339,7 +336,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                   newProfile.plannedActivities.get(0).id = updated.plannedActivities.get(0).id;
                   newProfile.plannedActivities.get(1).id = updated.plannedActivities.get(1).id;
                   newProfile.relevantLocations.get(0).id = updated.relevantLocations.get(0).id;
-                  newProfile.relationships = updated.relationships;
                   assertThat(updated).isEqualTo(newProfile);
 
                   testContext.assertComplete(WeNetSocialContextBuilderSimulator.createProxy(vertx)
@@ -349,8 +345,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                           assertThat(notification.updatedFieldNames).isNotNull().contains("name", "dateOfBirth",
                               "gender", "email", "phoneNumber", "locale", "avatar", "nationality", "occupation",
-                              "norms", "plannedActivities", "relevantLocations", "relationships", "personalBehaviors",
-                              "materials", "competences", "meanings");
+                              "norms", "plannedActivities", "relevantLocations", "personalBehaviors", "materials",
+                              "competences", "meanings");
 
                         });
 
@@ -441,7 +437,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             newProfile._lastUpdateTs = merged._lastUpdateTs;
             newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
             newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
-            newProfile.relationships = merged.relationships;
             newProfile.personalBehaviors = storedProfile.personalBehaviors;
             assertThat(merged).isEqualTo(newProfile);
 
@@ -509,7 +504,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
             newProfile._lastUpdateTs = merged._lastUpdateTs;
             newProfile.plannedActivities.get(0).id = merged.plannedActivities.get(0).id;
             newProfile.relevantLocations.get(0).id = merged.relevantLocations.get(0).id;
-            newProfile.relationships = merged.relationships;
             newProfile.personalBehaviors = storedProfile.personalBehaviors;
             assertThat(merged).isEqualTo(newProfile);
 
@@ -1275,109 +1269,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
   }
 
   /**
-   * Verify that can update the relationships of an user.
-   *
-   * @param vertx       event bus to use.
-   * @param client      to connect to the server.
-   * @param testContext context to test.
-   *
-   * @see Profiles#retrieveProfile(String,
-   *      io.vertx.ext.web.api.service.ServiceRequest, io.vertx.core.Handler)
-   */
-  @Test
-  public void shouldUpdateProfileRelationship(final Vertx vertx, final WebClient client,
-      final VertxTestContext testContext) {
-
-    testContext.assertComplete(new WeNetUserProfileTest().createModelExample(23, vertx, testContext))
-        .onSuccess(created -> {
-
-          assertIsValid(created, new WeNetValidateContext("codePrefix", vertx), testContext, () -> {
-
-            final var repository = ProfilesRepository.createProxy(vertx);
-
-            testContext.assertComplete(repository.storeProfile(created)).onSuccess(storedProfile -> {
-
-              final var newProfile = new WeNetUserProfile();
-              newProfile.relationships = new ArrayList<>();
-              newProfile.relationships.add(new SocialNetworkRelationship());
-              newProfile.relationships.get(0).userId = storedProfile.relationships.get(0).userId;
-              newProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
-              newProfile.relationships.add(new SocialNetworkRelationship());
-              newProfile.relationships.get(1).userId = storedProfile.relationships.get(0).userId;
-              newProfile.relationships.get(1).type = SocialNetworkRelationshipType.acquaintance;
-              final var checkpoint = testContext.checkpoint(4);
-              testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-                  .expect(res -> testContext.verify(() -> {
-
-                    assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                    final var updated = assertThatBodyIs(WeNetUserProfile.class, res);
-                    assertThat(updated).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-                    final var expected = new HistoricWeNetUserProfilesPage();
-                    expected.profiles = new ArrayList<>();
-                    expected.profiles.add(new HistoricWeNetUserProfile());
-                    expected.profiles.get(0).from = storedProfile._creationTs;
-                    expected.profiles.get(0).to = updated._lastUpdateTs;
-                    expected.profiles.get(0).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
-                        WeNetUserProfile.class);
-                    expected.total++;
-
-                    storedProfile._lastUpdateTs = updated._lastUpdateTs;
-                    storedProfile.relationships.add(0, new SocialNetworkRelationship());
-                    storedProfile.relationships.get(0).userId = storedProfile.relationships.get(1).userId;
-                    storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.friend;
-                    assertThat(updated).isEqualTo(storedProfile);
-                    testRequest(client, HttpMethod.GET, Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                        .expect(resPage -> {
-
-                          assertThat(resPage.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                          final var page = assertThatBodyIs(HistoricWeNetUserProfilesPage.class, resPage);
-                          assertThat(page).isEqualTo(expected);
-                          newProfile.relationships = new ArrayList<>();
-                          newProfile.relationships.add(new SocialNetworkRelationship());
-                          newProfile.relationships.get(0).userId = storedProfile.relationships.get(0).userId;
-                          newProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
-                          testRequest(client, HttpMethod.PUT, Profiles.PATH + "/" + storedProfile.id)
-                              .expect(res2 -> testContext.verify(() -> {
-
-                                assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                                final var updated2 = assertThatBodyIs(WeNetUserProfile.class, res2);
-                                assertThat(updated2).isNotEqualTo(storedProfile).isNotEqualTo(newProfile);
-
-                                expected.profiles.add(new HistoricWeNetUserProfile());
-                                expected.profiles.get(1).from = updated._lastUpdateTs;
-                                expected.profiles.get(1).to = updated2._lastUpdateTs;
-                                expected.profiles.get(1).profile = Model.fromJsonObject(storedProfile.toJsonObject(),
-                                    WeNetUserProfile.class);
-                                expected.total++;
-
-                                storedProfile._lastUpdateTs = updated2._lastUpdateTs;
-                                storedProfile.relationships = new ArrayList<>();
-                                storedProfile.relationships.get(0).type = SocialNetworkRelationshipType.family;
-                                assertThat(updated2).isEqualTo(storedProfile);
-                                testRequest(client, HttpMethod.GET,
-                                    Profiles.PATH + "/" + storedProfile.id + Profiles.HISTORIC_PATH)
-                                        .expect(resPage2 -> {
-
-                                          assertThat(resPage2.statusCode()).isEqualTo(Status.OK.getStatusCode());
-                                          final var page2 = assertThatBodyIs(HistoricWeNetUserProfilesPage.class,
-                                              resPage2);
-                                          assertThat(page2).isEqualTo(expected);
-
-                                        }).send(testContext, checkpoint);
-
-                              })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-
-                        }).send(testContext, checkpoint);
-
-                  })).sendJson(newProfile.toJsonObject(), testContext, checkpoint);
-            });
-          });
-        });
-
-  }
-
-  /**
    * Verify that can store a profile with only an identifier.
    *
    * @param vertx       event bus to use.
@@ -1413,7 +1304,6 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       assertThat(stored.norms).isNull();
       assertThat(stored.plannedActivities).isNull();
       assertThat(stored.relevantLocations).isNull();
-      assertThat(stored.relationships).isNull();
       assertThat(stored.personalBehaviors).isNull();
       assertThat(stored.materials).isNull();
       assertThat(stored.competences).isNull();

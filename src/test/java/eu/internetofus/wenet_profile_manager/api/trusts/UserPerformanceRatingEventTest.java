@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.WeNetValidateContext;
-import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.model.ModelTestCase;
@@ -34,7 +33,6 @@ import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExten
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxTestContext;
-import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -81,29 +79,22 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
     return testContext.assertComplete(
 
-        StoreServices.storeTaskExample(index, vertx, testContext).compose(task -> {
+        StoreServices.storeTaskExample(index, vertx, testContext).compose(task ->
 
-          final var profile = new WeNetUserProfile();
-          profile.relationships = new ArrayList<>();
-          profile.relationships.add(new SocialNetworkRelationshipTest().createModelExample(index));
-          profile.relationships.get(0).appId = task.appId;
-          profile.relationships.get(0).userId = task.requesterId;
-          return StoreServices.storeProfile(profile, vertx, testContext).compose(stored -> {
+        StoreServices.storeSocialNetworkRelationshipExample(index, vertx, testContext).compose(stored -> {
 
-            final var model = new UserPerformanceRatingEvent();
-            model.sourceId = stored.id;
-            model.targetId = task.requesterId;
-            model.relationship = profile.relationships.get(0).type;
-            model.appId = task.appId;
-            model.communityId = task.communityId;
-            model.taskTypeId = task.taskTypeId;
-            model.taskId = task.id;
-            model.rating = 1.0 / Math.max(1, index + 2);
-            return Future.succeededFuture(model);
+          final var model = new UserPerformanceRatingEvent();
+          model.sourceId = stored.sourceId;
+          model.targetId = stored.targetId;
+          model.relationship = stored.type;
+          model.appId = task.appId;
+          model.communityId = task.communityId;
+          model.taskTypeId = task.taskTypeId;
+          model.taskId = task.id;
+          model.rating = 1.0 / Math.max(1, index + 2);
+          return Future.succeededFuture(model);
 
-          });
-
-        }));
+        })));
 
   }
 

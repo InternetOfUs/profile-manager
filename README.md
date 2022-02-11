@@ -36,9 +36,9 @@ First of all, you must install the next software.
 The profile manager component requires:
 
  - [MongoDB](https://docs.mongodb.com/manual/installation/)
- - [WeNet - Social context builder](https://bitbucket.org/wenet/wenet-social-context-builder/)
- - [WeNet - Service API](https://bitbucket.org/wenet/wenet-service-api/)
- - [WeNet - Task manager API](https://bitbucket.org/wenet/wenet-task-manager/)
+ - [Social context builder](https://github.com/InternetOfUs/social-context-builder/)
+ - [Service API](https://github.com/InternetOfUs/service-api/)
+ - [Task manager API](https://github.com/InternetOfUs/task-manager/)
 
 ### Development
 
@@ -113,7 +113,7 @@ On this container, you can use the next environment variables:
  - **CACHE_TIMEOUT** to define the time in seconds that a value can be on the cache. By default is **300**.
  - **CACHE_SIZE** to define the maximum number of entries that can be on the cache. By default is **10000**.
  - **AUTOSTORE_PROFILE_CHANGES_IN_HISTORY** this is **true** if every change on the profile has to provoke that the history is updated. By default is **false**.
- 
+
 When the container is started, it stores the log messages at **/usr/wenet/profile-manager/var/log/profile-manager.log**. This file is limited
 to 10 MB and rolled every day using the pattern **profile-manager.log.X** (where X is a number between 1 and 99).
 
@@ -157,7 +157,7 @@ during 30 seconds execute:
 
 ## Documentation
 
-The latest APIs documentation is available [here](http://swagger.u-hopper.com/?url=https://bitbucket.org/wenet/wenet-components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml).
+The latest APIs documentation is available [here](http://swagger.u-hopper.com/?url=https://github.com/InternetOfUs/components-documentation/raw/master/sources/wenet-profile_manager-openapi.yaml).
 
 
 ## Instances

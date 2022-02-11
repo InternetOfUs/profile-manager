@@ -2,6 +2,11 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 0.25.0 (2022-01-25)
+
+ * Extract relations from profile and manage with a new web services as the trust events.
+
+
 ## Version 0.24.0 (2022-01-19)
 
  * Add configuration parameter to define if the profiles chnages has to be stored on the historic.

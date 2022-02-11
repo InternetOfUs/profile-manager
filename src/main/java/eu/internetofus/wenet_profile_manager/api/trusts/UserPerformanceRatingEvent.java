@@ -21,7 +21,6 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import eu.internetofus.common.components.WeNetValidateContext;
-import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.ReflectionModel;
@@ -107,7 +106,7 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
     this.sourceId = context.normalizeString(this.sourceId);
     if (this.sourceId == null) {
 
-      return context.failField("sourceId", "You must define the identifier of teh user that provide the rating");
+      return context.failField("sourceId", "You must define the identifier of the user that provide the rating");
     }
     this.targetId = context.normalizeString(this.targetId);
     if (this.targetId == null) {
@@ -118,6 +117,7 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
       return context.failField("targetId", "The 'targetId' can not be the same as the 'sourceId'.");
     }
+    future = context.validateDefinedProfileIdField("sourceId", this.sourceId, future);
     future = context.validateDefinedProfileIdField("targetId", this.targetId, future);
 
     if (this.appId != null) {
@@ -162,47 +162,13 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
 
       }));
     }
-    future = future
-        .compose(empty -> context.validateDefinedProfileByIdField("sourceId", this.sourceId).transform(search -> {
 
-          if (search.failed()) {
+    if (this.relationship != null) {
 
-            return context.failField("sourceId", "The '" + this.sourceId + "' is not defined.", search.cause());
+      future = context.validateExistSocialNetworkRelationshipField("relationship", this.appId, this.sourceId,
+          this.targetId, this.relationship, future);
 
-          } else {
-
-            final var profile = search.result();
-            var validRelationship = true;
-            if (this.relationship != null) {
-
-              validRelationship = false;
-              if (profile.relationships != null) {
-
-                for (final SocialNetworkRelationship relation : profile.relationships) {
-
-                  if (relation.type == this.relationship && relation.userId.equals(this.targetId)
-                      && relation.appId.equals(this.appId)) {
-                    // exist relation between them
-                    validRelationship = true;
-                    break;
-                  }
-                }
-              }
-            }
-            if (!validRelationship) {
-
-              return context.failField("relationship",
-                  "The '" + this.relationship + "' is not defined on the '" + this.appId + "' by the source user '"
-                      + this.sourceId + "' with the target user '" + this.targetId + "'.");
-
-            } else {
-
-              return Future.succeededFuture();
-            }
-
-          }
-
-        }));
+    }
 
     promise.tryComplete();
 

@@ -29,7 +29,6 @@ import eu.internetofus.common.components.models.PlannedActivity;
 import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.Routine;
-import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.social_context_builder.ProfileUpdateNotification;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
@@ -789,133 +788,6 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void addProfileRelationship(final Boolean storeProfileChangesInHistory, final String userId,
-      final JsonObject body, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String, WeNetValidateContext>(),
-        "relationship", SocialNetworkRelationship.class);
-    element.model.id = userId;
-    ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, (profile, relationships) -> profile.relationships = relationships,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
-        this.addProfileToHistoricChain(storeChanges, element.model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveProfileRelationships(final String userId, final ServiceRequest request,
-      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var context = new ServiceContext(request, resultHandler);
-    final var model = this.createProfileContext();
-    model.id = userId;
-    ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, context);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void retrieveProfileRelationship(final String userId, final int index, final ServiceRequest request,
-      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
-        "relationships", SocialNetworkRelationship.class);
-    element.model.id = userId;
-    element.id = index;
-    ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, ModelResources.searchElementByIndex(), context);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void updateProfileRelationship(final Boolean storeProfileChangesInHistory, final String userId,
-      final int index, final JsonObject body, final ServiceRequest request,
-      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
-        "relationships", SocialNetworkRelationship.class);
-    element.model.id = userId;
-    element.id = index;
-    ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
-        this.addProfileToHistoricChain(storeChanges, element.model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void mergeProfileRelationship(final Boolean storeProfileChangesInHistory, final String userId, final int index,
-      final JsonObject body, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
-        "relationships", SocialNetworkRelationship.class);
-    element.model.id = userId;
-    element.id = index;
-    ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
-        this.addProfileToHistoricChain(storeChanges, element.model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void deleteProfileRelationship(final Boolean storeProfileChangesInHistory, final String userId,
-      final int index, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    final var context = new ServiceContext(request, resultHandler);
-    final var element = this.fillElementContext(
-        new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, Integer, WeNetValidateContext>(),
-        "relationships", SocialNetworkRelationship.class);
-    element.model.id = userId;
-    element.id = index;
-    ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        profile -> profile.relationships, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
-        this.addProfileToHistoricChain(storeChanges, element.model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler)));
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public void addProfilePersonalBehavior(final Boolean storeProfileChangesInHistory, final String userId,
       final JsonObject body, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
@@ -1429,51 +1301,6 @@ public class ProfilesResource implements Profiles {
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository
         .retrieveProfilesPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
-
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void addOrUpdateProfileRelationship(final Boolean storeProfileChangesInHistory, final String userId,
-      final JsonObject body, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
-
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    this.repository.searchProfile(userId).onComplete(search -> {
-
-      final var profile = search.result();
-      if (profile != null && profile.relationships != null) {
-
-        final var newRelationship = Model.fromJsonObject(body, SocialNetworkRelationship.class);
-        if (newRelationship != null) {
-
-          final var max = profile.relationships.size();
-          for (var index = 0; index < max; index++) {
-
-            final var relationship = profile.relationships.get(index);
-            if (SocialNetworkRelationship.compareIds(relationship, newRelationship)) {
-
-              this.mergeProfileRelationship(storeProfileChangesInHistory, userId, index, body, request, resultHandler);
-              return;
-            }
-          }
-        }
-      }
-
-      // not defined => add
-      final var context = new ServiceContext(request, resultHandler);
-      final var element = this.fillElementContext(
-          new ModelFieldContext<WeNetUserProfile, String, SocialNetworkRelationship, String, WeNetValidateContext>(),
-          "relationship", SocialNetworkRelationship.class);
-      element.model.id = userId;
-      ModelResources.createModelFieldElementChain(body, element, (any, handler) -> handler.handle(search),
-          model -> model.relationships, (model, relationships) -> model.relationships = relationships,
-          (model, handler) -> this.repository.updateProfile(model).onComplete(handler), context,
-          this.addProfileToHistoricChain(storeChanges, element.model,
-              () -> ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, element.value)));
-
-    });
 
   }
 
