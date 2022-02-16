@@ -77,7 +77,7 @@ public class RelationshipsRepositoryImpl extends Repository implements Relations
   @Override
   public void deleteSocialNetworkRelationship(final JsonObject query, final Handler<AsyncResult<Void>> deleteHandler) {
 
-    this.deleteOneDocument(RELATIONSHIPS_COLLECTION, query).onComplete(deleteHandler);
+    this.deleteDocuments(RELATIONSHIPS_COLLECTION, query).onComplete(deleteHandler);
 
   }
 
@@ -92,7 +92,8 @@ public class RelationshipsRepositoryImpl extends Repository implements Relations
     options.setSort(sort);
     options.setSkip(offset);
     options.setLimit(limit);
-    this.searchPageObject(RELATIONSHIPS_COLLECTION, query, options, "relationships", null).onComplete(handler);
+    this.searchPageObject(RELATIONSHIPS_COLLECTION, query, options, "relationships", relation -> relation.remove("_id"))
+        .onComplete(handler);
 
   }
 

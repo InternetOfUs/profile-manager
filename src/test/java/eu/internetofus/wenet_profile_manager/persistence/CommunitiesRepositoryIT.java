@@ -387,7 +387,7 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#searchCommunity(String, io.vertx.core.Handler)
+   * @see CommunitiesRepository#deleteCommunity
    */
   @Test
   public void shouldNotDeleteUndefinedCommunity(final Vertx vertx, final VertxTestContext testContext) {
@@ -405,7 +405,7 @@ public class CommunitiesRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see CommunitiesRepository#updateCommunity(JsonObject, io.vertx.core.Handler)
+   * @see CommunitiesRepository#deleteCommunity
    */
   @Test
   public void shouldDeleteCommunity(final Vertx vertx, final VertxTestContext testContext) {

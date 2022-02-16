@@ -28,6 +28,7 @@ import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipType;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.model.ModelTestCase;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Future;
@@ -81,18 +82,24 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
 
         StoreServices.storeTaskExample(index, vertx, testContext).compose(task ->
 
-        StoreServices.storeSocialNetworkRelationshipExample(index, vertx, testContext).compose(stored -> {
+        StoreServices.storeSocialNetworkRelationshipExample(index, vertx, testContext).compose(relationship -> {
 
-          final var model = new UserPerformanceRatingEvent();
-          model.sourceId = stored.sourceId;
-          model.targetId = stored.targetId;
-          model.relationship = stored.type;
-          model.appId = task.appId;
-          model.communityId = task.communityId;
-          model.taskTypeId = task.taskTypeId;
-          model.taskId = task.id;
-          model.rating = 1.0 / Math.max(1, index + 2);
-          return Future.succeededFuture(model);
+          task.appId = relationship.appId;
+          return testContext.assertComplete(WeNetTaskManager.createProxy(vertx).updateTask(task.id, task))
+              .transform(any -> {
+
+                final var model = new UserPerformanceRatingEvent();
+                model.sourceId = relationship.sourceId;
+                model.targetId = relationship.targetId;
+                model.relationship = relationship.type;
+                model.appId = relationship.appId;
+                model.communityId = task.communityId;
+                model.taskTypeId = task.taskTypeId;
+                model.taskId = task.id;
+                model.rating = 1.0 / Math.max(1, index + 2);
+                return Future.succeededFuture(model);
+
+              });
 
         })));
 
@@ -126,7 +133,7 @@ public class UserPerformanceRatingEventTest extends ModelTestCase<UserPerformanc
   public void shouldBasicExampleNotBeValid(final Vertx vertx, final VertxTestContext testContext) {
 
     final var event = this.createModelExample(1);
-    assertIsNotValid(event, "targetId", new WeNetValidateContext("codePrefix", vertx), testContext);
+    assertIsNotValid(event, "sourceId", new WeNetValidateContext("codePrefix", vertx), testContext);
 
   }
 

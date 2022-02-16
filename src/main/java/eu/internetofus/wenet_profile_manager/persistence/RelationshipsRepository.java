@@ -32,6 +32,7 @@ import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -84,6 +85,22 @@ public interface RelationshipsRepository {
   /**
    * Store or update a relationship.
    *
+   * @param relationship to add or update.
+   *
+   * @return the future with the identifier if the relationship is added.
+   */
+  @GenIgnore
+  default Future<String> storeOrUpdateSocialNetworkRelationship(final SocialNetworkRelationship relationship) {
+
+    final Promise<String> promise = Promise.promise();
+    this.storeOrUpdateSocialNetworkRelationship(relationship, promise);
+    return promise.future();
+
+  }
+
+  /**
+   * Store or update a relationship.
+   *
    * @param relationship  to add or update.
    * @param updateHandler handler to manage the update.
    */
@@ -118,6 +135,22 @@ public interface RelationshipsRepository {
    * @param deleteHandler handler to manage the delete result.
    */
   void deleteSocialNetworkRelationship(final JsonObject query, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete a social network relationship.
+   *
+   * @param query that match the relationships to delete.
+   *
+   * @return the future with the delete result.
+   */
+  @GenIgnore
+  default Future<Void> deleteSocialNetworkRelationship(final JsonObject query) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteSocialNetworkRelationship(query, promise);
+    return promise.future();
+
+  }
 
   /**
    * Create a query to obtain the relationships that has the specified parameters.
@@ -171,6 +204,26 @@ public interface RelationshipsRepository {
   /**
    * Retrieve the relationships defined on the context.
    *
+   * @param query  to obtain the required relationships.
+   * @param sort   describe how has to be ordered the obtained relationships.
+   * @param offset the index of the first social network relationship to return.
+   * @param limit  the number maximum of relationships to return.
+   *
+   * @return the future with the page.
+   */
+  @GenIgnore
+  default Future<SocialNetworkRelationshipsPage> retrieveSocialNetworkRelationshipsPage(final JsonObject query,
+      final JsonObject sort, final int offset, final int limit) {
+
+    final Promise<JsonObject> promise = Promise.promise();
+    this.retrieveSocialNetworkRelationshipsPageObject(query, sort, offset, limit, promise);
+    return Model.fromFutureJsonObject(promise.future(), SocialNetworkRelationshipsPage.class);
+
+  }
+
+  /**
+   * Retrieve the relationships defined on the context.
+   *
    * @param context that describe witch page want to obtain.
    * @param handler for the obtained page.
    */
@@ -180,59 +233,6 @@ public interface RelationshipsRepository {
 
     this.retrieveSocialNetworkRelationshipsPageObject(context.query, context.sort, context.offset, context.limit,
         handler);
-  }
-
-  /**
-   * Retrieve the relationships defined on the context.
-   *
-   * @param context       that describe witch page want to obtain.
-   * @param searchHandler for the obtained page.
-   */
-  @GenIgnore
-  default void retrieveSocialNetworkRelationshipsPage(final ModelsPageContext context,
-      final Handler<AsyncResult<SocialNetworkRelationshipsPage>> searchHandler) {
-
-    this.retrieveSocialNetworkRelationshipsPage(context.query, context.sort, context.offset, context.limit,
-        searchHandler);
-
-  }
-
-  /**
-   * Retrieve the relationships defined on the context.
-   *
-   * @param query         to obtain the required relationships.
-   * @param sort          describe how has to be ordered the obtained
-   *                      relationships.
-   * @param offset        the index of the first social network relationship to
-   *                      return.
-   * @param limit         the number maximum of relationships to return.
-   * @param searchHandler for the obtained page.
-   */
-  @GenIgnore
-  default void retrieveSocialNetworkRelationshipsPage(final JsonObject query, final JsonObject sort, final int offset,
-      final int limit, final Handler<AsyncResult<SocialNetworkRelationshipsPage>> searchHandler) {
-
-    this.retrieveSocialNetworkRelationshipsPageObject(query, sort, offset, limit, search -> {
-
-      if (search.failed()) {
-
-        searchHandler.handle(Future.failedFuture(search.cause()));
-
-      } else {
-
-        final var value = search.result();
-        final var page = Model.fromJsonObject(value, SocialNetworkRelationshipsPage.class);
-        if (page == null) {
-
-          searchHandler.handle(Future.failedFuture("The stored relationships page is not valid."));
-
-        } else {
-
-          searchHandler.handle(Future.succeededFuture(page));
-        }
-      }
-    });
-
   }
 
   /**

@@ -20,19 +20,26 @@
 package eu.internetofus.wenet_profile_manager.api.relationships;
 
 import eu.internetofus.common.components.WeNetModelContext;
+import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.ServiceContext;
 import eu.internetofus.common.vertx.ServiceRequests;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.RelationshipsRepository;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.core.Response.Status;
 import org.tinylog.Logger;
 
@@ -153,6 +160,52 @@ public class RelationshipsResource implements Relationships {
   @Override
   public void addOrUpdateSomeRelationships(final JsonArray body, final ServiceRequest request,
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+
+    final var context = new ServiceContext(request, resultHandler);
+    ModelResources.toModel(body, SocialNetworkRelationship.class, context, relationships -> {
+
+      new WeNetValidateContext("bad_", this.vertx)
+          .validateListField("body", relationships, SocialNetworkRelationship::compareIds).apply(null)
+          .onComplete(valid -> {
+
+            if (valid.failed()) {
+
+              final var cause = valid.cause();
+              Logger.trace(cause, "The {} is not valid.\n{}", body, context);
+              ServiceResponseHandlers.responseFailedWith(context.resultHandler, Status.BAD_REQUEST, cause);
+
+            } else {
+
+              @SuppressWarnings("rawtypes")
+              final List<Future> futures = new ArrayList<>();
+              for (final var relationship : relationships) {
+
+                final Promise<String> promise = Promise.promise();
+                this.repository.storeOrUpdateSocialNetworkRelationship(relationship, promise);
+                futures.add(promise.future());
+
+              }
+
+              CompositeFuture.all(futures).onComplete(stored -> {
+
+                if (stored.failed()) {
+
+                  final var cause = stored.cause();
+                  Logger.trace(cause, "The {} can not be added or updated.\n{}", () -> relationships, () -> context);
+                  ServiceResponseHandlers.responseFailedWith(context.resultHandler, Status.BAD_REQUEST, cause);
+
+                } else {
+
+                  ServiceResponseHandlers.responseOk(context.resultHandler, Model.toJsonArray(relationships));
+                }
+
+              });
+
+            }
+
+          });
+    });
+
   }
 
 }
