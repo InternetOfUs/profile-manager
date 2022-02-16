@@ -188,8 +188,7 @@ public class RelationshipsIT {
    * @param testContext context to test.
    */
   @Test
-  public void shouldAddOrUpdateSomeRelationship(final Vertx vertx, final WebClient client,
-      final VertxTestContext testContext) {
+  public void shouldAddOneRelationship(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
 
     testContext.assertComplete(new SocialNetworkRelationshipTest().createModelExample(33, vertx, testContext))
         .onSuccess(example -> {
@@ -206,6 +205,34 @@ public class RelationshipsIT {
 
               }));
         });
+  }
+
+  /**
+   * Should add or update some relationship.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldUpdateOneRelationship(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    StoreServices.storeSocialNetworkRelationshipExample(1, vertx, testContext).onSuccess(stored -> {
+      stored.weight /= 10.0;
+      testContext
+          .assertComplete(WeNetProfileManager.createProxy(vertx).addOrUpdateSocialNetworkRelationship(stored)
+              .compose(any -> WeNetProfileManager.createProxy(vertx)
+                  .retrieveSocialNetworkRelationshipsPage(stored.appId, null, null, null, null, 0, 10)))
+          .onSuccess(page -> testContext.verify(() -> {
+
+            assertThat(page).isNotNull();
+            assertThat(page.total).isEqualTo(1l);
+            assertThat(page.relationships).hasSize(1).contains(stored);
+            testContext.completeNow();
+
+          }));
+    });
   }
 
 }
