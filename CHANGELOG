@@ -2,8 +2,9 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
-## Version 0.25.0 (2022-01-25)
+## Version 1.0.0 (2022-02-23)
 
+ * Migrate repositoty to github.
  * Extract relations from profile and manage with a new web services as the trust events.
 
 
@@ -23,7 +24,7 @@ All notable changes to `wenet-profile-manager` will be documented in this file
  * Allow Update/merge models with no changes.
  * Add cache when validate the same model.
  * Add cache when check if component exist.
- 
+
 
 ## Version 0.22.0 (2021-11-9)
 
