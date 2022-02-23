@@ -80,6 +80,10 @@ public interface Relationships {
    * @param target        user identifier to match for the relationships target to
    *                      return.
    * @param type          for the relationships to return.
+   * @param weightFrom    minimal weight, inclusive, of the relationships to
+   *                      return.
+   * @param weightTo      maximal weight, inclusive, of the relationships to
+   *                      return.
    * @param order         in with the relationships has to be sort.
    * @param offset        index of the first social network relationship to
    *                      return.
@@ -97,6 +101,8 @@ public interface Relationships {
       @QueryParam(value = "source") @Parameter(description = "A user identifier to be equals on the relationships source to return. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships source if you write between '/'. For example to get the relationships with the source users '1' and '2' you must pass as 'source' '/^[1|2]$/'.", example = "1e346fd440", required = false) String source,
       @QueryParam(value = "target") @Parameter(description = "A user identifier to be equals on the relationships target to return. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships target if you write between '/'. For example to get the relationships with the target users '1' and '2' you must pass as 'target' '/^[1|2]$/'.", example = "1e346fd440", required = false) String target,
       @QueryParam(value = "type") @Parameter(description = "The type for the relationships to return. You can use a Perl compatible regular expressions (PCRE) that has to match the type of the relationships if you write between '/'. For example to get the relationships with the types 'friend' and 'colleague' you must pass as 'type' '/^[friend|colleague]$/'.", example = "friend", required = false) String type,
+      @QueryParam(value = "weightFrom") @Parameter(description = "The minimal weight, inclusive, of the relationships to return.", example = "0.3", required = false) Double weightFrom,
+      @QueryParam(value = "weightTo") @Parameter(description = "The maximal weight, inclusive, of the relationships to return.", example = "0.8", required = false) Double weightTo,
       @QueryParam(value = "order") @Parameter(description = "The order in witch the relationships has to be returned. For each field it has be separated by a ',' and each field can start with '+' (or without it) to order on ascending order, or with the prefix '-' to do on descendant order.", example = "sourceId,-weight,+type", required = false, style = ParameterStyle.FORM, explode = Explode.FALSE) String order,
       @DefaultValue("0") @QueryParam(value = "offset") @Parameter(description = "The index of the first social network relationship to return.", example = "4", required = false) int offset,
       @DefaultValue("10") @QueryParam(value = "limit") @Parameter(description = "The number maximum of social network relationships to return", example = "100", required = false) int limit,
@@ -113,6 +119,10 @@ public interface Relationships {
    * @param target        user identifier to match for the relationships target to
    *                      delete.
    * @param type          for the relationships to delete.
+   * @param weightFrom    minimal weight, inclusive, of the relationships to
+   *                      return.
+   * @param weightTo      maximal weight, inclusive, of the relationships to
+   *                      return.
    * @param request       of the operation.
    * @param resultHandler to inform of the response.
    */
@@ -126,6 +136,8 @@ public interface Relationships {
       @QueryParam(value = "source") @Parameter(description = "A user identifier to be equals on the relationships source to delete. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships source if you write between '/'. For example to delete the relationships with the source users '1' and '2' you must pass as 'source' '/^[1|2]$/'.", example = "1e346fd440", required = false) String source,
       @QueryParam(value = "target") @Parameter(description = "A user identifier to be equals on the relationships target to delete. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships target if you write between '/'. For example to delete the relationships with the target users '1' and '2' you must pass as 'target' '/^[1|2]$/'.", example = "1e346fd440", required = false) String target,
       @QueryParam(value = "type") @Parameter(description = "The type for the relationships to delete. You can use a Perl compatible regular expressions (PCRE) that has to match the type of the relationships if you write between '/'. For example to delete the relationships with the types 'friend' and 'colleague' you must pass as 'type' '/^[friend|colleague]$/'.", example = "friend", required = false) String type,
+      @QueryParam(value = "weightFrom") @Parameter(description = "The minimal weight, inclusive, of the relationships to return.", example = "0.3", required = false) Double weightFrom,
+      @QueryParam(value = "weightTo") @Parameter(description = "The maximal weight, inclusive, of the relationships to return.", example = "0.8", required = false) Double weightTo,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);
 

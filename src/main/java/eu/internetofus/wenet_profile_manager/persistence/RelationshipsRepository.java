@@ -155,21 +155,24 @@ public interface RelationshipsRepository {
   /**
    * Create a query to obtain the relationships that has the specified parameters.
    *
-   * @param appId    application identifier to match in the relationships to
-   *                 return.
-   * @param sourceId user identifier to match the source of the relationships to
-   *                 return.
-   * @param targetId user identifier to match the target of the relationships to
-   *                 return.
-   * @param type     to match in the relationships to return.
+   * @param appId      application identifier to match in the relationships to
+   *                   return.
+   * @param sourceId   user identifier to match the source of the relationships to
+   *                   return.
+   * @param targetId   user identifier to match the target of the relationships to
+   *                   return.
+   * @param type       to match in the relationships to return.
+   * @param weightFrom minimal weight, inclusive, of the relationships to return.
+   * @param weightTo   maximal weight, inclusive, of the relationships to return.
    *
    * @return the query that will return the required relationships.
    */
   static JsonObject createSocialNetworkRelationshipsPageQuery(final String appId, final String sourceId,
-      final String targetId, final String type) {
+      final String targetId, final String type, final Double weightFrom, final Double weightTo) {
 
     return new QueryBuilder().withEqOrRegex("appId", appId).withEqOrRegex("sourceId", sourceId)
-        .withEqOrRegex("targetId", targetId).withEqOrRegex("type", type).build();
+        .withEqOrRegex("targetId", targetId).withEqOrRegex("type", type).withRange("weight", weightFrom, weightTo)
+        .build();
 
   }
 

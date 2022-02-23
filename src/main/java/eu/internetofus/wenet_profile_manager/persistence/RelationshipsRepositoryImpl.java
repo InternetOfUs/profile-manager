@@ -66,7 +66,8 @@ public class RelationshipsRepositoryImpl extends Repository implements Relations
       final Handler<AsyncResult<String>> updateHandler) {
 
     final var query = RelationshipsRepository.createSocialNetworkRelationshipsPageQuery(relationship.getString("appId"),
-        relationship.getString("sourceId"), relationship.getString("targetId"), relationship.getString("type"));
+        relationship.getString("sourceId"), relationship.getString("targetId"), relationship.getString("type"), null,
+        null);
     this.upsertOneDocument(RELATIONSHIPS_COLLECTION, query, relationship, true).onComplete(updateHandler);
 
   }

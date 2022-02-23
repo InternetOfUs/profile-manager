@@ -77,14 +77,15 @@ public class RelationshipsResource implements Relationships {
    */
   @Override
   public void retrieveSocialNetworkRelationshipsPage(final String appId, final String sourceId, final String targetId,
-      final String type, final String orderValue, final int offset, final int limit, final ServiceRequest request,
-      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+      final String type, final Double weightFrom, final Double weightTo, final String orderValue, final int offset,
+      final int limit, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var order = ServiceRequests.extractQueryArray(orderValue);
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> {
 
-      page.query = RelationshipsRepository.createSocialNetworkRelationshipsPageQuery(appId, sourceId, targetId, type);
+      page.query = RelationshipsRepository.createSocialNetworkRelationshipsPageQuery(appId, sourceId, targetId, type,
+          weightFrom, weightTo);
       page.sort = RelationshipsRepository.createSocialNetworkRelationshipsPageSort(order);
       this.repository.retrieveSocialNetworkRelationshipsPageObject(page, search -> promise.handle(search));
 
@@ -97,10 +98,11 @@ public class RelationshipsResource implements Relationships {
    */
   @Override
   public void deleteSocialNetworkRelationships(final String appId, final String sourceId, final String targetId,
-      final String type, final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+      final String type, final Double weightFrom, final Double weightTo, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var query = RelationshipsRepository.createSocialNetworkRelationshipsPageQuery(appId, sourceId, targetId,
-        type);
+    final var query = RelationshipsRepository.createSocialNetworkRelationshipsPageQuery(appId, sourceId, targetId, type,
+        weightFrom, weightTo);
     final var context = new ServiceContext(request, resultHandler);
     this.repository.deleteSocialNetworkRelationship(query, delete -> {
 

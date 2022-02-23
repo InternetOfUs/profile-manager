@@ -166,8 +166,8 @@ public class RelationshipsIT {
             testContext
                 .assertComplete(WeNetProfileManager.createProxy(vertx)
                     .addOrUpdateSocialNetworkRelationships(Arrays.asList(stored, example))
-                    .compose(any -> WeNetProfileManager.createProxy(vertx)
-                        .retrieveSocialNetworkRelationshipsPage(example.appId, null, null, null, null, 0, 10)))
+                    .compose(any -> WeNetProfileManager.createProxy(vertx).retrieveSocialNetworkRelationshipsPage(
+                        example.appId, null, null, null, null, null, null, 0, 10)))
                 .onSuccess(page -> testContext.verify(() -> {
 
                   assertThat(page).isNotNull();
@@ -194,8 +194,8 @@ public class RelationshipsIT {
         .onSuccess(example -> {
           testContext
               .assertComplete(WeNetProfileManager.createProxy(vertx).addOrUpdateSocialNetworkRelationship(example)
-                  .compose(any -> WeNetProfileManager.createProxy(vertx)
-                      .retrieveSocialNetworkRelationshipsPage(example.appId, null, null, null, null, 0, 10)))
+                  .compose(any -> WeNetProfileManager.createProxy(vertx).retrieveSocialNetworkRelationshipsPage(
+                      example.appId, null, null, null, null, null, null, 0, 10)))
               .onSuccess(page -> testContext.verify(() -> {
 
                 assertThat(page).isNotNull();
@@ -223,7 +223,7 @@ public class RelationshipsIT {
       testContext
           .assertComplete(WeNetProfileManager.createProxy(vertx).addOrUpdateSocialNetworkRelationship(stored)
               .compose(any -> WeNetProfileManager.createProxy(vertx)
-                  .retrieveSocialNetworkRelationshipsPage(stored.appId, null, null, null, null, 0, 10)))
+                  .retrieveSocialNetworkRelationshipsPage(stored.appId, null, null, null, null, null, null, 0, 10)))
           .onSuccess(page -> testContext.verify(() -> {
 
             assertThat(page).isNotNull();
