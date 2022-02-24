@@ -38,6 +38,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
 import java.util.List;
+import org.tinylog.Logger;
 
 /**
  * The service to manage the {@link SocialNetworkRelationship} on the database.
@@ -67,18 +68,31 @@ public interface RelationshipsRepository {
   /**
    * Register this service.
    *
-   * @param vertx   that contains the event bus to use.
-   * @param pool    to create the database connections.
-   * @param version of the schemas.
+   * @param vertx      that contains the event bus to use.
+   * @param pool       to create the database connections.
+   * @param version    of the schemas.
+   * @param background is {@code true} if has to migrate the data base in
+   *                   background.
    *
    * @return the future that inform when the repository will be registered or not.
    */
-  static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version) {
+  static Future<Void> register(final Vertx vertx, final MongoClient pool, final String version,
+      final boolean background) {
 
     final var repository = new RelationshipsRepositoryImpl(vertx, pool, version);
     new ServiceBinder(vertx).setAddress(RelationshipsRepository.ADDRESS).register(RelationshipsRepository.class,
         repository);
-    return repository.migrateDocumentsToCurrentVersions();
+    if (background) {
+
+      repository.migrateDocumentsToCurrentVersions()
+          .onFailure(error -> Logger.error(error, "Cannot migrate the relationships."));
+      return Future.succeededFuture();
+
+    } else {
+
+      return repository.migrateDocumentsToCurrentVersions();
+
+    }
 
   }
 

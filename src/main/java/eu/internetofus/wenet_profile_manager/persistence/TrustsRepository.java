@@ -35,6 +35,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.serviceproxy.ServiceBinder;
 import javax.validation.constraints.NotNull;
+import org.tinylog.Logger;
 
 /**
  * The service to manage the {@link Trust} on the database.
@@ -64,18 +65,32 @@ public interface TrustsRepository {
   /**
    * Register this service.
    *
-   * @param vertx   that contains the event bus to use.
-   * @param conf    configuration to use.
-   * @param pool    to create the database connections.
-   * @param version of the schemas.
+   * @param vertx      that contains the event bus to use.
+   * @param conf       configuration to use.
+   * @param pool       to create the database connections.
+   * @param version    of the schemas.
+   * @param background is {@code true} if has to migrate the data base in
+   *                   background
    *
    * @return the future that inform when the repository will be registered or not.
    */
-  static Future<Void> register(final Vertx vertx, final JsonObject conf, final MongoClient pool, final String version) {
+  static Future<Void> register(final Vertx vertx, final JsonObject conf, final MongoClient pool, final String version,
+      final boolean background) {
 
     final var repository = new TrustsRepositoryImpl(conf, vertx, pool, version);
     new ServiceBinder(vertx).setAddress(TrustsRepository.ADDRESS).register(TrustsRepository.class, repository);
-    return repository.migrateDocumentsToCurrentVersions();
+
+    if (background) {
+
+      repository.migrateDocumentsToCurrentVersions()
+          .onFailure(error -> Logger.error(error, "Cannot migrate the trusts."));
+      return Future.succeededFuture();
+
+    } else {
+
+      return repository.migrateDocumentsToCurrentVersions();
+
+    }
 
   }
 

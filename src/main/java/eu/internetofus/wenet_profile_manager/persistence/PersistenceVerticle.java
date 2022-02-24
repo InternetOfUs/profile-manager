@@ -21,7 +21,9 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.vertx.AbstractPersistenceVerticle;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 
 /**
  * The verticle that provide the persistence services.
@@ -36,11 +38,17 @@ public class PersistenceVerticle extends AbstractPersistenceVerticle {
   @Override
   protected Future<Void> registerRepositoriesFor(final String schemaVersion) {
 
-    var future = ProfilesRepository.register(this.vertx, this.pool, schemaVersion);
-    future = future.compose(map -> TrustsRepository.register(this.vertx, this.config(), this.pool, schemaVersion));
-    future = future.compose(map -> CommunitiesRepository.register(this.vertx, this.pool, schemaVersion));
-    future = future.compose(map -> RelationshipsRepository.register(this.vertx, this.pool, schemaVersion));
-    return future;
+    final var conf = this.config().getJsonObject("profileManager", new JsonObject());
+    return CompositeFuture.all(
+        ProfilesRepository.register(this.vertx, this.pool, schemaVersion,
+            conf.getBoolean("migrateProfilesInBackground", true)),
+        TrustsRepository.register(this.vertx, this.config(), this.pool, schemaVersion,
+            conf.getBoolean("migrateTrustsInBackground", true)),
+        CommunitiesRepository.register(this.vertx, this.pool, schemaVersion,
+            conf.getBoolean("migrateCommunitiesInBackground", true)),
+        RelationshipsRepository.register(this.vertx, this.pool, schemaVersion,
+            conf.getBoolean("migrateRelationshipsInBackground", true)))
+        .map(any -> null);
 
   }
 

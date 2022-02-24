@@ -1025,4 +1025,44 @@ public class ProfilesRepositoryIT {
         })));
   }
 
+  /**
+   * Should profile is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldNotDefinedProfile(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    testContext.assertComplete(repository.isProfileDefined(UUID.randomUUID().toString()))
+        .onSuccess(defined -> testContext.verify(() -> {
+
+          assertThat(defined).isFalse();
+          testContext.completeNow();
+
+        }));
+  }
+
+  /**
+   * Should profile is defined.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   */
+  @Test
+  public void shouldDefinedProfile(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = ProfilesRepository.createProxy(vertx);
+    testContext
+        .assertComplete(
+            repository.storeProfile(new WeNetUserProfile()).compose(stored -> repository.isProfileDefined(stored.id)))
+        .onSuccess(defined -> testContext.verify(() -> {
+
+          assertThat(defined).isTrue();
+          testContext.completeNow();
+
+        }));
+  }
+
 }
