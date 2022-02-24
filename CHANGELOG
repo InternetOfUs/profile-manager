@@ -2,7 +2,7 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
-## Version 1.0.0 (2022-02-23)
+## Version 1.0.0 (2022-02-24)
 
  * Migrate repositoty to github.
  * Extract relations from profile and manage with a new web services as the trust events.
