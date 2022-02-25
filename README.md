@@ -1,4 +1,4 @@
-# WeNet - Profile manager
+# Internet of us - Profile manager
 
 ## Introduction
 
