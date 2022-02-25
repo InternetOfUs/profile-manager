@@ -27,6 +27,7 @@ services:
       CACHE_TIMEOUT: ${CACHE_TIMEOUT:-300}
       CACHE_SIZE: ${CACHE_SIZE:-10000}
       AUTOSTORE_PROFILE_CHANGES_IN_HISTORY: ${AUTOSTORE_PROFILE_CHANGES_IN_HISTORY:-false}
+      MIGRATE_DB_ON_BACKGROUND: ${MIGRATE_DB_ON_BACKGROUND:-true}
       WAIT_HOSTS: wenet_profile_manager_database:27017
     networks:
       wenet_network:

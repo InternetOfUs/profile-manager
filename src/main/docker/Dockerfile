@@ -28,6 +28,7 @@ ARG DEFAULT_COMP_AUTH_KEY=""
 ARG DEFAULT_CACHE_TIMEOUT=300
 ARG DEFAULT_CACHE_SIZE=10000
 ARG DEFAULT_AUTOSTORE_PROFILE_CHANGES_IN_HISTORY=false
+ARG DEFAULT_MIGRATE_DB_ON_BACKGROUND=true
 ENV API_HOST=${DEFAULT_API_HOST}
 ENV API_PORT=${DEFAULT_API_PORT}
 ENV DB_HOST=${DEFAULT_DB_HOST}
@@ -43,6 +44,7 @@ ENV COMP_AUTH_KEY=${DEFAULT_COMP_AUTH_KEY}
 ENV CACHE_TIMEOUT=${DEFAULT_CACHE_TIMEOUT}
 ENV CACHE_SIZE=${DEFAULT_CACHE_SIZE}
 ENV AUTOSTORE_PROFILE_CHANGES_IN_HISTORY=${DEFAULT_AUTOSTORE_PROFILE_CHANGES_IN_HISTORY}
+ENV MIGRATE_DB_ON_BACKGROUND=${DEFAULT_MIGRATE_DB_ON_BACKGROUND}
 
 # Create running dierectories
 RUN mkdir -p /usr/wenet/profile-manager/lib
@@ -71,7 +73,7 @@ RUN echo "{\"wenetComponents\":{\"socialContextBuilder\":\"${DEFAULT_WENET_SOCIA
 RUN echo "{\"wenetComponents\":{\"cache\":{\"timeout\":\"${DEFAULT_CACHE_TIMEOUT}\",\"size\":\"${DEFAULT_CACHE_SIZE}\"}}}" > /usr/wenet/profile-manager/etc/cache.json
 
 # Create configuration for the profile manager
-RUN echo "{\"profileManager\":{\"autoStoreProfileChangesInHistory\":\"${DEFAULT_AUTOSTORE_PROFILE_CHANGES_IN_HISTORY}\"}}" > /usr/wenet/profile-manager/etc/profileManager.json
+RUN echo "{\"profileManager\":{\"autoStoreProfileChangesInHistory\":${DEFAULT_AUTOSTORE_PROFILE_CHANGES_IN_HISTORY},\"migrateProfilesInBackground\":${DEFAULT_MIGRATE_DB_ON_BACKGROUND},\"migrateTrustsInBackground\":${DEFAULT_MIGRATE_DB_ON_BACKGROUND},\"migrateCommunitiesInBackground\":${DEFAULT_MIGRATE_DB_ON_BACKGROUND},\"migrateRelationshipsInBackground\":${DEFAULT_MIGRATE_DB_ON_BACKGROUND}}}" > /usr/wenet/profile-manager/etc/profileManager.json
 
 WORKDIR /usr/wenet/profile-manager
 COPY --from=build /build/target/wenet-profile-manager.jar /usr/wenet/profile-manager/wenet-profile-manager.jar
@@ -94,4 +96,8 @@ CMD /wait && java -jar wenet-profile-manager.jar -c etc \
 	-pwenetComponents.cache.timeout=${CACHE_TIMEOUT}\
 	-pwenetComponents.cache.size=${CACHE_SIZE}\
 	-pprofileManager.autoStoreProfileChangesInHistory=${AUTOSTORE_PROFILE_CHANGES_IN_HISTORY}\
+	-pprofileManager.migrateProfilesInBackground=${MIGRATE_DB_ON_BACKGROUND}\
+	-pprofileManager.migrateTrustsInBackground=${MIGRATE_DB_ON_BACKGROUND}\
+	-pprofileManager.migrateCommunitiesInBackground=${MIGRATE_DB_ON_BACKGROUND}\
+	-pprofileManager.migrateRelationshipsInBackground=${MIGRATE_DB_ON_BACKGROUND}\
 	${RUN_ARGS}
