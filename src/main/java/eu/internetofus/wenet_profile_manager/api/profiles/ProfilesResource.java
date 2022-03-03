@@ -23,13 +23,16 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 import eu.internetofus.common.components.WeNetModelContext;
 import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.Competence;
+import eu.internetofus.common.components.models.DeprecatedSocialNetworkRelationship;
 import eu.internetofus.common.components.models.Material;
 import eu.internetofus.common.components.models.Meaning;
 import eu.internetofus.common.components.models.PlannedActivity;
 import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.Routine;
+import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.social_context_builder.ProfileUpdateNotification;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
 import eu.internetofus.common.model.Model;
@@ -46,6 +49,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.api.service.ServiceRequest;
 import io.vertx.ext.web.api.service.ServiceResponse;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -142,7 +146,47 @@ public class ProfilesResource implements Profiles {
                   Logger.trace("Initialized social relations of the user {}.", () -> model.value.id);
                 }
               });
+
+          this.addUpdateRelationships(model.value.id, model.source.relationships);
+
         });
+
+  }
+
+  /**
+   * Add or update the deprecated relationships.
+   *
+   * @param profileId     identifier where the relationships are defined.
+   * @param relationships to update or add.
+   */
+  private void addUpdateRelationships(final String profileId,
+      final List<DeprecatedSocialNetworkRelationship> relationships) {
+
+    if (relationships != null && !relationships.isEmpty()) {
+
+      final var newRelationships = new ArrayList<SocialNetworkRelationship>();
+      for (final DeprecatedSocialNetworkRelationship relationship : relationships) {
+
+        final var newRelationship = new SocialNetworkRelationship();
+        newRelationship.appId = relationship.appId;
+        newRelationship.sourceId = profileId;
+        newRelationship.targetId = relationship.userId;
+        newRelationship.type = relationship.type;
+        newRelationship.weight = relationship.weight;
+        newRelationships.add(newRelationship);
+      }
+
+      WeNetProfileManager.createProxy(this.vertx).addOrUpdateSocialNetworkRelationships(newRelationships)
+          .onComplete(updated -> {
+
+            if (updated.failed()) {
+
+              Logger.trace(updated.cause(), "Cannot update the social network relationships of {}.", profileId);
+            }
+
+          });
+
+    }
 
   }
 
@@ -181,8 +225,12 @@ public class ProfilesResource implements Profiles {
     ModelResources.updateModelChain(body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
-        this.addProfileToHistoricChain(storeChanges, model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
+        this.addProfileToHistoricChain(storeChanges, model, () -> {
+
+          ServiceResponseHandlers.responseOk(resultHandler, model.value);
+          this.addUpdateRelationships(model.id, model.source.relationships);
+
+        }));
 
   }
 
@@ -200,8 +248,12 @@ public class ProfilesResource implements Profiles {
     ModelResources.mergeModelChain(body, model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
         (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
-        this.addProfileToHistoricChain(storeChanges, model,
-            () -> ServiceResponseHandlers.responseOk(resultHandler, model.value)));
+        this.addProfileToHistoricChain(storeChanges, model, () -> {
+
+          ServiceResponseHandlers.responseOk(resultHandler, model.value);
+          this.addUpdateRelationships(model.id, model.source.relationships);
+
+        }));
   }
 
   /**
@@ -308,8 +360,21 @@ public class ProfilesResource implements Profiles {
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelChain(model,
         (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), context,
-        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context, this
-            .addProfileToHistoricChain(storeChanges, model, () -> ServiceResponseHandlers.responseOk(resultHandler))));
+        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context,
+            this.addProfileToHistoricChain(storeChanges, model, () -> {
+
+              ServiceResponseHandlers.responseOk(resultHandler);
+              WeNetProfileManager.createProxy(this.vertx)
+                  .deleteSocialNetworkRelationshipsPage(null, userId, null, null, null, null).onComplete(deleted -> {
+
+                    if (deleted.failed()) {
+
+                      Logger.trace(updated.cause(), "Cannot deleted the social network relationships of {}.", userId);
+                    }
+
+                  });
+
+            })));
 
   }
 
