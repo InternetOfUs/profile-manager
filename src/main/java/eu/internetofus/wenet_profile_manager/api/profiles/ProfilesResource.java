@@ -365,11 +365,11 @@ public class ProfilesResource implements Profiles {
 
               ServiceResponseHandlers.responseOk(resultHandler);
               WeNetProfileManager.createProxy(this.vertx)
-                  .deleteSocialNetworkRelationshipsPage(null, userId, null, null, null, null).onComplete(deleted -> {
+                  .deleteSocialNetworkRelationships(null, userId, null, null, null, null).onComplete(deleted -> {
 
                     if (deleted.failed()) {
 
-                      Logger.trace(updated.cause(), "Cannot deleted the social network relationships of {}.", userId);
+                      Logger.trace(deleted.cause(), "Cannot deleted the social network relationships of {}.", userId);
                     }
 
                   });
