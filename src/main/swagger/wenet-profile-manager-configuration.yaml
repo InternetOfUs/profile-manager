@@ -44,7 +44,7 @@ openAPI:
       description: Other services provided by the API.
   info:
     # The verion of the API has to be synchonized with the 'api-version' property of the 'pom.xml'
-    version: '1.0.0'
+    version: '1.1.0'
     title: WeNet - Profile manager API
     description:  >-
       The profile manager component is responsible for storing and maintaining the WeNet user profiles.

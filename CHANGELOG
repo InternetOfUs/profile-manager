@@ -2,6 +2,12 @@
 
 All notable changes to `wenet-profile-manager` will be documented in this file
 
+## Version 1.0.0 (2022-03-03)
+
+ * Allow to acccess to the profile with the old social network relationships.
+ * Update common models API.
+ 
+
 ## Version 1.0.0 (2022-02-25)
 
  * Migrate repositoty to github.
