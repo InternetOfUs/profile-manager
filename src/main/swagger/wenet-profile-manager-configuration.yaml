@@ -8,10 +8,6 @@ openAPI:
       description: The functionality provided allows to access current and previous values of user attributes that define the user profile.  It also allows you to modify the current values.
     - name: Communities
       description: The functionality provided allows to manipulate the communities of users.
-    - name: Intelligences
-      description: Provide the functionality to evaluate the intelligences of a person
-    - name: Personalities
-      description: Provide the functionality to evaluate the personality of a person
     - name: Historic
       description: The functionality provided allows to access to the values of the models in previous dates.
     - name: Trusts
