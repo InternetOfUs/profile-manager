@@ -95,7 +95,7 @@ public interface Relationships {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Return the relationships that match the request parameters", description = "Allow to get all the relationships that match the request parameters")
-  @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(array = @ArraySchema(schema = @Schema(implementation = SocialNetworkRelationshipsPage.class))))
+  @ApiResponse(responseCode = "200", description = "The relationships defined into the profile", content = @Content(schema = @Schema(implementation = SocialNetworkRelationshipsPage.class)))
   void retrieveSocialNetworkRelationshipsPage(
       @QueryParam(value = "appId") @Parameter(description = "An application identifier to be equals on the social network relationships to return. You can use a Perl compatible regular expressions (PCRE) that has to match the application identifier of the relationships if you write between '/'. For example to get the relationships for the applications '1' and '2' you must pass as 'appId' '/^[1|2]$/'.", example = "1", required = false) String appId,
       @QueryParam(value = "sourceId") @Parameter(description = "A user identifier to be equals on the relationships source to return. You can use a Perl compatible regular expressions (PCRE) that has to match the user identifier of the relationships source if you write between '/'. For example to get the relationships with the source users '1' and '2' you must pass as 'source' '/^[1|2]$/'.", example = "1e346fd440", required = false) String sourceId,
