@@ -152,8 +152,8 @@ public interface Relationships {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Add or update a relationship between users", description = "Add or modify a relationship between WeNet users")
-  @RequestBody(description = "The new values for the relationship", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.2.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
-  @ApiResponse(responseCode = "200", description = "The added or updated relationship between users", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.2.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @RequestBody(description = "The new values for the relationship", required = true, content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.3.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
+  @ApiResponse(responseCode = "200", description = "The added or updated relationship between users", content = @Content(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.3.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship")))
   @ApiResponse(responseCode = "400", description = "Bad relationship to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void addOrUpdateRelationship(@Parameter(hidden = true, required = false) JsonObject body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
@@ -171,8 +171,8 @@ public interface Relationships {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @Operation(summary = "Update some relationships between users", description = "Modify some relationships between WeNet users")
-  @RequestBody(description = "The new values for the relationships", required = true, content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.2.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
-  @ApiResponse(responseCode = "200", description = "The updated relationships between users", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.2.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
+  @RequestBody(description = "The new values for the relationships", required = true, content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.3.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
+  @ApiResponse(responseCode = "200", description = "The updated relationships between users", content = @Content(array = @ArraySchema(schema = @Schema(ref = "https://raw.githubusercontent.com/InternetOfUs/components-documentation/MODELS_2.3.0/sources/wenet-models-openapi.yaml#/components/schemas/SocialNetworkRelationship"))))
   @ApiResponse(responseCode = "400", description = "Bad relationships to update", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void addOrUpdateSomeRelationships(@Parameter(hidden = true, required = false) JsonArray body,
       @Parameter(hidden = true, required = false) ServiceRequest request,
