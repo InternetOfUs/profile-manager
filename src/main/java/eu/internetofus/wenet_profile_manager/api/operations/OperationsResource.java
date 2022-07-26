@@ -25,6 +25,7 @@ import eu.internetofus.common.components.profile_diversity_manager.AgentsData;
 import eu.internetofus.common.components.profile_diversity_manager.AttributesData;
 import eu.internetofus.common.components.profile_diversity_manager.WeNetProfileDiversityManager;
 import eu.internetofus.common.components.profile_manager.DiversityData;
+import eu.internetofus.common.components.profile_manager.DiversityData.MatchType;
 import eu.internetofus.common.components.profile_manager.DiversityValue;
 import eu.internetofus.common.components.profile_manager.SimilarityData;
 import eu.internetofus.common.components.profile_manager.SimilarityResult;
@@ -100,7 +101,7 @@ public class OperationsResource implements Operations {
         Future<AgentsData> future = Future.succeededFuture(this.createEmptyAgentsData());
         for (final var profileId : model.source.userIds) {
 
-          future = future.compose(this.merge(profileId, model.source.attributes));
+          future = future.compose(this.merge(profileId, model.source.attributes, model.source.match));
 
         }
 
@@ -115,23 +116,33 @@ public class OperationsResource implements Operations {
           } else {
 
             final var data = search.result();
-            WeNetProfileDiversityManager.createProxy(this.vertx).calculateDiversityOf(data).onComplete(calculus -> {
+            if (data.qualitativeAttributes.isEmpty() && data.quantitativeAttributes.isEmpty()) {
 
-              final var result = new DiversityValue();
-              if (calculus.failed()) {
+              final var cause = new ValidationErrorException("undefined_profile_attributes",
+                  "The profiles does not have at least one common attribute value.");
+              Logger.trace(cause, "Not found at least a common profile attribute to calculate diversity");
+              ServiceResponseHandlers.responseFailedWith(context.resultHandler, Status.BAD_REQUEST, cause);
 
-                Logger.trace(calculus.cause(), "Cannot calculate diversity");
-                result.diversity = 0d;
+            } else {
 
-              } else {
+              WeNetProfileDiversityManager.createProxy(this.vertx).calculateDiversityOf(data).onComplete(calculus -> {
 
-                final var diversity = calculus.result();
-                result.diversity = diversity.value;
-              }
+                final var result = new DiversityValue();
+                if (calculus.failed()) {
 
-              ServiceResponseHandlers.responseOk(resultHandler, result);
+                  Logger.trace(calculus.cause(), "Cannot calculate diversity");
+                  result.diversity = 0d;
 
-            });
+                } else {
+
+                  final var diversity = calculus.result();
+                  result.diversity = diversity.value;
+                }
+
+                ServiceResponseHandlers.responseOk(resultHandler, result);
+
+              });
+            }
           }
 
         });
@@ -161,10 +172,12 @@ public class OperationsResource implements Operations {
    *
    * @param profileId  identifier of the profile to merge.
    * @param attributes to get of the profile.
+   * @param match      that has to do over the fields.
    *
    * @return the future agents data.
    */
-  protected Function<AgentsData, Future<AgentsData>> merge(final String profileId, final Set<String> attributes) {
+  protected Function<AgentsData, Future<AgentsData>> merge(final String profileId, final Set<String> attributes,
+      final MatchType match) {
 
     return data -> {
 
@@ -189,15 +202,19 @@ public class OperationsResource implements Operations {
             final var value = this.getProfileAttributeValue(attributeName, profile);
             if (value instanceof String || value instanceof Integer) {
 
-              final var option = String.valueOf(value);
-              agent.qualitativeAttributes.put(attributeName, option);
-              var options = data.qualitativeAttributes.get(attributeName);
-              if (options == null) {
+              if (match == MatchType.ALL || data.agents.size() == 1
+                  || data.qualitativeAttributes.containsKey(attributeName)) {
 
-                options = new HashSet<>();
-                data.qualitativeAttributes.put(attributeName, options);
+                final var option = String.valueOf(value);
+                agent.qualitativeAttributes.put(attributeName, option);
+                var options = data.qualitativeAttributes.get(attributeName);
+                if (options == null) {
+
+                  options = new HashSet<>();
+                  data.qualitativeAttributes.put(attributeName, options);
+                }
+                options.add(option);
               }
-              options.add(option);
 
             } else if (value instanceof Number) {
 
@@ -209,17 +226,27 @@ public class OperationsResource implements Operations {
                         + attributeName + "' of the profile '" + profileId + "'is not on the range [0,1]."));
                 return;
 
-              } else {
+              } else if (match == MatchType.ALL || data.agents.size() == 1
+                  || data.quantitativeAttributes.contains(attributeName)) {
 
                 agent.quantitativeAttributes.put(attributeName, quantitativeValue);
                 data.quantitativeAttributes.add(attributeName);
+
               }
 
             } else if (value == null) {
 
-              promise.fail(new ValidationErrorException("bad_profile_attribute_value",
-                  "The attribute '" + attributeName + "' is not defined on the profile '" + profileId + "'."));
-              return;
+              if (match == MatchType.ALL) {
+
+                promise.fail(new ValidationErrorException("bad_profile_attribute_value",
+                    "The attribute '" + attributeName + "' is not defined on the profile '" + profileId + "'."));
+                return;
+
+              } else {
+                // remove it because is not defined
+                data.quantitativeAttributes.remove(attributeName);
+                data.qualitativeAttributes.remove(attributeName);
+              }
 
             } else {
 

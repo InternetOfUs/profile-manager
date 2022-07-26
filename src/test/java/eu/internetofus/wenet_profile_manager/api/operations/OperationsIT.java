@@ -26,12 +26,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.Offset.offset;
 
 import eu.internetofus.common.components.StoreServices;
+import eu.internetofus.common.components.models.CompetenceTest;
 import eu.internetofus.common.components.profile_manager.DiversityData;
+import eu.internetofus.common.components.profile_manager.DiversityData.MatchType;
 import eu.internetofus.common.components.profile_manager.DiversityDataTest;
 import eu.internetofus.common.components.profile_manager.DiversityValue;
 import eu.internetofus.common.components.profile_manager.SimilarityData;
 import eu.internetofus.common.components.profile_manager.SimilarityDataTest;
 import eu.internetofus.common.components.profile_manager.SimilarityResult;
+import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Future;
@@ -605,6 +608,177 @@ public class OperationsIT {
         assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
         final var diversityValue = assertThatBodyIs(DiversityValue.class, res);
         assertThat(diversityValue.diversity).isEqualTo(0.25d, offset(0.000000001));
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Verify that fail calculate diversity with at least one attribute not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#diversity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailDiversityWithOneAttributeNotDefined(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var model = new DiversityData();
+    model.attributes = new HashSet<>();
+    model.attributes.add("competences.u_active");
+    model.attributes.add("competences.u_read");
+    model.attributes.add("competences.u_essay");
+    model.attributes.add("competences.u_org");
+    model.attributes.add("competences.u_balance");
+    model.attributes.add("competences.u_assess");
+    model.attributes.add("competences.undefined");
+    model.attributes.add("competences.u_theory");
+    model.attributes.add("competences.u_pract");
+    model.userIds = new HashSet<>();
+    model.match = MatchType.ALL;
+
+    var future = Future.succeededFuture(model);
+    for (var i = 0; i < 3; i += 2) {
+
+      final var profileIndex = i;
+      future = future
+          .compose(chainModel -> StoreServices.storeProfileExample(profileIndex, vertx, testContext).map(profile -> {
+
+            chainModel.userIds.add(profile.id);
+            return chainModel;
+
+          }));
+    }
+
+    testContext.assertComplete(future).onSuccess(data -> {
+
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/diversity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Verify that calculate diversity if at least one match.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#diversity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldCalculateDiversityIfAtLeastOneMatch(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var model = new DiversityData();
+    model.attributes = new HashSet<>();
+    model.attributes.add("competences.u_active");
+    model.attributes.add("competences.undefined_read");
+    model.attributes.add("competences.undefined_essay");
+    model.attributes.add("competences.undefined_org");
+    model.attributes.add("competences.undefined_balance");
+    model.attributes.add("competences.undefined_assess");
+    model.attributes.add("competences.undefined_theory");
+    model.attributes.add("competences.undefined_pract");
+    model.match = MatchType.AT_LEAST_ONE;
+    model.userIds = new HashSet<>();
+
+    var future = Future.succeededFuture(model);
+    for (var i = 0; i < 3; i += 2) {
+
+      final var profileIndex = i;
+      future = future.compose(
+          chainModel -> StoreServices.storeProfileExample(profileIndex, vertx, testContext).compose(profile -> {
+
+            final var competence = new CompetenceTest().createModelExample(profileIndex);
+            profile.competences.add(competence);
+            return WeNetProfileManager.createProxy(vertx).updateProfile(profile).map(updated -> {
+
+              chainModel.userIds.add(updated.id);
+              return chainModel;
+
+            });
+
+          }));
+    }
+
+    testContext.assertComplete(future).onSuccess(data -> {
+
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/diversity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.OK.getStatusCode());
+        final var diversityValue = assertThatBodyIs(DiversityValue.class, res);
+        assertThat(diversityValue.diversity).isEqualTo(0.25d, offset(0.000000001));
+
+      }).sendJson(data.toJsonObject(), testContext);
+
+    });
+
+  }
+
+  /**
+   * Verify that fail calculate diversity because any match.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   *
+   * @see Operations#diversity(JsonObject,
+   *      io.vertx.ext.web.api.service.ServiceRequest, Handler)
+   */
+  @Test
+  public void shouldFailCalculateDiversityBecauseAnyMatch(final Vertx vertx, final WebClient client,
+      final VertxTestContext testContext) {
+
+    final var model = new DiversityData();
+    model.attributes = new HashSet<>();
+    model.attributes.add("competences.undefined_active");
+    model.attributes.add("competences.undefined_read");
+    model.attributes.add("competences.undefined_essay");
+    model.attributes.add("competences.undefined_org");
+    model.attributes.add("competences.undefined_balance");
+    model.attributes.add("competences.undefined_assess");
+    model.attributes.add("competences.undefined_theory");
+    model.attributes.add("competences.undefined_pract");
+    model.match = MatchType.AT_LEAST_ONE;
+    model.userIds = new HashSet<>();
+
+    var future = Future.succeededFuture(model);
+    for (var i = 0; i < 3; i += 2) {
+
+      final var profileIndex = i;
+      future = future
+          .compose(chainModel -> StoreServices.storeProfileExample(profileIndex, vertx, testContext).map(updated -> {
+
+            chainModel.userIds.add(updated.id);
+            return chainModel;
+
+          }));
+    }
+
+    testContext.assertComplete(future).onSuccess(data -> {
+
+      testRequest(client, HttpMethod.POST, Operations.PATH + "/diversity").expect(res -> {
+
+        assertThat(res.statusCode()).isEqualTo(Status.BAD_REQUEST.getStatusCode());
+        final var error = assertThatBodyIs(ErrorMessage.class, res);
+        assertThat(error.code).isNotEmpty();
+        assertThat(error.message).isNotEmpty().isNotEqualTo(error.code);
 
       }).sendJson(data.toJsonObject(), testContext);
 
