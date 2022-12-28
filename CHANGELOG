@@ -3,6 +3,11 @@
 All notable changes to `wenet-profile-manager` will be documented in this file
 
 
+## Version 1.3.0 (2022-12-28)
+
+ * Allow to edit the new file latestKnownActivity.
+
+
 ## Version 1.2.0 (2022-08-12)
 
  * Allow to obtain the diversity for some attributes not all.
