@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "HistoricWeNetUserProfilesPage", description = "Contains a set of profiles found")
+@Schema(title = "HistoricWeNetUserProfilesPage", description = "Contains a set of profiles found")
 public class HistoricWeNetUserProfilesPage extends ReflectionModel implements Model {
 
   /**

@@ -41,13 +41,13 @@ public class UserPerformanceRatingEvent extends ReflectionModel implements Model
   /**
    * The identifier of the user that provide the performance.
    */
-  @Schema(name = "sourceId", description = "The identifier of the user that is providing the performance of another user.", example = "88cb96277edd")
+  @Schema(title = "sourceId", description = "The identifier of the user that is providing the performance of another user.", example = "88cb96277edd")
   public String sourceId;
 
   /**
    * The identifier of the user that has perform the action.
    */
-  @Schema(name = "targetId", description = "The identifier of the user that has perform the task.", example = "bf2743937ed6")
+  @Schema(title = "targetId", description = "The identifier of the user that has perform the task.", example = "bf2743937ed6")
   public String targetId;
 
   /**

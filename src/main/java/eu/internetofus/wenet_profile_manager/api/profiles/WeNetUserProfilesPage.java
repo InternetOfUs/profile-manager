@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "WeNetUserProfilesPage", description = "Contains a set of profiles found")
+@Schema(title = "WeNetUserProfilesPage", description = "Contains a set of profiles found")
 public class WeNetUserProfilesPage extends ReflectionModel implements Model {
 
   /**

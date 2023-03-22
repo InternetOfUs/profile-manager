@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
  *
  * @author UDT-IA, IIIA-CSIC
  */
-@Schema(name = "HistoricWeNetUserProfile", description = "The information of the user profile in a period of time.")
+@Schema(title = "HistoricWeNetUserProfile", description = "The information of the user profile in a period of time.")
 public class HistoricWeNetUserProfile extends ReflectionModel implements Model {
 
   /**
