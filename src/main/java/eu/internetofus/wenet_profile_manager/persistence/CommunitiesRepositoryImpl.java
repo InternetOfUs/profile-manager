@@ -193,4 +193,16 @@ public class CommunitiesRepositoryImpl extends Repository implements Communities
 
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteAllMembersForUser(final String userId, final Handler<AsyncResult<Void>> deleteHandler) {
+
+    final var query = new JsonObject().put("members.userId", userId);
+    final var update = new JsonObject().put("$pull",
+        new JsonObject().put("members", new JsonObject().put("userId", userId)));
+    this.updateCollection(COMMUNITIES_COLLECTION, query, update).onComplete(deleteHandler);
+  }
+
 }

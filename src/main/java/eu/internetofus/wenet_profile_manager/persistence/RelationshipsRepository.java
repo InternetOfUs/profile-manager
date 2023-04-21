@@ -264,4 +264,28 @@ public interface RelationshipsRepository {
   void retrieveSocialNetworkRelationshipsPageObject(JsonObject query, JsonObject sort, int offset, int limit,
       Handler<AsyncResult<JsonObject>> handler);
 
+  /**
+   * Delete all the social network relationships related to an user.
+   *
+   * @param userId        identifier of the user to remove its relationships.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteAllSocialNetworkRelationshipWith(final String userId, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete all the social network relationships related to an user.
+   *
+   * @param userId identifier of the user to remove its relationships.
+   *
+   * @return the future with the delete result.
+   */
+  @GenIgnore
+  default Future<Void> deleteAllSocialNetworkRelationshipWith(final String userId) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteAllSocialNetworkRelationshipWith(userId, promise);
+    return promise.future();
+
+  }
+
 }

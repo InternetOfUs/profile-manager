@@ -26,6 +26,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
@@ -107,6 +108,18 @@ public class RelationshipsRepositoryImpl extends Repository implements Relations
   public Future<Void> migrateDocumentsToCurrentVersions() {
 
     return this.migrateSchemaVersionOnCollectionTo(this.schemaVersion, RELATIONSHIPS_COLLECTION);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteAllSocialNetworkRelationshipWith(final String userId,
+      final Handler<AsyncResult<Void>> deleteHandler) {
+
+    final var fields = new JsonArray().add(new JsonObject().put("sourceId", userId).put("targetId", userId));
+    final var query = new JsonObject().put("$or", fields);
+    this.deleteDocuments(RELATIONSHIPS_COLLECTION, query).onComplete(deleteHandler);
   }
 
 }

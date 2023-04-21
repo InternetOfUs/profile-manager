@@ -384,4 +384,120 @@ public class TrustsRepositoryIT {
 
   }
 
+  /**
+   * Verify that can not delete events for an undefined user.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#deleteAllEventsForUser(String)
+   */
+  @Test
+  public void shouldNotDeleteEventsForUndefinedUser(final Vertx vertx, final VertxTestContext testContext) {
+
+    testContext.assertFailure(TrustsRepository.createProxy(vertx).deleteAllEventsForUser("undefined user identifier"))
+        .onFailure(failed -> testContext.completeNow());
+
+  }
+
+  /**
+   * Verify that can delete events for a source user.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#deleteAllEventsForUser(String)
+   */
+  @Test
+  public void shouldDeleteEventsForSourceUser(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var event = new UserPerformanceRatingEventTest().createModelExample(11);
+    final var repository = TrustsRepository.createProxy(vertx);
+    testContext.assertComplete(repository.storeTrustEvent(event)).onSuccess(stored -> {
+
+      testContext.assertComplete(repository.deleteAllEventsForUser(event.sourceId)).onSuccess(success -> {
+
+        testContext
+            .assertFailure(
+                repository.calculateTrustBy(TrustAggregator.MAXIMUM, new JsonObject().put("sourceId", event.sourceId)))
+            .onFailure(failed -> testContext.completeNow());
+
+      });
+
+    });
+
+  }
+
+  /**
+   * Verify that can delete events for a target user.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#deleteAllEventsForUser(String)
+   */
+  @Test
+  public void shouldDeleteEventsForTargetUser(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var event = new UserPerformanceRatingEventTest().createModelExample(43);
+    final var repository = TrustsRepository.createProxy(vertx);
+    testContext.assertComplete(repository.storeTrustEvent(event)).onSuccess(stored -> {
+
+      testContext.assertComplete(repository.deleteAllEventsForUser(event.targetId)).onSuccess(success -> {
+
+        testContext
+            .assertFailure(
+                repository.calculateTrustBy(TrustAggregator.MAXIMUM, new JsonObject().put("targetId", event.targetId)))
+            .onFailure(failed -> testContext.completeNow());
+
+      });
+
+    });
+
+  }
+
+  /**
+   * Verify that can not delete events for an undefined task.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#deleteAllEventsForTask(String)
+   */
+  @Test
+  public void shouldNotDeleteEventsForUndefinedTask(final Vertx vertx, final VertxTestContext testContext) {
+
+    testContext.assertFailure(TrustsRepository.createProxy(vertx).deleteAllEventsForTask("undefined task identifier"))
+        .onFailure(failed -> testContext.completeNow());
+
+  }
+
+  /**
+   * Verify that can delete events for a task.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see TrustsRepository#deleteAllEventsForTask(String)
+   */
+  @Test
+  public void shouldDeleteEventsForTask(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var event = new UserPerformanceRatingEventTest().createModelExample(1);
+    final var repository = TrustsRepository.createProxy(vertx);
+    testContext.assertComplete(repository.storeTrustEvent(event)).onSuccess(stored -> {
+
+      testContext.assertComplete(repository.deleteAllEventsForTask(event.taskId)).onSuccess(success -> {
+
+        testContext
+            .assertFailure(
+                repository.calculateTrustBy(TrustAggregator.MAXIMUM, new JsonObject().put("taskId", event.taskId)))
+            .onFailure(failed -> testContext.completeNow());
+
+      });
+
+    });
+
+  }
+
 }

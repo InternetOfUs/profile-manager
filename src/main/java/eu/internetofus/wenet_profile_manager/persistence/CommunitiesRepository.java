@@ -355,4 +355,28 @@ public interface CommunitiesRepository {
    */
   void isCommunityDefined(String id, Handler<AsyncResult<Boolean>> searchHandler);
 
+  /**
+   * Delete from all the communities the members related to an user.
+   *
+   * @param userId        identifier of the user to remove as member.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteAllMembersForUser(final String userId, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete from all the communities the members related to an user.
+   *
+   * @param userId identifier of the user to remove as member.
+   *
+   * @return the future with the delete result.
+   */
+  @GenIgnore
+  default Future<Void> deleteAllMembersForUser(final String userId) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteAllMembersForUser(userId, promise);
+    return promise.future();
+
+  }
+
 }

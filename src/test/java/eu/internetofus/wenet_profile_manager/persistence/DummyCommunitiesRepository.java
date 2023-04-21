@@ -79,4 +79,11 @@ public class DummyCommunitiesRepository implements CommunitiesRepository {
   public void isCommunityDefined(final String id, final Handler<AsyncResult<Boolean>> searchHandler) {
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteAllMembersForUser(final String userId, final Handler<AsyncResult<Void>> deleteHandler) {
+  }
+
 }

@@ -28,6 +28,7 @@ import eu.internetofus.common.components.models.CommunityProfileTest;
 import eu.internetofus.common.vertx.ModelsPageContext;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -724,4 +725,92 @@ public class CommunitiesRepositoryIT {
 
   }
 
+  /**
+   * Verify that a community is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#isCommunityDefined
+   */
+  @Test
+  public void shouldNotCommunityDefiend(final Vertx vertx, final VertxTestContext testContext) {
+
+    CommunitiesRepository.createProxy(vertx).isCommunityDefined("undefined community identifier")
+        .onSuccess(value -> testContext.verify(() -> {
+
+          assertThat(value).isFalse();
+          testContext.completeNow();
+        }));
+
+  }
+
+  /**
+   * Verify that a community is defined.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#isCommunityDefined
+   */
+  @Test
+  public void shouldCommunityDefined(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var repository = CommunitiesRepository.createProxy(vertx);
+    repository.storeCommunity(new CommunityProfile(), testContext.succeeding(storedCommunity -> {
+
+      repository.isCommunityDefined(storedCommunity.id).onSuccess(value -> testContext.verify(() -> {
+
+        assertThat(value).isTrue();
+        testContext.completeNow();
+      }));
+
+    }));
+
+  }
+
+  /**
+   * Verify that a community is not defined.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see CommunitiesRepository#isCommunityDefined
+   */
+  @Test
+  public void shoylDeleteAllMembersForUser(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var max = 10;
+    final var member = new CommunityMemberTest().createModelExample(234);
+    final List<CommunityProfile> communities = new ArrayList<>();
+    storeSomeCommunityProfiles(vertx, testContext, community -> community.members.add(member), max, communities,
+        testContext.succeeding(empty -> {
+
+          CommunitiesRepository.createProxy(vertx).deleteAllMembersForUser(member.userId)
+              .onComplete(testContext.succeeding(any -> {
+
+                @SuppressWarnings("rawtypes")
+                final List<Future> getters = new ArrayList<>();
+                for (final var community : communities) {
+
+                  getters.add(CommunitiesRepository.createProxy(vertx).searchCommunity(community.id));
+
+                }
+
+                CompositeFuture.all(getters).onSuccess(futures -> testContext.verify(() -> {
+
+                  for (var i = 0; i < max; i++) {
+
+                    final var community = (CommunityProfile) futures.resultAt(i);
+                    assertThat(community.members).doesNotContain(member);
+                  }
+
+                  testContext.completeNow();
+
+                }));
+
+              }));
+        }));
+
+  }
 }

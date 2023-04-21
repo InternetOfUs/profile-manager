@@ -22,6 +22,7 @@ package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.components.WeNetModelContext;
 import eu.internetofus.common.components.WeNetValidateContext;
+import eu.internetofus.common.components.interaction_protocol_engine.WeNetInteractionProtocolEngine;
 import eu.internetofus.common.components.models.Competence;
 import eu.internetofus.common.components.models.DeprecatedSocialNetworkRelationship;
 import eu.internetofus.common.components.models.Material;
@@ -32,9 +33,11 @@ import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.Routine;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfile;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.social_context_builder.ProfileUpdateNotification;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilder;
+import eu.internetofus.common.components.task_manager.WeNetTaskManager;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.ModelContext;
@@ -43,6 +46,7 @@ import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.ServiceContext;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
+import eu.internetofus.wenet_profile_manager.persistence.RelationshipsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -71,7 +75,7 @@ public class ProfilesResource implements Profiles {
   /**
    * The repository to manage the profiles.
    */
-  protected ProfilesRepository repository;
+  protected ProfilesRepository profilesRepository;
 
   /**
    * This is {@code true} if has to auto store all the profiles changes on the
@@ -89,7 +93,7 @@ public class ProfilesResource implements Profiles {
   public ProfilesResource(final Vertx vertx, final boolean autoStoreProfileChangesInHistory) {
 
     this.vertx = vertx;
-    this.repository = ProfilesRepository.createProxy(vertx);
+    this.profilesRepository = ProfilesRepository.createProxy(vertx);
     this.autoStoreProfileChangesInHistory = autoStoreProfileChangesInHistory;
 
   }
@@ -115,7 +119,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.retrieveModel(model, (id, handler) -> this.repository.searchProfile(id).onComplete(handler),
+    ModelResources.retrieveModel(model, (id, handler) -> this.profilesRepository.searchProfile(id).onComplete(handler),
         context);
   }
 
@@ -129,7 +133,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.createModelChain(body, model,
-        (profile, handler) -> this.repository.storeProfile(profile).onComplete(handler), context, () -> {
+        (profile, handler) -> this.profilesRepository.storeProfile(profile).onComplete(handler), context, () -> {
 
           ServiceResponseHandlers.responseWith(resultHandler, Status.CREATED, model.value);
 
@@ -223,8 +227,8 @@ public class ProfilesResource implements Profiles {
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.updateModelChain(body, model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context, false,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context, false,
         this.addProfileToHistoricChain(storeChanges, model, () -> {
 
           ServiceResponseHandlers.responseOk(resultHandler, model.value);
@@ -246,8 +250,8 @@ public class ProfilesResource implements Profiles {
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.mergeModelChain(body, model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, model, () -> {
 
           ServiceResponseHandlers.responseOk(resultHandler, model.value);
@@ -318,7 +322,7 @@ public class ProfilesResource implements Profiles {
           historic.from = model.target._lastUpdateTs;
           historic.to = model.value._lastUpdateTs;
           historic.profile = model.target;
-          this.repository.storeHistoricProfile(historic).onComplete(store -> {
+          this.profilesRepository.storeHistoricProfile(historic).onComplete(store -> {
 
             if (store.failed()) {
 
@@ -359,23 +363,72 @@ public class ProfilesResource implements Profiles {
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.retrieveModelChain(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), context,
-        () -> ModelResources.deleteModelChain(model, this.repository::deleteProfile, context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler), context,
+        () -> ModelResources.deleteModelChain(model, this.profilesRepository::deleteProfile, context,
             this.addProfileToHistoricChain(storeChanges, model, () -> {
 
               ServiceResponseHandlers.responseOk(resultHandler);
-              WeNetProfileManager.createProxy(this.vertx)
-                  .deleteSocialNetworkRelationships(null, userId, null, null, null, null).onComplete(deleted -> {
 
-                    if (deleted.failed()) {
-
-                      Logger.trace(deleted.cause(), "Cannot deleted the social network relationships of {}.", userId);
-                    }
-
-                  });
+              this.deleteAllReferenceToUser(userId);
+              this.notifyProfileDeleted(userId);
 
             })));
 
+  }
+
+  /**
+   * Remove all the data that has any reference to an user.
+   *
+   * @param userId identifier of the user that has been removed.
+   */
+  private void deleteAllReferenceToUser(final String userId) {
+
+    ProfilesRepository.createProxy(this.vertx).deleteHistoricProfile(userId).onComplete(deleted -> {
+
+      if (deleted.failed()) {
+
+        Logger.trace(deleted.cause(), "Cannot deleted the historic of {}.", userId);
+      }
+
+    });
+
+    RelationshipsRepository.createProxy(this.vertx).deleteAllSocialNetworkRelationshipWith(userId)
+        .onComplete(deleted -> {
+
+          if (deleted.failed()) {
+
+            Logger.trace(deleted.cause(), "Cannot deleted the social network relationships of {}.", userId);
+          }
+
+        });
+
+  }
+
+  /**
+   * Called when has to notify that a profile has been removed.
+   *
+   * @param userId identifier of the user that is removed its profile.
+   */
+  private void notifyProfileDeleted(final String userId) {
+
+    WeNetTaskManager.createProxy(this.vertx).profileDeleted(userId).onComplete(deleted -> {
+
+      if (deleted.failed()) {
+
+        Logger.trace(deleted.cause(), "Cannot notify to the task manager that the profile {} has been deleted.",
+            userId);
+      }
+
+    });
+    WeNetInteractionProtocolEngine.createProxy(this.vertx).profileDeleted(userId).onComplete(deleted -> {
+
+      if (deleted.failed()) {
+
+        Logger.trace(deleted.cause(),
+            "Cannot notify to the interaction protocol engine that the profile {} has been deleted.", userId);
+      }
+
+    });
   }
 
   /**
@@ -388,7 +441,7 @@ public class ProfilesResource implements Profiles {
 
     final var query = ProfilesRepository.createProfileHistoricPageQuery(userId, from, to);
     final var sort = ProfilesRepository.createProfileHistoricPageSort(order);
-    this.repository.searchHistoricProfilePage(query, sort, offset, limit).onComplete(search -> {
+    this.profilesRepository.searchHistoricProfilePage(query, sort, offset, limit).onComplete(search -> {
 
       if (search.failed()) {
 
@@ -427,9 +480,9 @@ public class ProfilesResource implements Profiles {
         ProtocolNorm.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        (profile, norms) -> profile.norms = norms,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, (profile, norms) -> profile.norms = norms,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -446,8 +499,8 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        context);
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, context);
 
   }
 
@@ -465,8 +518,8 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = index;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        ModelResources.searchElementByIndex(), context);
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, ModelResources.searchElementByIndex(), context);
 
   }
 
@@ -485,9 +538,9 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = index;
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -508,9 +561,9 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = index;
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -531,9 +584,9 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = index;
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler), profile -> profile.norms,
-        ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
+        profile -> profile.norms, ModelResources.searchElementByIndex(),
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -576,10 +629,10 @@ public class ProfilesResource implements Profiles {
         "plannedActivities", PlannedActivity.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities,
         (profile, plannedActivities) -> profile.plannedActivities = plannedActivities,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -596,7 +649,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, context);
 
   }
@@ -615,7 +668,7 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = plannedActivityId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(), context);
 
   }
@@ -648,9 +701,9 @@ public class ProfilesResource implements Profiles {
     element.id = plannedActivityId;
 
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -673,9 +726,9 @@ public class ProfilesResource implements Profiles {
     element.id = plannedActivityId;
 
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -697,9 +750,9 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = plannedActivityId;
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.plannedActivities, this.searchProfilePlannedActivity(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -719,10 +772,10 @@ public class ProfilesResource implements Profiles {
         "relevant_location", RelevantLocation.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations,
         (profile, relevantLocations) -> profile.relevantLocations = relevantLocations,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -739,7 +792,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, context);
 
   }
@@ -758,7 +811,7 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
     element.id = relevantLocationId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(), context);
 
   }
@@ -791,9 +844,9 @@ public class ProfilesResource implements Profiles {
     element.id = relevantLocationId;
 
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -816,9 +869,9 @@ public class ProfilesResource implements Profiles {
     element.id = relevantLocationId;
 
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -841,9 +894,9 @@ public class ProfilesResource implements Profiles {
     element.id = relevantLocationId;
 
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.relevantLocations, this.searchProfileRelevantLocation(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -863,10 +916,10 @@ public class ProfilesResource implements Profiles {
         Routine.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors,
         (profile, personalBehaviours) -> profile.personalBehaviors = personalBehaviours,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -883,7 +936,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, context);
 
   }
@@ -902,7 +955,7 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(), context);
 
   }
@@ -923,9 +976,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -947,9 +1000,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -971,9 +1024,9 @@ public class ProfilesResource implements Profiles {
     element.model.id = userId;
 
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.personalBehaviors, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -993,9 +1046,9 @@ public class ProfilesResource implements Profiles {
         Material.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, (profile, materials) -> profile.materials = materials,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1012,7 +1065,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, context);
 
   }
@@ -1031,7 +1084,7 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(), context);
 
   }
@@ -1051,9 +1104,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1074,9 +1127,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1097,9 +1150,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.materials, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -1119,9 +1172,9 @@ public class ProfilesResource implements Profiles {
         Competence.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, (profile, competences) -> profile.competences = competences,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1138,7 +1191,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, context);
 
   }
@@ -1157,7 +1210,7 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(), context);
 
   }
@@ -1177,9 +1230,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1200,9 +1253,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1223,9 +1276,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.competences, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
 
@@ -1245,9 +1298,9 @@ public class ProfilesResource implements Profiles {
         Meaning.class);
     element.model.id = userId;
     ModelResources.createModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, (profile, meanings) -> profile.meanings = meanings,
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1264,7 +1317,7 @@ public class ProfilesResource implements Profiles {
     final var model = this.createProfileContext();
     model.id = userId;
     ModelResources.retrieveModelField(model,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, context);
 
   }
@@ -1283,7 +1336,7 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.retrieveModelFieldElement(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(), context);
 
   }
@@ -1303,9 +1356,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.updateModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1326,9 +1379,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.mergeModelFieldElementChain(body, element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler, element.value)));
 
@@ -1349,9 +1402,9 @@ public class ProfilesResource implements Profiles {
     element.id = index;
     element.model.id = userId;
     ModelResources.deleteModelFieldElementChain(element,
-        (profileId, handler) -> this.repository.searchProfile(profileId).onComplete(handler),
+        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler),
         profile -> profile.meanings, ModelResources.searchElementByIndex(),
-        (profile, handler) -> this.repository.updateProfile(profile).onComplete(handler), context,
+        (profile, handler) -> this.profilesRepository.updateProfile(profile).onComplete(handler), context,
         this.addProfileToHistoricChain(storeChanges, element.model,
             () -> ServiceResponseHandlers.responseOk(resultHandler)));
   }
@@ -1364,7 +1417,7 @@ public class ProfilesResource implements Profiles {
       final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
     final var context = new ServiceContext(request, resultHandler);
-    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.repository
+    ModelResources.retrieveModelsPage(offset, limit, (page, promise) -> this.profilesRepository
         .retrieveProfilesPageObject(page.offset, page.limit, search -> promise.handle(search)), context);
 
   }
@@ -1380,7 +1433,7 @@ public class ProfilesResource implements Profiles {
     model.id = userId;
     final var context = new ServiceContext(request, resultHandler);
     ModelResources.checkModelExist(model,
-        (modelId, handler) -> this.repository.searchProfile(modelId).onComplete(handler), context);
+        (modelId, handler) -> this.profilesRepository.searchProfile(modelId).onComplete(handler), context);
 
   }
 

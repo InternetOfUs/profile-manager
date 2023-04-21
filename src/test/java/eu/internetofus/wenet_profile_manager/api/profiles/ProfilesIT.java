@@ -25,18 +25,24 @@ import static eu.internetofus.common.vertx.HttpResponses.assertThatBodyIs;
 import static io.reactiverse.junit5.web.TestRequest.queryParam;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.data.Offset.offset;
 
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.WeNetValidateContext;
 import eu.internetofus.common.components.models.AliveBirthDate;
+import eu.internetofus.common.components.models.CommunityMemberTest;
+import eu.internetofus.common.components.models.CommunityProfile;
+import eu.internetofus.common.components.models.CommunityProfileTest;
 import eu.internetofus.common.components.models.PlannedActivity;
 import eu.internetofus.common.components.models.ProtocolNorm;
 import eu.internetofus.common.components.models.RelevantLocation;
 import eu.internetofus.common.components.models.RoutineTest;
+import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
 import eu.internetofus.common.components.models.UserName;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfilesPage;
+import eu.internetofus.common.components.profile_manager.SocialNetworkRelationshipsPage;
 import eu.internetofus.common.components.profile_manager.WeNetProfileManager;
 import eu.internetofus.common.components.social_context_builder.WeNetSocialContextBuilderSimulator;
 import eu.internetofus.common.model.ErrorMessage;
@@ -46,6 +52,7 @@ import eu.internetofus.common.vertx.AbstractModelResourcesIT;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepositoryIT;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -56,6 +63,7 @@ import io.vertx.junit5.VertxTestContext;
 import java.util.ArrayList;
 import java.util.UUID;
 import javax.ws.rs.core.Response.Status;
+import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -287,7 +295,8 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                                 assertThat(page.profiles).hasSize(1);
                                 assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                                assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1l));
+                                assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
+                                    Offset.offset(1l));
                                 assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
                               }).send(testContext, checkpoint);
@@ -460,7 +469,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
                           assertThat(page.profiles).hasSize(1);
                           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
                           assertThat((Long) page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs,
-                              offset((Long) 1L));
+                              Offset.offset((Long) 1L));
                           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
 
                         }).send(testContext, checkpoint);
@@ -703,7 +712,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                           assertThat(page.profiles).hasSize(1);
                           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                          assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
+                          assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, Offset.offset(1L));
                           storedProfile._lastUpdateTs = old_lastUpdateTs;
                           storedProfile.name.middle = old_middle;
                           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
@@ -763,7 +772,7 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
 
                           assertThat(page.profiles).hasSize(1);
                           assertThat(page.profiles.get(0).from).isEqualTo(storedProfile._creationTs);
-                          assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, offset(1L));
+                          assertThat(page.profiles.get(0).to).isCloseTo(storedProfile._lastUpdateTs, Offset.offset(1L));
                           storedProfile._lastUpdateTs = old_lastUpdateTs;
                           storedProfile.dateOfBirth.day = 24;
                           assertThat(page.profiles.get(0).profile).isEqualTo(storedProfile);
@@ -1394,6 +1403,89 @@ public class ProfilesIT extends AbstractModelResourcesIT<WeNetUserProfile, Strin
       }));
 
     });
+
+  }
+
+  /**
+   * Should not delete undefined profile.
+   *
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldNotDeleteUndefinedProfile(final WebClient client, final VertxTestContext testContext) {
+
+    testRequest(client, HttpMethod.DELETE, Profiles.PATH + "/" + UUID.randomUUID().toString()).expect(res -> {
+      assertThat(res.statusCode()).isEqualTo(Status.NOT_FOUND.getStatusCode());
+
+    });
+
+  }
+
+  /**
+   * Should delete profile.
+   *
+   * @param vertx       event bus to use.
+   * @param client      to connect to the server.
+   * @param testContext context to test.
+   */
+  @Test
+  public void shouldDeleteProfile(final Vertx vertx, final WebClient client, final VertxTestContext testContext) {
+
+    testContext.assertComplete(new CommunityProfileTest().createModelExample(345, vertx, testContext))
+        .onSuccess(community -> {
+
+          testContext.assertComplete(new SocialNetworkRelationshipTest().createModelExample(33, vertx, testContext))
+              .onSuccess(relationship -> {
+
+                final var userId = relationship.sourceId;
+                final var profile = new WeNetUserProfileTest().createBasicExample(253);
+                testContext.assertComplete(WeNetProfileManager.createProxy(vertx).updateProfile(userId, profile, true))
+                    .onSuccess(any -> {
+
+                      final var member = new CommunityMemberTest().createModelExample(256);
+                      member.userId = userId;
+                      community.members.add(member);
+                      testContext.assertComplete(WeNetProfileManager.createProxy(vertx).updateCommunity(community))
+                          .onSuccess(any2 -> {
+
+                            testContext.assertComplete(WeNetProfileManager.createProxy(vertx).deleteProfile(profile.id))
+                                .onSuccess(any3 -> {
+
+                                  testContext
+                                      .assertFailure(WeNetProfileManager.createProxy(vertx).retrieveProfile(profile.id))
+                                      .onFailure(result -> {
+
+                                        testContext.assertComplete(CompositeFuture.all(
+                                            WeNetProfileManager.createProxy(vertx).retrieveCommunity(community.id),
+                                            WeNetProfileManager.createProxy(vertx)
+                                                .retrieveSocialNetworkRelationshipsPage(null, userId, null, null, null,
+                                                    null, null, 0, 1000),
+                                            WeNetProfileManager.createProxy(vertx)
+                                                .retrieveSocialNetworkRelationshipsPage(null, null, userId, null, null,
+                                                    null, null, 0, 1000),
+                                            WeNetProfileManager.createProxy(vertx).getProfileHistoricPage(userId, null,
+                                                null, null, 0, 100)
+
+                                      )).onSuccess(results -> testContext.verify(() -> {
+
+                                        final var updatedCommunity = (CommunityProfile) results.resultAt(0);
+                                        assertThat(updatedCommunity.members).doesNotContain(member);
+                                        var updatedRelationships = (SocialNetworkRelationshipsPage) results.resultAt(1);
+                                        assertThat(updatedRelationships.total).isEqualTo(0l);
+                                        updatedRelationships = (SocialNetworkRelationshipsPage) results.resultAt(2);
+                                        assertThat(updatedRelationships.total).isEqualTo(0l);
+
+                                        testContext.completeNow();
+
+                                      }));
+
+                                      });
+                                });
+                          });
+                    });
+              });
+        });
 
   }
 

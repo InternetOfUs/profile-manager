@@ -21,11 +21,11 @@
 package eu.internetofus.wenet_profile_manager.persistence;
 
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfilesPage;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.QueryBuilder;
-import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;
@@ -348,5 +348,28 @@ public interface ProfilesRepository {
    * @param searchHandler handler to manage the search.
    */
   void isProfileDefined(String id, Handler<AsyncResult<Boolean>> searchHandler);
+
+  /**
+   * Delete a historic profile.
+   *
+   * @param id            identifier of the user to delete its historic.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteHistoricProfile(String id, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete a historic profile.
+   *
+   * @param id identifier of the user to delete its historic.
+   *
+   * @return the future that inform when the historic profile is removed.
+   */
+  @GenIgnore
+  default Future<Void> deleteHistoricProfile(final String id) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteHistoricProfile(id, promise);
+    return promise.future();
+  }
 
 }

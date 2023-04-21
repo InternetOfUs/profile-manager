@@ -262,4 +262,27 @@ public class TrustsRepositoryImpl extends Repository implements TrustsRepository
     return this.migrateSchemaVersionOnCollectionTo(this.schemaVersion, TRUSTS_COLLECTION);
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteAllEventsForUser(final String userId, final Handler<AsyncResult<Void>> deleteHandler) {
+
+    final var fields = new JsonArray().add(new JsonObject().put("sourceId", userId))
+        .add(new JsonObject().put("targetId", userId));
+    final var query = new JsonObject().put("$or", fields);
+    this.deleteDocuments(TRUSTS_COLLECTION, query).onComplete(deleteHandler);
+
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void deleteAllEventsForTask(final String taskId, final Handler<AsyncResult<Void>> deleteHandler) {
+
+    this.deleteDocuments(TRUSTS_COLLECTION, new JsonObject().put("taskId", taskId)).onComplete(deleteHandler);
+
+  }
+
 }

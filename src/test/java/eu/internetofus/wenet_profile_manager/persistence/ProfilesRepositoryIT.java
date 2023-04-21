@@ -25,13 +25,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.WeNetUserProfile;
 import eu.internetofus.common.components.models.WeNetUserProfileTest;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfileTest;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfilesPage;
 import eu.internetofus.common.components.profile_manager.UserIdentifiersPage;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfile;
-import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfileTest;
-import eu.internetofus.wenet_profile_manager.api.profiles.HistoricWeNetUserProfilesPage;
 import eu.internetofus.wenet_profile_manager.api.profiles.WeNetUserProfilesPage;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -1063,6 +1063,53 @@ public class ProfilesRepositoryIT {
           testContext.completeNow();
 
         }));
+  }
+
+  /**
+   * Verify that can delete a historic profile.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see ProfilesRepository#deleteHistoricProfile(String)
+   */
+  @Test
+  public void shouldDeleteHistoricProfile(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var historic = new HistoricWeNetUserProfile();
+    historic.from = 10000;
+    historic.to = 1000000;
+    historic.profile = new WeNetUserProfileTest().createBasicExample(1);
+    final var id = UUID.randomUUID().toString();
+    historic.profile.id = id;
+    final var historic2 = new HistoricWeNetUserProfile();
+    historic2.from = 10000;
+    historic2.to = 1000000;
+    historic2.profile = new WeNetUserProfileTest().createBasicExample(67);
+    historic2.profile.id = id;
+    final var repository = ProfilesRepository.createProxy(vertx);
+    testContext.assertComplete(repository.storeHistoricProfile(historic)).onSuccess(storedProfile1 -> {
+
+      testContext.assertComplete(repository.storeHistoricProfile(historic2)).onSuccess(storedProfile2 -> {
+
+        testContext.assertComplete(repository.deleteProfile(id)).onSuccess(success -> {
+          final var query = ProfilesRepository.createProfileHistoricPageQuery(id, 0l, Long.MAX_VALUE);
+          final var sort = ProfilesRepository.createProfileHistoricPageSort("-");
+          testContext.assertComplete(repository.searchHistoricProfilePage(query, sort, 0, 100))
+              .onSuccess(foundProfile -> testContext.verify(() -> {
+
+                final var page = new HistoricWeNetUserProfilesPage();
+                page.total = 0;
+                page.offset = 0;
+                page.profiles = null;
+                assertThat(foundProfile).isEqualTo(page);
+                testContext.completeNow();
+              }));
+
+        });
+      });
+    });
+
   }
 
 }

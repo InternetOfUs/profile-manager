@@ -145,4 +145,53 @@ public interface TrustsRepository {
    * @param trustHandler handler to manage the calculated trust.
    */
   void calculateTrustBy(TrustAggregator aggregator, JsonObject query, Handler<AsyncResult<Double>> trustHandler);
+
+  /**
+   * Delete all the events related to an user.
+   *
+   * @param userId        identifier of the user to remove its events.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteAllEventsForUser(final String userId, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete all the events related to an user.
+   *
+   * @param userId identifier of the user to remove its events.
+   *
+   * @return the future with the delete result.
+   */
+  @GenIgnore
+  default Future<Void> deleteAllEventsForUser(final String userId) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteAllEventsForUser(userId, promise);
+    return promise.future();
+
+  }
+
+  /**
+   * Delete all the events related to an task.
+   *
+   * @param taskId        identifier of the task to remove its events.
+   * @param deleteHandler handler to manage the delete result.
+   */
+  void deleteAllEventsForTask(final String taskId, Handler<AsyncResult<Void>> deleteHandler);
+
+  /**
+   * Delete all the events related to an task.
+   *
+   * @param taskId identifier of the task to remove its events.
+   *
+   * @return the future with the delete result.
+   */
+  @GenIgnore
+  default Future<Void> deleteAllEventsForTask(final String taskId) {
+
+    final Promise<Void> promise = Promise.promise();
+    this.deleteAllEventsForTask(taskId, promise);
+    return promise.future();
+
+  }
+
 }

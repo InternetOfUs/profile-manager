@@ -21,6 +21,7 @@
 package eu.internetofus.wenet_profile_manager.api.profiles;
 
 import eu.internetofus.common.components.models.WeNetUserProfile;
+import eu.internetofus.common.components.profile_manager.HistoricWeNetUserProfilesPage;
 import eu.internetofus.common.model.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
