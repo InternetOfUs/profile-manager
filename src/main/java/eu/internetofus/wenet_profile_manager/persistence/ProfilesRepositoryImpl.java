@@ -360,7 +360,7 @@ public class ProfilesRepositoryImpl extends Repository implements ProfilesReposi
   @Override
   public void deleteHistoricProfile(final String id, final Handler<AsyncResult<Void>> deleteHandler) {
 
-    final var query = new JsonObject().put("profile._id", id);
+    final var query = new JsonObject().put("profile.id", id);
     this.deleteDocuments(HISTORIC_PROFILES_COLLECTION, query).onComplete(deleteHandler);
 
   }

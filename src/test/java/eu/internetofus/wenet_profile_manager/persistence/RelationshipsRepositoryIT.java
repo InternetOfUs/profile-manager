@@ -22,8 +22,10 @@ package eu.internetofus.wenet_profile_manager.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import eu.internetofus.common.components.StoreServices;
 import eu.internetofus.common.components.models.SocialNetworkRelationship;
 import eu.internetofus.common.components.models.SocialNetworkRelationshipTest;
+import eu.internetofus.common.model.Model;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -159,6 +161,80 @@ public class RelationshipsRepositoryIT {
       testContext.completeNow();
 
     });
+
+  }
+
+  /**
+   * Verify that can delete all relationships with a reference to an user.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see RelationshipsRepository#deleteAllSocialNetworkRelationshipWith
+   */
+  @Test
+  public void shouldDeleteAllSocialNetworkRelationshipWith(final Vertx vertx, final VertxTestContext testContext) {
+
+    testContext.assertComplete(StoreServices.storeSocialNetworkRelationshipExample(1, vertx, testContext))
+        .onSuccess(event1 -> {
+
+          final var userId = event1.sourceId;
+          testContext.assertComplete(StoreServices.storeSocialNetworkRelationshipExample(2, vertx, testContext))
+              .onSuccess(event2 -> {
+
+                final var event3 = Model.fromJsonObject(event2.toJsonObject(), SocialNetworkRelationship.class);
+                event3.targetId = userId;
+                final var repository = RelationshipsRepository.createProxy(vertx);
+                testContext.assertComplete(repository.storeOrUpdateSocialNetworkRelationship(event3))
+                    .onSuccess(stored -> {
+
+                      testContext.assertComplete(repository.deleteAllSocialNetworkRelationshipWith(userId))
+                          .onSuccess(deleted -> {
+
+                            testContext
+                                .assertComplete(repository.retrieveSocialNetworkRelationshipsPage(
+                                    new JsonObject().put("sourceId", userId), new JsonObject(), 0, 0))
+                                .onSuccess(page -> {
+
+                                  testContext
+                                      .assertComplete(repository.retrieveSocialNetworkRelationshipsPage(
+                                          new JsonObject().put("targetId", userId), new JsonObject(), 0, 0))
+                                      .onSuccess(page2 -> {
+
+                                        testContext.verify(() -> {
+
+                                          assertThat(page).isNotNull();
+                                          assertThat(page.total).isEqualTo(0);
+                                          assertThat(page2).isNotNull();
+                                          assertThat(page2.total).isEqualTo(0);
+
+                                        });
+                                        testContext.completeNow();
+
+                                      });
+
+                                });
+                          });
+                    });
+              });
+        });
+
+  }
+
+  /**
+   * Verify that can not delete all relationships with a undefined user.
+   *
+   * @param vertx       event bus to use.
+   * @param testContext context that executes the test.
+   *
+   * @see RelationshipsRepository#deleteAllSocialNetworkRelationshipWith
+   */
+  @Test
+  public void shouldNotDeleteAllSocialNetworkRelationshipWith(final Vertx vertx, final VertxTestContext testContext) {
+
+    final var userId = UUID.randomUUID().toString();
+    testContext.assertFailure(RelationshipsRepository.createProxy(vertx).deleteAllSocialNetworkRelationshipWith(userId))
+        .onFailure(error -> testContext.completeNow());
 
   }
 

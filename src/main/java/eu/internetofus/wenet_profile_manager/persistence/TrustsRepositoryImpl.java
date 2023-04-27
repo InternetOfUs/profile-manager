@@ -20,9 +20,9 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.Repository;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

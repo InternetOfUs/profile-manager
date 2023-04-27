@@ -20,10 +20,10 @@
 
 package eu.internetofus.wenet_profile_manager.persistence;
 
+import eu.internetofus.common.components.profile_manager.Trust;
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
 import eu.internetofus.common.model.Model;
-import eu.internetofus.wenet_profile_manager.api.trusts.Trust;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.ProxyGen;
 import io.vertx.core.AsyncResult;

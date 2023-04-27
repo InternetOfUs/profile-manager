@@ -249,11 +249,9 @@ public interface Profiles {
   /**
    * Called when want to delete a profile.
    *
-   * @param storeProfileChangesInHistory is {@code true} if has to store the
-   *                                     changes in the history.
-   * @param userId                       identifier of the user to delete.
-   * @param request                      of the operation.
-   * @param resultHandler                to inform of the response.
+   * @param userId        identifier of the user to delete.
+   * @param request       of the operation.
+   * @param resultHandler to inform of the response.
    */
   @DELETE
   @Path(USER_ID_PATH)
@@ -262,7 +260,6 @@ public interface Profiles {
   @ApiResponse(responseCode = "204", description = "The profile was deleted successfully")
   @ApiResponse(responseCode = "404", description = "Not found profile", content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
   void deleteProfile(
-      @QueryParam(value = "storeProfileChangesInHistory") @Parameter(description = "This is true if what to store the changes in the historical.", example = "false", required = false) Boolean storeProfileChangesInHistory,
       @PathParam("userId") @Parameter(description = "The identifier of the user to delete") String userId,
       @Parameter(hidden = true, required = false) ServiceRequest request,
       @Parameter(hidden = true, required = false) Handler<AsyncResult<ServiceResponse>> resultHandler);

@@ -26,6 +26,10 @@ import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
+import eu.internetofus.common.components.profile_manager.Trust;
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEventTest;
 import eu.internetofus.common.model.ErrorMessage;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;

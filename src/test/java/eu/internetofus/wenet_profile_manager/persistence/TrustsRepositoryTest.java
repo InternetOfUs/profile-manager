@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

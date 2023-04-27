@@ -1092,7 +1092,7 @@ public class ProfilesRepositoryIT {
 
       testContext.assertComplete(repository.storeHistoricProfile(historic2)).onSuccess(storedProfile2 -> {
 
-        testContext.assertComplete(repository.deleteProfile(id)).onSuccess(success -> {
+        testContext.assertComplete(repository.deleteHistoricProfile(id)).onSuccess(success -> {
           final var query = ProfilesRepository.createProfileHistoricPageQuery(id, 0l, Long.MAX_VALUE);
           final var sort = ProfilesRepository.createProfileHistoricPageSort("-");
           testContext.assertComplete(repository.searchHistoricProfilePage(query, sort, 0, 100))

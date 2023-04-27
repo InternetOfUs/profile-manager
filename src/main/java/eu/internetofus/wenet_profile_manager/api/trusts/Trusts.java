@@ -29,7 +29,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
+import eu.internetofus.common.components.profile_manager.Trust;
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
 import eu.internetofus.common.model.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

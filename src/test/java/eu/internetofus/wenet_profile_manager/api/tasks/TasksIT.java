@@ -23,9 +23,9 @@ package eu.internetofus.wenet_profile_manager.api.tasks;
 import static io.reactiverse.junit5.web.TestRequest.testRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEventTest;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEventTest;
 import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

@@ -45,8 +45,10 @@ import eu.internetofus.common.vertx.ModelFieldContext;
 import eu.internetofus.common.vertx.ModelResources;
 import eu.internetofus.common.vertx.ServiceContext;
 import eu.internetofus.common.vertx.ServiceResponseHandlers;
+import eu.internetofus.wenet_profile_manager.persistence.CommunitiesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.ProfilesRepository;
 import eu.internetofus.wenet_profile_manager.persistence.RelationshipsRepository;
+import eu.internetofus.wenet_profile_manager.persistence.TrustsRepository;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -355,24 +357,24 @@ public class ProfilesResource implements Profiles {
    * {@inheritDoc}
    */
   @Override
-  public void deleteProfile(final Boolean storeProfileChangesInHistory, final String userId,
-      final ServiceRequest request, final Handler<AsyncResult<ServiceResponse>> resultHandler) {
+  public void deleteProfile(final String userId, final ServiceRequest request,
+      final Handler<AsyncResult<ServiceResponse>> resultHandler) {
 
-    final var storeChanges = this.calculateStoreChanges(storeProfileChangesInHistory);
-    final var model = this.createProfileContext();
-    model.id = userId;
-    final var context = new ServiceContext(request, resultHandler);
-    ModelResources.retrieveModelChain(model,
-        (profileId, handler) -> this.profilesRepository.searchProfile(profileId).onComplete(handler), context,
-        () -> ModelResources.deleteModelChain(model, this.profilesRepository::deleteProfile, context,
-            this.addProfileToHistoricChain(storeChanges, model, () -> {
+    this.profilesRepository.deleteProfile(userId).onComplete(handler -> {
 
-              ServiceResponseHandlers.responseOk(resultHandler);
+      if (handler.failed()) {
 
-              this.deleteAllReferenceToUser(userId);
-              this.notifyProfileDeleted(userId);
+        ServiceResponseHandlers.responseWithErrorMessage(resultHandler, Status.NOT_FOUND, "no_found",
+            "Not found any profile associated to the identifier.");
 
-            })));
+      } else {
+
+        ServiceResponseHandlers.responseOk(resultHandler);
+        this.deleteAllReferenceToUser(userId);
+        this.notifyProfileDeleted(userId);
+      }
+
+    });
 
   }
 
@@ -383,7 +385,7 @@ public class ProfilesResource implements Profiles {
    */
   private void deleteAllReferenceToUser(final String userId) {
 
-    ProfilesRepository.createProxy(this.vertx).deleteHistoricProfile(userId).onComplete(deleted -> {
+    this.profilesRepository.deleteHistoricProfile(userId).onComplete(deleted -> {
 
       if (deleted.failed()) {
 
@@ -391,7 +393,6 @@ public class ProfilesResource implements Profiles {
       }
 
     });
-
     RelationshipsRepository.createProxy(this.vertx).deleteAllSocialNetworkRelationshipWith(userId)
         .onComplete(deleted -> {
 
@@ -401,6 +402,22 @@ public class ProfilesResource implements Profiles {
           }
 
         });
+    CommunitiesRepository.createProxy(this.vertx).deleteAllMembersForUser(userId).onComplete(deleted -> {
+
+      if (deleted.failed()) {
+
+        Logger.trace(deleted.cause(), "Cannot deleted the members from the community of {}.", userId);
+      }
+
+    });
+    TrustsRepository.createProxy(this.vertx).deleteAllEventsForUser(userId).onComplete(deleted -> {
+
+      if (deleted.failed()) {
+
+        Logger.trace(deleted.cause(), "Cannot deleted the events for user {}.", userId);
+      }
+
+    });
 
   }
 

@@ -21,6 +21,9 @@
 package eu.internetofus.wenet_profile_manager.api.trusts;
 
 import eu.internetofus.common.components.WeNetValidateContext;
+import eu.internetofus.common.components.profile_manager.Trust;
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.common.vertx.QueryBuilder;

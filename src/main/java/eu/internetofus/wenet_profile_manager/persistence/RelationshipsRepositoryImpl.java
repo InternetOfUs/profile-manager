@@ -117,7 +117,8 @@ public class RelationshipsRepositoryImpl extends Repository implements Relations
   public void deleteAllSocialNetworkRelationshipWith(final String userId,
       final Handler<AsyncResult<Void>> deleteHandler) {
 
-    final var fields = new JsonArray().add(new JsonObject().put("sourceId", userId).put("targetId", userId));
+    final var fields = new JsonArray().add(new JsonObject().put("sourceId", userId))
+        .add(new JsonObject().put("targetId", userId));
     final var query = new JsonObject().put("$or", fields);
     this.deleteDocuments(RELATIONSHIPS_COLLECTION, query).onComplete(deleteHandler);
   }

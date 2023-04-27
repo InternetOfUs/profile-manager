@@ -23,12 +23,12 @@ package eu.internetofus.wenet_profile_manager.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
+import eu.internetofus.common.components.profile_manager.TrustAggregator;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEvent;
+import eu.internetofus.common.components.profile_manager.UserPerformanceRatingEventTest;
 import eu.internetofus.common.model.Model;
 import eu.internetofus.common.model.TimeManager;
 import eu.internetofus.wenet_profile_manager.WeNetProfileManagerIntegrationExtension;
-import eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator;
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEvent;
-import eu.internetofus.wenet_profile_manager.api.trusts.UserPerformanceRatingEventTest;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -155,7 +155,7 @@ public class TrustsRepositoryIT {
    * @param vertx          event bus to use.
    * @param testContext    context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @ParameterizedTest(name = "Should calcuate the trust for {0}")
@@ -195,7 +195,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @Test
@@ -228,7 +228,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @Test
@@ -261,7 +261,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @Test
@@ -296,7 +296,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @Test
@@ -326,7 +326,7 @@ public class TrustsRepositoryIT {
    * @param vertx       event bus to use.
    * @param testContext context that executes the test.
    *
-   * @see TrustsRepository#calculateTrustBy(eu.internetofus.wenet_profile_manager.api.trusts.TrustAggregator,
+   * @see TrustsRepository#calculateTrustBy(eu.internetofus.common.components.profile_manager.TrustAggregator,
    *      JsonObject)
    */
   @Test
